@@ -111,7 +111,7 @@ const Create: NextPage = () => {
           <Form.Item className='col-span-full'>
             <Editor
               key={renderEditor}
-              apiKey='bzuei2kyl5e5z8ryogjw5qq9ue6wfqj2qarzvlto5orm8pfd'
+              apiKey={process.env.TINY_MCE}
               init={{
                 height: 400,
                 menubar: true,
