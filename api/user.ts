@@ -9,7 +9,7 @@ export const auth = async (): Promise<IUserInfo> => {
 };
 
 export const register = async (data: FormData): Promise<IToken> => {
-  const res: AxiosResponse = await axios.post('http://localhost:5000/api/register', data);
+  const res: AxiosResponse = await axios.post('/api/user/register', data);
 
   return res.data;
 };

@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 const genre: string[] = [
   'Technology',
   'Science',
@@ -20,7 +20,7 @@ const genre: string[] = [
   'Political',
 ];
 
-const BlogSchema = new Schema(
+const BlogSchema = new mongoose.Schema(
   {
     author: { type: Schema.Types.ObjectId, required: [true, 'Author missing'] },
     image: String,
@@ -57,4 +57,4 @@ const BlogSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = model('Blog', BlogSchema);
+export default mongoose.models.Blog || mongoose.model('Blog', BlogSchema);
