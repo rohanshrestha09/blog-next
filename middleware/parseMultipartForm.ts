@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { NextFunction } from 'express';
 import formidable from 'formidable';
 
-const form = formidable({ multiples: false });
+const form = formidable({ multiples: true });
 
 const parseMultipartForm = async (
   req: NextApiRequest & { files: any },
@@ -17,6 +17,7 @@ const parseMultipartForm = async (
         req.files = files;
       }
       next();
+      console.log(req.files);
     });
   } else {
     next();

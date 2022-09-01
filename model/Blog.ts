@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-const genre: string[] = [
+export const genre: string[] = [
   'Technology',
   'Science',
   'Programming',

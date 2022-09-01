@@ -21,7 +21,6 @@ const Login: React.FC = () => {
   const handleLogin = useMutation(async (data: ILogin) => login(data), {
     onSuccess(res: IToken) {
       openSuccessNotification(res.message);
-      rememberMe && localStorage.setItem('token', res.token);
       form.resetFields();
       loginModalRef.current?.click();
       queryClient.refetchQueries([AUTH]);

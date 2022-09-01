@@ -1,5 +1,8 @@
-import type { NextPage } from 'next';
 import Head from 'next/head';
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import { DehydratedState, QueryClient, dehydrate } from '@tanstack/react-query';
+import { auth } from '../api/user';
+import { AUTH } from '../constants/queryKeys';
 
 const Home: NextPage = () => {
   return (
@@ -22,3 +25,22 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+export const getServerSideProps: GetServerSideProps = async (
+  ctx: GetServerSidePropsContext
+): Promise<{
+  props: { dehydratedState: DehydratedState };
+}> => {
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryFn: () => auth({ cookie: ctx.req && ctx.req.headers.cookie }),
+    queryKey: [AUTH],
+  });
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
+};

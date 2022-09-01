@@ -58,7 +58,6 @@ const Register: React.FC = () => {
     {
       onSuccess: (res: IToken) => {
         openSuccessNotification(res.message);
-        rememberMe && localStorage.setItem('token', res.token);
         form.resetFields();
         registerModalRef.current?.click();
         queryClient.refetchQueries([AUTH]);

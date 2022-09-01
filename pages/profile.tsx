@@ -1,8 +1,12 @@
 import Head from 'next/head';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useContext } from 'react';
+import { dehydrate, DehydratedState, QueryClient } from '@tanstack/react-query';
 import { Image } from 'antd';
 import IContext from '../interface/context';
 import userContext from '../utils/userContext';
+import { AUTH } from '../constants/queryKeys';
+import { auth } from '../api/user';
 
 const Profile = () => {
   const { userInfo } = useContext<IContext>(userContext);
@@ -30,3 +34,22 @@ const Profile = () => {
 };
 
 export default Profile;
+
+export const getServerSideProps: GetServerSideProps = async (
+  ctx: GetServerSidePropsContext
+): Promise<{
+  props: { dehydratedState: DehydratedState };
+}> => {
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryFn: () => auth({ cookie: ctx.req && ctx.req.headers.cookie }),
+    queryKey: [AUTH],
+  });
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
+};

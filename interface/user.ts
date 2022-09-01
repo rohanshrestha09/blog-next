@@ -24,6 +24,7 @@ export interface ILogin {
 
 export interface IUserInfo extends IMessage {
   user: {
+    _id: string;
     fullname: string;
     email: string;
     dateOfBirth: Date;

@@ -2,14 +2,16 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import moment from 'moment';
 import nextConnect from 'next-connect';
+import { isEmpty } from 'lodash';
 import fs from 'fs';
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import jwt, { Secret } from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import { serialize } from 'cookie';
 import User from '../../../model/User';
+import middleware from '../../../middleware/middleware';
 import parseMultipartForm from '../../../middleware/parseMultipartForm';
 import { IToken } from '../../../interface/user';
 import IMessage from '../../../interface/message';
-import middleware from '../../../middleware/middleware';
 
 const fsPromises = fs.promises;
 
@@ -23,7 +25,7 @@ export const config = {
 
 const handler = nextConnect();
 
-handler.use(middleware, parseMultipartForm);
+handler.use(middleware).use(parseMultipartForm);
 
 handler.post(
   async (req: NextApiRequest & { files: any }, res: NextApiResponse<IToken | IMessage>) => {
@@ -54,21 +56,21 @@ handler.post(
         dateOfBirth: new Date(moment(dateOfBirth).format()),
       });
 
-      const parsedFiles = req.files.image;
+      if (!isEmpty(req.files)) {
+        const file = req.files.image;
 
-      if (parsedFiles) {
-        if (!parsedFiles.mimetype.startsWith('image/'))
+        if (!file.mimetype.startsWith('image/'))
           return res.status(403).json({ message: 'Please choose an image' });
 
-        const filename = parsedFiles.mimetype.replace('image/', `${_userId}.`);
+        const filename = file.mimetype.replace('image/', `${_userId}.`);
 
         const storageRef = ref(storage, `users/${filename}`);
 
         const metadata = {
-          contentType: parsedFiles.mimetype,
+          contentType: file.mimetype,
         };
 
-        await uploadBytes(storageRef, await fsPromises.readFile(parsedFiles.filepath), metadata);
+        await uploadBytes(storageRef, await fsPromises.readFile(file.filepath), metadata);
 
         const url = await getDownloadURL(storageRef);
 
@@ -78,9 +80,19 @@ handler.post(
         });
       }
 
-      const token: string = jwt.sign({ _id: _userId }, process.env.JWT_TOKEN, {
-        expiresIn: '20d',
+      const token: string = jwt.sign({ _id: _userId }, process.env.JWT_TOKEN as Secret, {
+        expiresIn: '30d',
       });
+
+      const serialized = serialize('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development',
+        sameSite: 'strict',
+        maxAge: 60 * 60 * 24 * 30,
+        path: '/',
+      });
+
+      res.setHeader('Set-Cookie', serialized);
 
       return res.status(200).json({ token, message: 'Signup Successful' });
     } catch (err: any) {

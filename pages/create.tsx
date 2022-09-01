@@ -1,4 +1,4 @@
-import type { GetServerSideProps, NextPage } from 'next';
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { useRef, useState } from 'react';
 import {
@@ -12,11 +12,13 @@ import {
 import { Editor } from '@tinymce/tinymce-react';
 import { Form, Input, Button, Upload, Select, Dropdown, Menu, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import Cookies from 'js-cookie';
 import { IGetGenre, IPostBlog } from '../interface/blog';
 import { getGenre, postBlog } from '../api/blog';
 import { openErrorNotification, openSuccessNotification } from '../utils/openNotification';
 import IMessage from '../interface/message';
 import { AUTH, GET_GENRE } from '../constants/queryKeys';
+import { auth } from '../api/user';
 
 const Create: NextPage = () => {
   const queryClient = useQueryClient();
@@ -69,7 +71,9 @@ const Create: NextPage = () => {
       });
       if (selectedImage) formData.append('image', selectedImage);
 
-      return postBlog(formData);
+      const cookie = Cookies.get('token') ? `token=${Cookies.get('token')}` : undefined;
+
+      return postBlog({ cookie, data: formData });
     },
     {
       onSuccess: (res: IMessage) => {
@@ -79,7 +83,7 @@ const Create: NextPage = () => {
         setRenderEditor(Math.random() * 100);
         queryClient.refetchQueries([AUTH]);
       },
-      onError: (err: any) => openErrorNotification(err.response.data.message),
+      onError: (err: Error | any) => openErrorNotification(err.response.data.message),
     }
   );
 
@@ -249,10 +253,17 @@ const Create: NextPage = () => {
 
 export default Create;
 
-export const getServerSideProps: GetServerSideProps = async (): Promise<{
-  props: { dehyrdatedState: DehydratedState };
+export const getServerSideProps: GetServerSideProps = async (
+  ctx: GetServerSidePropsContext
+): Promise<{
+  props: { dehydratedState: DehydratedState };
 }> => {
   const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryFn: () => auth({ cookie: ctx.req && ctx.req.headers.cookie }),
+    queryKey: [AUTH],
+  });
 
   await queryClient.prefetchQuery({
     queryFn: () => getGenre(),
@@ -261,7 +272,7 @@ export const getServerSideProps: GetServerSideProps = async (): Promise<{
 
   return {
     props: {
-      dehyrdatedState: dehydrate(queryClient),
+      dehydratedState: dehydrate(queryClient),
     },
   };
 };
