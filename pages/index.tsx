@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { DehydratedState, QueryClient, dehydrate } from '@tanstack/react-query';
-import { auth } from '../api/user';
+import { auth } from '../apiAxios/user';
 import { AUTH } from '../constants/queryKeys';
 
 const Home: NextPage = () => {

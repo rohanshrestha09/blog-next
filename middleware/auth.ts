@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextFunction } from 'express';
 import mongoose from 'mongoose';
-import cookie from 'cookie';
 import User from '../model/User';
 import Blog from '../model/Blog';
 import IMessage from '../interface/message';
@@ -13,7 +12,7 @@ const auth = async (
   res: NextApiResponse<IMessage>,
   next: NextFunction
 ): Promise<any> => {
-  const token = req.headers.cookie ? cookie.parse(req.headers.cookie).token : req.cookies.token;
+  const token = req.cookies.token;
 
   if (!token) return res.status(401).json({ message: 'Not authorised' });
 

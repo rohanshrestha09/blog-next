@@ -17,7 +17,6 @@ const parseMultipartForm = async (
         req.files = files;
       }
       next();
-      console.log(req.files);
     });
   } else {
     next();

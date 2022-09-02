@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { useRouter } from 'next/router';
 import { NextFunction } from 'express';
 import mongoose from 'mongoose';
 import Blog from '../model/Blog';
@@ -11,9 +10,7 @@ const blogValidator = async (
   res: NextApiResponse<IMessage>,
   next: NextFunction
 ) => {
-  const router = useRouter();
-
-  const { _blogId } = router.query;
+  const { _blogId } = req.query;
 
   try {
     const blog = await Blog.findById(new mongoose.Types.ObjectId(_blogId as string));

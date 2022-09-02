@@ -6,7 +6,7 @@ import { Image } from 'antd';
 import IContext from '../interface/context';
 import userContext from '../utils/userContext';
 import { AUTH } from '../constants/queryKeys';
-import { auth } from '../api/user';
+import { auth } from '../apiAxios/user';
 
 const Profile = () => {
   const { userInfo } = useContext<IContext>(userContext);

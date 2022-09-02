@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Form, Input, Checkbox, Button } from 'antd';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { UserOutlined, LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
-import { login } from '../api/user';
+import { login } from '../apiAxios/user';
 import type { ILogin, IToken } from '../interface/user';
 import { openSuccessNotification, openErrorNotification } from '../utils/openNotification';
 import { AUTH } from '../constants/queryKeys';

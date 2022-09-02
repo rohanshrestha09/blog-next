@@ -14,11 +14,11 @@ import { Form, Input, Button, Upload, Select, Dropdown, Menu, message } from 'an
 import { UploadOutlined } from '@ant-design/icons';
 import Cookies from 'js-cookie';
 import { IGetGenre, IPostBlog } from '../interface/blog';
-import { getGenre, postBlog } from '../api/blog';
+import { getGenre, postBlog } from '../apiAxios/blog';
 import { openErrorNotification, openSuccessNotification } from '../utils/openNotification';
 import IMessage from '../interface/message';
 import { AUTH, GET_GENRE } from '../constants/queryKeys';
-import { auth } from '../api/user';
+import { auth } from '../apiAxios/user';
 
 const Create: NextPage = () => {
   const queryClient = useQueryClient();
@@ -71,9 +71,7 @@ const Create: NextPage = () => {
       });
       if (selectedImage) formData.append('image', selectedImage);
 
-      const cookie = Cookies.get('token') ? `token=${Cookies.get('token')}` : undefined;
-
-      return postBlog({ cookie, data: formData });
+      return postBlog({ cookie: Cookies.get('token'), data: formData });
     },
     {
       onSuccess: (res: IMessage) => {

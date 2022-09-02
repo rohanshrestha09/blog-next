@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import Cookies from 'js-cookie';
-import { auth } from '../api/user';
+import { auth } from '../apiAxios/user';
 import { AUTH } from '../constants/queryKeys';
 import UserContext from './userContext';
 import AppLayout from '../components/AppLayout';
@@ -10,10 +10,8 @@ import AppLayout from '../components/AppLayout';
 const UserAuth: React.FC<{
   children: React.ReactNode;
 }> = ({ children }): JSX.Element => {
-  const cookie = Cookies.get('token') ? `token=${Cookies.get('token')}` : undefined;
-
   const { data: userInfo, refetch } = useQuery({
-    queryFn: () => auth({ cookie }),
+    queryFn: () => auth({ cookie: Cookies.get('token') }),
     queryKey: [AUTH],
   });
 

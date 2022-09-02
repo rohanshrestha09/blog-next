@@ -11,7 +11,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { IRegister, IToken } from '../interface/user';
-import { register } from '../api/user';
+import { register } from '../apiAxios/user';
 import { openSuccessNotification, openErrorNotification } from '../utils/openNotification';
 import { AUTH } from '../constants/queryKeys';
 
