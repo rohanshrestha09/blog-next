@@ -8,7 +8,7 @@ import Blog from '../../../model/Blog';
 import middleware from '../../../middleware/middleware';
 import auth from '../../../middleware/auth';
 import parseMultipartForm from '../../../middleware/parseMultipartForm';
-import { IUserInfo } from '../../../interface/user';
+import { IUser } from '../../../interface/user';
 import IMessage from '../../../interface/message';
 import { IBlog } from '../../../interface/blog';
 
@@ -21,6 +21,8 @@ export const config = {
 const fsPromises = fs.promises;
 
 const handler = nextConnect();
+
+handler.use(middleware);
 
 handler.get(async (req: NextApiRequest, res: NextApiResponse<{ blogs: IBlog[] } | IMessage>) => {
   const { sort, pageSize } = req.query;
@@ -57,15 +59,15 @@ handler.get(async (req: NextApiRequest, res: NextApiResponse<{ blogs: IBlog[] } 
           message: 'Blogs Fetched Successfully',
         });
     }
-  } catch (err: any) {
+  } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
   }
 });
 
-handler.use(middleware).use(auth).use(parseMultipartForm);
+handler.use(auth).use(parseMultipartForm);
 
 handler.post(
-  async (req: NextApiRequest & IUserInfo & { files: any }, res: NextApiResponse<IMessage>) => {
+  async (req: NextApiRequest & IUser & { files: any }, res: NextApiResponse<IMessage>) => {
     const { _id: _authorId } = req.user;
 
     const { title, content, genre, isPublished } = req.body;
@@ -108,7 +110,7 @@ handler.post(
       await User.findByIdAndUpdate(_authorId, { $push: { blogs: _blogId } });
 
       return res.status(200).json({ message: 'Blog Posted Successfully' });
-    } catch (err: any) {
+    } catch (err: Error | any) {
       return res.status(404).json({ message: err.message });
     }
   }

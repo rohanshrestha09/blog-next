@@ -39,7 +39,7 @@ handler.post(async (req: NextApiRequest, res: NextApiResponse<IToken | IMessage>
     res.setHeader('Set-Cookie', serialized);
 
     return res.status(200).json({ token, message: 'Login Successful' });
-  } catch (err: any) {
+  } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
   }
 });

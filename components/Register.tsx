@@ -10,8 +10,8 @@ import {
   UploadOutlined,
   UserOutlined,
 } from '@ant-design/icons';
+import UserAxios from '../apiAxios/userAxios';
 import { IRegister, IToken } from '../interface/user';
-import { register } from '../apiAxios/user';
 import { openSuccessNotification, openErrorNotification } from '../utils/openNotification';
 import { AUTH } from '../constants/queryKeys';
 
@@ -53,7 +53,7 @@ const Register: React.FC = () => {
       });
       if (selectedImage) formData.append('image', selectedImage);
 
-      return register(formData);
+      return new UserAxios().register(formData);
     },
     {
       onSuccess: (res: IToken) => {

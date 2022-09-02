@@ -22,7 +22,7 @@ export interface ILogin {
   remember: boolean;
 }
 
-export interface IUserInfo extends IMessage {
+export interface IUser extends IMessage {
   user: {
     _id: string;
     fullname: string;
@@ -38,4 +38,8 @@ export interface IUserInfo extends IMessage {
     createdat: Date;
     updatedAt: Date;
   };
+}
+
+export interface IQueryUser {
+  queryUser: IUser['user'];
 }

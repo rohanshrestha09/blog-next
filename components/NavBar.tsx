@@ -9,7 +9,7 @@ import IContext from '../interface/context';
 const NavBar: React.FC = () => {
   const router = useRouter();
 
-  const { userInfo } = useContext<IContext>(userContext);
+  const { user } = useContext<IContext>(userContext);
 
   return (
     <div className='sticky top-0 navbar lg:px-40 shadow-md z-10 justify-between bg-base-100'>
@@ -30,24 +30,18 @@ const NavBar: React.FC = () => {
           />
         </div>
 
-        {userInfo ? (
+        {user ? (
           <label className='btn min-h-[2.6rem] h-[2.6rem] px-2 btn-circle flex flex-nowrap items-center gap-2 w-36'>
             <div className='w-9 avatar'>
-              {userInfo.image ? (
-                <Image
-                  alt=''
-                  className='rounded-full'
-                  height={50}
-                  src={userInfo.image}
-                  width={50}
-                />
+              {user.image ? (
+                <Image alt='' className='rounded-full' height={50} src={user.image} width={50} />
               ) : (
                 <Avatar className='bg-[#1890ff]' size='small'>
-                  {userInfo.fullname[0]}
+                  {user.fullname[0]}
                 </Avatar>
               )}
             </div>
-            <span className='text-sm truncate'>{userInfo.fullname}</span>
+            <span className='text-sm truncate'>{user.fullname}</span>
           </label>
         ) : (
           <label

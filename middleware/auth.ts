@@ -4,11 +4,11 @@ import mongoose from 'mongoose';
 import User from '../model/User';
 import Blog from '../model/Blog';
 import IMessage from '../interface/message';
-import { IUserInfo } from '../interface/user';
+import { IUser } from '../interface/user';
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 
 const auth = async (
-  req: NextApiRequest & IUserInfo,
+  req: NextApiRequest & IUser,
   res: NextApiResponse<IMessage>,
   next: NextFunction
 ): Promise<any> => {
@@ -30,7 +30,7 @@ const auth = async (
     };
 
     next();
-  } catch (err: any) {
+  } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
   }
 };

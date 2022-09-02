@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Form, Input, Checkbox, Button } from 'antd';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { UserOutlined, LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
-import { login } from '../apiAxios/user';
+import UserAxios from '../apiAxios/userAxios';
 import type { ILogin, IToken } from '../interface/user';
 import { openSuccessNotification, openErrorNotification } from '../utils/openNotification';
 import { AUTH } from '../constants/queryKeys';
@@ -18,7 +18,7 @@ const Login: React.FC = () => {
 
   const [rememberMe, setRememberMe] = useState<boolean>(true);
 
-  const handleLogin = useMutation(async (data: ILogin) => login(data), {
+  const handleLogin = useMutation(async (data: ILogin) => new UserAxios().login(data), {
     onSuccess(res: IToken) {
       openSuccessNotification(res.message);
       form.resetFields();

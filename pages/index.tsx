@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { DehydratedState, QueryClient, dehydrate } from '@tanstack/react-query';
-import { auth } from '../apiAxios/user';
+import UserAxios from '../apiAxios/userAxios';
 import { AUTH } from '../constants/queryKeys';
 
 const Home: NextPage = () => {
@@ -33,8 +33,10 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
+  const userAxios = new UserAxios(ctx.req && ctx.req.headers.cookie);
+
   await queryClient.prefetchQuery({
-    queryFn: () => auth({ cookie: ctx.req && ctx.req.headers.cookie }),
+    queryFn: () => userAxios.auth(),
     queryKey: [AUTH],
   });
 

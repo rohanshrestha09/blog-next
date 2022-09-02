@@ -5,7 +5,7 @@ import Blog from '../model/Blog';
 import { IBlog } from '../interface/blog';
 import IMessage from '../interface/message';
 
-const blogValidator = async (
+const validateBlog = async (
   req: NextApiRequest & IBlog,
   res: NextApiResponse<IMessage>,
   next: NextFunction
@@ -20,9 +20,9 @@ const blogValidator = async (
     req.blog = blog;
 
     next();
-  } catch (err: any) {
+  } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
   }
 };
 
-export default blogValidator;
+export default validateBlog;

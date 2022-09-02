@@ -12,18 +12,19 @@ import {
 import { Editor } from '@tinymce/tinymce-react';
 import { Form, Input, Button, Upload, Select, Dropdown, Menu, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import Cookies from 'js-cookie';
+import UserAxios from '../apiAxios/userAxios';
+import BlogAxios from '../apiAxios/blogAxios';
 import { IGetGenre, IPostBlog } from '../interface/blog';
-import { getGenre, postBlog } from '../apiAxios/blog';
 import { openErrorNotification, openSuccessNotification } from '../utils/openNotification';
 import IMessage from '../interface/message';
 import { AUTH, GET_GENRE } from '../constants/queryKeys';
-import { auth } from '../apiAxios/user';
 
 const Create: NextPage = () => {
   const queryClient = useQueryClient();
 
   const editorRef = useRef<any>();
+
+  const blogAxios = new BlogAxios();
 
   const [form] = Form.useForm();
 
@@ -34,7 +35,7 @@ const Create: NextPage = () => {
   const [renderEditor, setRenderEditor] = useState<number>(1);
 
   const { data: genre, isSuccess: isGenreSuccess } = useQuery<IGetGenre['genre']>({
-    queryFn: () => getGenre(),
+    queryFn: () => blogAxios.getGenre(),
     queryKey: [GET_GENRE],
   });
 
@@ -71,7 +72,7 @@ const Create: NextPage = () => {
       });
       if (selectedImage) formData.append('image', selectedImage);
 
-      return postBlog({ cookie: Cookies.get('token'), data: formData });
+      return blogAxios.postBlog(formData);
     },
     {
       onSuccess: (res: IMessage) => {
@@ -258,13 +259,17 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
+  const blogAxios = new BlogAxios(ctx.req && ctx.req.headers.cookie);
+
+  const userAxios = new UserAxios(ctx.req && ctx.req.headers.cookie);
+
   await queryClient.prefetchQuery({
-    queryFn: () => auth({ cookie: ctx.req && ctx.req.headers.cookie }),
+    queryFn: () => userAxios.auth(),
     queryKey: [AUTH],
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getGenre(),
+    queryFn: () => blogAxios.getGenre(),
     queryKey: [GET_GENRE],
   });
 

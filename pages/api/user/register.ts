@@ -95,7 +95,7 @@ handler.post(
       res.setHeader('Set-Cookie', serialized);
 
       return res.status(200).json({ token, message: 'Signup Successful' });
-    } catch (err: any) {
+    } catch (err: Error | any) {
       return res.status(404).json({ message: err.message });
     }
   }
