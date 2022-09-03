@@ -32,6 +32,8 @@ class User {
 
   login = async (data: ILogin): Promise<IToken> => await this.axiosFn('post', 'login', data);
 
+  logout = async (): Promise<IMessage> => await this.axiosFn('delete', 'logout');
+
   getUser = async (id: string): Promise<IUser['user'] & IMessage> => await this.axiosFn('get', id);
 
   updateUser = async (data: FormData): Promise<IMessage> => await this.axiosFn('put', '', data);
