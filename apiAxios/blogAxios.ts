@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { IGetGenre } from '../interface/blog';
+import { capitalize } from 'lodash';
+import { IBlog, IGetGenre } from '../interface/blog';
 import IMessage from '../interface/message';
 
 class Blog {
@@ -12,7 +13,7 @@ class Blog {
     method: string,
     url: string,
     data?: any
-  ): Promise<IGetGenre['genre'] & IMessage> => {
+  ): Promise<IGetGenre & IBlog & { blogs: IBlog['blog'][] } & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
       url: `http://localhost:3000/api/blog/${url}`,
@@ -24,9 +25,71 @@ class Blog {
     return res.data;
   };
 
-  getGenre = async (): Promise<IGetGenre['genre']> => await this.axiosFn('get', 'genre');
+  getBlog = async (id: string): Promise<IBlog> => await this.axiosFn('get', id);
+
+  getAllBlog = async ({
+    sort,
+    pageSize,
+  }: {
+    sort: string;
+    pageSize: number;
+  }): Promise<{ blogs: IBlog['blog'][] } & IMessage> =>
+    await this.axiosFn('get', `?sort=${sort}&pageSize=${pageSize}`);
+
+  getCategorisedBlog = async ({
+    genre,
+    sort,
+    pageSize,
+  }: {
+    genre: string;
+    sort: string;
+    pageSize: number;
+  }): Promise<{ blogs: IBlog['blog'][] } & IMessage> =>
+    await this.axiosFn(
+      'get',
+      `categorised?genre=${capitalize(genre)}&sort=${sort}&pageSize=${pageSize}`
+    );
 
   postBlog = async (data: FormData): Promise<IMessage> => await this.axiosFn('post', '', data);
+
+  updateBlog = async ({ id, data }: { id: string; data: FormData }): Promise<IMessage> =>
+    await this.axiosFn('put', id, data);
+
+  deleteBlog = async (id: string): Promise<IMessage> => this.axiosFn('delete', id);
+
+  publishBlog = async ({
+    id,
+    shouldPublish,
+  }: {
+    id: string;
+    shouldPublish: boolean;
+  }): Promise<IMessage> =>
+    await this.axiosFn(`${shouldPublish ? 'post' : 'delete'}`, `${id}/publish`);
+
+  likeBlog = async ({ id, shouldLike }: { id: string; shouldLike: boolean }): Promise<IMessage> =>
+    await this.axiosFn(`${shouldLike ? 'post' : 'delete'}`, `${id}/like`);
+
+  bookmarkBlog = async ({
+    id,
+    shouldBookmark,
+  }: {
+    id: string;
+    shouldBookmark: boolean;
+  }): Promise<IMessage> =>
+    await this.axiosFn(`${shouldBookmark ? 'post' : 'delete'}`, `${id}/bookmark`);
+
+  commentBlog = async ({
+    id,
+    shouldComment,
+    data,
+  }: {
+    id: string;
+    shouldComment: boolean;
+    data: FormData;
+  }): Promise<IMessage> =>
+    await this.axiosFn(`${shouldComment ? 'post' : 'delete'}`, `${id}/comment`, data);
+
+  getGenre = async (): Promise<IGetGenre> => await this.axiosFn('get', 'genre');
 }
 
 export default Blog;

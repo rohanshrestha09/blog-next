@@ -25,7 +25,7 @@ handler.get(
         { expiresIn: '15min' }
       );
 
-      const resetUrl = `https://blogsansar.vercel.app/reset-password/${user._id}/${token}`;
+      const resetUrl = `https://blogsansar.vercel.app/security/reset-password/${user._id}/${token}`;
 
       const transporter = nodemailer.createTransport({
         //@ts-ignore
@@ -33,7 +33,7 @@ handler.get(
         host: 'smtp.gmail.com',
         auth: {
           user: process.env.MAILING_EMAIL,
-          pass: process.env.APP_PASSWORD,
+          pass: process.env.MAILING_PASSWORD,
         },
         port: '465',
       });
@@ -49,7 +49,7 @@ handler.get(
       });
 
       return res.status(200).json({
-        passwordResetLink: resetUrl,
+        message: `Password reset link sent to ${email}`,
       });
     } catch (err: Error | any) {
       return res.status(404).json({ message: err.message });

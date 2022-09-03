@@ -10,7 +10,7 @@ const validateUser = async (
   req: NextApiRequest & { queryUser: IUser },
   res: NextApiResponse<IMessage>,
   next: NextFunction
-): Promise<any> => {
+) => {
   const { _queryUserId } = req.query;
 
   try {

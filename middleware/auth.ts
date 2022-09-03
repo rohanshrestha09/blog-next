@@ -11,7 +11,7 @@ const auth = async (
   req: NextApiRequest & IUser,
   res: NextApiResponse<IMessage>,
   next: NextFunction
-): Promise<any> => {
+) => {
   const token = req.cookies.token;
 
   if (!token) return res.status(401).json({ message: 'Not authorised' });

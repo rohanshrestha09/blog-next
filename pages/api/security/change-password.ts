@@ -12,7 +12,7 @@ const handler = nextConnect();
 
 handler.use(middleware).use(auth).use(validatePassword);
 
-handler.use(async (req: NextApiRequest & IUser, res: NextApiResponse<IMessage>) => {
+handler.post(async (req: NextApiRequest & IUser, res: NextApiResponse<IMessage>) => {
   const { newPassword, confirmNewPassword } = req.body;
 
   const { _id: _userId } = req.user;

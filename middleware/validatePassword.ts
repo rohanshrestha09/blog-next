@@ -9,7 +9,7 @@ const validatePassword = async (
   req: NextApiRequest & IUser,
   res: NextApiResponse<IMessage>,
   next: NextFunction
-): Promise<any> => {
+) => {
   const { _id: _userId } = req.user;
 
   const { password } = req.body;

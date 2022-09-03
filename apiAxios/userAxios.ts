@@ -1,4 +1,3 @@
-import { async } from '@firebase/util';
 import axios, { AxiosResponse } from 'axios';
 import IMessage from '../interface/message';
 import { ILogin, IToken, IUser } from '../interface/user';
@@ -33,13 +32,22 @@ class User {
 
   login = async (data: ILogin): Promise<IToken> => await this.axiosFn('post', 'login', data);
 
-  getUser = async (id: string): Promise<IUser['user']> => await this.axiosFn('get', `${id}`);
+  getUser = async (id: string): Promise<IUser['user'] & IMessage> => await this.axiosFn('get', id);
 
   updateUser = async (data: FormData): Promise<IMessage> => await this.axiosFn('put', '', data);
 
-  deleteUser = async (): Promise<IMessage> => await this.axiosFn('delete', '');
+  deleteUser = async (data: FormData): Promise<IMessage> => await this.axiosFn('delete', '', data);
 
   deleteUserImage = async (): Promise<IMessage> => await this.axiosFn('delete', 'image');
+
+  followUser = async ({
+    id,
+    shouldFollow,
+  }: {
+    id: string;
+    shouldFollow: boolean;
+  }): Promise<IMessage> =>
+    await this.axiosFn(`${shouldFollow ? 'post' : 'delete'}`, `${id}/follow`);
 }
 
 export default User;

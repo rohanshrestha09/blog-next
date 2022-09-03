@@ -24,45 +24,50 @@ const handler = nextConnect();
 
 handler.use(middleware);
 
-handler.get(async (req: NextApiRequest, res: NextApiResponse<{ blogs: IBlog[] } | IMessage>) => {
-  const { sort, pageSize } = req.query;
+handler.get(
+  async (
+    req: NextApiRequest,
+    res: NextApiResponse<({ blogs: IBlog['blog'][] } & IMessage) | IMessage>
+  ) => {
+    const { sort, pageSize } = req.query;
 
-  try {
-    switch (sort) {
-      case 'likes':
-        return res.status(200).json({
-          blogs: await Blog.find({})
-            .sort({ likes: -1 })
-            .limit(Number(pageSize) || 10),
-          message: 'Blogs Fetched Successfully',
-        });
+    try {
+      switch (sort) {
+        case 'likes':
+          return res.status(200).json({
+            blogs: await Blog.find({})
+              .sort({ likes: -1 })
+              .limit(Number(pageSize) || 10),
+            message: 'Blogs Fetched Successfully',
+          });
 
-      case 'views':
-        return res.status(200).json({
-          blogs: await Blog.find({})
-            .sort({ views: -1 })
-            .limit(Number(pageSize) || 10),
-          message: 'Blogs Fetched Successfully',
-        });
+        case 'views':
+          return res.status(200).json({
+            blogs: await Blog.find({})
+              .sort({ views: -1 })
+              .limit(Number(pageSize) || 10),
+            message: 'Blogs Fetched Successfully',
+          });
 
-      case 'latest':
-        return res.status(200).json({
-          blogs: await Blog.find({})
-            .sort({ createdAt: -1 })
-            .limit(Number(pageSize) || 10),
-          message: 'Blogs Fetched Successfully',
-        });
+        case 'latest':
+          return res.status(200).json({
+            blogs: await Blog.find({})
+              .sort({ createdAt: -1 })
+              .limit(Number(pageSize) || 10),
+            message: 'Blogs Fetched Successfully',
+          });
 
-      default:
-        return res.status(200).json({
-          blogs: await Blog.find({}).limit(Number(pageSize) || 10),
-          message: 'Blogs Fetched Successfully',
-        });
+        default:
+          return res.status(200).json({
+            blogs: await Blog.find({}).limit(Number(pageSize) || 10),
+            message: 'Blogs Fetched Successfully',
+          });
+      }
+    } catch (err: Error | any) {
+      return res.status(404).json({ message: err.message });
     }
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
   }
-});
+);
 
 handler.use(auth).use(parseMultipartForm);
 

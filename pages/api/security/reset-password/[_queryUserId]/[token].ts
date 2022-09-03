@@ -18,12 +18,15 @@ handler.post(async (req: NextApiRequest & IQueryUser, res: NextApiResponse<IMess
 
   const { _id: _userId } = req.queryUser;
 
-  const { password } = req.body;
+  const { password, confirmPassword } = req.body;
 
   if (!token) return res.status(403).json({ message: 'Invalid token' });
 
   if (!password || password < 8)
     return res.status(403).json({ message: 'Password must contain atleast 8 characters' });
+
+  if (password !== confirmPassword)
+    return res.status(403).json({ message: 'Password does not match' });
 
   try {
     const { password: oldPassword } = await User.findById(_userId).select('+password');
