@@ -1,17 +1,18 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import NextApiHandler from '../../../interface/next';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import moment from 'moment';
-import nextConnect from 'next-connect';
 import { isEmpty } from 'lodash';
 import fs from 'fs';
 import jwt, { Secret } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { serialize } from 'cookie';
 import User from '../../../model/User';
-import middleware from '../../../middleware/middleware';
-import parseMultipartForm from '../../../middleware/parseMultipartForm';
-import { IToken } from '../../../interface/user';
+import init from '../../../middleware/init';
+import withParseMultipartForm from '../../../middleware/withParseMultipartForm';
 import IMessage from '../../../interface/message';
+import IFiles from '../../../interface/files';
+import { IToken } from '../../../interface/user';
 
 const fsPromises = fs.promises;
 
@@ -23,12 +24,15 @@ export const config = {
   },
 };
 
-const handler = nextConnect();
+init();
 
-handler.use(middleware).use(parseMultipartForm);
+const handler: NextApiHandler = async (
+  req: NextApiRequest & IFiles,
+  res: NextApiResponse<IToken | IMessage>
+) => {
+  const { method } = req;
 
-handler.post(
-  async (req: NextApiRequest & { files: any }, res: NextApiResponse<IToken | IMessage>) => {
+  if (method === 'POST') {
     const { fullname, email, password, confirmPassword, dateOfBirth } = req.body;
 
     const storage = getStorage();
@@ -57,7 +61,7 @@ handler.post(
       });
 
       if (!isEmpty(req.files)) {
-        const file = req.files.image;
+        const file = req.files.image as any;
 
         if (!file.mimetype.startsWith('image/'))
           return res.status(403).json({ message: 'Please choose an image' });
@@ -99,6 +103,8 @@ handler.post(
       return res.status(404).json({ message: err.message });
     }
   }
-);
 
-export default handler;
+  return res.status(405).json({ message: 'Method not allowed' });
+};
+
+export default withParseMultipartForm(handler);

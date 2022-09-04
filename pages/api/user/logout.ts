@@ -1,27 +1,31 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import nextConnect from 'next-connect';
+import NextApiHandler from '../../../interface/next';
 import { serialize } from 'cookie';
-import auth from '../../../middleware/auth';
-import middleware from '../../../middleware/middleware';
+import init from '../../../middleware/init';
+import withAuth from '../../../middleware/withAuth';
 import IMessage from '../../../interface/message';
 
-const handler = nextConnect();
+init();
 
-handler.use(middleware).use(auth);
+const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse<IMessage>) => {
+  const { method } = req;
 
-handler.delete(async (req: NextApiRequest, res: NextApiResponse<IMessage>) => {
-  try {
-    const serialized = serialize('token', '', {
-      maxAge: 0,
-      path: '/',
-    });
+  if (method === 'DELETE') {
+    try {
+      const serialized = serialize('token', '', {
+        maxAge: 0,
+        path: '/',
+      });
 
-    res.setHeader('Set-Cookie', serialized);
+      res.setHeader('Set-Cookie', serialized);
 
-    return res.status(200).json({ message: 'Logout Successful' });
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
+      return res.status(200).json({ message: 'Logout Successful' });
+    } catch (err: Error | any) {
+      return res.status(404).json({ message: err.message });
+    }
   }
-});
 
-export default handler;
+  return res.status(405).json({ message: 'Method not allowed' });
+};
+
+export default withAuth(handler);

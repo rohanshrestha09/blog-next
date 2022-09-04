@@ -2,13 +2,13 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { initializeApp } from 'firebase/app';
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 import mongoose from 'mongoose';
-import formidable, { Fields, Files } from 'formidable';
+import formidable from 'formidable';
 import bcrypt from 'bcryptjs';
-import Blog from '../model/Blog';
-import User from '../model/User';
-import IMiddleware from '../interface/middleware';
-import IMessage from '../interface/message';
-import { IUser } from '../interface/user';
+import Blog from '../../model/Blog';
+import User from '../../model/User';
+import IMiddleware from '../../interface/middleware';
+import IMessage from '../../interface/message';
+import { IUser } from '../../interface/user';
 
 const form = formidable({ multiples: true });
 

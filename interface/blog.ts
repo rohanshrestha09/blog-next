@@ -22,6 +22,10 @@ export interface IBlog extends IMessage {
   };
 }
 
+export interface IBlogs extends IMessage {
+  blogs: IBlog['blog'][];
+}
+
 export interface IGetGenre extends IMessage {
   genre: string[];
 }

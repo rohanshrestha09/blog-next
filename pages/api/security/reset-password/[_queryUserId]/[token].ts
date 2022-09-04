@@ -1,53 +1,61 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import nextConnect from 'next-connect';
+import NextApiHandler from '../../../../../interface/next';
 import mongoose from 'mongoose';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '../../../../../model/User';
-import middleware from '../../../../../middleware/middleware';
-import validateUser from '../../../../../middleware/validateUser';
+import init from '../../../../../middleware/init';
+import withValidateUser from '../../../../../middleware/withValidateUser';
 import { IQueryUser } from '../../../../../interface/user';
 import IMessage from '../../../../../interface/message';
 
-const handler = nextConnect();
+init();
 
-handler.use(middleware).use(validateUser);
+const handler: NextApiHandler = async (
+  req: NextApiRequest & IQueryUser,
+  res: NextApiResponse<IMessage>
+) => {
+  const {
+    method,
+    query: { token },
+  } = req;
 
-handler.post(async (req: NextApiRequest & IQueryUser, res: NextApiResponse<IMessage>) => {
-  const { token } = req.query;
+  if (method === 'POST') {
+    const { _id: _userId } = req.queryUser;
 
-  const { _id: _userId } = req.queryUser;
+    const { password, confirmPassword } = req.body;
 
-  const { password, confirmPassword } = req.body;
+    if (!token) return res.status(403).json({ message: 'Invalid token' });
 
-  if (!token) return res.status(403).json({ message: 'Invalid token' });
+    if (!password || password < 8)
+      return res.status(403).json({ message: 'Password must contain atleast 8 characters' });
 
-  if (!password || password < 8)
-    return res.status(403).json({ message: 'Password must contain atleast 8 characters' });
+    if (password !== confirmPassword)
+      return res.status(403).json({ message: 'Password does not match' });
 
-  if (password !== confirmPassword)
-    return res.status(403).json({ message: 'Password does not match' });
+    try {
+      const { password: oldPassword } = await User.findById(_userId).select('+password');
 
-  try {
-    const { password: oldPassword } = await User.findById(_userId).select('+password');
+      const { _id } = jwt.verify(
+        token as string,
+        `${process.env.JWT_PASSWORD}${oldPassword}`
+      ) as JwtPayload;
 
-    const { _id } = jwt.verify(
-      token as string,
-      `${process.env.JWT_PASSWORD}${oldPassword}`
-    ) as JwtPayload;
+      const salt = await bcrypt.genSalt(10);
 
-    const salt = await bcrypt.genSalt(10);
+      const encryptedPassword: string = await bcrypt.hash(password, salt);
 
-    const encryptedPassword: string = await bcrypt.hash(password, salt);
+      await User.findByIdAndUpdate(new mongoose.Types.ObjectId(_id), {
+        password: encryptedPassword,
+      });
 
-    await User.findByIdAndUpdate(new mongoose.Types.ObjectId(_id), {
-      password: encryptedPassword,
-    });
-
-    return res.status(200).json({ message: 'Password Reset Successful' });
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
+      return res.status(200).json({ message: 'Password Reset Successful' });
+    } catch (err: Error | any) {
+      return res.status(404).json({ message: err.message });
+    }
   }
-});
 
-export default handler;
+  return res.status(405).json({ message: 'Method not allowed' });
+};
+
+export default withValidateUser(handler);

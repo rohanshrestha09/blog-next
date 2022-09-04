@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { NextFunction } from 'express';
+// import { NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
-import User from '../model/User';
-import IMessage from '../interface/message';
-import { IUser } from '../interface/user';
+import User from '../../model/User';
+import IMessage from '../../interface/message';
+import { IUser } from '../../interface/user';
 
 const validatePassword = async (
   req: NextApiRequest & IUser,
-  res: NextApiResponse<IMessage>,
-  next: NextFunction
+  res: NextApiResponse<IMessage>
+  // next: NextFunction
 ) => {
   const { _id: _userId } = req.user;
 
@@ -23,7 +23,7 @@ const validatePassword = async (
 
     if (!isMatched) return res.status(403).json({ message: 'Incorrect Password' });
 
-    next();
+    // next();
   } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
   }

@@ -1,17 +1,20 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import nextConnect from 'next-connect';
+import NextApiHandler from '../../../../interface/next';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
+import init from '../../../../middleware/init';
 import User from '../../../../model/User';
-import middleware from '../../../../middleware/middleware';
 import IMessage from '../../../../interface/message';
 
-const handler = nextConnect();
+init();
 
-handler.use(middleware);
+const handler: NextApiHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<IMessage | { passwordResetLink: string }>
+) => {
+  const { method } = req;
 
-handler.get(
-  async (req: NextApiRequest, res: NextApiResponse<IMessage | { passwordResetLink: string }>) => {
+  if (method === 'GET') {
     const { email } = req.body;
 
     try {
@@ -55,6 +58,8 @@ handler.get(
       return res.status(404).json({ message: err.message });
     }
   }
-);
+
+  return res.status(405).json({ message: 'Method not allowed' });
+};
 
 export default handler;

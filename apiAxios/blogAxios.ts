@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { capitalize } from 'lodash';
-import { IBlog, IGetGenre } from '../interface/blog';
+import { IBlog, IBlogs, IGetGenre } from '../interface/blog';
 import IMessage from '../interface/message';
 
 class Blog {
@@ -13,7 +13,7 @@ class Blog {
     method: string,
     url: string,
     data?: any
-  ): Promise<IGetGenre & IBlog & { blogs: IBlog['blog'][] } & IMessage> => {
+  ): Promise<IGetGenre & IBlog & IBlogs & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
       url: `http://localhost:3000/api/blog/${url}`,
@@ -44,7 +44,7 @@ class Blog {
     genre: string;
     sort: string;
     pageSize: number;
-  }): Promise<{ blogs: IBlog['blog'][] } & IMessage> =>
+  }): Promise<IBlogs & IMessage> =>
     await this.axiosFn(
       'get',
       `categorised?genre=${capitalize(genre)}&sort=${sort}&pageSize=${pageSize}`

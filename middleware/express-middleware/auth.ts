@@ -1,16 +1,16 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { NextFunction } from 'express';
+// import { NextFunction } from 'express';
 import mongoose from 'mongoose';
-import User from '../model/User';
-import Blog from '../model/Blog';
-import IMessage from '../interface/message';
-import { IUser } from '../interface/user';
+import User from '../../model/User';
+import Blog from '../../model/Blog';
+import IMessage from '../../interface/message';
+import { IUser } from '../../interface/user';
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 
 const auth = async (
   req: NextApiRequest & IUser,
-  res: NextApiResponse<IMessage>,
-  next: NextFunction
+  res: NextApiResponse<IMessage>
+  // next: NextFunction
 ) => {
   const token = req.cookies.token;
 
@@ -29,7 +29,7 @@ const auth = async (
       bookmarks: await Blog.find({ _id: user.bookmarks }),
     };
 
-    next();
+    // next();
   } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
   }

@@ -1,32 +1,39 @@
-import nextConnect from 'next-connect';
 import { NextApiRequest, NextApiResponse } from 'next';
+import NextApiHandler from '../../../interface/next';
 import { deleteObject, getStorage, ref } from 'firebase/storage';
 import User from '../../../model/User';
-import middleware from '../../../middleware/middleware';
-import auth from '../../../middleware/auth';
-import IMessage from '../../../interface/message';
+import init from '../../../middleware/init';
+import withAuth from '../../../middleware/withAuth';
 import { IUser } from '../../../interface/user';
+import IMessage from '../../../interface/message';
 
-const handler = nextConnect();
+init();
 
-handler.use(middleware).use(auth);
+const handler: NextApiHandler = async (
+  req: NextApiRequest & IUser,
+  res: NextApiResponse<IMessage>
+) => {
+  const { method } = req;
 
-handler.delete(async (req: NextApiRequest & IUser, res: NextApiResponse<IMessage>) => {
-  const { _id: _userId, image, imageName } = req.user;
+  if (method === 'DELETE') {
+    const { _id: _userId, image, imageName } = req.user;
 
-  const storage = getStorage();
+    const storage = getStorage();
 
-  try {
-    if (image) deleteObject(ref(storage, `users/${imageName}`));
+    try {
+      if (image) deleteObject(ref(storage, `users/${imageName}`));
 
-    await User.findByIdAndUpdate(_userId, {
-      $unset: { image: '', imageName: '' },
-    });
+      await User.findByIdAndUpdate(_userId, {
+        $unset: { image: '', imageName: '' },
+      });
 
-    return res.status(200).json({ message: 'Profile Image Removed Successfully' });
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
+      return res.status(200).json({ message: 'Profile Image Removed Successfully' });
+    } catch (err: Error | any) {
+      return res.status(404).json({ message: err.message });
+    }
   }
-});
 
-export default handler;
+  return res.status(405).json({ message: 'Method not allowed' });
+};
+
+export default withAuth(handler);

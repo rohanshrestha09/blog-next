@@ -1,50 +1,52 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import nextConnect from 'next-connect';
+import NextApiHandler from '../../../../interface/next';
 import Blog from '../../../../model/Blog';
-import auth from '../../../../middleware/auth';
-import middleware from '../../../../middleware/middleware';
-import validateBlog from '../../../../middleware/validateBlog';
+import init from '../../../../middleware/init';
+import withAuth from '../../../../middleware/withAuth';
+import withValidateBlog from '../../../../middleware/withValidateBlog';
 import { IUser } from '../../../../interface/user';
 import { IBlog } from '../../../../interface/blog';
 import IMessage from '../../../../interface/message';
 
-const handler = nextConnect();
+init();
 
-handler.use(middleware).use(auth).use(validateBlog);
+const handler: NextApiHandler = async (
+  req: NextApiRequest & IUser & IBlog,
+  res: NextApiResponse<IMessage>
+) => {
+  const {
+    method,
+    user: { _id: _userId },
+    blog: { _id: _blogId },
+    body: { comment },
+  } = req;
 
-handler.post(async (req: NextApiRequest & IUser & IBlog, res: NextApiResponse<IMessage>) => {
-  const { _id: _blogId } = req.blog;
+  switch (method) {
+    case 'POST':
+      try {
+        await Blog.findByIdAndUpdate(_blogId, {
+          $push: { comments: { commenter: _userId, comment } },
+        });
 
-  const { _id: _userId } = req.user;
+        return res.status(200).json({ message: 'Comment Successfull' });
+      } catch (err: Error | any) {
+        return res.status(404).json({ message: err.message });
+      }
 
-  const { comment } = req.body;
+    case 'DELETE':
+      try {
+        await Blog.findByIdAndUpdate(_blogId, {
+          $pull: { comments: { commenter: _userId, comment } },
+        });
 
-  try {
-    await Blog.findByIdAndUpdate(_blogId, {
-      $push: { comments: { commenter: _userId, comment } },
-    });
+        return res.status(200).json({ message: 'Comment Deleted Successfully' });
+      } catch (err: Error | any) {
+        return res.status(404).json({ message: err.message });
+      }
 
-    return res.status(200).json({ message: 'Comment Successfull' });
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
+    default:
+      return res.status(405).json({ message: 'Method not allowed' });
   }
-});
+};
 
-handler.delete(async (req: NextApiRequest & IUser & IBlog, res: NextApiResponse<IMessage>) => {
-  const { _id: _blogId } = req.blog;
-
-  const { _id: _userId } = req.user;
-
-  const { comment } = req.body;
-  try {
-    await Blog.findByIdAndUpdate(_blogId, {
-      $pull: { comments: { commenter: _userId, comment } },
-    });
-
-    return res.status(200).json({ message: 'Comment Deleted Successfully' });
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
-  }
-});
-
-export default handler;
+export default withAuth(withValidateBlog(handler));

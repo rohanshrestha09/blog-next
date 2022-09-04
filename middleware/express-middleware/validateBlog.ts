@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { NextFunction } from 'express';
+// import { NextFunction } from 'express';
 import mongoose from 'mongoose';
-import Blog from '../model/Blog';
-import { IBlog } from '../interface/blog';
-import IMessage from '../interface/message';
+import Blog from '../../model/Blog';
+import { IBlog } from '../../interface/blog';
+import IMessage from '../../interface/message';
 
 const validateBlog = async (
   req: NextApiRequest & IBlog,
-  res: NextApiResponse<IMessage>,
-  next: NextFunction
+  res: NextApiResponse<IMessage>
+  // next: NextFunction
 ) => {
   const { _blogId } = req.query;
 
@@ -19,7 +19,7 @@ const validateBlog = async (
 
     req.blog = blog;
 
-    next();
+    // next();
   } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
   }

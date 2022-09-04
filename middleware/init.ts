@@ -1,10 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { NextFunction } from 'express';
 import { initializeApp } from 'firebase/app';
 import mongoose from 'mongoose';
 
-const middleware = async (req: NextApiRequest, res: NextApiResponse, next: NextFunction) => {
-  await mongoose.connect(process.env.MONGODB_URI as string);
+const init = () => {
+  mongoose.connect(process.env.MONGODB_URI as string);
 
   const firebaseConfig = {
     apiKey: process.env.API_KEY,
@@ -18,8 +16,6 @@ const middleware = async (req: NextApiRequest, res: NextApiResponse, next: NextF
 
   // Initialize Firebase
   initializeApp(firebaseConfig);
-
-  next();
 };
 
-export default middleware;
+export default init;

@@ -1,53 +1,59 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import nextConnect from 'next-connect';
+import NextApiHandler from '../../../../interface/next';
+import init from '../../../../middleware/init';
+import withAuth from '../../../../middleware/withAuth';
+import withValidateBlog from '../../../../middleware/withValidateBlog';
 import User from '../../../../model/User';
-import auth from '../../../../middleware/auth';
-import middleware from '../../../../middleware/middleware';
-import validateBlog from '../../../../middleware/validateBlog';
 import { IUser } from '../../../../interface/user';
 import { IBlog } from '../../../../interface/blog';
 import IMessage from '../../../../interface/message';
 
-const handler = nextConnect();
+init();
 
-handler.use(middleware).use(auth).use(validateBlog);
+const handler: NextApiHandler = async (
+  req: NextApiRequest & IUser & IBlog,
+  res: NextApiResponse<IMessage>
+) => {
+  const {
+    method,
+    user: { _id: _userId },
+    blog: { _id: _blogId },
+  } = req;
 
-handler.post(async (req: NextApiRequest & IUser & IBlog, res: NextApiResponse<IMessage>) => {
-  const { _id: _blogId } = req.blog;
+  switch (method) {
+    case 'POST':
+      try {
+        const bookmarkExist = await User.findOne({
+          $and: [{ _id: _userId }, { bookmarks: _blogId }],
+        });
 
-  const { _id: _userId } = req.user;
-  try {
-    const bookmarkExist = await User.findOne({
-      $and: [{ _id: _userId }, { bookmarks: _blogId }],
-    });
+        if (bookmarkExist) return res.status(403).json({ message: 'Already Bookmarked' });
 
-    if (bookmarkExist) return res.status(403).json({ message: 'Already Bookmarked' });
+        await User.findByIdAndUpdate(_userId, { $push: { bookmarks: _blogId } });
 
-    await User.findByIdAndUpdate(_userId, { $push: { bookmarks: _blogId } });
+        return res.status(200).json({ message: 'Bookmarked Successfully' });
+      } catch (err: Error | any) {
+        return res.status(404).json({ message: err.message });
+      }
 
-    return res.status(200).json({ message: 'Bookmarked Successfully' });
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
+    case 'DELETE':
+      try {
+        const bookmarkExist = await User.findOne({
+          $and: [{ _id: _userId }, { bookmarks: _blogId }],
+        });
+
+        if (!bookmarkExist) return res.status(403).json({ message: 'Already Unbookmarked' });
+
+        await User.findByIdAndUpdate(_userId, { $pull: { bookmarks: _blogId } });
+
+        return res.status(200).json({ message: 'Unbookmarked Successfully' });
+      } catch (err: Error | any) {
+        return res.status(404).json({ message: err.message });
+      }
+
+    default:
+      return res.status(405).json({ message: 'Method not allowed' });
   }
-});
+};
 
-handler.delete(async (req: NextApiRequest & IUser & IBlog, res: NextApiResponse<IMessage>) => {
-  const { _id: _blogId } = req.blog;
-
-  const { _id: _userId } = req.user;
-  try {
-    const bookmarkExist = await User.findOne({
-      $and: [{ _id: _userId }, { bookmarks: _blogId }],
-    });
-
-    if (!bookmarkExist) return res.status(403).json({ message: 'Already Unbookmarked' });
-
-    await User.findByIdAndUpdate(_userId, { $pull: { bookmarks: _blogId } });
-
-    return res.status(200).json({ message: 'Unbookmarked Successfully' });
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
-  }
-});
-
-export default handler;
+export default withAuth(withValidateBlog(handler));

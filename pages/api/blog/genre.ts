@@ -1,15 +1,21 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import nextConnect from 'next-connect';
-import IMessage from '../../../interface/message';
-import middleware from '../../../middleware/middleware';
+import NextApiHandler from '../../../interface/next';
+import init from '../../../middleware/init';
+import { IGetGenre } from '../../../interface/blog';
 import { genre } from '../../../model/Blog';
+import IMessage from '../../../interface/message';
 
-const handler = nextConnect();
+init();
 
-handler.use(middleware);
+const handler: NextApiHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<IGetGenre | IMessage>
+) => {
+  const { method } = req;
 
-handler.get(async (req: NextApiRequest, res: NextApiResponse<{ genre: string[] } & IMessage>) => {
-  return res.status(200).json({ genre, message: 'Genre Fetched Successfully' });
-});
+  return method === 'GET'
+    ? res.status(200).json({ genre, message: 'Genre Fetched Successfully' })
+    : res.status(405).json({ message: 'Method not allowed' });
+};
 
 export default handler;

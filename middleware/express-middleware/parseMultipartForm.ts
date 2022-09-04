@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { NextFunction } from 'express';
+// import { NextFunction } from 'express';
 import formidable from 'formidable';
 
 const form = formidable({ multiples: true });
 
 const parseMultipartForm = async (
   req: NextApiRequest & { files: any },
-  res: NextApiResponse,
-  next: NextFunction
+  res: NextApiResponse
+  // next: NextFunction
 ) => {
   const contentType = req.headers['content-type'];
   if (contentType && contentType.indexOf('multipart/form-data') !== -1) {
@@ -16,10 +16,10 @@ const parseMultipartForm = async (
         req.body = fields;
         req.files = files;
       }
-      next();
+      // next();
     });
   } else {
-    next();
+    // next();
   }
 };
 

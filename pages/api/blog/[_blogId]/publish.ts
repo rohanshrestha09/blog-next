@@ -1,38 +1,45 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import nextConnect from 'next-connect';
+import NextApiHandler from '../../../../interface/next';
 import Blog from '../../../../model/Blog';
-import auth from '../../../../middleware/auth';
-import middleware from '../../../../middleware/middleware';
-import validateBlog from '../../../../middleware/validateBlog';
+import init from '../../../../middleware/init';
+import withAuth from '../../../../middleware/withAuth';
+import withValidateBlog from '../../../../middleware/withValidateBlog';
 import { IBlog } from '../../../../interface/blog';
 import IMessage from '../../../../interface/message';
 
-const handler = nextConnect();
+init();
 
-handler.use(middleware).use(auth).use(validateBlog);
+const handler: NextApiHandler = async (
+  req: NextApiRequest & IBlog,
+  res: NextApiResponse<IMessage>
+) => {
+  const {
+    method,
+    blog: { _id: _blogId },
+  } = req;
 
-handler.post(async (req: NextApiRequest & IBlog, res: NextApiResponse<IMessage>) => {
-  const { _id: _blogId } = req.blog;
+  switch (method) {
+    case 'POST':
+      try {
+        await Blog.findByIdAndUpdate(_blogId, { isPublished: true });
 
-  try {
-    await Blog.findByIdAndUpdate(_blogId, { isPublished: true });
+        return res.status(200).json({ message: 'Blog Published Successfully' });
+      } catch (err: Error | any) {
+        return res.status(404).json({ message: err.message });
+      }
 
-    return res.status(200).json({ message: 'Blog Published Successfully' });
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
+    case 'DELETE':
+      try {
+        await Blog.findByIdAndUpdate(_blogId, { isPublished: false });
+
+        return res.status(200).json({ message: 'Blog Unpubished Successfully' });
+      } catch (err: Error | any) {
+        return res.status(404).json({ message: err.message });
+      }
+
+    default:
+      return res.status(405).json({ message: 'Method not allowed' });
   }
-});
+};
 
-handler.delete(async (req: NextApiRequest & IBlog, res: NextApiResponse<IMessage>) => {
-  const { _id: _blogId } = req.blog;
-
-  try {
-    await Blog.findByIdAndUpdate(_blogId, { isPublished: false });
-
-    return res.status(200).json({ message: 'Blog Unpubished Successfully' });
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
-  }
-});
-
-export default handler;
+export default withAuth(withValidateBlog(handler));

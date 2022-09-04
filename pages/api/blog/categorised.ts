@@ -1,19 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import nextConnect from 'next-connect';
+import NextApiHandler from '../../../interface/next';
 import Blog from '../../../model/Blog';
-import middleware from '../../../middleware/middleware';
-import { IBlog } from '../../../interface/blog';
+import init from '../../../middleware/init';
+import { IBlogs } from '../../../interface/blog';
 import IMessage from '../../../interface/message';
 
-const handler = nextConnect();
+init();
 
-handler.use(middleware);
+const handler: NextApiHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<IBlogs | IMessage>
+) => {
+  const { method } = req;
 
-handler.get(
-  async (
-    req: NextApiRequest,
-    res: NextApiResponse<({ blogs: IBlog['blog'][] } & IMessage) | IMessage>
-  ) => {
+  if (method === 'GET') {
     const { genre, sort, pageSize } = req.query;
 
     try {
@@ -52,6 +52,8 @@ handler.get(
       return res.status(404).json({ message: err.message });
     }
   }
-);
+
+  return res.status(405).json({ message: 'Method not allowed' });
+};
 
 export default handler;

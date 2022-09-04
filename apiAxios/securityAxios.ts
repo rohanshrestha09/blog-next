@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import IMessage from '../interface/message';
 
-class Blog {
+class Security {
   readonly cookie;
   constructor(cookie?: any) {
     this.cookie = cookie;
@@ -30,7 +30,7 @@ class Blog {
     id: string;
     token: string;
     data: { password: string; confirmPassword: string };
-  }) => await this.axiosFn('post', `reset-password/${id}/${token}`, data);
+  }): Promise<IMessage> => await this.axiosFn('post', `reset-password/${id}/${token}`, data);
 
   changePassword = async (data: {
     password: string;
@@ -38,3 +38,5 @@ class Blog {
     confirmNewPassword: string;
   }): Promise<IMessage> => await this.axiosFn('post', 'change-password', data);
 }
+
+export default Security;
