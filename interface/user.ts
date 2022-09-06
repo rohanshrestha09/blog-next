@@ -35,6 +35,8 @@ export interface IUser extends IMessage {
     bio?: string;
     following?: string[];
     followers?: string[];
+    followingCount: number;
+    followerCount: number;
     createdat: Date;
     updatedAt: Date;
   };

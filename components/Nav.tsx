@@ -1,14 +1,10 @@
 import { NextRouter, useRouter } from 'next/router';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { AiOutlineHome, AiOutlineLogout } from 'react-icons/ai';
 import { BiMessageSquareEdit, BiUserCircle, BiNotification } from 'react-icons/bi';
-import IContext from '../interface/context';
-import userContext from '../utils/userContext';
 
 const Nav: React.FC = () => {
   const router: NextRouter = useRouter();
-
-  const { userLogout } = useContext<IContext>(userContext);
 
   const [toggleNav, setToggleNav] = useState<boolean>(false);
 
@@ -23,7 +19,7 @@ const Nav: React.FC = () => {
   const routingFn = (key: string) => {
     switch (key) {
       case 'logout':
-        return userLogout();
+        return;
       case 'feed':
         return router.push('/');
       default:
@@ -32,7 +28,7 @@ const Nav: React.FC = () => {
   };
 
   return (
-    <div className='fixed lg:bottom-10 lg:left-auto left-5 bottom-5 flex flex-col z-10'>
+    <div className='fixed xl:bottom-10 xl:left-auto left-5 bottom-5 flex flex-col z-10'>
       <div
         className={`flex flex-col justify-between h-0 transition-all duration-300 ${
           toggleNav && 'h-[19rem]'

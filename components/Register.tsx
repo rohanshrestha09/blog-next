@@ -69,8 +69,8 @@ const Register: React.FC = () => {
   return (
     <>
       <input className='modal-toggle' id='registerModal' type='checkbox' />
-      <div className='modal'>
-        <div className='modal-box relative min-h-[98%] scrollbar'>
+      <label htmlFor='registerModal' className='modal'>
+        <label className='modal-box relative min-h-[98%] scrollbar'>
           <label
             ref={registerModalRef}
             className='btn btn-sm btn-circle absolute right-2 top-2'
@@ -226,7 +226,7 @@ const Register: React.FC = () => {
 
             <Form.Item>
               <Button
-                className='w-full h-[3.2rem] rounded-lg text-base btn-primary text-white hover:text-white'
+                className='w-full h-[3.2rem] rounded-lg text-base btn-primary text-white hover:text-white focus:btn-primary'
                 htmlType='submit'
                 loading={handleRegister.isLoading}
               >
@@ -247,8 +247,8 @@ const Register: React.FC = () => {
               </span>
             </Form.Item>
           </Form>
-        </div>
-      </div>
+        </label>
+      </label>
     </>
   );
 };

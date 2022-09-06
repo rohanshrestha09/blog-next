@@ -12,7 +12,7 @@ class Security {
       method,
       url: `http://localhost:3000/api/security/${url}`,
       data,
-      headers: { cookie: this.cookie },
+      headers: { Cookie: this.cookie },
       withCredentials: true,
     });
 

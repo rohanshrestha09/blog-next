@@ -29,3 +29,11 @@
 .scrollbar::-webkit-scrollbar {
   background-color: transparent;
 }
+
+.ant-image-preview-img {
+  height: 80% !important;
+  position: absolute !important;
+  top: 10% !important;
+  left: 50% !important;
+  transform: translate(-50%, 0%) !important;
+}

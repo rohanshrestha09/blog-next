@@ -29,6 +29,8 @@ const UserSchema = new mongoose.Schema(
     bio: String,
     following: [Schema.Types.ObjectId],
     followers: [Schema.Types.ObjectId],
+    followingCount: { type: Number, default: 0 },
+    followerCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

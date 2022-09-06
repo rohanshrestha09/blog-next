@@ -19,7 +19,7 @@ const UserAuth: React.FC<{
   };
 
   return (
-    <UserContext.Provider value={{ user: user && user['user'], userLogout }}>
+    <UserContext.Provider value={{ user, userLogout }}>
       <AppLayout>
         {children} <ReactQueryDevtools />
       </AppLayout>

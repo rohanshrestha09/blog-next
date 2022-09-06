@@ -33,8 +33,8 @@ const Login: React.FC = () => {
   return (
     <>
       <input className='modal-toggle' id='loginModal' type='checkbox' />
-      <div className='modal'>
-        <div className='modal-box relative scrollbar'>
+      <label htmlFor='loginModal' className='modal'>
+        <label className='modal-box relative scrollbar'>
           <label
             ref={loginModalRef}
             className='btn btn-sm btn-circle absolute right-2 top-2'
@@ -109,7 +109,7 @@ const Login: React.FC = () => {
 
             <Form.Item>
               <Button
-                className='w-full h-[3.2rem] rounded-lg text-base btn-primary text-white hover:text-white'
+                className='w-full h-[3.2rem] rounded-lg text-base btn-primary text-white hover:text-white focus:btn-primary'
                 htmlType='submit'
                 loading={handleLogin.isLoading}
               >
@@ -130,8 +130,8 @@ const Login: React.FC = () => {
               </span>
             </Form.Item>
           </Form>
-        </div>
-      </div>
+        </label>
+      </label>
     </>
   );
 };

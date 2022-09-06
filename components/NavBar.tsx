@@ -12,9 +12,9 @@ const NavBar: React.FC = () => {
   const { user } = useContext<IContext>(userContext);
 
   return (
-    <div className='sticky top-0 navbar lg:px-40 shadow-md z-10 justify-between bg-base-100'>
+    <div className='sticky top-0 navbar xl:px-48 shadow-md z-10 justify-between bg-base-100'>
       <span
-        className='font-megrim font-black text-4xl cursor-pointer text-black'
+        className='font-megrim font-black md:text-4xl text-3xl cursor-pointer text-black'
         onClick={() => router.push('/')}
       >
         BlogSansar

@@ -18,7 +18,7 @@ class Blog {
       method,
       url: `http://localhost:3000/api/blog/${url}`,
       data,
-      headers: { cookie: this.cookie },
+      headers: { Cookie: this.cookie },
       withCredentials: true,
     });
 
@@ -89,7 +89,10 @@ class Blog {
   }): Promise<IMessage> =>
     await this.axiosFn(`${shouldComment ? 'post' : 'delete'}`, `${id}/comment`, data);
 
-  getGenre = async (): Promise<IGetGenre> => await this.axiosFn('get', 'genre');
+  getGenre = async (): Promise<IGetGenre['genre']> =>
+    await (
+      await this.axiosFn('get', 'genre')
+    ).genre;
 }
 
 export default Blog;

@@ -15,8 +15,8 @@ const handler: NextApiHandler = async (
 ) => {
   const {
     method,
-    queryUser: { _id: _queryUserId },
-    user: { _id: _userId },
+    queryUser: { _id: _queryUserId, followerCount },
+    user: { _id: _userId, followingCount },
   } = req;
 
   switch (method) {
@@ -33,10 +33,12 @@ const handler: NextApiHandler = async (
 
         await User.findByIdAndUpdate(_userId, {
           $push: { following: _queryUserId },
+          followingCount: followingCount + 1,
         });
 
         await User.findByIdAndUpdate(_queryUserId, {
           $push: { followers: _userId },
+          followerCount: followerCount + 1,
         });
 
         return res.status(200).json({ message: 'Follow Successful' });
@@ -57,10 +59,12 @@ const handler: NextApiHandler = async (
 
         await User.findByIdAndUpdate(_userId, {
           $pull: { following: _queryUserId },
+          followingCount: followingCount - 1,
         });
 
         await User.findByIdAndUpdate(_queryUserId, {
           $pull: { followers: _userId },
+          followerCount: followerCount - 1,
         });
 
         return res.status(200).json({ message: 'Unfollow Successful' });

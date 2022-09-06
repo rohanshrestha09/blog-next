@@ -34,7 +34,7 @@ const Create: NextPage = () => {
 
   const [renderEditor, setRenderEditor] = useState<number>(1);
 
-  const { data: genre, isSuccess: isGenreSuccess } = useQuery<IGetGenre['genre']>({
+  const { data: genre } = useQuery({
     queryFn: () => blogAxios.getGenre(),
     queryKey: [GET_GENRE],
   });
@@ -187,7 +187,7 @@ const Create: NextPage = () => {
               size='large'
               allowClear
             >
-              {isGenreSuccess &&
+              {genre &&
                 genre.map((el) => (
                   <Option key={el} value={el}>
                     {el}
