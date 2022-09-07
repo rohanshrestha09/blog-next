@@ -10,7 +10,7 @@ class Security {
   axiosFn = async (method: string, url: string, data?: any): Promise<IMessage> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `/api/security/${url}`,
+      url: `${process.env.PROXY}/api/security/${url}`,
       data,
       headers: { Cookie: this.cookie },
       withCredentials: true,
