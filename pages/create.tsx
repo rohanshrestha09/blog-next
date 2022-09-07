@@ -266,13 +266,13 @@ export const getServerSideProps: GetServerSideProps = async (
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
   await queryClient.prefetchQuery({
-    queryFn: () => userAxios.auth(),
-    queryKey: [AUTH],
+    queryFn: () => blogAxios.getGenre(),
+    queryKey: [GET_GENRE],
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getGenre(),
-    queryKey: [GET_GENRE],
+    queryFn: () => userAxios.auth(),
+    queryKey: [AUTH],
   });
 
   return {
