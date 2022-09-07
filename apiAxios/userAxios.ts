@@ -16,7 +16,7 @@ class User {
   ): Promise<IUser & IToken & ILogin & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `http://localhost:3000/api/user/${url}`,
+      url: `/api/user/${url}`,
       data,
       headers: { Cookie: this.cookie },
       withCredentials: true,
