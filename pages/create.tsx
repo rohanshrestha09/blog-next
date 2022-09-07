@@ -259,16 +259,9 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
-  const blogAxios = new BlogAxios(ctx.req && ctx.req.headers.cookie);
-
   const userAxios = new UserAxios(ctx.req && ctx.req.headers.cookie);
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
-
-  await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getGenre(),
-    queryKey: [GET_GENRE],
-  });
 
   await queryClient.prefetchQuery({
     queryFn: () => userAxios.auth(),
