@@ -16,7 +16,7 @@ class Blog {
   ): Promise<IGetGenre & IBlog & IBlogs & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `${process.env.PROXY}/api/blog/${url}`,
+      url: `https://blogsansar.vercel.app/api/blog/${url}`,
       data,
       headers: { Cookie: this.cookie },
       withCredentials: true,
