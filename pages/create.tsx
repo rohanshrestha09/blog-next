@@ -14,7 +14,7 @@ import { Form, Input, Button, Upload, Select, Dropdown, Menu, message } from 'an
 import { UploadOutlined } from '@ant-design/icons';
 import UserAxios from '../apiAxios/userAxios';
 import BlogAxios from '../apiAxios/blogAxios';
-import { IGetGenre, IPostBlog } from '../interface/blog';
+import { IPostBlog } from '../interface/blog';
 import { openErrorNotification, openSuccessNotification } from '../utils/openNotification';
 import IMessage from '../interface/message';
 import { AUTH, GET_GENRE } from '../constants/queryKeys';
@@ -262,6 +262,8 @@ export const getServerSideProps: GetServerSideProps = async (
   const blogAxios = new BlogAxios(ctx.req && ctx.req.headers.cookie);
 
   const userAxios = new UserAxios(ctx.req && ctx.req.headers.cookie);
+
+  ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
   await queryClient.prefetchQuery({
     queryFn: () => userAxios.auth(),
