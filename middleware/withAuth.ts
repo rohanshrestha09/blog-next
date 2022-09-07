@@ -31,6 +31,9 @@ const withAuth = (handler: NextApiHandler) => {
         ...user._doc,
         blogs: await Blog.find({ _id: user.blogs }),
         bookmarks: await Blog.find({ _id: user.bookmarks }),
+        liked: await Blog.find({ _id: user.liked }),
+        following: await User.find({ _id: user.following }),
+        followers: await User.find({ _id: user.followers }),
       };
     } catch (err: Error | any) {
       return res.status(404).json({ message: err.message });

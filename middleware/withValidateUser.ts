@@ -21,6 +21,9 @@ const withValidateUser = (handler: NextApiHandler) => {
         ...queryUser._doc,
         blogs: await Blog.find({ _id: queryUser.blogs }),
         bookmarks: await Blog.find({ _id: queryUser.bookmarks }),
+        liked: await Blog.find({ _id: queryUser.liked }),
+        following: await User.find({ _id: queryUser.following }),
+        followers: await User.find({ _id: queryUser.followers }),
       };
     } catch (err: Error | any) {
       return res.status(404).json({ message: err.message });

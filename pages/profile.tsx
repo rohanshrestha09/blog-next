@@ -1,10 +1,11 @@
 import Head from 'next/head';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 import { dehydrate, DehydratedState, QueryClient } from '@tanstack/react-query';
 import { Image, Menu, MenuProps, Tabs } from 'antd';
-import { BsBookmarkCheck, BsBook } from 'react-icons/bs';
+import { BsBookmarkCheck, BsHeart } from 'react-icons/bs';
 import { RiUserFollowLine, RiUserAddLine } from 'react-icons/ri';
+import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md';
 import UserAxios from '../apiAxios/userAxios';
 import IContext from '../interface/context';
 import userContext from '../utils/userContext';
@@ -13,14 +14,40 @@ import { AUTH } from '../constants/queryKeys';
 const Profile = () => {
   const { user } = useContext<IContext>(userContext);
 
+  /* const followingRef = useRef<any>();
+
+  useEffect(() => {
+    followingRef.current.innerText = '0';
+    const increment = () => {
+      const target = 1500;
+      const c = +followingRef.current.innerText;
+
+      const inc = target / 500;
+
+      if (c < target) {
+        followingRef.current.innerText = `${Math.ceil(c + inc)}`;
+        setTimeout(increment, 1);
+      } else followingRef.current.innerText = 1500;
+    };
+    increment();
+  }, []);*/
+
   const items = [
     {
       label: (
         <span className='sm:mx-5 mx-auto'>
-          <BsBook className='inline' /> Blogs
+          <MdOutlinePublishedWithChanges className='inline' /> Published
         </span>
       ),
-      key: 'blogs',
+      key: 'published',
+    },
+    {
+      label: (
+        <span className='sm:mx-5 mx-auto'>
+          <MdOutlineUnpublished className='inline' /> Unpublished
+        </span>
+      ),
+      key: 'unpublished',
     },
     {
       label: (
@@ -33,25 +60,17 @@ const Profile = () => {
     {
       label: (
         <span className='sm:mx-5 mx-auto'>
-          <RiUserAddLine className='inline' /> Following
+          <BsHeart className='inline' /> Liked
         </span>
       ),
-      key: 'following',
-    },
-    {
-      label: (
-        <span className='sm:mx-5 mx-auto'>
-          <RiUserFollowLine className='inline' /> Followers
-        </span>
-      ),
-      key: 'followers',
+      key: 'liked',
     },
   ];
 
   return (
     <div className='w-full flex justify-center p-5'>
       <Head>
-        <title>{user?.fullname}</title>
+        <title>{`${user?.fullname} | BlogSansar`}</title>
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
@@ -65,14 +84,14 @@ const Profile = () => {
               src={user.image || 'error'}
       />*/}
 
-          <div className='stats shadow'>
-            <div className='stat'>
+          <div className='stats sm:grid-rows-1 sm:grid-cols-4 grid grid-cols-2 grid-rows-2 shadow'>
+            <div className='stat cursor-pointer hover:bg-gray-50 transition-all duration-200'>
               <div className='stat-figure text-primary'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
                   viewBox='0 0 24 24'
-                  className='inline-block sm:w-8 sm:h-8 h-6 w-6 stroke-current'
+                  className='inline-block md:w-8 md:h-8 h-6 w-6 stroke-current'
                 >
                   <path
                     strokeLinecap='round'
@@ -83,16 +102,16 @@ const Profile = () => {
                 </svg>
               </div>
               <div className='stat-title'>Total Likes</div>
-              <div className='stat-value text-primary sm:text-4xl text-xl'>25.6K</div>
+              <div className='stat-value text-primary md:text-3xl text-xl'>25.6K</div>
             </div>
 
-            <div className='stat'>
+            <div className='stat cursor-pointer hover:bg-gray-50 transition-all duration-200'>
               <div className='stat-figure text-secondary'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
                   viewBox='0 0 24 24'
-                  className='inline-block sm:w-8 sm:h-8 h-6 w-6 stroke-current'
+                  className='inline-block md:w-8 md:h-8 h-6 w-6 stroke-current'
                 >
                   <path
                     strokeLinecap='round'
@@ -103,19 +122,27 @@ const Profile = () => {
                 </svg>
               </div>
               <div className='stat-title'>Page Views</div>
-              <div className='stat-value text-secondary sm:text-4xl text-xl'>2.6M</div>
+              <div className='stat-value text-secondary md:text-3xl text-xl'>2.6M</div>
             </div>
 
-            <div className='stat sm:inline-grid hidden'>
+            <div className='stat cursor-pointer hover:bg-gray-50 transition-all duration-200'>
               <div className='stat-figure text-secondary'>
-                <RiUserFollowLine className='inline h-7 w-7 text-[#394E6A]' />
+                <RiUserFollowLine className='inline md:h-7 md:w-7 h-5 w-5 text-[#394E6A]' />
               </div>
               <div className='stat-title'>Followers</div>
-              <div className='stat-value sm:text-4xl text-xl'>86%</div>
+              <div className='stat-value md:text-3xl text-xl'>86%</div>
+            </div>
+
+            <div className='stat cursor-pointer hover:bg-gray-50 transition-all duration-200'>
+              <div className='stat-figure text-secondary'>
+                <RiUserAddLine className='inline md:h-7 md:w-7 h-5 w-5 text-[#394E6A]' />
+              </div>
+              <div className='stat-title'>Following</div>
+              <div className='stat-value md:text-3xl text-xl' /* ref={followingRef}*/>80</div>
             </div>
           </div>
 
-          <Tabs className='w-full' defaultActiveKey='blogs' items={items} centered />
+          <Tabs className='w-full' defaultActiveKey='published' items={items} centered />
         </main>
       )}
     </div>

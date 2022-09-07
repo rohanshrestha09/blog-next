@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../../../../interface/next';
+import User from '../../../../model/User';
 import Blog from '../../../../model/Blog';
 import init from '../../../../middleware/init';
 import withAuth from '../../../../middleware/withAuth';
@@ -34,6 +35,10 @@ const handler: NextApiHandler = async (
           likes: likers.length + 1,
         });
 
+        await User.findByIdAndUpdate(_userId, {
+          $push: { liked: _blogId },
+        });
+
         return res.status(200).json({ message: 'Liked' });
       } catch (err: Error | any) {
         return res.status(404).json({ message: err.message });
@@ -50,6 +55,10 @@ const handler: NextApiHandler = async (
         await Blog.findByIdAndUpdate(_blogId, {
           $pull: { likers: _userId },
           likes: likers.length - 1,
+        });
+
+        await User.findByIdAndUpdate(_userId, {
+          $pull: { liked: _blogId },
         });
 
         return res.status(200).json({ message: 'Unliked' });

@@ -8,6 +8,7 @@ import IMessage from '../../../../interface/message';
 import { IUser } from '../../../../interface/user';
 import { IBlog } from '../../../../interface/blog';
 
+/*
 init();
 
 const handler: NextApiHandler = async (
@@ -42,4 +43,4 @@ const handler: NextApiHandler = async (
   return res.status(405).json({ message: 'Method not allowed' });
 };
 
-export default withAuth(withValidateBlog(handler));
+export default withAuth(withValidateBlog(handler)); */

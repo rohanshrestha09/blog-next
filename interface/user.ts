@@ -32,9 +32,10 @@ export interface IUser extends IMessage {
     imageName?: string;
     bookmarks?: IBlog[];
     blogs?: IBlog[];
+    liked?: IBlog[];
     bio?: string;
-    following?: string[];
-    followers?: string[];
+    following?: IUser['user'][];
+    followers?: IUser['user'][];
     followingCount: number;
     followerCount: number;
     createdat: Date;
