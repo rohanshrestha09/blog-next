@@ -17,7 +17,7 @@ export interface IBlog extends IMessage {
     views: number;
     isPublished: boolean;
     comments?: { commenter: string; comment: string }[];
-    createdat: Date;
+    createdAt: Date;
     updatedAt: Date;
   };
 }

@@ -38,7 +38,7 @@ export interface IUser extends IMessage {
     followers?: IUser['user'][];
     followingCount: number;
     followerCount: number;
-    createdat: Date;
+    createdAt: Date;
     updatedAt: Date;
   };
 }

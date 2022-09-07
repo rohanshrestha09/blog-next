@@ -31,7 +31,7 @@ const NavBar: React.FC = () => {
         </div>
 
         {user ? (
-          <label className='btn min-h-[2.6rem] h-[2.6rem] px-2 btn-circle flex flex-nowrap items-center gap-2 w-36'>
+          <label className='btn min-h-fit h-[2.6rem] px-2 btn-circle flex flex-nowrap items-center gap-2 w-36'>
             <div className='w-9 avatar'>
               {user.image ? (
                 <Image alt='' className='rounded-full' height={50} src={user.image} width={50} />
@@ -45,7 +45,7 @@ const NavBar: React.FC = () => {
           </label>
         ) : (
           <label
-            className='btn modal-button min-h-[2.6rem] h-[2.6rem] leading-none rounded-full'
+            className='btn modal-button min-h-fit h-[2.6rem] leading-none rounded-full'
             htmlFor='registerModal'
           >
             Login/Register

@@ -87,7 +87,7 @@ const Create: NextPage = () => {
   );
 
   return (
-    <div className='w-full flex flex-col items-center p-5 pb-0'>
+    <div className='w-full flex flex-col items-center p-5'>
       <Head>
         <title>Create a post</title>
         <link href='/favicon.ico' rel='icon' />
@@ -150,10 +150,10 @@ const Create: NextPage = () => {
             />
           </Form.Item>
 
-          <Form.Item className='w-fit'>
+          <Form.Item className='w-fit sm:col-span-1 col-span-full'>
             <Upload {...fileUploadOptions}>
               <Button
-                className='rounded-lg flex items-center py-[1.23rem] md:text-sm text-xs'
+                className='rounded-lg flex items-center py-[1.23rem] text-sm'
                 icon={<UploadOutlined className='text-lg' />}
               >
                 Upload Blog Cover
@@ -162,7 +162,7 @@ const Create: NextPage = () => {
           </Form.Item>
 
           <Form.Item
-            className='col-span-3 md:w-full w-4/6 justify-self-end'
+            className='sm:col-span-3 col-span-full'
             name='genre'
             rules={[
               {
@@ -196,7 +196,7 @@ const Create: NextPage = () => {
             </Select>
           </Form.Item>
 
-          <Form.Item className='col-span-full w-fit flex items-center bg-[#021431] min-h-[2.6rem] h-[2.6rem] px-3 rounded-full'>
+          <Form.Item className='col-span-full w-fit flex items-center bg-[#021431] min-h-fit h-[2.6rem] px-3 rounded-full'>
             <Button
               className='btn min-h-full h-auto focus:bg-inherit focus:border-[#021431]'
               loading={handlePostBlog.isLoading}

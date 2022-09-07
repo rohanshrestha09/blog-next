@@ -8,7 +8,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
   return (
     <Layout className='font-sans w-full flex items-center' data-theme='winter'>
       <NavBar />
-      <Layout className='lg:px-48 w-full relative bg-inherit' data-theme='winter'>
+      <Layout className='xl:px-48 w-full relative bg-inherit' data-theme='winter'>
         <Nav />
         <Login />
         <Register />
