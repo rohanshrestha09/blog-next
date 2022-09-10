@@ -196,7 +196,7 @@ const Create: NextPage = () => {
             </Select>
           </Form.Item>
 
-          <Form.Item className='col-span-full w-fit flex items-center bg-[#021431] min-h-fit h-[2.6rem] px-3 rounded-full'>
+          <Form.Item className='col-span-full w-fit flex items-center bg-[#021431] min-h-8 h-10 px-3 rounded-full'>
             <Button
               className='btn min-h-full h-auto focus:bg-inherit focus:border-[#021431]'
               loading={handlePostBlog.isLoading}
@@ -241,7 +241,7 @@ const Create: NextPage = () => {
                 />
               }
             >
-              <span className='rotate-45'>{'>'}</span>
+              <span>{'>'}</span>
             </Dropdown>
           </Form.Item>
         </Form>

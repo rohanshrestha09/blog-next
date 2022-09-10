@@ -10,7 +10,7 @@ class Security {
   axiosFn = async (method: string, url: string, data?: any): Promise<IMessage> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `httpss://blogsansar.vercel.app/api/security/${url}`,
+      url: `https://blogsansar.vercel.app/api/security/${url}`,
       data,
       headers: { Cookie: this.cookie },
       withCredentials: true,

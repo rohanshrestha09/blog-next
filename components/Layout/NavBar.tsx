@@ -3,8 +3,8 @@ import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { Avatar } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import userContext from '../utils/userContext';
-import IContext from '../interface/context';
+import userContext from '../../utils/userContext';
+import IContext from '../../interface/context';
 
 const NavBar: React.FC = () => {
   const router = useRouter();

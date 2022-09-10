@@ -4,10 +4,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Form, Input, Checkbox, Button } from 'antd';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { UserOutlined, LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
-import UserAxios from '../apiAxios/userAxios';
-import type { ILogin, IToken } from '../interface/user';
-import { openSuccessNotification, openErrorNotification } from '../utils/openNotification';
-import { AUTH } from '../constants/queryKeys';
+import UserAxios from '../../apiAxios/userAxios';
+import type { ILogin, IToken } from '../../interface/user';
+import { openSuccessNotification, openErrorNotification } from '../../utils/openNotification';
+import { AUTH } from '../../constants/queryKeys';
 
 const Login: React.FC = () => {
   const queryClient = useQueryClient();

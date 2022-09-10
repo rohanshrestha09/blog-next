@@ -3,10 +3,13 @@ import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useCallback, useContext } from 'react';
 import { dehydrate, DehydratedState, QueryClient } from '@tanstack/react-query';
 import { Button, Divider, Empty, Image, Space, Tabs } from 'antd';
-import { BsBook, BsBookmarkCheck, BsFacebook, BsHeart } from 'react-icons/bs';
+import { BsBook, BsBookmarkCheck, BsFacebook, BsHeart, BsPlus, BsPlusSquare } from 'react-icons/bs';
 import { RiUserFollowLine, RiUserAddLine } from 'react-icons/ri';
 import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md';
+import { GiSpiderWeb } from 'react-icons/gi';
+import { FaBiohazard } from 'react-icons/fa';
 import { FiEdit } from 'react-icons/fi';
+import { TbEdit } from 'react-icons/tb';
 import UserAxios from '../apiAxios/userAxios';
 import IContext from '../interface/context';
 import userContext from '../utils/userContext';
@@ -135,17 +138,27 @@ const Profile = () => {
             <div className='sm:w-[55%] w-full flex flex-col sm:items-start items-center sm:gap-3 gap-1'>
               <p className='text-xl font-semibold break-words'>{user.fullname}</p>
 
-              <p className='break-all sm:text-left text-center'>
-                {user.bio} Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aut ratione
-              </p>
+              {user.bio ? (
+                <p className='break-all sm:text-left text-center'>{user.bio}</p>
+              ) : (
+                <p className='link inline-flex items-center gap-1 hover:text-slate-400 transition-all'>
+                  Update Bio <FaBiohazard />
+                </p>
+              )}
 
-              <a
-                className='link font-semibold break-all'
-                href='https://rohanshrestha09.com.np'
-                target='_blank'
-              >
-                https://rohanshrestha09.com.np
-              </a>
+              {user.portfolio ? (
+                <a
+                  className='link font-semibold break-all'
+                  href='https://rohanshrestha09.com.np'
+                  target='_blank'
+                >
+                  https://rohanshrestha09.com.np
+                </a>
+              ) : (
+                <p className='link inline-flex items-center gap-1 hover:text-slate-400 transition-all'>
+                  Add Website <GiSpiderWeb />
+                </p>
+              )}
 
               <p className='font-semibold'>{`Joined ${moment(user.createdAt).format('ll')}`}</p>
 
