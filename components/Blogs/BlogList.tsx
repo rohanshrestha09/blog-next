@@ -7,7 +7,7 @@ import userContext from '../../utils/userContext';
 
 interface Props {
   authorName: string;
-  authorImage?: string;
+  authorImage: string | null;
   title: string;
   content: string;
   image: string;
