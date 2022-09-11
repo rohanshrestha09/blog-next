@@ -11,12 +11,12 @@ export interface IBlog extends IMessage {
     title: string;
     content: string;
     genre: string[];
-    likers: [];
+    likers: string[] | [];
     likes: number;
-    viewers: [];
+    viewers: string[] | [];
     views: number;
     isPublished: boolean;
-    comments?: { commenter: string; comment: string }[];
+    comments: { commenter: string; comment: string }[] | null;
     createdAt: Date;
     updatedAt: Date;
   };

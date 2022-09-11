@@ -3,6 +3,7 @@ import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useCallback, useContext } from 'react';
 import { dehydrate, DehydratedState, QueryClient } from '@tanstack/react-query';
 import { Button, Divider, Empty, Image, Space, Tabs } from 'antd';
+import { isEmpty } from 'lodash';
 import { BsBook, BsBookmarkCheck, BsFacebook, BsHeart, BsPlus, BsPlusSquare } from 'react-icons/bs';
 import { RiUserFollowLine, RiUserAddLine } from 'react-icons/ri';
 import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md';
@@ -15,6 +16,7 @@ import IContext from '../interface/context';
 import userContext from '../utils/userContext';
 import { AUTH } from '../constants/queryKeys';
 import moment from 'moment';
+import BlogList from '../components/Blogs/BlogList';
 
 const Profile = () => {
   const { user } = useContext<IContext>(userContext);
@@ -45,13 +47,31 @@ const Profile = () => {
           <BsBook className='inline' /> All Blogs
         </span>
       ),
-      children: (
+      children: isEmpty(user.blogs) ? (
         <Empty>
           <Button className='btn min-h-8 h-10 focus:btn focus:min-h-8 focus:h-10'>
             Create one
           </Button>
         </Empty>
+      ) : (
+        user.blogs.map((el) => (
+          <BlogList
+            authorName={user.fullname}
+            authorImage={user.image}
+            title={el.title}
+            content={el.content}
+            image={el.image}
+            genre={el.genre}
+            createdAt={el.createdAt}
+          />
+        ))
       ),
+
+      /*<Empty>
+          <Button className='btn min-h-8 h-10 focus:btn focus:min-h-8 focus:h-10'>
+            Create one
+          </Button>
+        </Empty>*/
     },
     {
       key: 'published',
@@ -135,11 +155,11 @@ const Profile = () => {
               />
             </span>
 
-            <div className='sm:w-[55%] w-full flex flex-col sm:items-start items-center sm:gap-3 gap-1'>
-              <p className='text-xl font-semibold break-words'>{user.fullname}</p>
+            <div className='sm:w-[55%] w-full flex flex-col sm:items-start items-center sm:gap-3 gap-1 break-all'>
+              <p className='text-xl font-semibold'>{user.fullname}</p>
 
               {user.bio ? (
-                <p className='break-all sm:text-left text-center'>{user.bio}</p>
+                <p className='sm:text-left text-center'>{user.bio}</p>
               ) : (
                 <p className='link inline-flex items-center gap-1 hover:text-slate-400 transition-all'>
                   Update Bio <FaBiohazard />
@@ -148,7 +168,7 @@ const Profile = () => {
 
               {user.portfolio ? (
                 <a
-                  className='link font-semibold break-all'
+                  className='link font-semibold'
                   href='https://rohanshrestha09.com.np'
                   target='_blank'
                 >
@@ -182,7 +202,7 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className='stats w-full sm:grid-rows-1 sm:grid-cols-4 grid grid-cols-2 grid-rows-2 shadow'>
+          <div className='stats sm:w-[92%] w-full sm:grid-rows-1 sm:grid-cols-4 grid grid-cols-2 grid-rows-2 shadow'>
             <div className='stat cursor-pointer hover:bg-gray-50 transition-all duration-200'>
               <div className='stat-figure text-primary'>
                 <svg
@@ -243,7 +263,7 @@ const Profile = () => {
           <Tabs
             className='w-full'
             tabBarStyle={{ borderBottomWidth: '1px' }}
-            defaultActiveKey='published'
+            defaultActiveKey='blogs'
             items={items}
             centered
           />

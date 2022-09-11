@@ -5,29 +5,25 @@
 @tailwind components;
 @tailwind utilities;
 
-::-webkit-scrollbar {
+.scrollbar::-webkit-scrollbar {
   width: 8px;
   height: 8px;
-  background-color: inherit;
+  background-color: transparent;
 }
 
-::-webkit-scrollbar-track {
+.scrollbar::-webkit-scrollbar-track {
   margin-top: 10px;
   margin-bottom: 10px;
 }
 
-::-webkit-scrollbar-thumb {
+.scrollbar::-webkit-scrollbar-thumb {
   background: rgb(170, 170, 170);
   border-radius: 10px;
 }
 
 /* scrollbar Handle on hover */
-::-webkit-scrollbar-thumb:hover {
+.scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(170 170 170 / 0.5);
-}
-
-.scrollbar::-webkit-scrollbar {
-  background-color: transparent;
 }
 
 .ant-image-preview-img {

@@ -31,21 +31,21 @@ const NavBar: React.FC = () => {
         </div>
 
         {user ? (
-          <label className='btn min-h-fit h-[2.6rem] px-2 btn-circle flex flex-nowrap items-center gap-2 w-36'>
-            <div className='w-9 avatar'>
+          <label className='btn min-h-8 h-10 px-2 btn-circle flex flex-nowrap items-center gap-2 w-36'>
+            <span className='w-9 avatar'>
               {user.image ? (
-                <Image alt='' className='rounded-full' height={50} src={user.image} width={50} />
+                <Image alt='' className='rounded-full' src={user.image} height={50} width={50} />
               ) : (
                 <Avatar className='bg-[#1890ff]' size='small'>
                   {user.fullname[0]}
                 </Avatar>
               )}
-            </div>
+            </span>
             <span className='text-sm truncate'>{user.fullname}</span>
           </label>
         ) : (
           <label
-            className='btn modal-button min-h-fit h-[2.6rem] leading-none rounded-full'
+            className='btn modal-button min-h-8 h-10 leading-none rounded-full'
             htmlFor='registerModal'
           >
             Login/Register
