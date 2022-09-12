@@ -37,14 +37,16 @@ const Nav: React.FC = () => {
         {iconArr.map((el, index) => (
           <div
             key={index}
-            className={`${toggleNav ? 'btn opacity-100' : 'opacity-0'} ${
-              !toggleNav && '[&>*]:h-0 [&>*]:w-0'
+            className={`${
+              toggleNav ? 'btn opacity-100' : 'opacity-0 [&>*]:h-0 [&>*]:w-0'
             } btn-circle hover:w-40 relative transition-all duration-300 [&>*]:absolute [&>*]:left-[0.65rem] [&>*]:transition-all [&>*]:duration-100 [&>*]:hover:opacity-100`}
             onClick={() => routingFn(el.key as string)}
           >
-            {el}
+            <span>{el}</span>
             <span
-              className={`absolute right-0 opacity-0 ${el.key === 'notification' && 'text-xs'}`}
+              className={`${el.key === 'notification' && 'text-xs'} ${
+                !toggleNav && 'hidden'
+              } absolute right-0 opacity-0`}
             >
               {el.key}
             </span>

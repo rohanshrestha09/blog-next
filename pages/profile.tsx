@@ -1,16 +1,14 @@
 import Head from 'next/head';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { useCallback, useContext } from 'react';
+import { useContext } from 'react';
 import { dehydrate, DehydratedState, QueryClient } from '@tanstack/react-query';
-import { Button, Divider, Empty, Image, Space, Tabs } from 'antd';
+import { Button, Empty, Image, Space, Tabs } from 'antd';
 import { isEmpty } from 'lodash';
-import { BsBook, BsBookmarkCheck, BsFacebook, BsHeart, BsPlus, BsPlusSquare } from 'react-icons/bs';
+import { BsBook, BsBookmarkCheck, BsHeart } from 'react-icons/bs';
 import { RiUserFollowLine, RiUserAddLine } from 'react-icons/ri';
 import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md';
 import { GiSpiderWeb } from 'react-icons/gi';
 import { FaBiohazard } from 'react-icons/fa';
-import { FiEdit } from 'react-icons/fi';
-import { TbEdit } from 'react-icons/tb';
 import UserAxios from '../apiAxios/userAxios';
 import IContext from '../interface/context';
 import userContext from '../utils/userContext';
@@ -49,29 +47,13 @@ const Profile = () => {
       ),
       children: isEmpty(user.blogs) ? (
         <Empty>
-          <Button className='btn min-h-8 h-10 focus:btn focus:min-h-8 focus:h-10'>
-            Create one
-          </Button>
+          <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
         </Empty>
       ) : (
-        user.blogs.map((el) => (
-          <BlogList
-            authorName={user.fullname}
-            authorImage={user.image}
-            title={el.title}
-            content={el.content}
-            image={el.image}
-            genre={el.genre}
-            createdAt={el.createdAt}
-          />
+        user.blogs.map((blog) => (
+          <BlogList editable authorName={user.fullname} authorImage={user.image} blog={blog} />
         ))
       ),
-
-      /*<Empty>
-          <Button className='btn min-h-8 h-10 focus:btn focus:min-h-8 focus:h-10'>
-            Create one
-          </Button>
-        </Empty>*/
     },
     {
       key: 'published',
@@ -80,12 +62,17 @@ const Profile = () => {
           <MdOutlinePublishedWithChanges className='inline' /> Published
         </span>
       ),
-      children: (
+      children: isEmpty(user.blogs) ? (
         <Empty>
-          <Button className='btn min-h-8 h-10 focus:btn focus:min-h-8 focus:h-10'>
-            Create one
-          </Button>
+          <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
         </Empty>
+      ) : (
+        user.blogs.map(
+          (blog) =>
+            blog.isPublished && (
+              <BlogList editable authorName={user.fullname} authorImage={user.image} blog={blog} />
+            )
+        )
       ),
     },
     {
@@ -95,12 +82,17 @@ const Profile = () => {
           <MdOutlineUnpublished className='inline' /> Unpublished
         </span>
       ),
-      children: (
+      children: isEmpty(user.blogs) ? (
         <Empty>
-          <Button className='btn min-h-8 h-10 focus:btn focus:min-h-8 focus:h-10'>
-            Create one
-          </Button>
+          <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
         </Empty>
+      ) : (
+        user.blogs.map(
+          (blog) =>
+            !blog.isPublished && (
+              <BlogList editable authorName={user.fullname} authorImage={user.image} blog={blog} />
+            )
+        )
       ),
     },
     {
@@ -110,14 +102,20 @@ const Profile = () => {
           <BsBookmarkCheck className='inline' /> Bookmarks
         </span>
       ),
-      children: (
+      children: isEmpty(user.blogs) ? (
         <Empty>
-          <Button className='btn min-h-8 h-10 focus:btn focus:min-h-8 focus:h-10'>
-            Browse Blogs
-          </Button>
+          <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
         </Empty>
+      ) : (
+        user.blogs.map(
+          (blog) =>
+            !blog.isPublished && (
+              <BlogList authorName={user.fullname} authorImage={user.image} blog={blog} />
+            )
+        )
       ),
     },
+
     {
       key: 'liked',
       label: (
@@ -125,12 +123,17 @@ const Profile = () => {
           <BsHeart className='inline' /> Liked
         </span>
       ),
-      children: (
+      children: isEmpty(user.blogs) ? (
         <Empty>
-          <Button className='btn min-h-8 h-10 focus:btn focus:min-h-8 focus:h-10'>
-            Browse Blogs
-          </Button>
+          <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
         </Empty>
+      ) : (
+        user.blogs.map(
+          (blog) =>
+            !blog.isPublished && (
+              <BlogList authorName={user.fullname} authorImage={user.image} blog={blog} />
+            )
+        )
       ),
     },
   ];
@@ -138,7 +141,7 @@ const Profile = () => {
   return (
     <div className='w-full flex justify-center p-5 sm:py-6'>
       <Head>
-        <title>{`${user?.fullname} | BlogSansar`}</title>
+        <title>{`${user && user.fullname} | BlogSansar`}</title>
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
@@ -166,7 +169,7 @@ const Profile = () => {
                 </p>
               )}
 
-              {user.portfolio ? (
+              {user.website ? (
                 <a
                   className='link font-semibold'
                   href='https://rohanshrestha09.com.np'
@@ -262,8 +265,8 @@ const Profile = () => {
 
           <Tabs
             className='w-full'
-            tabBarStyle={{ borderBottomWidth: '1px' }}
             defaultActiveKey='blogs'
+            tabBarStyle={{ borderBottomWidth: '1px' }}
             items={items}
             centered
           />

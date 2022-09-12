@@ -213,7 +213,7 @@ const Create: NextPage = () => {
               Save & Publish
             </Button>
 
-            <span className='text-white pr-3'>|</span>
+            <span className='text-slate-200 pr-3'>|</span>
 
             <Dropdown
               className='text-[#99C6FF] text-base cursor-pointer rotate-45'
