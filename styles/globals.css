@@ -33,3 +33,21 @@
   left: 50% !important;
   transform: translate(-50%, 0%) !important;
 }
+
+.multiline-truncate-content,
+.multiline-truncate-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.multiline-truncate-title {
+  -webkit-line-clamp: 2;
+}
+
+@media screen and (max-width: 639px) {
+  .multiline-truncate-content {
+    display: none;
+  }
+}
