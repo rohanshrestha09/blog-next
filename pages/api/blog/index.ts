@@ -70,7 +70,7 @@ const handler: NextApiHandler = async (
       }
 
     case 'POST':
-      const { _id: _authorId } = req.user;
+      const { _id: _authorId, fullname: authorName, image: authorImage } = req.user;
 
       const { title, content, genre, isPublished } = req.body;
 
@@ -81,6 +81,8 @@ const handler: NextApiHandler = async (
 
         const { _id: _blogId } = await Blog.create({
           author: _authorId,
+          authorName,
+          authorImage,
           title,
           content,
           genre,

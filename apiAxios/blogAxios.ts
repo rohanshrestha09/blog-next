@@ -16,7 +16,7 @@ class Blog {
   ): Promise<IGetGenre & IBlog & IBlogs & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `https://blogsansar.vercel.app/api/blog/${url}`,
+      url: `http://localhost:3000/api/blog/${url}`,
       data,
       headers: { Cookie: this.cookie },
       withCredentials: true,
@@ -25,7 +25,10 @@ class Blog {
     return res.data;
   };
 
-  getBlog = async (id: string): Promise<IBlog> => await this.axiosFn('get', id);
+  getBlog = async (id: string): Promise<IBlog['blog']> =>
+    await (
+      await this.axiosFn('get', id)
+    ).blog;
 
   getAllBlog = async ({
     sort,

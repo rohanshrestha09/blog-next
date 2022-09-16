@@ -1,5 +1,6 @@
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
+import { NextRouter, useRouter } from 'next/router';
 import { useRef, useState } from 'react';
 import {
   dehydrate,
@@ -10,19 +11,27 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { Editor } from '@tinymce/tinymce-react';
-import { Form, Input, Button, Upload, Select, Dropdown, Menu, message } from 'antd';
+import { Form, Input, Button, Upload, Select, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import UserAxios from '../apiAxios/userAxios';
-import BlogAxios from '../apiAxios/blogAxios';
-import { IPostBlog } from '../interface/blog';
-import { openErrorNotification, openSuccessNotification } from '../utils/openNotification';
-import IMessage from '../interface/message';
-import { AUTH, GET_GENRE } from '../constants/queryKeys';
+import UserAxios from '../../../apiAxios/userAxios';
+import BlogAxios from '../../../apiAxios/blogAxios';
+import { IPostBlog } from '../../../interface/blog';
+import { openErrorNotification, openSuccessNotification } from '../../../utils/openNotification';
+import ConfirmDelete from '../../../components/shared/ConfirmDelete';
+import IMessage from '../../../interface/message';
+import { AUTH, GET_BLOG, GET_GENRE } from '../../../constants/queryKeys';
 
-const Create: NextPage = () => {
+const UpdateBlog: NextPage = () => {
+  const {
+    query: { _blogId },
+    push,
+  }: NextRouter = useRouter();
+
   const queryClient = useQueryClient();
 
   const editorRef = useRef<any>();
+
+  const deleteModalRef = useRef<HTMLLabelElement>(null);
 
   const blogAxios = new BlogAxios();
 
@@ -32,11 +41,15 @@ const Create: NextPage = () => {
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
-  const [renderEditor, setRenderEditor] = useState<number>(1);
-
   const { data: genre } = useQuery({
     queryFn: () => blogAxios.getGenre(),
     queryKey: [GET_GENRE],
+  });
+
+  const { data: blog } = useQuery({
+    queryFn: () => blogAxios.getBlog(_blogId as string),
+    queryKey: [GET_BLOG],
+    onSuccess: (blog) => form.setFieldsValue({ title: blog.title, genre: blog.genre }),
   });
 
   const fileUploadOptions = {
@@ -55,7 +68,7 @@ const Create: NextPage = () => {
     onRemove: () => setSelectedImage(null),
   };
 
-  const handlePostBlog = useMutation(
+  const handleUpdateBlog = useMutation(
     (formValues: IPostBlog | any) => {
       // * avoid append if formvalue is empty
       const formData = new FormData();
@@ -72,24 +85,31 @@ const Create: NextPage = () => {
       });
       if (selectedImage) formData.append('image', selectedImage);
 
-      return blogAxios.postBlog(formData);
+      return blogAxios.updateBlog({ id: _blogId as string, data: formData });
     },
     {
       onSuccess: (res: IMessage) => {
         openSuccessNotification(res.message);
-        form.resetFields();
-        setSelectedImage(null);
-        setRenderEditor(Math.random() * 100);
         queryClient.refetchQueries([AUTH]);
       },
       onError: (err: Error | any) => openErrorNotification(err.response.data.message),
     }
   );
 
+  const handleDeleteBlog = useMutation((id: string) => blogAxios.deleteBlog(id), {
+    onSuccess: (res: IMessage) => {
+      openSuccessNotification(res.message);
+      queryClient.refetchQueries([AUTH]);
+      deleteModalRef.current?.click();
+      push('/profile');
+    },
+    onError: (err: Error | any) => openErrorNotification(err.response.data.message),
+  });
+
   return (
     <div className='w-full flex flex-col items-center p-5'>
       <Head>
-        <title>Create a post</title>
+        <title>Update post</title>
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
@@ -113,8 +133,7 @@ const Create: NextPage = () => {
 
           <Form.Item className='col-span-full'>
             <Editor
-              key={renderEditor}
-              apiKey={process.env.TINY_MCE}
+              apiKey={process.env.NEXT_PUBLIC_TINY_MCE}
               init={{
                 height: 400,
                 menubar: true,
@@ -145,7 +164,7 @@ const Create: NextPage = () => {
                   'removeformat | help',
                 content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
               }}
-              initialValue='<p>This is the initial content of the editor.</p>'
+              initialValue={blog && blog.content}
               onInit={(evt, editor) => (editorRef.current = editor)}
             />
           </Form.Item>
@@ -171,8 +190,8 @@ const Create: NextPage = () => {
               },
               {
                 validator: (_, value) => {
-                  if (value.length > 5) {
-                    return Promise.reject('Max 5 genre allowed.');
+                  if (value.length > 4) {
+                    return Promise.reject('Max 4 genre allowed.');
                   } else {
                     return Promise.resolve();
                   }
@@ -183,7 +202,7 @@ const Create: NextPage = () => {
             <Select
               className='w-full rounded-lg'
               mode='multiple'
-              placeholder='Select genre (max 5)'
+              placeholder='Select genre (max 4)'
               size='large'
               allowClear
             >
@@ -196,61 +215,43 @@ const Create: NextPage = () => {
             </Select>
           </Form.Item>
 
-          <Form.Item className='col-span-full w-fit flex items-center bg-[#021431] min-h-8 h-10 px-3 rounded-full'>
+          <Form.Item className='col-span-full'>
             <Button
-              className='btn min-h-full h-auto focus:bg-inherit focus:border-[#021431]'
-              loading={handlePostBlog.isLoading}
+              className='btn min-h-8 h-10 focus:bg-[#021431]'
+              loading={handleUpdateBlog.isLoading}
               onClick={() =>
                 form.validateFields().then((values) =>
-                  handlePostBlog.mutate({
+                  handleUpdateBlog.mutate({
                     ...values,
-                    isPublished: true,
                     content: editorRef.current && editorRef.current.getContent(),
                   })
                 )
               }
             >
-              Save & Publish
+              Update
             </Button>
 
-            <span className='text-slate-200 pr-3'>|</span>
-
-            <Dropdown
-              className='text-[#99C6FF] text-base cursor-pointer rotate-45'
-              overlay={
-                <Menu
-                  items={[
-                    {
-                      label: (
-                        <span
-                          onClick={() =>
-                            form.validateFields().then((values) =>
-                              handlePostBlog.mutate({
-                                ...values,
-                                content: editorRef.current && editorRef.current.getContent(),
-                              })
-                            )
-                          }
-                        >
-                          Save to Draft
-                        </span>
-                      ),
-                      key: 0,
-                    },
-                  ]}
-                />
-              }
+            <Button
+              className='min-h-8 h-10 mx-2 rounded-[0.5rem] uppercase'
+              onClick={() => deleteModalRef.current?.click()}
+              danger
             >
-              <span>{'>'}</span>
-            </Dropdown>
+              Delete Blog
+            </Button>
           </Form.Item>
         </Form>
+
+        <ConfirmDelete
+          deleteModalRef={deleteModalRef}
+          deleteMutation={() => handleDeleteBlog.mutate(_blogId as string)}
+          isLoading={handleDeleteBlog.isLoading}
+        />
       </main>
     </div>
   );
 };
 
-export default Create;
+export default UpdateBlog;
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext
@@ -261,11 +262,18 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const userAxios = new UserAxios(ctx.req && ctx.req.headers.cookie);
 
+  const blogAxios = new BlogAxios(ctx.req && ctx.req.headers.cookie);
+
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
   await queryClient.prefetchQuery({
     queryFn: () => userAxios.auth(),
     queryKey: [AUTH],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => blogAxios.getBlog(ctx.params ? (ctx.params._blogId as string) : ''),
+    queryKey: [GET_BLOG],
   });
 
   return {

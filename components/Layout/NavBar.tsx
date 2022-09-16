@@ -19,6 +19,7 @@ const NavBar: React.FC = () => {
       >
         BlogSansar
       </span>
+
       <div className='gap-5'>
         <div className='sm:block hidden form-control relative'>
           <SearchOutlined className='absolute text-lg left-3 top-1.5 text-slate-600' />
@@ -34,10 +35,7 @@ const NavBar: React.FC = () => {
           <label className='btn min-h-8 h-10 px-2 btn-circle flex flex-nowrap items-center gap-2 w-36'>
             <span className='w-9 avatar'>
               {user.image ? (
-                <Avatar
-                  src={<Image alt='' src={user.image} height={60} width={60} layout='fill' />}
-                  size='small'
-                />
+                <Avatar src={<Image alt='' src={user.image} layout='fill' />} size='small' />
               ) : (
                 <Avatar className='bg-[#1890ff]' size='small'>
                   {user.fullname[0]}

@@ -48,30 +48,33 @@ const handler: NextApiHandler = async (
       const { title, content, genre } = req.body;
 
       try {
-        if (isEmpty(req.files)) return res.status(403).json({ message: 'Image required' });
+        if (req.files.image) {
+          const file = req.files.image as any;
 
-        const file = req.files.image as any;
+          if (!file.mimetype.startsWith('image/'))
+            return res.status(403).json({ message: 'Please choose an image' });
 
-        if (!file.mimetype.startsWith('image/'))
-          return res.status(403).json({ message: 'Please choose an image' });
+          if (image) deleteObject(ref(storage, `blogs/${imageName}`));
 
-        if (image) deleteObject(ref(storage, `blogs/${imageName}`));
+          const filename = file.mimetype.replace('image/', `${_blogId}.`);
 
-        const filename = file.mimetype.replace('image/', `${_blogId}.`);
+          const storageRef = ref(storage, `blogs/${filename}`);
 
-        const storageRef = ref(storage, `blogs/${filename}`);
+          const metadata = {
+            contentType: file.mimetype,
+          };
 
-        const metadata = {
-          contentType: file.mimetype,
-        };
+          await uploadBytes(storageRef, await fsPromises.readFile(file.filepath), metadata);
 
-        await uploadBytes(storageRef, await fsPromises.readFile(file.filepath), metadata);
+          const url = await getDownloadURL(storageRef);
 
-        const url = await getDownloadURL(storageRef);
+          await Blog.findByIdAndUpdate(_blogId, {
+            image: url,
+            imageName: filename,
+          });
+        }
 
         await Blog.findByIdAndUpdate(_blogId, {
-          image: url,
-          imageName: filename,
           title,
           content,
           genre,

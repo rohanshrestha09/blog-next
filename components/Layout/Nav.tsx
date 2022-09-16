@@ -1,3 +1,4 @@
+import { Popover } from 'antd';
 import { NextRouter, useRouter } from 'next/router';
 import { useState } from 'react';
 import { AiOutlineHome, AiOutlineLogout } from 'react-icons/ai';
@@ -8,9 +9,24 @@ const Nav: React.FC = () => {
 
   const [toggleNav, setToggleNav] = useState<boolean>(false);
 
+  const content = (
+    <div>
+      <p>Content</p>
+      <p>Content</p>
+    </div>
+  );
+
   const iconArr: JSX.Element[] = [
     <AiOutlineLogout key='logout' size={26} />,
-    <BiNotification key='notification' size={26} />,
+    <Popover
+      key='notification'
+      placement='right'
+      title={'Notifications'}
+      content={content}
+      trigger='click'
+    >
+      <BiNotification size={26} />
+    </Popover>,
     <BiMessageSquareEdit key='create' size={26} />,
     <BiUserCircle key='profile' size={26} />,
     <AiOutlineHome key='feed' size={26} />,
@@ -22,8 +38,10 @@ const Nav: React.FC = () => {
         return;
       case 'feed':
         return router.push('/');
-      default:
-        return router.push(key);
+      case 'create':
+        return router.push('/blog/create');
+      case 'profile':
+        return router.push('/profile');
     }
   };
 
@@ -39,14 +57,14 @@ const Nav: React.FC = () => {
             key={index}
             className={`${
               toggleNav ? 'btn opacity-100' : 'opacity-0 [&>*]:h-0 [&>*]:w-0'
-            } btn-circle hover:w-40 relative transition-all duration-300 [&>*]:absolute [&>*]:left-[0.65rem] [&>*]:transition-all [&>*]:duration-100 [&>*]:hover:opacity-100`}
+            } btn-circle justify-center hover:w-40 relative transition-all duration-300 [&>*]:transition-all [&>*]:duration-100 [&>*]:hover:opacity-100`}
             onClick={() => routingFn(el.key as string)}
           >
-            <span>{el}</span>
+            <span className='absolute left-[0.65rem]'>{el}</span>
             <span
               className={`${el.key === 'notification' && 'text-xs'} ${
                 !toggleNav && 'hidden'
-              } absolute right-0 opacity-0`}
+              } opacity-0 w-fit ml-5`}
             >
               {el.key}
             </span>

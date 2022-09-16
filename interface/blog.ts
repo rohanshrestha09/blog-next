@@ -6,6 +6,8 @@ export interface IBlog extends IMessage {
   blog: {
     _id: string;
     author: string;
+    authorName: string;
+    authorImage: string | null;
     image: string;
     imageName: string;
     title: string;
@@ -16,7 +18,7 @@ export interface IBlog extends IMessage {
     viewers: string[] | [];
     views: number;
     isPublished: boolean;
-    comments: { commenter: string; comment: string }[] | null;
+    comments: { commenter: string; comment: string }[] | [];
     createdAt: Date;
     updatedAt: Date;
   };

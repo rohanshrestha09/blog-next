@@ -12,8 +12,8 @@ import {
 } from '@ant-design/icons';
 import UserAxios from '../../apiAxios/userAxios';
 import { IRegister, IToken } from '../../interface/user';
-import { openSuccessNotification, openErrorNotification } from '../../utils/openNotification';
 import { AUTH } from '../../constants/queryKeys';
+import { openSuccessNotification, openErrorNotification } from '../../utils/openNotification';
 
 const Register: React.FC = () => {
   const queryClient = useQueryClient();

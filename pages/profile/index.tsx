@@ -2,19 +2,19 @@ import Head from 'next/head';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useContext } from 'react';
 import { dehydrate, DehydratedState, QueryClient } from '@tanstack/react-query';
-import { Button, Empty, Image, Space, Tabs } from 'antd';
+import moment from 'moment';
 import { isEmpty } from 'lodash';
+import { Button, Empty, Image, Space, Tabs } from 'antd';
 import { BsBook, BsBookmarkCheck, BsHeart } from 'react-icons/bs';
 import { RiUserFollowLine, RiUserAddLine } from 'react-icons/ri';
 import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md';
 import { GiSpiderWeb } from 'react-icons/gi';
 import { FaBiohazard } from 'react-icons/fa';
-import UserAxios from '../apiAxios/userAxios';
-import IContext from '../interface/context';
-import userContext from '../utils/userContext';
-import { AUTH } from '../constants/queryKeys';
-import moment from 'moment';
-import BlogList from '../components/Blogs/BlogList';
+import UserAxios from '../../apiAxios/userAxios';
+import IContext from '../../interface/context';
+import userContext from '../../utils/userContext';
+import BlogList from '../../components/Blogs/BlogList';
+import { AUTH } from '../../constants/queryKeys';
 
 const Profile = () => {
   const { user } = useContext<IContext>(userContext);
@@ -62,7 +62,7 @@ const Profile = () => {
           <MdOutlinePublishedWithChanges className='inline' /> Published
         </span>
       ),
-      children: isEmpty(user.blogs) ? (
+      children: isEmpty(user.blogs.filter((blog) => blog.isPublished)) ? (
         <Empty>
           <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
         </Empty>
@@ -70,7 +70,12 @@ const Profile = () => {
         user.blogs.map(
           (blog) =>
             blog.isPublished && (
-              <BlogList editable authorName={user.fullname} authorImage={user.image} blog={blog} />
+              <BlogList
+                editable
+                authorName={blog.authorName}
+                authorImage={blog.authorImage}
+                blog={blog}
+              />
             )
         )
       ),
@@ -82,7 +87,7 @@ const Profile = () => {
           <MdOutlineUnpublished className='inline' /> Unpublished
         </span>
       ),
-      children: isEmpty(user.blogs) ? (
+      children: isEmpty(user.blogs.filter((blog) => !blog.isPublished)) ? (
         <Empty>
           <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
         </Empty>
@@ -90,7 +95,12 @@ const Profile = () => {
         user.blogs.map(
           (blog) =>
             !blog.isPublished && (
-              <BlogList editable authorName={user.fullname} authorImage={user.image} blog={blog} />
+              <BlogList
+                editable
+                authorName={blog.authorName}
+                authorImage={blog.authorImage}
+                blog={blog}
+              />
             )
         )
       ),
@@ -102,15 +112,15 @@ const Profile = () => {
           <BsBookmarkCheck className='inline' /> Bookmarks
         </span>
       ),
-      children: isEmpty(user.blogs) ? (
+      children: isEmpty(user.bookmarks) ? (
         <Empty>
           <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
         </Empty>
       ) : (
-        user.blogs.map(
+        user.bookmarks.map(
           (blog) =>
-            !blog.isPublished && (
-              <BlogList authorName={user.fullname} authorImage={user.image} blog={blog} />
+            blog.isPublished && (
+              <BlogList authorName={blog.authorName} authorImage={blog.authorImage} blog={blog} />
             )
         )
       ),
@@ -123,15 +133,15 @@ const Profile = () => {
           <BsHeart className='inline' /> Liked
         </span>
       ),
-      children: isEmpty(user.blogs) ? (
+      children: isEmpty(user.liked) ? (
         <Empty>
           <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
         </Empty>
       ) : (
-        user.blogs.map(
+        user.liked.map(
           (blog) =>
-            !blog.isPublished && (
-              <BlogList authorName={user.fullname} authorImage={user.image} blog={blog} />
+            blog.isPublished && (
+              <BlogList authorName={blog.authorName} authorImage={blog.authorImage} blog={blog} />
             )
         )
       ),

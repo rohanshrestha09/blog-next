@@ -27,11 +27,13 @@
 }
 
 .ant-image-preview-img {
-  height: 80% !important;
-  position: absolute !important;
-  top: 10% !important;
-  left: 50% !important;
-  transform: translate(-50%, 0%) !important;
+  height: 80%;
+  position: absolute;
+  margin: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
 .multiline-truncate-content,
