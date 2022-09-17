@@ -1,4 +1,4 @@
-import { Popover } from 'antd';
+import { Button, Popover } from 'antd';
 import { NextRouter, useRouter } from 'next/router';
 import { useState } from 'react';
 import { AiOutlineHome, AiOutlineLogout } from 'react-icons/ai';
@@ -53,14 +53,14 @@ const Nav: React.FC = () => {
         }`}
       >
         {iconArr.map((el, index) => (
-          <div
+          <Button
             key={index}
             className={`${
               toggleNav ? 'btn opacity-100' : 'opacity-0 [&>*]:h-0 [&>*]:w-0'
-            } btn-circle justify-center hover:w-40 relative transition-all duration-300 [&>*]:transition-all [&>*]:duration-100 [&>*]:hover:opacity-100`}
+            } btn-circle justify-center focus:bg-[#021027] hover:w-40 relative transition-all duration-300 [&>*]:transition-all [&>*]:duration-100 [&>*]:hover:opacity-100`}
             onClick={() => routingFn(el.key as string)}
           >
-            <span className='absolute left-[0.65rem]'>{el}</span>
+            <span className='!absolute left-[0.65rem]'>{el}</span>
             <span
               className={`${el.key === 'notification' && 'text-xs'} ${
                 !toggleNav && 'hidden'
@@ -68,7 +68,7 @@ const Nav: React.FC = () => {
             >
               {el.key}
             </span>
-          </div>
+          </Button>
         ))}
       </div>
 

@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { NextRouter, useRouter } from 'next/router';
 import { useRef } from 'react';
-import { Avatar, Divider, Popover, Space, Tag } from 'antd';
+import { Avatar, Button, Divider, Popover, Space, Tag } from 'antd';
 import moment from 'moment';
 import he from 'he';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -49,6 +49,18 @@ const BlogList: React.FC<Props> = ({
 
   const blogAxios = new BlogAxios();
 
+  const handlePublishBlog = useMutation(
+    ({ id, shouldPublish }: { id: string; shouldPublish: boolean }) =>
+      blogAxios.publishBlog({ id, shouldPublish }),
+    {
+      onSuccess: (res: IMessage) => {
+        openSuccessNotification(res.message);
+        queryClient.refetchQueries([AUTH]);
+      },
+      onError: (err: Error | any) => openErrorNotification(err.response.data.message),
+    }
+  );
+
   const handleDeleteBlog = useMutation((id: string) => blogAxios.deleteBlog(id), {
     onSuccess: (res: IMessage) => {
       openSuccessNotification(res.message);
@@ -70,14 +82,16 @@ const BlogList: React.FC<Props> = ({
 
       <Divider className='bg-slate-200' type='vertical' />
 
-      <Space
-        className={`cursor-pointer ${
+      <Button
+        className={`${
           isPublished ? 'hover:bg-red-500' : 'hover:bg-green-500'
-        } hover:text-white rounded-lg px-2 py-1.5 transition-all`}
+        } inline-flex items-center gap-2 border-0 focus:text-current hover:!text-white rounded-lg px-2 py-1.5 transition-all`}
+        loading={handlePublishBlog.isLoading}
+        onClick={() => handlePublishBlog.mutate({ id: _id, shouldPublish: !isPublished })}
       >
         <MdOutlinePublishedWithChanges />
         {isPublished ? 'Unpublish' : 'Publish'}
-      </Space>
+      </Button>
 
       <Divider className='bg-slate-200' type='vertical' />
 
@@ -102,17 +116,16 @@ const BlogList: React.FC<Props> = ({
       <div className='w-full flex flex-col gap-3 sm:px-10 py-4'>
         <Space className='relative'>
           {authorImage ? (
-            <Avatar
-              src={<Image alt='' src={authorImage} height={50} width={50} layout='fill' />}
-              size='small'
-            />
+            <Avatar src={<Image alt='' src={authorImage} layout='fill' />} size='small' />
           ) : (
             <Avatar className='bg-[#1890ff]' size='small'>
               {authorName[0]}
             </Avatar>
           )}
           <p className='break-all'>{authorName}</p>
+
           <span className='text-2xl leading-none tracking-tighter text-gray-400'>&#x22C5;</span>
+
           <p className='text-gray-500 text-xs'>{moment(createdAt).format('ll').slice(0, -6)}</p>
 
           {editable && (
@@ -126,15 +139,12 @@ const BlogList: React.FC<Props> = ({
           </Button>*/}
 
               <Popover
-                className='absolute right-0 top-0 translate-y-1/2'
                 content={popoverContent}
+                placement='left'
                 overlayInnerStyle={{ borderRadius: '10px' }}
                 trigger='click'
               >
-                <BsThreeDots
-                  className='hover:rounded-full cursor-pointer hover:bg-gray-200 transition-all'
-                  size={16}
-                />
+                <BsThreeDots className='absolute right-0 top-0 translate-y-1/2 hover:rounded-full cursor-pointer hover:bg-gray-200 transition-all sm:text-base' />
               </Popover>
             </>
           )}
@@ -145,6 +155,7 @@ const BlogList: React.FC<Props> = ({
             <p className='sm:text-xl text-base font-bold sm:leading-none leading-snug multiline-truncate-title'>
               {title}
             </p>
+
             <p className='leading-loose multiline-truncate-content'>
               {he.decode(content.replace(/<[^>]+>/g, ''))}
             </p>
@@ -157,8 +168,8 @@ const BlogList: React.FC<Props> = ({
 
         <div className='w-full flex items-center justify-between'>
           <span className='truncate'>
-            {genre.map((el) => (
-              <Tag className='rounded-full'>{el}</Tag>
+            {genre.map((tag) => (
+              <Tag className='rounded-full'>{tag}</Tag>
             ))}
           </span>
 
@@ -181,21 +192,13 @@ const BlogList: React.FC<Props> = ({
             {editable && (
               <>
                 <Divider className='bg-slate-200' type='vertical' />
-                {isPublished ? (
-                  <span
-                    className='flex items-center tooltip sm:tooltip-bottom tooltip-left'
-                    data-tip={isPublished ? 'Published' : 'Unpublished'}
-                  >
-                    <MdOutlinePublishedWithChanges />
-                  </span>
-                ) : (
-                  <span
-                    className='flex items-center tooltip sm:tooltip-bottom tooltip-left'
-                    data-tip={isPublished ? 'Published' : 'Unpublished'}
-                  >
-                    <MdOutlineUnpublished />
-                  </span>
-                )}
+
+                <span
+                  className='flex items-center tooltip sm:tooltip-bottom tooltip-left'
+                  data-tip={isPublished ? 'Published' : 'Unpublished'}
+                >
+                  {isPublished ? <MdOutlinePublishedWithChanges /> : <MdOutlineUnpublished />}
+                </span>
               </>
             )}
           </Space>

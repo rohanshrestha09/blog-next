@@ -12,7 +12,7 @@ const ConfirmDelete: React.FC<Props> = ({ deleteModalRef, isLoading, deleteMutat
     <>
       <input className='modal-toggle' id='deleteModal' type='checkbox' />
       <label htmlFor='deleteModal' className='modal' data-theme='winter'>
-        <label className='modal-box relative scrollbar'>
+        <label className='modal-box'>
           <label
             ref={deleteModalRef}
             className='btn btn-sm btn-circle absolute right-2 top-2'
@@ -32,14 +32,14 @@ const ConfirmDelete: React.FC<Props> = ({ deleteModalRef, isLoading, deleteMutat
 
             <Space className='mt-8'>
               <Button
-                className='rounded-[0.5rem]'
+                className='rounded-lg'
                 disabled={isLoading}
                 onClick={() => deleteModalRef.current?.click()}
               >
                 Cancel
               </Button>
               <Button
-                className='rounded-[0.5rem]'
+                className='rounded-lg'
                 disabled={isLoading}
                 type='primary'
                 onClick={deleteMutation}

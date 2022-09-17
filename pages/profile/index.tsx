@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { useContext } from 'react';
+import { Key, useContext } from 'react';
 import { dehydrate, DehydratedState, QueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
@@ -37,116 +37,75 @@ const Profile = () => {
     increment();
   }, []);*/
 
+  const filterMethod = (key: Key) => {
+    switch (key) {
+      case 'blogs':
+        return isEmpty(user.blogs);
+
+      case 'published':
+        return isEmpty(user.blogs.filter((blog) => blog.isPublished));
+
+      case 'unpublished':
+        return isEmpty(user.blogs.filter((blog) => !blog.isPublished));
+
+      case 'bookmarks':
+        return isEmpty(user.bookmarks);
+
+      case 'liked':
+        return isEmpty(user.liked);
+
+      default:
+        return;
+    }
+  };
+
   const items = [
+    { key: 'blogs', label: 'All Blogs', icon: <BsBook className='inline' />, editable: true },
     {
-      key: 'blogs',
+      key: 'published',
+      label: 'Published',
+      icon: <MdOutlinePublishedWithChanges className='inline' />,
+      editable: true,
+    },
+    {
+      key: 'unpublished',
+      label: 'Unpublished',
+      icon: <MdOutlineUnpublished className='inline' />,
+      editable: true,
+    },
+    {
+      key: 'bookmarks',
+      label: 'Bookmarks',
+      icon: <BsBookmarkCheck className='inline' />,
+      editable: false,
+    },
+    { key: 'liked', label: 'Liked', icon: <BsHeart className='inline' />, editable: false },
+  ].map(({ key, label, editable, icon }) => {
+    return {
+      key,
       label: (
         <span className='sm:mx-5 mx-auto'>
-          <BsBook className='inline' /> All Blogs
+          {icon} {label}
         </span>
       ),
-      children: isEmpty(user.blogs) ? (
+
+      children: filterMethod(key) ? (
         <Empty>
           <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
         </Empty>
       ) : (
         user.blogs.map((blog) => (
-          <BlogList editable authorName={user.fullname} authorImage={user.image} blog={blog} />
+          <BlogList
+            key={blog._id}
+            editable={editable}
+            authorName={user.fullname}
+            authorImage={user.image}
+            blog={blog}
+          />
         ))
       ),
-    },
-    {
-      key: 'published',
-      label: (
-        <span className='sm:mx-5 mx-auto'>
-          <MdOutlinePublishedWithChanges className='inline' /> Published
-        </span>
-      ),
-      children: isEmpty(user.blogs.filter((blog) => blog.isPublished)) ? (
-        <Empty>
-          <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
-        </Empty>
-      ) : (
-        user.blogs.map(
-          (blog) =>
-            blog.isPublished && (
-              <BlogList
-                editable
-                authorName={blog.authorName}
-                authorImage={blog.authorImage}
-                blog={blog}
-              />
-            )
-        )
-      ),
-    },
-    {
-      key: 'unpublished',
-      label: (
-        <span className='sm:mx-5 mx-auto'>
-          <MdOutlineUnpublished className='inline' /> Unpublished
-        </span>
-      ),
-      children: isEmpty(user.blogs.filter((blog) => !blog.isPublished)) ? (
-        <Empty>
-          <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
-        </Empty>
-      ) : (
-        user.blogs.map(
-          (blog) =>
-            !blog.isPublished && (
-              <BlogList
-                editable
-                authorName={blog.authorName}
-                authorImage={blog.authorImage}
-                blog={blog}
-              />
-            )
-        )
-      ),
-    },
-    {
-      key: 'bookmarks',
-      label: (
-        <span className='sm:mx-5 mx-auto'>
-          <BsBookmarkCheck className='inline' /> Bookmarks
-        </span>
-      ),
-      children: isEmpty(user.bookmarks) ? (
-        <Empty>
-          <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
-        </Empty>
-      ) : (
-        user.bookmarks.map(
-          (blog) =>
-            blog.isPublished && (
-              <BlogList authorName={blog.authorName} authorImage={blog.authorImage} blog={blog} />
-            )
-        )
-      ),
-    },
-
-    {
-      key: 'liked',
-      label: (
-        <span className='sm:mx-5 mx-auto'>
-          <BsHeart className='inline' /> Liked
-        </span>
-      ),
-      children: isEmpty(user.liked) ? (
-        <Empty>
-          <Button className='btn min-h-8 h-10 focus:bg-[#021027]'>Create one</Button>
-        </Empty>
-      ) : (
-        user.liked.map(
-          (blog) =>
-            blog.isPublished && (
-              <BlogList authorName={blog.authorName} authorImage={blog.authorImage} blog={blog} />
-            )
-        )
-      ),
-    },
-  ];
+    };
+  });
 
   return (
     <div className='w-full flex justify-center p-5 sm:py-6'>
