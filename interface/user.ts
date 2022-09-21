@@ -34,7 +34,7 @@ export interface IUser extends IMessage {
     blogs: IBlog['blog'][] | [];
     liked: IBlog['blog'][] | [];
     bio: string | null;
-    website: string;
+    website: string | null;
     following: IUser['user'][] | [];
     followers: IUser['user'][] | [];
     followingCount: number;

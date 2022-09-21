@@ -38,7 +38,7 @@ const handler: NextApiHandler = async (
 
   switch (method) {
     case 'PUT':
-      const { fullname, bio, dateOfBirth } = req.body;
+      const { fullname, bio, website, dateOfBirth } = req.body;
 
       try {
         if (!isEmpty(req.files)) {
@@ -70,6 +70,7 @@ const handler: NextApiHandler = async (
         await User.findByIdAndUpdate(_userId, {
           fullname,
           bio,
+          website,
           dateOfBirth: new Date(moment(dateOfBirth).format()),
         });
 

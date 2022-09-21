@@ -2,7 +2,7 @@ import { NextRouter, useRouter } from 'next/router';
 import Image from 'next/image';
 import { useContext, useState, ReactNode, Key } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { Avatar, Drawer, Menu, MenuProps } from 'antd';
+import { Avatar, Drawer, Menu, MenuProps, Tooltip, Comment, Popover } from 'antd';
 import { IconType } from 'react-icons';
 import { MdOutlineKeyboardArrowRight } from 'react-icons/md';
 import { AiOutlineLogout, AiOutlineUser } from 'react-icons/ai';
@@ -23,6 +23,8 @@ const NavDrawer: React.FC = () => {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  const [isPopOverOpen, setIsPopOverOpen] = useState(false);
+
   type MenuItem = Required<MenuProps>['items'][number];
 
   const handleLogout = useMutation(() => userAxios.logout(), {
@@ -36,7 +38,7 @@ const NavDrawer: React.FC = () => {
   const getDrawerItems = (
     label: ReactNode,
     key: Key,
-    Icon: IconType,
+    Icon: IconType | null,
     children?: MenuItem[],
     type?: 'group'
   ): MenuItem => {
@@ -52,7 +54,7 @@ const NavDrawer: React.FC = () => {
             </Avatar>
           )
         ) : (
-          <Icon size={18} />
+          Icon && <Icon size={18} />
         ),
       children,
       label,
@@ -79,6 +81,42 @@ const NavDrawer: React.FC = () => {
           ]
         );
 
+      case 'notifications':
+        return getDrawerItems(
+          <Popover
+            autoAdjustOverflow={false}
+            content={[1, 2, 3, 4, 5, 6].map((el) => (
+              <Comment
+                key={el}
+                author={<a className='font-sans'>Han Solo</a>}
+                avatar={<Avatar src='https://joeschmoe.io/api/v1/random' alt='Han Solo' />}
+                content={
+                  <p className='multiline-truncate-title sm:w-80 font-sans'>
+                    We supply a series of design principles, practical patterns and high quality
+                    design resources (Sketch and Axure), to help people create their product
+                    prototypes beautifully and efficiently.
+                  </p>
+                }
+                datetime={
+                  <Tooltip title='2016-11-22 11:22:33'>
+                    <span className='font-sans'>8 hours ago</span>
+                  </Tooltip>
+                }
+              />
+            ))}
+            placement='bottomLeft'
+            open={isPopOverOpen}
+            onOpenChange={(open) => setIsPopOverOpen(open)}
+            overlayClassName='scrollbar h-[34rem] overflow-y-scroll shadow-md rounded-xl'
+            overlayInnerStyle={{ borderRadius: '10px' }}
+            trigger='click'
+          >
+            {name}
+          </Popover>,
+          key,
+          icon
+        );
+
       default:
         return getDrawerItems(name, key, icon);
     }
@@ -90,7 +128,7 @@ const NavDrawer: React.FC = () => {
         return handleLogout.mutate();
 
       case 'notifications':
-        return;
+        return setIsPopOverOpen(true);
 
       default:
         return push(key);
@@ -116,11 +154,11 @@ const NavDrawer: React.FC = () => {
         contentWrapperStyle={{ width: 'auto', height: 'auto' }}
       >
         <Menu
-          className='w-60 !font-sans'
+          className='w-72 !font-sans'
           mode='inline'
           defaultSelectedKeys={[pathname]}
           items={items}
-          onSelect={({ key }) => routingFn(key)}
+          onClick={({ key }) => routingFn(key)}
         />
       </Drawer>
     </>

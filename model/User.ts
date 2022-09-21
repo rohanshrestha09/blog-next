@@ -28,6 +28,7 @@ const UserSchema = new mongoose.Schema(
     blogs: { type: [Schema.Types.ObjectId], default: [] },
     liked: { type: [Schema.Types.ObjectId], default: [] },
     bio: { type: String, default: null },
+    website: { type: String, default: null },
     following: { type: [Schema.Types.ObjectId], default: [] },
     followers: { type: [Schema.Types.ObjectId], default: [] },
     followingCount: { type: Number, default: 0 },
