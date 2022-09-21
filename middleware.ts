@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const middleware = (request: NextRequest) => {
-  console.log(request.nextUrl.pathname);
+  const token = request.cookies.get('token');
+  if (!token) return NextResponse.rewrite(new URL('/fallback', request.url));
 };
 
 export default middleware;
 
 export const config = {
-  matcher: '/profile',
+  matcher: ['/blog/create', '/profile'],
 };

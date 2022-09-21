@@ -1,74 +1,106 @@
 import { NextRouter, useRouter } from 'next/router';
-import { Key, useState } from 'react';
-import { capitalize } from 'lodash';
-import { Drawer, Menu, MenuProps } from 'antd';
+import Image from 'next/image';
+import { useContext, useState, ReactNode, Key } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { Avatar, Drawer, Menu, MenuProps } from 'antd';
+import { IconType } from 'react-icons';
 import { MdOutlineKeyboardArrowRight } from 'react-icons/md';
-import { AiOutlineHome, AiOutlineLogout } from 'react-icons/ai';
+import { AiOutlineLogout, AiOutlineUser } from 'react-icons/ai';
 import { FiEdit3 } from 'react-icons/fi';
-import { IoMdShareAlt } from 'react-icons/io';
-import { BiMessageSquareEdit, BiUserCircle, BiNotification } from 'react-icons/bi';
+import { BsAppIndicator, BsHouse } from 'react-icons/bs';
+import { BiMessageSquareEdit, BiUserCircle } from 'react-icons/bi';
+import UserAxios from '../../apiAxios/userAxios';
+import userContext from '../../utils/userContext';
+import { openErrorNotification, openSuccessNotification } from '../../utils/openNotification';
+import IMessage from '../../interface/message';
 
 const NavDrawer: React.FC = () => {
   const { pathname, push }: NextRouter = useRouter();
+
+  const { user } = useContext(userContext);
+
+  const userAxios = new UserAxios();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   type MenuItem = Required<MenuProps>['items'][number];
 
-  function getItem(
-    label: React.ReactNode,
-    key: React.Key,
-    icon?: React.ReactNode,
+  const handleLogout = useMutation(() => userAxios.logout(), {
+    onSuccess: (res: IMessage) => {
+      openSuccessNotification(res.message);
+      window.location.reload();
+    },
+    onError: (err: Error | any) => openErrorNotification(err.response.data.message),
+  });
+
+  const getDrawerItems = (
+    label: ReactNode,
+    key: Key,
+    Icon: IconType,
     children?: MenuItem[],
     type?: 'group'
-  ): MenuItem {
+  ): MenuItem => {
     return {
       key,
-      icon,
+      icon:
+        key === '/profile' ? (
+          user.image ? (
+            <Avatar src={<Image alt='' src={user.image} layout='fill' />} size={18} />
+          ) : (
+            <Avatar className='bg-[#1890ff]' size={18}>
+              {user.fullname[0]}
+            </Avatar>
+          )
+        ) : (
+          <Icon size={18} />
+        ),
       children,
       label,
       type,
     } as MenuItem;
-  }
-
-  const getDrawerItem = (key: Key, icon: JSX.Element) => {
-    switch (key) {
-      case 'profile':
-        return getItem(capitalize(icon.key as string), icon.key as Key, icon, [
-          getItem('Visit', 'visit', <IoMdShareAlt />),
-          getItem('Edit', 'edit', <FiEdit3 />),
-        ]);
-
-      default:
-        return getItem(capitalize(icon.key as string), icon.key as Key, icon);
-    }
   };
 
   const items: MenuItem[] = [
-    <AiOutlineLogout key='logout' />,
-    <BiNotification key='notification' />,
-    <BiMessageSquareEdit key='create' />,
-    <BiUserCircle key='profile' />,
-    <AiOutlineHome key='feed' />,
-  ].map((icon) => getDrawerItem(icon.key as Key, icon));
+    { key: 'logout', name: 'Logout', icon: AiOutlineLogout },
+    { key: 'notifications', name: 'Notifications', icon: BsAppIndicator },
+    { key: '/blog/create/', name: 'Create', icon: BiMessageSquareEdit },
+    { key: '/profile/', name: 'Profile', icon: AiOutlineUser },
+    { key: '/', name: 'Feed', icon: BsHouse },
+  ].map(({ key, name, icon }) => {
+    switch (key) {
+      case '/profile/':
+        return getDrawerItems(
+          name,
+          key,
+          icon,
+          user && [
+            getDrawerItems(user.fullname, '/profile', BiUserCircle),
+            getDrawerItems('Edit', '/profile/edit', FiEdit3),
+          ]
+        );
+
+      default:
+        return getDrawerItems(name, key, icon);
+    }
+  });
 
   const routingFn = (key: string) => {
     switch (key) {
       case 'logout':
+        return handleLogout.mutate();
+
+      case 'notifications':
         return;
-      case 'feed':
-        return push('/');
-      case 'create':
-        return push('/blog/create');
-      case 'visit':
-        return push('/profile');
+
+      default:
+        return push(key);
     }
   };
 
   return (
     <>
       <MdOutlineKeyboardArrowRight
-        className='fixed left-4 top-1/2 translate-y-1/2 cursor-pointer text-slate-600 hover:bg-gray-200 rounded-full'
+        className='fixed left-4 top-1/2 translate-y-1/2 cursor-pointer text-slate-600 hover:bg-gray-200 rounded-full z-50'
         size={40}
         onClick={() => setIsDrawerOpen(true)}
       />
@@ -88,7 +120,7 @@ const NavDrawer: React.FC = () => {
           mode='inline'
           defaultSelectedKeys={[pathname]}
           items={items}
-          onSelect={(el) => routingFn(el.key)}
+          onSelect={({ key }) => routingFn(key)}
         />
       </Drawer>
     </>

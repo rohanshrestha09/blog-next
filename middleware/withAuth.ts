@@ -7,10 +7,8 @@ import Blog from '../model/Blog';
 import { IUser } from '../interface/user';
 import IMessage from '../interface/message';
 
-const bypassAuth = (url: string | undefined, method: string | undefined): boolean => {
-  if (url && url.startsWith('/api/blog') && method === 'GET') return true;
-  return false;
-};
+const bypassAuth = (url: string | undefined, method: string | undefined): boolean =>
+  (url && url.startsWith('/api/blog') && method === 'GET') || false;
 
 const withAuth = (handler: NextApiHandler) => {
   return async (req: NextApiRequest & IUser, res: NextApiResponse<IMessage>) => {

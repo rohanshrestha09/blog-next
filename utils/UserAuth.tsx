@@ -8,17 +8,13 @@ import AppLayout from '../components/Layout/AppLayout';
 const UserAuth: React.FC<{
   children: React.ReactNode;
 }> = ({ children }): JSX.Element => {
-  const { data: user, refetch } = useQuery({
+  const { data: user } = useQuery({
     queryFn: () => new UserAxios().auth(),
     queryKey: [AUTH],
   });
 
-  const userLogout = (): void => {
-    refetch();
-  };
-
   return (
-    <UserContext.Provider value={{ user, userLogout }}>
+    <UserContext.Provider value={{ user }}>
       <AppLayout>
         {children} <ReactQueryDevtools />
       </AppLayout>

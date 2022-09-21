@@ -93,7 +93,7 @@ const CreateBlog: NextPage = () => {
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      <main className='xl:w-3/4 w-full'>
+      <main className='xl:w-[51rem] w-full'>
         <Form
           autoComplete='off'
           className='w-full grid grid-cols-4'

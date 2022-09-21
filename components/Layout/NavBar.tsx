@@ -12,7 +12,7 @@ const NavBar: React.FC = () => {
   const { user } = useContext<IContext>(userContext);
 
   return (
-    <div className='sticky top-0 navbar xl:px-48 shadow-md z-10 justify-between bg-base-100'>
+    <div className='sticky top-0 navbar xl:px-60 shadow-md z-10 justify-between bg-base-100'>
       <span
         className='font-megrim font-black md:text-4xl text-3xl cursor-pointer text-black'
         onClick={() => router.push('/')}
@@ -33,7 +33,7 @@ const NavBar: React.FC = () => {
 
         {user ? (
           <label className='btn min-h-8 h-10 px-2 btn-circle flex flex-nowrap items-center gap-2 w-36'>
-            <span className='w-9 avatar'>
+            <span className='avatar'>
               {user.image ? (
                 <Avatar src={<Image alt='' src={user.image} layout='fill' />} size='small' />
               ) : (

@@ -113,7 +113,7 @@ const BlogList: React.FC<Props> = ({
 
   return (
     <>
-      <div className='w-full flex flex-col gap-3 sm:px-10 py-4'>
+      <div className='w-full flex flex-col gap-3 sm:px-16 py-4'>
         <Space className='relative'>
           {authorImage ? (
             <Avatar src={<Image alt='' src={authorImage} layout='fill' />} size='small' />
@@ -169,7 +169,9 @@ const BlogList: React.FC<Props> = ({
         <div className='w-full flex items-center justify-between'>
           <span className='truncate'>
             {genre.map((tag) => (
-              <Tag className='rounded-full'>{tag}</Tag>
+              <Tag className='rounded-full' key={tag}>
+                {tag}
+              </Tag>
             ))}
           </span>
 
