@@ -1,8 +1,9 @@
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Form, Input, Button, Checkbox, DatePicker, Upload, message } from 'antd';
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { Form, Input, Button, Checkbox, DatePicker, Upload, Modal } from 'antd';
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import {
   EyeInvisibleOutlined,
   EyeTwoTone,
@@ -10,15 +11,24 @@ import {
   UploadOutlined,
   UserOutlined,
 } from '@ant-design/icons';
+import { closeRegisterModal } from '../../store/registerModalSlice';
+import { openLoginModal } from '../../store/loginModalSlice';
+import {
+  errorNotification,
+  successNotification,
+  warningNotification,
+} from '../../utils/notification';
 import UserAxios from '../../apiAxios/userAxios';
-import { IRegister, IToken } from '../../interface/user';
 import { AUTH } from '../../constants/queryKeys';
-import { openSuccessNotification, openErrorNotification } from '../../utils/openNotification';
+import type { RootState } from '../../store';
+import type { IRegister, IToken } from '../../interface/user';
 
 const Register: React.FC = () => {
-  const queryClient = useQueryClient();
+  const { isOpen: isRegisterModalOpen } = useSelector((state: RootState) => state.registerModal);
 
-  const registerModalRef = useRef<HTMLLabelElement>(null);
+  const dispatch = useDispatch();
+
+  const queryClient = useQueryClient();
 
   const [form] = Form.useForm();
 
@@ -33,7 +43,7 @@ const Register: React.FC = () => {
     beforeUpload: (file: File) => {
       const isImage = file.type.startsWith('image/');
       if (!isImage) {
-        message.error(`${file.name} is not an image file`);
+        warningNotification(`${file.name} is not an image file`);
         return isImage || Upload.LIST_IGNORE;
       }
       if (file) setSelectedImage(file);
@@ -57,199 +67,189 @@ const Register: React.FC = () => {
     },
     {
       onSuccess: (res: IToken) => {
-        openSuccessNotification(res.message);
+        successNotification(res.message);
         form.resetFields();
-        registerModalRef.current?.click();
         queryClient.refetchQueries([AUTH]);
+        dispatch(closeRegisterModal());
       },
-      onError: (err: Error | any) => openErrorNotification(err.response.data.message),
+      onError: (err: Error) => errorNotification(err),
     }
   );
 
   return (
-    <>
-      <input className='modal-toggle' id='registerModal' type='checkbox' />
-      <label htmlFor='registerModal' className='modal'>
-        <label className='modal-box relative min-h-[98%] scrollbar'>
-          <label
-            ref={registerModalRef}
-            className='btn btn-sm btn-circle absolute right-2 top-2'
-            htmlFor='registerModal'
-          >
-            ✕
-          </label>
-          <Form
-            autoComplete='off'
-            className='pt-3'
-            form={form}
-            initialValues={{ remember: true }}
-            layout='vertical'
-            name='normal_register'
-            requiredMark={false}
-            onFinish={() =>
-              form.validateFields().then((values) =>
-                handleRegister.mutate({
-                  ...values,
-                  dateOfBirth: values.dateOfBirth._d.toString(),
-                })
+    <Modal
+      centered
+      className='font-sans'
+      open={isRegisterModalOpen}
+      onCancel={() => dispatch(closeRegisterModal())}
+      footer={null}
+    >
+      <Form
+        autoComplete='off'
+        form={form}
+        initialValues={{ remember: true }}
+        layout='vertical'
+        name='form_in_modal'
+        requiredMark={false}
+        onFinish={() =>
+          form.validateFields().then((values) =>
+            handleRegister.mutate({
+              ...values,
+              dateOfBirth: values.dateOfBirth._d.toString(),
+            })
+          )
+        }
+      >
+        <Form.Item
+          label='Full Name'
+          name='fullname'
+          rules={[{ required: true, message: 'Please input your Fullname!' }]}
+        >
+          <Input
+            className='rounded-lg p-2'
+            placeholder='Full Name'
+            prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
+          />
+        </Form.Item>
+
+        <Form.Item
+          label='Email'
+          name='email'
+          rules={[{ required: true, message: 'Please input your Email!' }]}
+        >
+          <Input
+            className='rounded-lg p-2'
+            placeholder='Email'
+            prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
+            type='email'
+          />
+        </Form.Item>
+
+        <Form.Item
+          label='Password'
+          name='password'
+          rules={[
+            { required: true, message: 'Please input your Password!' },
+            {
+              validator: (_, value) =>
+                value.length < 8
+                  ? Promise.reject('Password must contain atleast 8 characters.')
+                  : Promise.resolve(),
+            },
+          ]}
+        >
+          <Input.Password
+            className='rounded-lg p-2'
+            iconRender={(visible) =>
+              visible ? (
+                <EyeTwoTone className='text-gray-600 text-lg' />
+              ) : (
+                <EyeInvisibleOutlined className='text-gray-600 text-lg' />
               )
             }
-          >
-            <Form.Item
-              label='Full Name'
-              name='fullname'
-              rules={[{ required: true, message: 'Please input your Fullname!' }]}
-            >
-              <Input
-                className='rounded-lg p-2'
-                placeholder='Full Name'
-                prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
-              />
-            </Form.Item>
+            placeholder='Password'
+            prefix={<LockOutlined className='text-gray-600 text-lg mr-2' />}
+            type='password'
+          />
+        </Form.Item>
 
-            <Form.Item
-              label='Email'
-              name='email'
-              rules={[{ required: true, message: 'Please input your Email!' }]}
-            >
-              <Input
-                className='rounded-lg p-2'
-                placeholder='Email'
-                prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
-                type='email'
-              />
-            </Form.Item>
+        <Form.Item
+          label='Confirm Password'
+          name='confirmPassword'
+          rules={[
+            { required: true, message: 'Please input your Password!' },
+            {
+              validator: (_, value) =>
+                value === form.getFieldValue('password')
+                  ? Promise.resolve()
+                  : Promise.reject('Password does not match.'),
+            },
+          ]}
+        >
+          <Input.Password
+            className='rounded-lg p-2'
+            iconRender={(visible) =>
+              visible ? (
+                <EyeTwoTone className='text-gray-600 text-lg' />
+              ) : (
+                <EyeInvisibleOutlined className='text-gray-600 text-lg' />
+              )
+            }
+            placeholder='Confirm Password'
+            prefix={<LockOutlined className='text-gray-600 text-lg mr-2' />}
+            type='password'
+          />
+        </Form.Item>
 
-            <Form.Item
-              label='Password'
-              name='password'
-              rules={[
-                { required: true, message: 'Please input your Password!' },
-                {
-                  validator: (_, value) => {
-                    if (value.length < 8) {
-                      return Promise.reject('Password must contain atleast 8 characters.');
-                    } else {
-                      return Promise.resolve();
-                    }
-                  },
-                },
-              ]}
-            >
-              <Input.Password
-                className='rounded-lg p-2'
-                iconRender={(visible) =>
-                  visible ? (
-                    <EyeTwoTone className='text-gray-600 text-lg' />
-                  ) : (
-                    <EyeInvisibleOutlined className='text-gray-600 text-lg' />
-                  )
-                }
-                placeholder='Password'
-                prefix={<LockOutlined className='text-gray-600 text-lg mr-2' />}
-                type='password'
-              />
-            </Form.Item>
-
-            <Form.Item
-              label='Confirm Password'
-              name='confirmPassword'
-              rules={[
-                { required: true, message: 'Please input your Password!' },
-                {
-                  validator: (_, value) => {
-                    if (value === form.getFieldValue('password')) {
-                      return Promise.resolve();
-                    } else {
-                      return Promise.reject('Password does not match.');
-                    }
-                  },
-                },
-              ]}
-            >
-              <Input.Password
-                className='rounded-lg p-2'
-                iconRender={(visible) =>
-                  visible ? (
-                    <EyeTwoTone className='text-gray-600 text-lg' />
-                  ) : (
-                    <EyeInvisibleOutlined className='text-gray-600 text-lg' />
-                  )
-                }
-                placeholder='Confirm Password'
-                prefix={<LockOutlined className='text-gray-600 text-lg mr-2' />}
-                type='password'
-              />
-            </Form.Item>
-
-            <div className='w-full grid grid-cols-5'>
-              <Form.Item className='col-span-2' label='Display Picture'>
-                <Upload {...fileUploadOptions}>
-                  <Button
-                    className='rounded-lg flex items-center h-12'
-                    icon={<UploadOutlined className='text-lg' />}
-                  >
-                    Click to Upload
-                  </Button>
-                </Upload>
-              </Form.Item>
-
-              <Form.Item
-                className='col-span-3'
-                label='Date of Birth'
-                name='dateOfBirth'
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your Date of birth!',
-                  },
-                ]}
-              >
-                <DatePicker className='rounded-lg p-3 w-full' />
-              </Form.Item>
-            </div>
-
-            <Form.Item>
-              <Form.Item name='remember' noStyle>
-                <Checkbox
-                  checked={rememberMe}
-                  onChange={(e: CheckboxChangeEvent) => setRememberMe(e.target.checked)}
-                >
-                  Remember me
-                </Checkbox>
-              </Form.Item>
-
-              <Link href='/' passHref={true}>
-                <a className='text-[#0579FD] absolute right-0'>Forgot password</a>
-              </Link>
-            </Form.Item>
-
-            <Form.Item>
+        <div className='w-full grid grid-cols-5'>
+          <Form.Item className='sm:col-span-2 col-span-full' label='Display Picture'>
+            <Upload {...fileUploadOptions}>
               <Button
-                className='w-full h-[3.2rem] rounded-lg text-base btn-primary text-white hover:text-white focus:btn-primary'
-                htmlType='submit'
-                loading={handleRegister.isLoading}
+                className='rounded-lg flex items-center h-12'
+                icon={<UploadOutlined className='text-lg' />}
               >
-                Signup Now
+                Click to Upload
               </Button>
-            </Form.Item>
+            </Upload>
+          </Form.Item>
 
-            <Form.Item className='flex justify-center mb-0'>
-              <span>
-                Already have an account?{' '}
-                <label
-                  className='modal-button text-[#0579FD] cursor-pointer'
-                  htmlFor='loginModal'
-                  onClick={() => registerModalRef.current?.click()}
-                >
-                  Login
-                </label>
-              </span>
-            </Form.Item>
-          </Form>
-        </label>
-      </label>
-    </>
+          <Form.Item
+            className='sm:col-span-3 col-span-full'
+            label='Date of Birth'
+            name='dateOfBirth'
+            rules={[
+              {
+                required: true,
+                message: 'Please input your Date of birth!',
+              },
+            ]}
+          >
+            <DatePicker className='rounded-lg p-3 w-full' />
+          </Form.Item>
+        </div>
+
+        <Form.Item>
+          <Form.Item name='remember' noStyle>
+            <Checkbox
+              checked={rememberMe}
+              onChange={(e: CheckboxChangeEvent) => setRememberMe(e.target.checked)}
+            >
+              Remember me
+            </Checkbox>
+          </Form.Item>
+
+          <Link href='/' passHref={true}>
+            <a className='text-[#0579FD] absolute right-0'>Forgot password</a>
+          </Link>
+        </Form.Item>
+
+        <Form.Item>
+          <Button
+            type='primary'
+            className='w-full h-[3.2rem] bg-[#057AFF] rounded-lg text-base text-white'
+            htmlType='submit'
+            loading={handleRegister.isLoading}
+          >
+            Signup Now
+          </Button>
+        </Form.Item>
+
+        <Form.Item className='flex justify-center mb-0'>
+          <span>
+            Already have an account?{' '}
+            <label
+              className='modal-button text-[#0579FD] cursor-pointer'
+              onClick={() => {
+                dispatch(openLoginModal());
+                dispatch(closeRegisterModal());
+              }}
+            >
+              Login
+            </label>
+          </span>
+        </Form.Item>
+      </Form>
+    </Modal>
   );
 };
 

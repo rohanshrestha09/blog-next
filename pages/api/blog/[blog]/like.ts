@@ -5,38 +5,38 @@ import Blog from '../../../../model/Blog';
 import init from '../../../../middleware/init';
 import withAuth from '../../../../middleware/withAuth';
 import withValidateBlog from '../../../../middleware/withValidateBlog';
-import { IUser } from '../../../../interface/user';
+import { IAuth } from '../../../../interface/user';
 import { IBlog } from '../../../../interface/blog';
 import IMessage from '../../../../interface/message';
 
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IUser & IBlog,
+  req: NextApiRequest & IAuth & IBlog,
   res: NextApiResponse<IMessage>
 ) => {
   const {
     method,
-    user: { _id: _userId },
-    blog: { _id: _blogId, likers },
+    auth: { _id: authId },
+    blog: { _id: blogId, likers },
   } = req;
 
   switch (method) {
     case 'POST':
       try {
         const likeExist = await Blog.findOne({
-          $and: [{ _id: _blogId }, { likers: _userId }],
+          $and: [{ _id: blogId }, { likers: authId }],
         });
 
         if (likeExist) return res.status(403).json({ message: 'Already Liked' });
 
-        await Blog.findByIdAndUpdate(_blogId, {
-          $push: { likers: _userId },
+        await Blog.findByIdAndUpdate(blogId, {
+          $push: { likers: authId },
           likes: likers.length + 1,
         });
 
-        await User.findByIdAndUpdate(_userId, {
-          $push: { liked: _blogId },
+        await User.findByIdAndUpdate(authId, {
+          $push: { liked: blogId },
         });
 
         return res.status(200).json({ message: 'Liked' });
@@ -47,18 +47,18 @@ const handler: NextApiHandler = async (
     case 'DELETE':
       try {
         const likeExist = await Blog.findOne({
-          $and: [{ _id: _blogId }, { likers: _userId }],
+          $and: [{ _id: blogId }, { likers: authId }],
         });
 
         if (!likeExist) return res.status(403).json({ message: 'ALready Unliked' });
 
-        await Blog.findByIdAndUpdate(_blogId, {
-          $pull: { likers: _userId },
+        await Blog.findByIdAndUpdate(blogId, {
+          $pull: { likers: authId },
           likes: likers.length - 1,
         });
 
-        await User.findByIdAndUpdate(_userId, {
-          $pull: { liked: _blogId },
+        await User.findByIdAndUpdate(authId, {
+          $pull: { liked: blogId },
         });
 
         return res.status(200).json({ message: 'Unliked' });

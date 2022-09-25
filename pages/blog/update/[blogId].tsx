@@ -2,6 +2,7 @@ import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'ne
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
 import { useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   dehydrate,
   DehydratedState,
@@ -11,27 +12,32 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { Editor } from '@tinymce/tinymce-react';
-import { Form, Input, Button, Upload, Select, message } from 'antd';
+import { Form, Input, Button, Upload, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import UserAxios from '../../../apiAxios/userAxios';
+import AuthAxios from '../../../apiAxios/authAxios';
 import BlogAxios from '../../../apiAxios/blogAxios';
-import { IPostBlog } from '../../../interface/blog';
-import { openErrorNotification, openSuccessNotification } from '../../../utils/openNotification';
+import { closeDeleteModal, openDeleteModal } from '../../../store/deleteModalSlice';
 import ConfirmDelete from '../../../components/shared/ConfirmDelete';
-import IMessage from '../../../interface/message';
+import {
+  errorNotification,
+  successNotification,
+  warningNotification,
+} from '../../../utils/notification';
 import { AUTH, GET_BLOG, GET_GENRE } from '../../../constants/queryKeys';
+import type { IPostBlog } from '../../../interface/blog';
+import type IMessage from '../../../interface/message';
 
 const UpdateBlog: NextPage = () => {
   const {
-    query: { _blogId },
+    query: { blogId },
     push,
   }: NextRouter = useRouter();
+
+  const dispatch = useDispatch();
 
   const queryClient = useQueryClient();
 
   const editorRef = useRef<any>();
-
-  const deleteModalRef = useRef<HTMLLabelElement>(null);
 
   const blogAxios = new BlogAxios();
 
@@ -47,7 +53,7 @@ const UpdateBlog: NextPage = () => {
   });
 
   const { data: blog } = useQuery({
-    queryFn: () => blogAxios.getBlog(_blogId as string),
+    queryFn: () => blogAxios.getBlog(blogId as string),
     queryKey: [GET_BLOG],
     onSuccess: (blog) => form.setFieldsValue({ title: blog.title, genre: blog.genre }),
   });
@@ -59,7 +65,7 @@ const UpdateBlog: NextPage = () => {
     beforeUpload: (file: File) => {
       const isImage = file.type.startsWith('image/');
       if (!isImage) {
-        message.error(`${file.name} is not an image file`);
+        warningNotification(`${file.name} is not an image file`);
         return isImage || Upload.LIST_IGNORE;
       }
       if (file) setSelectedImage(file);
@@ -85,25 +91,25 @@ const UpdateBlog: NextPage = () => {
       });
       if (selectedImage) formData.append('image', selectedImage);
 
-      return blogAxios.updateBlog({ id: _blogId as string, data: formData });
+      return blogAxios.updateBlog({ id: blogId as string, data: formData });
     },
     {
       onSuccess: (res: IMessage) => {
-        openSuccessNotification(res.message);
+        successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
       },
-      onError: (err: Error | any) => openErrorNotification(err.response.data.message),
+      onError: (err: Error) => errorNotification(err),
     }
   );
 
   const handleDeleteBlog = useMutation((id: string) => blogAxios.deleteBlog(id), {
     onSuccess: (res: IMessage) => {
-      openSuccessNotification(res.message);
+      successNotification(res.message);
       queryClient.refetchQueries([AUTH]);
-      deleteModalRef.current?.click();
+      dispatch(closeDeleteModal());
       push('/profile');
     },
-    onError: (err: Error | any) => openErrorNotification(err.response.data.message),
+    onError: (err: Error) => errorNotification(err),
   });
 
   return (
@@ -189,13 +195,8 @@ const UpdateBlog: NextPage = () => {
                 message: 'Please select atleast a genre',
               },
               {
-                validator: (_, value) => {
-                  if (value.length > 4) {
-                    return Promise.reject('Max 4 genre allowed.');
-                  } else {
-                    return Promise.resolve();
-                  }
-                },
+                validator: (_, value) =>
+                  value.length > 4 ? Promise.reject('Max 4 genre allowed.') : Promise.resolve(),
               },
             ]}
           >
@@ -217,7 +218,7 @@ const UpdateBlog: NextPage = () => {
 
           <Form.Item className='col-span-full'>
             <Button
-              className='btn min-h-8 h-10 focus:bg-[#021431]'
+              className='h-10 bg-[#021431] text-white uppercase rounded-lg border-[#021431] hover:bg-[#021431] focus:bg-[#021431]'
               loading={handleUpdateBlog.isLoading}
               onClick={() =>
                 form.validateFields().then((values) =>
@@ -232,20 +233,19 @@ const UpdateBlog: NextPage = () => {
             </Button>
 
             <Button
-              className='min-h-8 h-10 mx-2 rounded-[0.5rem] uppercase'
-              onClick={() => deleteModalRef.current?.click()}
+              className='h-10 mx-2 rounded-[0.5rem] uppercase'
+              onClick={() => dispatch(openDeleteModal())}
               danger
             >
               Delete Blog
             </Button>
           </Form.Item>
-        </Form>
 
-        <ConfirmDelete
-          deleteModalRef={deleteModalRef}
-          deleteMutation={() => handleDeleteBlog.mutate(_blogId as string)}
-          isLoading={handleDeleteBlog.isLoading}
-        />
+          <ConfirmDelete
+            isLoading={handleDeleteBlog.isLoading}
+            deleteMutation={() => handleDeleteBlog.mutate(blogId as string)}
+          />
+        </Form>
       </main>
     </div>
   );
@@ -260,14 +260,14 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
-  const userAxios = new UserAxios(ctx.req && ctx.req.headers.cookie);
+  const authAxios = new AuthAxios(ctx.req && ctx.req.headers.cookie);
 
   const blogAxios = new BlogAxios(ctx.req && ctx.req.headers.cookie);
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
   await queryClient.prefetchQuery({
-    queryFn: () => userAxios.auth(),
+    queryFn: () => authAxios.auth(),
     queryKey: [AUTH],
   });
 

@@ -53,7 +53,7 @@ const handler: NextApiHandler = async (
 
       const encryptedPassword: string = await bcrypt.hash(password, salt);
 
-      const { _id: _userId } = await User.create({
+      const { _id: authId } = await User.create({
         fullname,
         email,
         password: encryptedPassword,
@@ -66,7 +66,7 @@ const handler: NextApiHandler = async (
         if (!file.mimetype.startsWith('image/'))
           return res.status(403).json({ message: 'Please choose an image' });
 
-        const filename = file.mimetype.replace('image/', `${_userId}.`);
+        const filename = file.mimetype.replace('image/', `${authId}.`);
 
         const storageRef = ref(storage, `users/${filename}`);
 
@@ -78,13 +78,13 @@ const handler: NextApiHandler = async (
 
         const url = await getDownloadURL(storageRef);
 
-        await User.findByIdAndUpdate(_userId, {
+        await User.findByIdAndUpdate(authId, {
           image: url,
           imageName: filename,
         });
       }
 
-      const token: string = jwt.sign({ _id: _userId }, process.env.JWT_TOKEN as Secret, {
+      const token: string = jwt.sign({ _id: authId }, process.env.JWT_TOKEN as Secret, {
         expiresIn: '30d',
       });
 

@@ -4,32 +4,32 @@ import init from '../../../../middleware/init';
 import withAuth from '../../../../middleware/withAuth';
 import withValidateBlog from '../../../../middleware/withValidateBlog';
 import User from '../../../../model/User';
-import { IUser } from '../../../../interface/user';
+import { IAuth } from '../../../../interface/user';
 import { IBlog } from '../../../../interface/blog';
 import IMessage from '../../../../interface/message';
 
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IUser & IBlog,
+  req: NextApiRequest & IAuth & IBlog,
   res: NextApiResponse<IMessage>
 ) => {
   const {
     method,
-    user: { _id: _userId },
-    blog: { _id: _blogId },
+    auth: { _id: authId },
+    blog: { _id: blogId },
   } = req;
 
   switch (method) {
     case 'POST':
       try {
         const bookmarkExist = await User.findOne({
-          $and: [{ _id: _userId }, { bookmarks: _blogId }],
+          $and: [{ _id: authId }, { bookmarks: blogId }],
         });
 
         if (bookmarkExist) return res.status(403).json({ message: 'Already Bookmarked' });
 
-        await User.findByIdAndUpdate(_userId, { $push: { bookmarks: _blogId } });
+        await User.findByIdAndUpdate(authId, { $push: { bookmarks: blogId } });
 
         return res.status(200).json({ message: 'Bookmarked Successfully' });
       } catch (err: Error | any) {
@@ -39,12 +39,12 @@ const handler: NextApiHandler = async (
     case 'DELETE':
       try {
         const bookmarkExist = await User.findOne({
-          $and: [{ _id: _userId }, { bookmarks: _blogId }],
+          $and: [{ _id: authId }, { bookmarks: blogId }],
         });
 
         if (!bookmarkExist) return res.status(403).json({ message: 'Already Unbookmarked' });
 
-        await User.findByIdAndUpdate(_userId, { $pull: { bookmarks: _blogId } });
+        await User.findByIdAndUpdate(authId, { $pull: { bookmarks: blogId } });
 
         return res.status(200).json({ message: 'Unbookmarked Successfully' });
       } catch (err: Error | any) {

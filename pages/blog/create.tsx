@@ -10,14 +10,18 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { Editor } from '@tinymce/tinymce-react';
-import { Form, Input, Button, Upload, Select, message } from 'antd';
+import { Form, Input, Button, Upload, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import UserAxios from '../../apiAxios/userAxios';
+import AuthAxios from '../../apiAxios/authAxios';
 import BlogAxios from '../../apiAxios/blogAxios';
-import { IPostBlog } from '../../interface/blog';
-import { openErrorNotification, openSuccessNotification } from '../../utils/openNotification';
-import IMessage from '../../interface/message';
+import {
+  errorNotification,
+  successNotification,
+  warningNotification,
+} from '../../utils/notification';
 import { AUTH, GET_GENRE } from '../../constants/queryKeys';
+import type { IPostBlog } from '../../interface/blog';
+import type IMessage from '../../interface/message';
 
 const CreateBlog: NextPage = () => {
   const queryClient = useQueryClient();
@@ -46,7 +50,7 @@ const CreateBlog: NextPage = () => {
     beforeUpload: (file: File) => {
       const isImage = file.type.startsWith('image/');
       if (!isImage) {
-        message.error(`${file.name} is not an image file`);
+        warningNotification(`${file.name} is not an image file`);
         return isImage || Upload.LIST_IGNORE;
       }
       if (file) setSelectedImage(file);
@@ -76,13 +80,13 @@ const CreateBlog: NextPage = () => {
     },
     {
       onSuccess: (res: IMessage) => {
-        openSuccessNotification(res.message);
+        successNotification(res.message);
         form.resetFields();
         setSelectedImage(null);
         setRenderEditor(Math.random() * 100);
         queryClient.refetchQueries([AUTH]);
       },
-      onError: (err: Error | any) => openErrorNotification(err.response.data.message),
+      onError: (err: Error) => errorNotification(err),
     }
   );
 
@@ -170,13 +174,8 @@ const CreateBlog: NextPage = () => {
                 message: 'Please select atleast a genre',
               },
               {
-                validator: (_, value) => {
-                  if (value.length > 4) {
-                    return Promise.reject('Max 4 genre allowed.');
-                  } else {
-                    return Promise.resolve();
-                  }
-                },
+                validator: (_, value) =>
+                  value.length > 4 ? Promise.reject('Max 4 genre allowed.') : Promise.resolve(),
               },
             ]}
           >
@@ -198,7 +197,7 @@ const CreateBlog: NextPage = () => {
 
           <Form.Item className='col-span-full'>
             <Button
-              className='btn min-h-8 h-10 focus:bg-[#021431]'
+              className='h-10 uppercase text-white bg-[#021431] border-[#021431] rounded-lg hover:bg-[#021431] focus:bg-[#021431]'
               loading={handlePostBlog.isLoading}
               onClick={() =>
                 form.validateFields().then((values) =>
@@ -214,7 +213,7 @@ const CreateBlog: NextPage = () => {
             </Button>
 
             <Button
-              className='min-h-8 h-10 mx-2 rounded-[0.5rem] border-slate-600 uppercase'
+              className='h-10 mx-2 rounded-[0.5rem] border-slate-600 uppercase'
               loading={handlePostBlog.isLoading}
               onClick={() =>
                 form.validateFields().then((values) =>
@@ -243,12 +242,12 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
-  const userAxios = new UserAxios(ctx.req && ctx.req.headers.cookie);
+  const authAxios = new AuthAxios(ctx.req && ctx.req.headers.cookie);
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
   await queryClient.prefetchQuery({
-    queryFn: () => userAxios.auth(),
+    queryFn: () => authAxios.auth(),
     queryKey: [AUTH],
   });
 

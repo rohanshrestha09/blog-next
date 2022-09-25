@@ -1,8 +1,13 @@
 import Head from 'next/head';
-import { NextPage } from 'next';
-import { Button } from 'antd';
+import type { NextPage } from 'next';
+import { useDispatch } from 'react-redux';
+import { Button, Space } from 'antd';
+import { openRegisterModal } from '../store/registerModalSlice';
+import { openLoginModal } from '../store/loginModalSlice';
 
 const Fallback: NextPage = () => {
+  const dispatch = useDispatch();
+
   return (
     <div>
       <Head>
@@ -10,16 +15,22 @@ const Fallback: NextPage = () => {
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      <main className='absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center'>
-        <label htmlFor='registerModal'>
-          <Button className='btn min-h-8 h-10 focus:bg-[#021431]'>Signup</Button>
-        </label>
+      <main>
+        <Space className='absolute top-0 left-0 right-0 bottom-0 flex justify-center'>
+          <Button
+            className='h-10 bg-[#021431] border-[#021431] uppercase text-white rounded-lg focus:bg-[#021431] hover:bg-[#021431]'
+            onClick={() => dispatch(openRegisterModal())}
+          >
+            Signup
+          </Button>
 
-        <label htmlFor='loginModal'>
-          <Button className='modal-button min-h-8 h-10 mx-2 rounded-[0.5rem] border-slate-600 uppercase'>
+          <Button
+            className='h-10 rounded-lg border-slate-600 uppercase'
+            onClick={() => dispatch(openLoginModal())}
+          >
             Signin
           </Button>
-        </label>
+        </Space>
       </main>
     </div>
   );

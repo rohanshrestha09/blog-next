@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { DehydratedState, QueryClient, dehydrate } from '@tanstack/react-query';
-import UserAxios from '../apiAxios/userAxios';
+import AuthAxios from '../apiAxios/authAxios';
 import { AUTH } from '../constants/queryKeys';
 
 const Home: NextPage = () => {
@@ -12,14 +12,7 @@ const Home: NextPage = () => {
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      <main>
-        <label className='btn modal-button w-24' htmlFor='registerModal'>
-          open Register
-        </label>
-        <label className='btn modal-button w-24' htmlFor='loginModal'>
-          open login
-        </label>
-      </main>
+      <main></main>
     </div>
   );
 };
@@ -33,12 +26,12 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
-  const userAxios = new UserAxios(ctx.req && ctx.req.headers.cookie);
+  const authAxios = new AuthAxios(ctx.req && ctx.req.headers.cookie);
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
   await queryClient.prefetchQuery({
-    queryFn: () => userAxios.auth(),
+    queryFn: () => authAxios.auth(),
     queryKey: [AUTH],
   });
 

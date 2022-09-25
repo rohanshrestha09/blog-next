@@ -4,26 +4,26 @@ import { deleteObject, getStorage, ref } from 'firebase/storage';
 import User from '../../../model/User';
 import init from '../../../middleware/init';
 import withAuth from '../../../middleware/withAuth';
-import { IUser } from '../../../interface/user';
+import { IAuth } from '../../../interface/user';
 import IMessage from '../../../interface/message';
 
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IUser,
+  req: NextApiRequest & IAuth,
   res: NextApiResponse<IMessage>
 ) => {
   const { method } = req;
 
   if (method === 'DELETE') {
-    const { _id: _userId, image, imageName } = req.user;
+    const { _id: authId, image, imageName } = req.auth;
 
     const storage = getStorage();
 
     try {
       if (image) deleteObject(ref(storage, `users/${imageName}`));
 
-      await User.findByIdAndUpdate(_userId, {
+      await User.findByIdAndUpdate(authId, {
         $unset: { image: '', imageName: '' },
       });
 

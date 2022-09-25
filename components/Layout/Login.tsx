@@ -1,18 +1,24 @@
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Form, Input, Checkbox, Button } from 'antd';
+import { Form, Input, Checkbox, Button, Modal } from 'antd';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { UserOutlined, LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
+import { closeLoginModal } from '../../store/loginModalSlice';
+import { openRegisterModal } from '../../store/registerModalSlice';
+import { errorNotification, successNotification } from '../../utils/notification';
 import UserAxios from '../../apiAxios/userAxios';
-import type { ILogin, IToken } from '../../interface/user';
-import { openSuccessNotification, openErrorNotification } from '../../utils/openNotification';
 import { AUTH } from '../../constants/queryKeys';
+import type { RootState } from '../../store';
+import type { ILogin, IToken } from '../../interface/user';
 
 const Login: React.FC = () => {
-  const queryClient = useQueryClient();
+  const { isOpen: isLoginModalOpen } = useSelector((state: RootState) => state.loginModal);
 
-  const loginModalRef = useRef<HTMLLabelElement>(null);
+  const dispatch = useDispatch();
+
+  const queryClient = useQueryClient();
 
   const [form] = Form.useForm();
 
@@ -20,119 +26,115 @@ const Login: React.FC = () => {
 
   const handleLogin = useMutation(async (data: ILogin) => new UserAxios().login(data), {
     onSuccess(res: IToken) {
-      openSuccessNotification(res.message);
+      successNotification(res.message);
       form.resetFields();
-      loginModalRef.current?.click();
       queryClient.refetchQueries([AUTH]);
+      dispatch(closeLoginModal());
     },
-    onError(err: Error | any) {
-      openErrorNotification(err.response.data.message);
+    onError(err: Error) {
+      errorNotification(err);
     },
   });
 
   return (
-    <>
-      <input className='modal-toggle' id='loginModal' type='checkbox' />
-      <label htmlFor='loginModal' className='modal'>
-        <label className='modal-box relative scrollbar'>
-          <label
-            ref={loginModalRef}
-            className='btn btn-sm btn-circle absolute right-2 top-2'
-            htmlFor='loginModal'
-          >
-            ✕
-          </label>
+    <Modal
+      centered
+      className='font-sans'
+      open={isLoginModalOpen}
+      onCancel={() => dispatch(closeLoginModal())}
+      destroyOnClose
+      footer={null}
+    >
+      <Form
+        autoComplete='off'
+        form={form}
+        initialValues={{ remember: true }}
+        layout='vertical'
+        name='form_in_modal'
+        requiredMark={false}
+        onFinish={async () =>
+          form.validateFields().then((values) => {
+            handleLogin.mutate(values);
+          })
+        }
+      >
+        <Form.Item
+          label='Email'
+          name='email'
+          rules={[{ required: true, message: 'Please input your Email!' }]}
+        >
+          <Input
+            className='rounded-lg p-2'
+            placeholder='Email'
+            prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
+            type='email'
+          />
+        </Form.Item>
 
-          <Form
-            autoComplete='off'
-            className='pt-3'
-            form={form}
-            initialValues={{ remember: true }}
-            layout='vertical'
-            name='normal_login'
-            requiredMark={false}
-            onFinish={async () =>
-              form.validateFields().then((values) => {
-                handleLogin.mutate(values);
-              })
+        <Form.Item
+          label='Password'
+          name='password'
+          rules={[{ required: true, message: 'Please input your Password!' }]}
+        >
+          <Input.Password
+            className='rounded-lg p-2'
+            iconRender={(visible) =>
+              visible ? (
+                <EyeTwoTone className='text-gray-600 text-lg' />
+              ) : (
+                <EyeInvisibleOutlined className='text-gray-600 text-lg' />
+              )
             }
+            placeholder='Password'
+            prefix={<LockOutlined className='text-gray-600 text-lg mr-2' />}
+            type='password'
+          />
+        </Form.Item>
+
+        <Form.Item>
+          <Form.Item name='remember' noStyle>
+            <Checkbox
+              checked={rememberMe}
+              onChange={(e: CheckboxChangeEvent) => {
+                setRememberMe(e.target.checked);
+              }}
+            >
+              Remember me
+            </Checkbox>
+          </Form.Item>
+
+          <Link href='/' passHref={true}>
+            <a className='text-[#0579FD] absolute right-0'>Forgot password</a>
+          </Link>
+        </Form.Item>
+
+        <Form.Item>
+          <Button
+            type='primary'
+            className='w-full h-[3.2rem] bg-[#057AFF] rounded-lg text-base'
+            htmlType='submit'
+            loading={handleLogin.isLoading}
           >
-            <Form.Item
-              label='Email'
-              name='email'
-              rules={[{ required: true, message: 'Please input your Email!' }]}
+            Login
+          </Button>
+        </Form.Item>
+
+        <Form.Item className='flex justify-center mb-0'>
+          <span>
+            Don&apos;t have an account?{' '}
+            <label
+              className='modal-button text-[#0579FD] cursor-pointer'
+              onClick={() => {
+                dispatch(openRegisterModal());
+                dispatch(closeLoginModal());
+              }}
             >
-              <Input
-                className='rounded-lg p-2'
-                placeholder='Email'
-                prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
-                type='email'
-              />
-            </Form.Item>
-
-            <Form.Item
-              label='Password'
-              name='password'
-              rules={[{ required: true, message: 'Please input your Password!' }]}
-            >
-              <Input.Password
-                className='rounded-lg p-2'
-                iconRender={(visible) =>
-                  visible ? (
-                    <EyeTwoTone className='text-gray-600 text-lg' />
-                  ) : (
-                    <EyeInvisibleOutlined className='text-gray-600 text-lg' />
-                  )
-                }
-                placeholder='Password'
-                prefix={<LockOutlined className='text-gray-600 text-lg mr-2' />}
-                type='password'
-              />
-            </Form.Item>
-
-            <Form.Item>
-              <Form.Item name='remember' noStyle>
-                <Checkbox
-                  checked={rememberMe}
-                  onChange={(e: CheckboxChangeEvent) => {
-                    setRememberMe(e.target.checked);
-                  }}
-                >
-                  Remember me
-                </Checkbox>
-              </Form.Item>
-
-              <Link href='/' passHref={true}>
-                <a className='text-[#0579FD] absolute right-0'>Forgot password</a>
-              </Link>
-            </Form.Item>
-
-            <Form.Item>
-              <Button
-                className='w-full h-[3.2rem] rounded-lg text-base btn-primary text-white hover:text-white focus:btn-primary'
-                htmlType='submit'
-                loading={handleLogin.isLoading}
-              >
-                Login
-              </Button>
-            </Form.Item>
-
-            <Form.Item className='flex justify-center mb-0'>
-              <span>
-                Don&apos;t have an account?{' '}
-                <label
-                  className='modal-button text-[#0579FD] cursor-pointer'
-                  htmlFor='registerModal'
-                  onClick={() => loginModalRef.current?.click()}
-                >
-                  Create One
-                </label>
-              </span>
-            </Form.Item>
-          </Form>
-        </label>
-      </label>
-    </>
+              Create One
+            </label>
+          </span>
+        </Form.Item>
+      </Form>
+    </Modal>
   );
 };
 

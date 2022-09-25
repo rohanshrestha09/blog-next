@@ -4,12 +4,11 @@ import init from '../../../../middleware/init';
 import withValidateUser from '../../../../middleware/withValidateUser';
 import IMessage from '../../../../interface/message';
 import { IUser } from '../../../../interface/user';
-import { IQueryUser } from '../../../../interface/user';
 
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IQueryUser,
+  req: NextApiRequest & IUser,
   res: NextApiResponse<IUser | IMessage>
 ) => {
   const { method } = req;
@@ -17,7 +16,7 @@ const handler: NextApiHandler = async (
   if (method === 'GET') {
     try {
       return res.status(200).json({
-        user: req.queryUser,
+        user: req.user,
         message: 'User Fetched Successfully',
       });
     } catch (err: Error | any) {

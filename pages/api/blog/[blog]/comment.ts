@@ -4,35 +4,42 @@ import Blog from '../../../../model/Blog';
 import init from '../../../../middleware/init';
 import withAuth from '../../../../middleware/withAuth';
 import withValidateBlog from '../../../../middleware/withValidateBlog';
+import { IAuth } from '../../../../interface/user';
 import { IBlog } from '../../../../interface/blog';
 import IMessage from '../../../../interface/message';
 
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IBlog,
+  req: NextApiRequest & IAuth & IBlog,
   res: NextApiResponse<IMessage>
 ) => {
   const {
     method,
-    blog: { _id: _blogId },
+    auth: { _id: authId },
+    blog: { _id: blogId },
+    body: { comment },
   } = req;
 
   switch (method) {
     case 'POST':
       try {
-        await Blog.findByIdAndUpdate(_blogId, { isPublished: true });
+        await Blog.findByIdAndUpdate(blogId, {
+          $push: { comments: { commenter: authId, comment } },
+        });
 
-        return res.status(200).json({ message: 'Blog Published Successfully' });
+        return res.status(200).json({ message: 'Comment Successfull' });
       } catch (err: Error | any) {
         return res.status(404).json({ message: err.message });
       }
 
     case 'DELETE':
       try {
-        await Blog.findByIdAndUpdate(_blogId, { isPublished: false });
+        await Blog.findByIdAndUpdate(blogId, {
+          $pull: { comments: { commenter: authId, comment } },
+        });
 
-        return res.status(200).json({ message: 'Blog Unpubished Successfully' });
+        return res.status(200).json({ message: 'Comment Deleted Successfully' });
       } catch (err: Error | any) {
         return res.status(404).json({ message: err.message });
       }

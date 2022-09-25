@@ -1,9 +1,9 @@
 import axios, { AxiosResponse } from 'axios';
-import IMessage from '../interface/message';
-import { ILogin, IToken, IUser } from '../interface/user';
+import { IBlogs } from '../interface/blog';
+import { ILogin, IToken, IUser, IAuth } from '../interface/user';
 
 class User {
-  readonly cookie;
+  private readonly cookie;
 
   constructor(cookie?: any) {
     this.cookie = cookie;
@@ -13,7 +13,7 @@ class User {
     method: string,
     url: string,
     data?: any
-  ): Promise<IUser & IToken & ILogin & IMessage> => {
+  ): Promise<IUser & IToken & ILogin & IBlogs> => {
     const res: AxiosResponse = await axios({
       method,
       url: `http://localhost:3000/api/user/${url}`,
@@ -25,31 +25,28 @@ class User {
     return res.data;
   };
 
-  auth = async (): Promise<IUser['user']> => await (await this.axiosFn('get', 'auth')).user;
-
   register = async (data: FormData): Promise<IToken> =>
     await this.axiosFn('post', 'register', data);
 
   login = async (data: ILogin): Promise<IToken> => await this.axiosFn('post', 'login', data);
 
-  logout = async (): Promise<IMessage> => await this.axiosFn('delete', 'logout');
-
   getUser = async (id: string): Promise<IUser> => await this.axiosFn('get', id);
 
-  updateUser = async (data: FormData): Promise<IMessage> => await this.axiosFn('put', '', data);
-
-  deleteUser = async (data: FormData): Promise<IMessage> => await this.axiosFn('delete', '', data);
-
-  deleteUserImage = async (): Promise<IMessage> => await this.axiosFn('delete', 'image');
-
-  followUser = async ({
-    id,
-    shouldFollow,
+  getUserBlogs = async ({
+    user,
+    sort,
+    pageSize,
+    genre,
   }: {
-    id: string;
-    shouldFollow: boolean;
-  }): Promise<IMessage> =>
-    await this.axiosFn(`${shouldFollow ? 'post' : 'delete'}`, `${id}/follow`);
+    user: string;
+    sort?: string;
+    pageSize: number;
+    genre?: string[] | [];
+  }): Promise<IBlogs> =>
+    await this.axiosFn(
+      'get',
+      `user/blog?user=${user}&genre=${genre || ''}sort=${sort || ''}&pageSize=${pageSize}`
+    );
 }
 
 export default User;

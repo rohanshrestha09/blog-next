@@ -5,19 +5,19 @@ import User from '../../../model/User';
 import init from '../../../middleware/init';
 import withAuth from '../../../middleware/withAuth';
 import withValidatePassword from '../../../middleware/withValidatePassword';
-import { IUser } from '../../../interface/user';
+import { IAuth } from '../../../interface/user';
 import IMessage from '../../../interface/message';
 
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IUser,
+  req: NextApiRequest & IAuth,
   res: NextApiResponse<IMessage>
 ) => {
   const { method } = req;
 
   if (method === 'POST') {
-    const { _id: _userId } = req.user;
+    const { _id: authId } = req.auth;
 
     const { newPassword, confirmNewPassword } = req.body;
 
@@ -32,7 +32,7 @@ const handler: NextApiHandler = async (
 
       const encryptedPassword: string = await bcrypt.hash(newPassword, salt);
 
-      await User.findByIdAndUpdate(_userId, { password: encryptedPassword });
+      await User.findByIdAndUpdate(authId, { password: encryptedPassword });
 
       return res.status(200).json({ message: 'Password Change Successful' });
     } catch (err: Error | any) {

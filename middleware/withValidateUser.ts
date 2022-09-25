@@ -1,30 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../interface/next';
-import mongoose from 'mongoose';
 import User from '../model/User';
-import Blog from '../model/Blog';
-import { IQueryUser } from '../interface/user';
 import IMessage from '../interface/message';
+import { IUser } from '../interface/user';
 
 const withValidateUser = (handler: NextApiHandler) => {
-  return async (req: NextApiRequest & IQueryUser, res: NextApiResponse<IMessage>) => {
-    const { _queryUserId } = req.query;
+  return async (req: NextApiRequest & IUser, res: NextApiResponse<IMessage>) => {
+    const { user: userId } = req.query;
 
     try {
-      const queryUser = await User.findById(
-        new mongoose.Types.ObjectId(_queryUserId as string)
-      ).select('-password');
+      const user = await User.findById(userId).select('-password');
 
-      if (!queryUser) return res.status(404).json({ message: 'User does not exist' });
+      if (!user) return res.status(404).json({ message: 'User does not exist' });
 
-      req.queryUser = {
-        ...queryUser._doc,
-        blogs: await Blog.find({ _id: queryUser.blogs }),
-        bookmarks: await Blog.find({ _id: queryUser.bookmarks }),
-        liked: await Blog.find({ _id: queryUser.liked }),
-        following: await User.find({ _id: queryUser.following }),
-        followers: await User.find({ _id: queryUser.followers }),
-      };
+      req.user = user;
     } catch (err: Error | any) {
       return res.status(404).json({ message: err.message });
     }

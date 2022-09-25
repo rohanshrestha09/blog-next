@@ -18,19 +18,19 @@ const handler: NextApiHandler = async (
   const { method } = req;
 
   if (method === 'POST') {
-    const { _id: _blogId, viewers } = req.blog;
+    const { _id: blogId, viewers } = req.blog;
 
-    const { _id: _userId } = req.user;
+    const { _id: userId } = req.user;
 
     try {
       const viewersExist = await Blog.findOne({
-        $and: [{ _id: _blogId }, { viewers: _userId }],
+        $and: [{ _id: blogId }, { viewers: userId }],
       });
 
       if (viewersExist) return res.status(201);
 
-      await Blog.findByIdAndUpdate(_blogId, {
-        $push: { viewers: _userId },
+      await Blog.findByIdAndUpdate(blogId, {
+        $push: { viewers: userId },
         views: viewers.length + 1,
       });
 

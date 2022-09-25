@@ -6,13 +6,13 @@ import bcrypt from 'bcryptjs';
 import User from '../../../../../model/User';
 import init from '../../../../../middleware/init';
 import withValidateUser from '../../../../../middleware/withValidateUser';
-import { IQueryUser } from '../../../../../interface/user';
+import { IUser } from '../../../../../interface/user';
 import IMessage from '../../../../../interface/message';
 
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IQueryUser,
+  req: NextApiRequest & IUser,
   res: NextApiResponse<IMessage>
 ) => {
   const {
@@ -21,7 +21,7 @@ const handler: NextApiHandler = async (
   } = req;
 
   if (method === 'POST') {
-    const { _id: _userId } = req.queryUser;
+    const { _id: userId } = req.user;
 
     const { password, confirmPassword } = req.body;
 
@@ -34,7 +34,7 @@ const handler: NextApiHandler = async (
       return res.status(403).json({ message: 'Password does not match' });
 
     try {
-      const { password: oldPassword } = await User.findById(_userId).select('+password');
+      const { password: oldPassword } = await User.findById(userId).select('+password');
 
       const { _id } = jwt.verify(
         token as string,

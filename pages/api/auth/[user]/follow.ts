@@ -5,39 +5,39 @@ import init from '../../../../middleware/init';
 import withAuth from '../../../../middleware/withAuth';
 import withValidateUser from '../../../../middleware/withValidateUser';
 import IMessage from '../../../../interface/message';
-import { IQueryUser, IUser } from '../../../../interface/user';
+import { IAuth, IUser } from '../../../../interface/user';
 
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IUser & IQueryUser,
+  req: NextApiRequest & IUser & IAuth,
   res: NextApiResponse<IMessage>
 ) => {
   const {
     method,
-    queryUser: { _id: _queryUserId, followerCount },
-    user: { _id: _userId, followingCount },
+    user: { _id: userId, followerCount },
+    auth: { _id: authId, followingCount },
   } = req;
 
   switch (method) {
     case 'POST':
-      if (_userId === _queryUserId)
+      if (authId === userId)
         return res.status(403).json({ message: "Can't follow same user" });
 
       try {
         const followingExists = await User.findOne({
-          $and: [{ _id: _userId }, { following: _queryUserId }],
+          $and: [{ _id: authId }, { following: userId }],
         });
 
         if (followingExists) return res.status(403).json({ message: 'Already Following' });
 
-        await User.findByIdAndUpdate(_userId, {
-          $push: { following: _queryUserId },
+        await User.findByIdAndUpdate(authId, {
+          $push: { following: userId },
           followingCount: followingCount + 1,
         });
 
-        await User.findByIdAndUpdate(_queryUserId, {
-          $push: { followers: _userId },
+        await User.findByIdAndUpdate(userId, {
+          $push: { followers: authId },
           followerCount: followerCount + 1,
         });
 
@@ -47,23 +47,23 @@ const handler: NextApiHandler = async (
       }
 
     case 'DELETE':
-      if (_userId === _queryUserId)
+      if (authId === userId)
         return res.status(403).json({ message: "Can't unfollow same user" });
 
       try {
         const followingExists = await User.findOne({
-          $and: [{ _id: _userId }, { following: _queryUserId }],
+          $and: [{ _id: authId }, { following: userId }],
         });
 
         if (!followingExists) return res.status(403).json({ message: 'Not following' });
 
-        await User.findByIdAndUpdate(_userId, {
-          $pull: { following: _queryUserId },
+        await User.findByIdAndUpdate(authId, {
+          $pull: { following: userId },
           followingCount: followingCount - 1,
         });
 
-        await User.findByIdAndUpdate(_queryUserId, {
-          $pull: { followers: _userId },
+        await User.findByIdAndUpdate(userId, {
+          $pull: { followers: authId },
           followerCount: followerCount - 1,
         });
 

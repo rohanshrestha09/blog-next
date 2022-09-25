@@ -2,7 +2,8 @@ import axios, { AxiosResponse } from 'axios';
 import IMessage from '../interface/message';
 
 class Security {
-  readonly cookie;
+  private readonly cookie;
+
   constructor(cookie?: any) {
     this.cookie = cookie;
   }

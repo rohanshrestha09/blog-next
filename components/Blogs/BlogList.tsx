@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import { NextRouter, useRouter } from 'next/router';
 import { useRef } from 'react';
-import { Avatar, Button, Divider, Popover, Space, Tag } from 'antd';
+import { useDispatch } from 'react-redux';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import he from 'he';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Avatar, Button, Divider, message, Popover, Space, Tag, Tooltip } from 'antd';
 import { BsHeart, BsThreeDots } from 'react-icons/bs';
 import { VscComment } from 'react-icons/vsc';
 import { FiEdit3 } from 'react-icons/fi';
@@ -13,11 +14,11 @@ import {
   MdOutlinePublishedWithChanges,
   MdOutlineUnpublished,
 } from 'react-icons/md';
+import { closeDeleteModal, openDeleteModal } from '../../store/deleteModalSlice';
 import BlogAxios from '../../apiAxios/blogAxios';
 import { AUTH } from '../../constants/queryKeys';
-import IMessage from '../../interface/message';
+import type IMessage from '../../interface/message';
 import ConfirmDelete from '../shared/ConfirmDelete';
-import { openSuccessNotification, openErrorNotification } from '../../utils/openNotification';
 
 interface Props {
   editable?: boolean;
@@ -43,9 +44,9 @@ const BlogList: React.FC<Props> = ({
 }) => {
   const router: NextRouter = useRouter();
 
-  const queryClient = useQueryClient();
+  const dispatch = useDispatch();
 
-  const deleteModalRef = useRef<HTMLLabelElement>(null);
+  const queryClient = useQueryClient();
 
   const blogAxios = new BlogAxios();
 
@@ -54,20 +55,20 @@ const BlogList: React.FC<Props> = ({
       blogAxios.publishBlog({ id, shouldPublish }),
     {
       onSuccess: (res: IMessage) => {
-        openSuccessNotification(res.message);
+        message.success(res.message);
         queryClient.refetchQueries([AUTH]);
       },
-      onError: (err: Error | any) => openErrorNotification(err.response.data.message),
+      onError: (err: Error | any) => message.error(err.response.data.message),
     }
   );
 
   const handleDeleteBlog = useMutation((id: string) => blogAxios.deleteBlog(id), {
     onSuccess: (res: IMessage) => {
-      openSuccessNotification(res.message);
+      message.success(res.message);
       queryClient.refetchQueries([AUTH]);
-      deleteModalRef.current?.click();
+      dispatch(closeDeleteModal());
     },
-    onError: (err: Error | any) => openErrorNotification(err.response.data.message),
+    onError: (err: Error | any) => message.error(err.response.data.message),
   });
 
   const popoverContent = (
@@ -97,16 +98,15 @@ const BlogList: React.FC<Props> = ({
 
       <Space
         className='cursor-pointer hover:bg-red-500 hover:text-white rounded-lg px-2 py-1.5 transition-all'
-        onClick={() => deleteModalRef.current?.click()}
+        onClick={() => dispatch(openDeleteModal())}
       >
         <MdOutlineDelete />
         Delete
       </Space>
 
       <ConfirmDelete
-        deleteModalRef={deleteModalRef}
-        deleteMutation={() => handleDeleteBlog.mutate(_id)}
         isLoading={handleDeleteBlog.isLoading}
+        deleteMutation={() => handleDeleteBlog.mutate(_id)}
       />
     </>
   );
@@ -176,31 +176,29 @@ const BlogList: React.FC<Props> = ({
           </span>
 
           <Space size={5}>
-            <Space className='flex items-center tooltip tooltip-bottom' data-tip='Likes'>
-              <BsHeart />
-              {likes}
-            </Space>
+            <Tooltip title='Likes' placement='bottom'>
+              <Space className='flex items-center'>
+                <BsHeart />
+                {likes}
+              </Space>
+            </Tooltip>
 
             <Divider className='bg-slate-200' type='vertical' />
 
-            <Space
-              className='flex items-center tooltip sm:tooltip-bottom tooltip-left'
-              data-tip='Comments'
-            >
-              <VscComment />
-              {1}
-            </Space>
+            <Tooltip title='Comment' placement='bottom'>
+              <Space className='flex items-center'>
+                <VscComment />
+                {1}
+              </Space>
+            </Tooltip>
 
             {editable && (
               <>
                 <Divider className='bg-slate-200' type='vertical' />
 
-                <span
-                  className='flex items-center tooltip sm:tooltip-bottom tooltip-left'
-                  data-tip={isPublished ? 'Published' : 'Unpublished'}
-                >
+                <Tooltip title={isPublished ? 'Published' : 'Unpublished'} placement='bottom'>
                   {isPublished ? <MdOutlinePublishedWithChanges /> : <MdOutlineUnpublished />}
-                </span>
+                </Tooltip>
               </>
             )}
           </Space>

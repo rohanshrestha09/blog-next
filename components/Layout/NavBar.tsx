@@ -1,18 +1,20 @@
 import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { useContext } from 'react';
-import { Avatar } from 'antd';
+import { NextRouter, useRouter } from 'next/router';
+import { useDispatch } from 'react-redux';
+import { Avatar, Button } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import userContext from '../../utils/userContext';
-import IContext from '../../interface/context';
+import { openRegisterModal } from '../../store/registerModalSlice';
+import { useAuth } from '../../utils/UserAuth';
 
 const NavBar: React.FC = () => {
-  const router = useRouter();
+  const router: NextRouter = useRouter();
 
-  const { user } = useContext<IContext>(userContext);
+  const { authUser } = useAuth();
+
+  const dispatch = useDispatch();
 
   return (
-    <div className='sticky top-0 navbar xl:px-60 shadow-md z-10 justify-between bg-base-100'>
+    <div className='w-full bg-white flex items-center justify-between sticky top-0 xl:px-60 px-5 py-3 shadow-md z-10'>
       <span
         className='font-megrim font-black md:text-4xl text-3xl cursor-pointer text-black'
         onClick={() => router.push('/')}
@@ -20,37 +22,40 @@ const NavBar: React.FC = () => {
         BlogSansar
       </span>
 
-      <div className='gap-5'>
-        <div className='sm:block hidden form-control relative'>
-          <SearchOutlined className='absolute text-lg left-3 top-1.5 text-slate-600' />
+      <div className='flex items-center gap-5'>
+        <div className='sm:block hidden relative border-2 focus:outline-none rounded-full'>
+          <SearchOutlined className='absolute flex items-center text-lg left-3 top-0 bottom-0 text-slate-600' />
 
           <input
-            className='input input-bordered h-10 rounded-full pl-9'
+            className='h-9 rounded-full pl-9 focus:border-none focus:outline-none'
             placeholder='Search'
             type='search'
           />
         </div>
 
-        {user ? (
-          <label className='btn min-h-8 h-10 px-2 btn-circle flex flex-nowrap items-center gap-2 w-36'>
-            <span className='avatar'>
-              {user.image ? (
-                <Avatar src={<Image alt='' src={user.image} layout='fill' />} size='small' />
+        {authUser ? (
+          <div className='h-10 flex flex-nowrap items-center gap-2 w-36 text-white bg-[#021431] rounded-full px-2'>
+            <span>
+              {authUser.image ? (
+                <Avatar
+                  src={<Image alt='' className='object-cover' src={authUser.image} layout='fill' />}
+                  size='small'
+                />
               ) : (
                 <Avatar className='bg-[#1890ff]' size='small'>
-                  {user.fullname[0]}
+                  {authUser.fullname[0]}
                 </Avatar>
               )}
             </span>
-            <span className='text-sm truncate'>{user.fullname}</span>
-          </label>
+            <span className='text-sm truncate'>{authUser.fullname}</span>
+          </div>
         ) : (
-          <label
-            className='btn modal-button min-h-8 h-10 leading-none rounded-full'
-            htmlFor='registerModal'
+          <Button
+            className='h-10 uppercase font-semibold bg-[#021431] focus:bg-[#021431] hover:bg-[#021431] text-white leading-none rounded-full'
+            onClick={() => dispatch(openRegisterModal())}
           >
             Login/Register
-          </label>
+          </Button>
         )}
       </div>
     </div>

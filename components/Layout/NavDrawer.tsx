@@ -1,6 +1,6 @@
 import { NextRouter, useRouter } from 'next/router';
 import Image from 'next/image';
-import { useContext, useState, ReactNode, Key } from 'react';
+import { useState, ReactNode, Key } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Avatar, Drawer, Menu, MenuProps, Tooltip, Comment, Popover } from 'antd';
 import { IconType } from 'react-icons';
@@ -9,17 +9,17 @@ import { AiOutlineLogout, AiOutlineUser } from 'react-icons/ai';
 import { FiEdit3 } from 'react-icons/fi';
 import { BsAppIndicator, BsHouse } from 'react-icons/bs';
 import { BiMessageSquareEdit, BiUserCircle } from 'react-icons/bi';
-import UserAxios from '../../apiAxios/userAxios';
-import userContext from '../../utils/userContext';
-import { openErrorNotification, openSuccessNotification } from '../../utils/openNotification';
-import IMessage from '../../interface/message';
+import { errorNotification, successNotification } from '../../utils/notification';
+import { useAuth } from '../../utils/UserAuth';
+import AuthAxios from '../../apiAxios/authAxios';
+import type IMessage from '../../interface/message';
 
 const NavDrawer: React.FC = () => {
   const { pathname, push }: NextRouter = useRouter();
 
-  const { user } = useContext(userContext);
+  const { authUser } = useAuth();
 
-  const userAxios = new UserAxios();
+  const authAxios = new AuthAxios();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -27,12 +27,12 @@ const NavDrawer: React.FC = () => {
 
   type MenuItem = Required<MenuProps>['items'][number];
 
-  const handleLogout = useMutation(() => userAxios.logout(), {
+  const handleLogout = useMutation(() => authAxios.logout(), {
     onSuccess: (res: IMessage) => {
-      openSuccessNotification(res.message);
+      successNotification(res.message);
       window.location.reload();
     },
-    onError: (err: Error | any) => openErrorNotification(err.response.data.message),
+    onError: (err: Error) => errorNotification(err),
   });
 
   const getDrawerItems = (
@@ -46,11 +46,11 @@ const NavDrawer: React.FC = () => {
       key,
       icon:
         key === '/profile' ? (
-          user.image ? (
-            <Avatar src={<Image alt='' src={user.image} layout='fill' />} size={18} />
+          authUser.image ? (
+            <Avatar src={<Image alt='' src={authUser.image} layout='fill' />} size={18} />
           ) : (
             <Avatar className='bg-[#1890ff]' size={18}>
-              {user.fullname[0]}
+              {authUser.fullname[0]}
             </Avatar>
           )
         ) : (
@@ -75,8 +75,8 @@ const NavDrawer: React.FC = () => {
           name,
           key,
           icon,
-          user && [
-            getDrawerItems(user.fullname, '/profile', BiUserCircle),
+          authUser && [
+            getDrawerItems(authUser.fullname, '/profile', BiUserCircle),
             getDrawerItems('Edit', '/profile/edit', FiEdit3),
           ]
         );
@@ -138,7 +138,7 @@ const NavDrawer: React.FC = () => {
   return (
     <>
       <MdOutlineKeyboardArrowRight
-        className='fixed left-4 top-1/2 translate-y-1/2 cursor-pointer text-slate-600 hover:bg-gray-200 rounded-full z-50'
+        className='fixed left-4 top-[51%] cursor-pointer text-slate-600 hover:bg-gray-200 rounded-full z-50'
         size={40}
         onClick={() => setIsDrawerOpen(true)}
       />

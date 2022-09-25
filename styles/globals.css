@@ -35,6 +35,10 @@
   left: 0;
 }
 
+.ant-modal-content {
+  border-radius: 0.9rem;
+}
+
 .multiline-truncate-content,
 .multiline-truncate-title {
   display: -webkit-box;

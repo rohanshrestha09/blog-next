@@ -1,7 +1,6 @@
-import { IUser } from './user';
+import { IUserData } from './user';
 
 interface IContext {
-  user: IUser['user'];
-  userLogout: () => void;
+  authUser: IUserData;
 }
 export default IContext;

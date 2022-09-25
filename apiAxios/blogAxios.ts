@@ -1,10 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
-import { capitalize } from 'lodash';
-import { IBlog, IBlogs, IGetGenre } from '../interface/blog';
+import { IBlog, IBlogData, IBlogs, IGetGenre } from '../interface/blog';
 import IMessage from '../interface/message';
 
 class Blog {
-  readonly cookie;
+  private readonly cookie;
+
   constructor(cookie?: any) {
     this.cookie = cookie;
   }
@@ -13,7 +13,7 @@ class Blog {
     method: string,
     url: string,
     data?: any
-  ): Promise<IGetGenre & IBlog & IBlogs & IMessage> => {
+  ): Promise<IGetGenre & IBlogData & IBlog & IBlogs & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
       url: `http://localhost:3000/api/blog/${url}`,
@@ -25,33 +25,18 @@ class Blog {
     return res.data;
   };
 
-  getBlog = async (id: string): Promise<IBlog['blog']> =>
-    await (
-      await this.axiosFn('get', id)
-    ).blog;
+  getBlog = async (id: string): Promise<IBlogData> => await (await this.axiosFn('get', id)).blog;
 
   getAllBlog = async ({
     sort,
     pageSize,
-  }: {
-    sort: string;
-    pageSize: number;
-  }): Promise<{ blogs: IBlog['blog'][] } & IMessage> =>
-    await this.axiosFn('get', `?sort=${sort}&pageSize=${pageSize}`);
-
-  getCategorisedBlog = async ({
     genre,
-    sort,
-    pageSize,
   }: {
-    genre: string;
     sort: string;
     pageSize: number;
-  }): Promise<IBlogs & IMessage> =>
-    await this.axiosFn(
-      'get',
-      `categorised?genre=${capitalize(genre)}&sort=${sort}&pageSize=${pageSize}`
-    );
+    genre: string[] | [];
+  }): Promise<IBlogs> =>
+    await this.axiosFn('get', `?genre=${genre}&sort=${sort}&pageSize=${pageSize}`);
 
   postBlog = async (data: FormData): Promise<IMessage> => await this.axiosFn('post', '', data);
 

@@ -10,7 +10,7 @@ import withAuth from '../../../../middleware/withAuth';
 import withValidateBlog from '../../../../middleware/withValidateBlog';
 import withParseMultipartForm from '../../../../middleware/withParseMultipartForm';
 import { IBlog } from '../../../../interface/blog';
-import { IUser } from '../../../../interface/user';
+import { IAuth } from '../../../../interface/user';
 import IMessage from '../../../../interface/message';
 import IFiles from '../../../../interface/files';
 
@@ -25,12 +25,12 @@ const fsPromises = fs.promises;
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IBlog & IFiles & IUser,
+  req: NextApiRequest & IBlog & IFiles & IAuth,
   res: NextApiResponse<IBlog | IMessage>
 ) => {
   const { method } = req;
 
-  const { _id: _blogId, image, imageName } = req.blog;
+  const { _id: blogId, image, imageName } = req.blog;
 
   const storage = getStorage();
 
@@ -48,7 +48,7 @@ const handler: NextApiHandler = async (
       const { title, content, genre } = req.body;
 
       try {
-        if (req.files.image) {
+        if (!isEmpty(req.files)) {
           const file = req.files.image as any;
 
           if (!file.mimetype.startsWith('image/'))
@@ -56,7 +56,7 @@ const handler: NextApiHandler = async (
 
           if (image) deleteObject(ref(storage, `blogs/${imageName}`));
 
-          const filename = file.mimetype.replace('image/', `${_blogId}.`);
+          const filename = file.mimetype.replace('image/', `${blogId}.`);
 
           const storageRef = ref(storage, `blogs/${filename}`);
 
@@ -68,13 +68,13 @@ const handler: NextApiHandler = async (
 
           const url = await getDownloadURL(storageRef);
 
-          await Blog.findByIdAndUpdate(_blogId, {
+          await Blog.findByIdAndUpdate(blogId, {
             image: url,
             imageName: filename,
           });
         }
 
-        await Blog.findByIdAndUpdate(_blogId, {
+        await Blog.findByIdAndUpdate(blogId, {
           title,
           content,
           genre,
@@ -86,14 +86,14 @@ const handler: NextApiHandler = async (
       }
 
     case 'DELETE':
-      const { _id: _authorId } = req.user;
+      const { _id: authId } = req.auth;
 
       try {
         if (image) deleteObject(ref(storage, `blogs/${imageName}`));
 
-        await Blog.findByIdAndDelete(_blogId);
+        await Blog.findByIdAndDelete(blogId);
 
-        await User.findByIdAndUpdate(_authorId, { $pull: { blogs: _blogId } });
+        await User.findByIdAndUpdate(authId, { $pull: { blogs: blogId } });
 
         return res.status(200).json({ message: 'Blog Deleted Successfully' });
       } catch (err: Error | any) {
