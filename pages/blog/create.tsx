@@ -91,37 +91,36 @@ const CreateBlog: NextPage = () => {
   );
 
   return (
-    <div className='w-full flex flex-col items-center p-5'>
+    <div className='w-full flex flex-col items-center'>
       <Head>
         <title>Create a post</title>
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      <main className='xl:w-[51rem] w-full'>
+      <main className='2xl:w-4/5 xl:w-full md:w-4/5 w-full flex flex-col gap-4'>
+        <header className='text-2xl uppercase'>Create a blog</header>
+
         <Form
           autoComplete='off'
-          className='w-full grid grid-cols-4'
           form={form}
           initialValues={{ remember: true }}
           layout='vertical'
           name='basic'
           requiredMark={false}
         >
-          <Form.Item
-            className='col-span-full'
-            name='title'
-            rules={[{ required: true, message: 'Please input title' }]}
-          >
+          <Form.Item name='title' rules={[{ required: true, message: 'Please input title' }]}>
             <Input className='rounded-lg px-4 py-2.5 placeholder:text-base' placeholder='Title' />
           </Form.Item>
 
-          <Form.Item className='col-span-full'>
+          <Form.Item>
             <Editor
               key={renderEditor}
               apiKey={process.env.NEXT_PUBLIC_TINY_MCE}
               init={{
-                height: 400,
+                height: 440,
                 menubar: true,
+                skin: 'oxide-dark',
+                content_css: 'dark',
                 plugins: [
                   'advlist',
                   'autolink',
@@ -154,50 +153,46 @@ const CreateBlog: NextPage = () => {
             />
           </Form.Item>
 
-          <Form.Item className='w-fit sm:col-span-1 col-span-full'>
-            <Upload {...fileUploadOptions}>
-              <Button
-                className='rounded-lg flex items-center py-[1.23rem] text-sm'
-                icon={<UploadOutlined className='text-lg' />}
-              >
-                Upload Blog Cover
-              </Button>
-            </Upload>
-          </Form.Item>
+          <div className='w-full flex md:flex-row flex-col md:gap-3'>
+            <Form.Item className='sm:mb-2'>
+              <Upload {...fileUploadOptions}>
+                <Button
+                  className='rounded-lg flex items-center py-[1.23rem] text-sm'
+                  icon={<UploadOutlined className='text-lg' />}
+                >
+                  Upload Blog Cover
+                </Button>
+              </Upload>
+            </Form.Item>
 
-          <Form.Item
-            className='sm:col-span-3 col-span-full'
-            name='genre'
-            rules={[
-              {
-                required: true,
-                message: 'Please select atleast a genre',
-              },
-              {
-                validator: (_, value) =>
-                  value.length > 4 ? Promise.reject('Max 4 genre allowed.') : Promise.resolve(),
-              },
-            ]}
-          >
-            <Select
-              className='w-full rounded-lg'
-              mode='multiple'
-              placeholder='Select genre (max 4)'
-              size='large'
-              allowClear
+            <Form.Item
+              className='w-full'
+              name='genre'
+              rules={[
+                {
+                  required: true,
+                  message: 'Please select atleast a genre',
+                },
+                {
+                  validator: (_, value) =>
+                    value.length > 4 ? Promise.reject('Max 4 genre allowed.') : Promise.resolve(),
+                },
+              ]}
             >
-              {genre &&
-                genre.map((el) => (
-                  <Option key={el} value={el}>
-                    {el}
-                  </Option>
-                ))}
-            </Select>
-          </Form.Item>
+              <Select mode='multiple' placeholder='Select genre (max 4)' size='large' allowClear>
+                {genre &&
+                  genre.map((el) => (
+                    <Option key={el} value={el}>
+                      {el}
+                    </Option>
+                  ))}
+              </Select>
+            </Form.Item>
+          </div>
 
-          <Form.Item className='col-span-full'>
+          <Form.Item>
             <Button
-              className='h-10 uppercase text-white bg-[#021431] border-[#021431] rounded-lg hover:bg-[#021431] focus:bg-[#021431]'
+              className='h-10 uppercase border-white rounded-lg'
               loading={handlePostBlog.isLoading}
               onClick={() =>
                 form.validateFields().then((values) =>
@@ -213,7 +208,7 @@ const CreateBlog: NextPage = () => {
             </Button>
 
             <Button
-              className='h-10 mx-2 rounded-[0.5rem] border-slate-600 uppercase'
+              className='h-10 mx-2 !bg-gray-200 border-gray-200 !text-black rounded-lg uppercase'
               loading={handlePostBlog.isLoading}
               onClick={() =>
                 form.validateFields().then((values) =>

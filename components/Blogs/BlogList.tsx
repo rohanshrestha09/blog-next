@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import { NextRouter, useRouter } from 'next/router';
-import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
@@ -14,11 +13,11 @@ import {
   MdOutlinePublishedWithChanges,
   MdOutlineUnpublished,
 } from 'react-icons/md';
-import { closeDeleteModal, openDeleteModal } from '../../store/deleteModalSlice';
 import BlogAxios from '../../apiAxios/blogAxios';
-import { AUTH } from '../../constants/queryKeys';
-import type IMessage from '../../interface/message';
 import ConfirmDelete from '../shared/ConfirmDelete';
+import { closeDeleteModal, openDeleteModal } from '../../store/deleteModalSlice';
+import { GET_AUTH_BLOGS } from '../../constants/queryKeys';
+import type IMessage from '../../interface/message';
 
 interface Props {
   editable?: boolean;
@@ -56,7 +55,7 @@ const BlogList: React.FC<Props> = ({
     {
       onSuccess: (res: IMessage) => {
         message.success(res.message);
-        queryClient.refetchQueries([AUTH]);
+        queryClient.refetchQueries([GET_AUTH_BLOGS]);
       },
       onError: (err: Error | any) => message.error(err.response.data.message),
     }
@@ -65,7 +64,7 @@ const BlogList: React.FC<Props> = ({
   const handleDeleteBlog = useMutation((id: string) => blogAxios.deleteBlog(id), {
     onSuccess: (res: IMessage) => {
       message.success(res.message);
-      queryClient.refetchQueries([AUTH]);
+      queryClient.refetchQueries([GET_AUTH_BLOGS]);
       dispatch(closeDeleteModal());
     },
     onError: (err: Error | any) => message.error(err.response.data.message),
@@ -74,14 +73,14 @@ const BlogList: React.FC<Props> = ({
   const popoverContent = (
     <>
       <Space
-        className='cursor-pointer hover:bg-[#021027] hover:text-white rounded-lg px-2 py-1.5 transition-all'
+        className='cursor-pointer hover:bg-gray-200 hover:text-black rounded-lg px-2 py-1.5 transition-all'
         onClick={() => router.push(`/blog/update/${_id}`)}
       >
         <FiEdit3 />
         Edit
       </Space>
 
-      <Divider className='bg-slate-200' type='vertical' />
+      <Divider className='bg-gray-200' type='vertical' />
 
       <Button
         className={`${
@@ -94,7 +93,7 @@ const BlogList: React.FC<Props> = ({
         {isPublished ? 'Unpublish' : 'Publish'}
       </Button>
 
-      <Divider className='bg-slate-200' type='vertical' />
+      <Divider className='bg-gray-200' type='vertical' />
 
       <Space
         className='cursor-pointer hover:bg-red-500 hover:text-white rounded-lg px-2 py-1.5 transition-all'
@@ -113,7 +112,7 @@ const BlogList: React.FC<Props> = ({
 
   return (
     <>
-      <div className='w-full flex flex-col gap-3 sm:px-16 py-4'>
+      <div className='w-full flex flex-col gap-3 sm:px-8 py-2'>
         <Space className='relative'>
           {authorImage ? (
             <Avatar src={<Image alt='' src={authorImage} layout='fill' />} size='small' />
@@ -126,27 +125,17 @@ const BlogList: React.FC<Props> = ({
 
           <span className='text-2xl leading-none tracking-tighter text-gray-400'>&#x22C5;</span>
 
-          <p className='text-gray-500 text-xs'>{moment(createdAt).format('ll').slice(0, -6)}</p>
+          <p className='text-gray-400 text-xs'>{moment(createdAt).format('ll').slice(0, -6)}</p>
 
           {editable && (
-            <>
-              {/* <Button
-                className='btn min-h-fit h-fit px-2 gap-1 focus:bg-[#021027] capitalize leading-none rounded-full text-xs'
-                onClick={() => router.push(`/blog/update/${_id}`)}
-              >
-                Edit
-                <FiEdit3 />
-          </Button>*/}
-
-              <Popover
-                content={popoverContent}
-                placement='left'
-                overlayInnerStyle={{ borderRadius: '10px' }}
-                trigger='click'
-              >
-                <BsThreeDots className='absolute right-0 top-0 translate-y-1/2 hover:rounded-full cursor-pointer hover:bg-gray-200 transition-all sm:text-base' />
-              </Popover>
-            </>
+            <Popover
+              content={popoverContent}
+              placement='left'
+              overlayInnerStyle={{ borderRadius: '10px' }}
+              trigger='click'
+            >
+              <BsThreeDots className='absolute right-0 top-0 translate-y-1/2 hover:rounded-full cursor-pointer hover:bg-gray-600 transition-all sm:text-base' />
+            </Popover>
           )}
         </Space>
 
@@ -183,7 +172,7 @@ const BlogList: React.FC<Props> = ({
               </Space>
             </Tooltip>
 
-            <Divider className='bg-slate-200' type='vertical' />
+            <Divider type='vertical' />
 
             <Tooltip title='Comment' placement='bottom'>
               <Space className='flex items-center'>
@@ -194,7 +183,7 @@ const BlogList: React.FC<Props> = ({
 
             {editable && (
               <>
-                <Divider className='bg-slate-200' type='vertical' />
+                <Divider type='vertical' />
 
                 <Tooltip title={isPublished ? 'Published' : 'Unpublished'} placement='bottom'>
                   {isPublished ? <MdOutlinePublishedWithChanges /> : <MdOutlineUnpublished />}
@@ -205,7 +194,7 @@ const BlogList: React.FC<Props> = ({
         </div>
       </div>
 
-      <hr />
+      <Divider />
     </>
   );
 };

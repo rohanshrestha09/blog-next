@@ -14,25 +14,8 @@ const NavBar: React.FC = () => {
   const dispatch = useDispatch();
 
   return (
-    <div className='w-full bg-white flex items-center justify-between sticky top-0 xl:px-60 px-5 py-3 shadow-md z-10'>
-      <span
-        className='font-megrim font-black md:text-4xl text-3xl cursor-pointer text-black'
-        onClick={() => router.push('/')}
-      >
-        BlogSansar
-      </span>
-
+    <div className='w-full flex items-center justify-between'>
       <div className='flex items-center gap-5'>
-        <div className='sm:block hidden relative border-2 focus:outline-none rounded-full'>
-          <SearchOutlined className='absolute flex items-center text-lg left-3 top-0 bottom-0 text-slate-600' />
-
-          <input
-            className='h-9 rounded-full pl-9 focus:border-none focus:outline-none'
-            placeholder='Search'
-            type='search'
-          />
-        </div>
-
         {authUser ? (
           <div className='h-10 flex flex-nowrap items-center gap-2 w-36 text-white bg-[#021431] rounded-full px-2'>
             <span>

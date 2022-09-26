@@ -1,4 +1,4 @@
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.dark.css';
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { useState } from 'react';

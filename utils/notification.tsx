@@ -2,6 +2,7 @@ import { toast, ToastOptions } from 'react-toastify';
 
 const config: ToastOptions<{}> = {
   position: 'top-right',
+  theme: 'dark',
   autoClose: 2500,
   hideProgressBar: false,
   closeOnClick: true,

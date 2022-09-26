@@ -43,14 +43,14 @@ class Auth {
     isPublished,
   }: {
     sort?: string;
-    pageSize: number;
+    pageSize?: number;
     genre?: string[] | [];
     isPublished?: boolean;
   }): Promise<IBlogs['blogs']> =>
     await (
       await this.axiosFn(
         'get',
-        `blog?genre=${genre || ''}&sort=${sort || ''}&pageSize=${pageSize}&isPublished=${
+        `blog?genre=${genre || ''}&sort=${sort || ''}&pageSize=${pageSize || 20}&isPublished=${
           typeof isPublished === 'boolean' ? isPublished : ''
         }`
       )
@@ -62,12 +62,12 @@ class Auth {
     genre,
   }: {
     sort?: string;
-    pageSize: number;
+    pageSize?: number;
     genre?: string[] | [];
   }): Promise<IBookmarks> =>
     await this.axiosFn(
       'get',
-      `blog/bookmark?genre=${genre || ''}&sort=${sort || ''}&pageSize=${pageSize}`
+      `blog/bookmark?genre=${genre || ''}&sort=${sort || ''}&pageSize=${pageSize || 20}`
     );
 
   getLikedBlogs = async ({
@@ -76,12 +76,12 @@ class Auth {
     genre,
   }: {
     sort?: string;
-    pageSize: number;
+    pageSize?: number;
     genre?: string[] | [];
   }): Promise<ILiked> =>
     await this.axiosFn(
       'get',
-      `blog/liked?genre=${genre || ''}&sort=${sort || ''}&pageSize=${pageSize}`
+      `blog/liked?genre=${genre || ''}&sort=${sort || ''}&pageSize=${pageSize || 20}`
     );
 
   followUser = async ({

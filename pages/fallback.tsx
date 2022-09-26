@@ -18,14 +18,14 @@ const Fallback: NextPage = () => {
       <main>
         <Space className='absolute top-0 left-0 right-0 bottom-0 flex justify-center'>
           <Button
-            className='h-10 bg-[#021431] border-[#021431] uppercase text-white rounded-lg focus:bg-[#021431] hover:bg-[#021431]'
+            className='h-10 mx-2 !bg-gray-200 border-gray-200 !text-black rounded-lg uppercase'
             onClick={() => dispatch(openRegisterModal())}
           >
             Signup
           </Button>
 
           <Button
-            className='h-10 rounded-lg border-slate-600 uppercase'
+            className='h-10 uppercase border-white rounded-lg'
             onClick={() => dispatch(openLoginModal())}
           >
             Signin

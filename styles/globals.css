@@ -5,23 +5,23 @@
 @tailwind components;
 @tailwind utilities;
 
-.scrollbar::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 8px;
   height: 8px;
   background-color: transparent;
 }
 
-.scrollbar::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   margin: 10px 0;
 }
 
-.scrollbar::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background: rgb(170, 170, 170);
   border-radius: 10px;
 }
 
 /* scrollbar Handle on hover */
-.scrollbar::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
   background: rgba(170 170 170 / 0.5);
 }
 
@@ -33,6 +33,14 @@
   right: 0;
   bottom: 0;
   left: 0;
+}
+
+.tox .tox-tooltip__body .tox.tox-tinymce-aux .tox-toolbar__overflow {
+  background-color: black !important;
+}
+
+.ant-select-multiple .ant-select-selector {
+  border-radius: 0.5rem !important;
 }
 
 .ant-modal-content {
