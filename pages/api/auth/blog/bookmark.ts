@@ -12,7 +12,7 @@ const handler: NextApiHandler = async (
 ) => {
   const {
     method,
-    query: { sort, pageSize, genre },
+    query: { sort, sortOrder, pageSize, genre, search },
     auth: { bookmarks },
   } = req;
 
@@ -20,13 +20,26 @@ const handler: NextApiHandler = async (
     case 'GET':
       let query = { blogs: bookmarks, isPublished: true };
 
-      if (genre) query = Object.assign({ genre }, query);
+      if (genre)
+        query = Object.assign(
+          {
+            genre: {
+              $in: Array.isArray(genre) ? genre : typeof genre === 'string' && genre.split(','),
+            },
+          },
+          query
+        );
+
+      if (search)
+        query = Object.assign({
+          title: { $inc: typeof search === 'string' && search.toLowerCase() },
+        });
 
       try {
         return res.status(200).json({
           bookmarks: await Blog.find(query)
-            .sort({ [sort as string]: -1 })
-            .limit(Number(pageSize) || 20),
+            .sort({ [(typeof sort === 'string' && sort) || 'likes']: sortOrder === 'asc' ? 1 : -1 })
+            .limit(Number(pageSize || 20)),
           message: 'Blogs Fetched Successfully',
         });
       } catch (err: Error | any) {

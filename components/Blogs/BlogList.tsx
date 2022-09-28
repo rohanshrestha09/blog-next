@@ -112,7 +112,7 @@ const BlogList: React.FC<Props> = ({
 
   return (
     <>
-      <div className='w-full flex flex-col gap-3 sm:px-8 py-2'>
+      <div className='w-full flex flex-col gap-3 sm:px-8'>
         <Space className='relative'>
           {authorImage ? (
             <Avatar src={<Image alt='' src={authorImage} layout='fill' />} size='small' />
@@ -141,9 +141,7 @@ const BlogList: React.FC<Props> = ({
 
         <div className='w-full flex justify-between sm:gap-12 gap-6 break-words'>
           <Space direction='vertical' size={4}>
-            <p className='sm:text-xl text-base font-bold sm:leading-none leading-snug multiline-truncate-title'>
-              {title}
-            </p>
+            <p className='sm:text-xl text-base font-bold multiline-truncate-title'>{title}</p>
 
             <p className='leading-loose multiline-truncate-content'>
               {he.decode(content.replace(/<[^>]+>/g, ''))}

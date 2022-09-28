@@ -179,7 +179,13 @@ const CreateBlog: NextPage = () => {
                 },
               ]}
             >
-              <Select mode='multiple' placeholder='Select genre (max 4)' size='large' allowClear>
+              <Select
+                mode='multiple'
+                popupClassName='rounded-lg'
+                placeholder='Select genre (max 4)'
+                size='large'
+                allowClear
+              >
                 {genre &&
                   genre.map((el) => (
                     <Option key={el} value={el}>

@@ -40,7 +40,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
         bodyStyle={{ padding: 0, margin: 0 }}
         contentWrapperStyle={{ width: 'auto', height: 'auto' }}
       >
-        <Nav additionalProps='w-72' />
+        <Nav additionalProps='w-72' isDrawer />
       </Drawer>
 
       <Affix offsetTop={1}>
@@ -49,7 +49,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
         </Sider>
       </Affix>
 
-      <Layout className='border-x border-slate-700 py-4 sm:px-8 px-4'>
+      <Layout className='border-x border-gray-700 py-4 sm:px-8 px-4'>
         <Content>{children}</Content>
       </Layout>
 

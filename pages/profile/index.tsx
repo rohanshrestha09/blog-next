@@ -1,13 +1,28 @@
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
 import moment from 'moment';
 import { capitalize, isEmpty } from 'lodash';
-import { Button, Empty, Image, Space, Tabs } from 'antd';
+import {
+  Button,
+  Empty,
+  Image,
+  Space,
+  Tabs,
+  Input,
+  Menu,
+  Dropdown,
+  Radio,
+  Divider,
+  Checkbox,
+  Spin,
+} from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import type { IconType } from 'react-icons';
+import { AiOutlineSortAscending, AiOutlineSortDescending } from 'react-icons/ai';
+import { GrRadialSelected } from 'react-icons/gr';
 import {
   BsBook,
   BsBookmarkCheck,
@@ -17,21 +32,32 @@ import {
   BsInstagram,
   BsLinkedin,
 } from 'react-icons/bs';
+import { BiSearch } from 'react-icons/bi';
 import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md';
 import { GiSpiderWeb } from 'react-icons/gi';
-import { FaBiohazard } from 'react-icons/fa';
+import { FaBiohazard, FaSort } from 'react-icons/fa';
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../apiAxios/authAxios';
+import BlogAxios from '../../apiAxios/blogAxios';
 import BlogList from '../../components/Blogs/BlogList';
-import { AUTH, GET_AUTH_BLOGS } from '../../constants/queryKeys';
+import { changeKey, setGenre, setSort, setSortOrder } from '../../store/authBlogSlice';
+import {
+  AUTH,
+  GET_AUTH_BLOGS,
+  GET_BOOKMARKED_BLOGS,
+  GET_GENRE,
+  GET_LIKED_BLOGS,
+} from '../../constants/queryKeys';
 import type { IBlogData } from '../../interface/blog';
 import type { RootState } from '../../store';
-import { setPublishedStatus } from '../../store/authBlogSlice';
+import { useEffect } from 'react';
 
 const Profile = () => {
   const router: NextRouter = useRouter();
 
-  const { sort, genre, pageSize, isPublished } = useSelector((state: RootState) => state.authBlog);
+  const { key, cachedKey, sort, sortOrder, genre, pageSize, isPublished } = useSelector(
+    (state: RootState) => state.authBlog
+  );
 
   const dispatch = useDispatch();
 
@@ -39,78 +65,195 @@ const Profile = () => {
 
   const authAxios = new AuthAxios();
 
-  const { data: blogs } = useQuery({
-    queryFn: () => authAxios.getAllBlogs({ sort, genre, pageSize, isPublished }),
-    queryKey: [GET_AUTH_BLOGS],
+  const blogAxios = new BlogAxios();
+
+  const {
+    data: blogs,
+    refetch,
+    isLoading,
+  } = useQuery({
+    queryFn: () => authAxios.getAllBlogs({ sort, genre, pageSize, isPublished, sortOrder }),
+    queryKey: [GET_AUTH_BLOGS, { sort, pageSize, sortOrder, genre, isPublished }],
   });
 
-  const items = useCallback(() => {
-    const getTabItems = (
-      label: string,
-      key: string,
-      Icon: IconType,
-      blogs: IBlogData[] | undefined,
-      emptyAlt: string,
-      editable: boolean,
-      route: string
-    ) => {
-      return {
-        key,
-        label: (
-          <span className='sm:mx-1.5 mx-auto flex items-center gap-1.5'>
-            <Icon className='inline' /> {label}
-          </span>
-        ),
-        children: isEmpty(blogs) ? (
-          <Empty>
-            <Button
-              className='h-10 border-white uppercase rounded-lg'
-              onClick={() => router.push(route)}
+  const { data: bookmarkedBlogs } = useQuery({
+    queryFn: () => authAxios.getBookmarkedBlogs({ sort, genre, pageSize, sortOrder }),
+    queryKey: [GET_BOOKMARKED_BLOGS, { sort, pageSize, sortOrder, genre, isPublished }],
+    enabled: cachedKey.includes('bookmarks'),
+  });
+
+  const { data: likedBlogs } = useQuery({
+    queryFn: () => authAxios.getLikedBlogs({ sort, genre, pageSize, sortOrder }),
+    queryKey: [GET_LIKED_BLOGS, { sort, pageSize, sortOrder, genre, isPublished }],
+    enabled: cachedKey.includes('liked'),
+  });
+
+  const { data: genreSelector } = useQuery({
+    queryFn: () => blogAxios.getGenre(),
+    queryKey: [GET_GENRE],
+  });
+
+  useEffect(() => {
+    if (key === 'allblogs') {
+      refetch();
+    }
+  }, [sort, sortOrder, genre, isPublished, pageSize, key, refetch]);
+
+  const menuSort = (
+    <Menu
+      className='rounded-lg'
+      items={[
+        {
+          key: 'sort',
+          label: (
+            <Radio.Group
+              onChange={({ target: { value: sort } }) => dispatch(setSort({ sort }))}
+              value={sort}
             >
-              {emptyAlt}
-            </Button>
-          </Empty>
-        ) : (
-          blogs &&
-          blogs.map((blog) => (
-            <BlogList
-              key={blog._id}
-              editable={editable}
-              authorName={authUser.fullname}
-              authorImage={authUser.image}
-              blog={blog}
-            />
-          ))
-        ),
-      };
-    };
+              <Space direction='vertical'>
+                <Radio value='likes'>Likes</Radio>
+                <Radio value='createdAt'>Created</Radio>
+                <Radio value='updatedAt'>Updated</Radio>
+              </Space>
+            </Radio.Group>
+          ),
+        },
+        {
+          key: 'divider',
+          label: <Divider className='my-0' />,
+        },
+        {
+          key: 'order',
+          label: (
+            <Radio.Group
+              onChange={({ target: { value: sortOrder } }) => dispatch(setSortOrder({ sortOrder }))}
+              value={sortOrder}
+            >
+              <Space direction='vertical'>
+                <Radio value='asc'>Ascending</Radio>
+                <Radio value='desc'>Descending</Radio>
+              </Space>
+            </Radio.Group>
+          ),
+        },
+      ]}
+    />
+  );
 
-    return [
-      { key: 'allblogs', icon: BsBook },
-      { key: 'published', icon: MdOutlinePublishedWithChanges },
-      { key: 'unpublished', icon: MdOutlineUnpublished },
-      { key: 'bookmarks', icon: BsBookmarkCheck },
-      { key: 'liked', icon: BsHeart },
-    ].map(({ key, icon }) => {
-      switch (key) {
-        case 'allblogs':
-        case 'published':
-        case 'unpublished':
-          return (
-            authUser &&
-            getTabItems(capitalize(key), key, icon, blogs, 'Create One', true, '/blog/create')
-          );
-
-        default:
-          return (
-            authUser && getTabItems(capitalize(key), key, icon, blogs, 'Browse Blogs', false, '/')
-          );
+  const menuGenre = (
+    <Menu
+      className='rounded-lg'
+      items={
+        genreSelector &&
+        genreSelector.map((key) => ({
+          key,
+          label: (
+            <Checkbox
+              value={key}
+              onChange={({ target: { value: genre, checked } }) =>
+                dispatch(setGenre({ genre, checked }))
+              }
+            >
+              {key}
+            </Checkbox>
+          ),
+        }))
       }
-    });
-  }, [authUser, blogs, router]);
+    />
+  );
+
+  const getTabItems = (
+    label: string,
+    key: string,
+    Icon: IconType,
+    blogs: IBlogData[] | undefined,
+    emptyAlt: string,
+    route: string
+  ) => {
+    return {
+      key,
+      label: (
+        <span className='sm:mx-1.5 mx-auto flex items-center gap-1.5'>
+          <Icon className='inline' /> {label}
+        </span>
+      ),
+      children: (
+        <>
+          <span className='w-full flex gap-3 items-center sm:px-8 pt-2 sticky top-2 z-10'>
+            <Input
+              className='rounded-lg py-[5px] bg-black'
+              placeholder='Search title...'
+              prefix={<BiSearch />}
+            />
+
+            <Dropdown overlay={menuSort}>
+              <Button className='!bg-gray-200 border-gray-200 !text-black rounded-lg text-sm flex items-center gap-2 px-2'>
+                <span>Sort By:</span>
+                <FaSort />
+              </Button>
+            </Dropdown>
+
+            <Dropdown overlay={menuGenre}>
+              <Button className='!bg-gray-200 border-gray-200 !text-black rounded-lg text-sm flex items-center gap-2 px-2'>
+                <span>Genre:</span>
+                <GrRadialSelected />
+              </Button>
+            </Dropdown>
+
+            {isLoading && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
+          </span>
+
+          <Divider />
+
+          {isEmpty(blogs) ? (
+            <Empty>
+              <Button
+                className='h-10 border-white uppercase rounded-lg'
+                onClick={() => router.push(route)}
+              >
+                {emptyAlt}
+              </Button>
+            </Empty>
+          ) : (
+            blogs &&
+            blogs.map((blog) => (
+              <BlogList
+                key={blog._id}
+                authorName={blog.authorName}
+                authorImage={blog.authorImage}
+                blog={blog}
+                editable={blog.author === (authUser && authUser._id)}
+              />
+            ))
+          )}
+        </>
+      ),
+    };
+  };
+
+  const items = [
+    { key: 'allblogs', icon: BsBook },
+    { key: 'published', icon: MdOutlinePublishedWithChanges },
+    { key: 'unpublished', icon: MdOutlineUnpublished },
+    { key: 'bookmarks', icon: BsBookmarkCheck },
+    { key: 'liked', icon: BsHeart },
+  ].map(({ key, icon }) => {
+    switch (key) {
+      case 'allblogs':
+      case 'published':
+      case 'unpublished':
+        return getTabItems(capitalize(key), key, icon, blogs, 'Create One', '/blog/create');
+
+      case 'bookmarks':
+        return getTabItems(capitalize(key), key, icon, bookmarkedBlogs, 'Browse Blogs', '/');
+
+      case 'liked':
+        return getTabItems(capitalize(key), key, icon, likedBlogs, 'Browse Blogs', '/');
+    }
+  });
 
   return (
-    <div className='w-full flex justify-center'>
+    <div className='w-full flex justify-center h-[200vh]'>
       <Head>
         <title>{`${authUser && authUser.fullname} | BlogSansar`}</title>
         <link href='/favicon.ico' rel='icon' />
@@ -134,7 +277,7 @@ const Profile = () => {
               {authUser.bio ? (
                 <p className='sm:text-left text-center'>{authUser.bio}</p>
               ) : (
-                <p className='underline cursor-pointer inline-flex items-center gap-1 hover:text-slate-400 transition-all'>
+                <p className='underline cursor-pointer inline-flex items-center gap-1 hover:text-gray-400 transition-all'>
                   Update Bio <FaBiohazard />
                 </p>
               )}
@@ -149,7 +292,7 @@ const Profile = () => {
                   https://rohanshrestha09.com.np
                 </a>
               ) : (
-                <p className='underline cursor-pointer inline-flex items-center gap-1 hover:text-slate-400 transition-all'>
+                <p className='underline cursor-pointer inline-flex items-center gap-1 hover:text-gray-400 transition-all'>
                   Add Website <GiSpiderWeb />
                 </p>
               )}
@@ -169,8 +312,8 @@ const Profile = () => {
           <Tabs
             className='w-full'
             defaultActiveKey='blogs'
-            items={items()}
-            onTabClick={(key) => dispatch(setPublishedStatus({ key }))}
+            items={items as any}
+            onTabClick={(key) => dispatch(changeKey({ key }))}
             centered
           />
         </main>
@@ -189,6 +332,7 @@ export const getServerSideProps: GetServerSideProps = async (
   const queryClient = new QueryClient();
 
   const authAxios = new AuthAxios(ctx.req && ctx.req.headers.cookie);
+  const queryKey = { genre: [], pageSize: 20, sort: 'likes', sortOrder: 'asc' };
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
@@ -199,7 +343,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.getAllBlogs({}),
-    queryKey: [GET_AUTH_BLOGS],
+    queryKey: [GET_AUTH_BLOGS, queryKey],
   });
 
   return {
