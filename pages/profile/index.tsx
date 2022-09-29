@@ -1,8 +1,7 @@
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
 import moment from 'moment';
 import { capitalize, isEmpty } from 'lodash';
@@ -41,7 +40,7 @@ import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../apiAxios/authAxios';
 import BlogAxios from '../../apiAxios/blogAxios';
 import BlogList from '../../components/Blogs/BlogList';
-import { changeKey, setGenre, setSort, setSortOrder } from '../../store/authBlogSlice';
+import { changeKey, setGenre, setSearch, setSort, setSortOrder } from '../../store/authBlogSlice';
 import {
   AUTH,
   GET_AUTH_BLOGS,
@@ -49,14 +48,22 @@ import {
   GET_GENRE,
   GET_LIKED_BLOGS,
 } from '../../constants/queryKeys';
+import { MENUKEYS, SORT_TYPE, SORT_ORDER } from '../../constants/reduxKeys';
 import type { IBlogData } from '../../interface/blog';
 import type { RootState } from '../../store';
+
+const { ALL_BLOGS, PUBLISHED, UNPUBLISHED, BOOKMARKED, LIKED } = MENUKEYS;
+
+const { LIKES, CREATED_AT, UPDATED_AT } = SORT_TYPE;
+
+const { ASCENDING, DESCENDING } = SORT_ORDER;
 
 const Profile = () => {
   const router: NextRouter = useRouter();
 
-  const { key, cachedKey, sort, sortOrder, genre, pageSize, isPublished } = useSelector(
-    (state: RootState) => state.authBlog
+  const { cachedKey, sort, sortOrder, genre, pageSize, isPublished, search } = useSelector(
+    (state: RootState) => state.authBlog,
+    shallowEqual
   );
 
   const dispatch = useDispatch();
@@ -67,25 +74,70 @@ const Profile = () => {
 
   const blogAxios = new BlogAxios();
 
-  const {
-    data: blogs,
-    refetch,
-    isLoading,
-  } = useQuery({
-    queryFn: () => authAxios.getAllBlogs({ sort, genre, pageSize, isPublished, sortOrder }),
-    queryKey: [GET_AUTH_BLOGS, { sort, pageSize, sortOrder, genre, isPublished }],
+  let timeout: any = 0;
+
+  const getSearchKey = (isPublished?: boolean) =>
+    typeof isPublished === 'undefined' ? ALL_BLOGS : isPublished ? PUBLISHED : UNPUBLISHED;
+
+  const getLoadingState = (key: MENUKEYS) => {
+    switch (key) {
+      case ALL_BLOGS:
+      case PUBLISHED:
+      case UNPUBLISHED:
+        return isBlogsLoading;
+
+      case BOOKMARKED:
+        return isBookmarkedBlogsLoading;
+
+      case LIKED:
+        return isLikedBlogsLoading;
+    }
+  };
+
+  const { data: blogs, isLoading: isBlogsLoading } = useQuery({
+    queryFn: () =>
+      authAxios.getAllBlogs({
+        sort,
+        genre,
+        pageSize,
+        isPublished,
+        sortOrder,
+        search: search[getSearchKey(isPublished)],
+      }),
+    queryKey: [
+      GET_AUTH_BLOGS,
+      {
+        sort,
+        pageSize,
+        sortOrder,
+        genre,
+        isPublished,
+        search: search[getSearchKey(isPublished)],
+      },
+    ],
   });
 
-  const { data: bookmarkedBlogs } = useQuery({
-    queryFn: () => authAxios.getBookmarkedBlogs({ sort, genre, pageSize, sortOrder }),
-    queryKey: [GET_BOOKMARKED_BLOGS, { sort, pageSize, sortOrder, genre, isPublished }],
-    enabled: cachedKey.includes('bookmarks'),
+  const { data: bookmarkedBlogs, isLoading: isBookmarkedBlogsLoading } = useQuery({
+    queryFn: () =>
+      authAxios.getBookmarkedBlogs({
+        sort,
+        genre,
+        pageSize,
+        sortOrder,
+        search: search[BOOKMARKED],
+      }),
+    queryKey: [
+      GET_BOOKMARKED_BLOGS,
+      { sort, pageSize, sortOrder, genre, search: search[BOOKMARKED] },
+    ],
+    enabled: cachedKey.includes(BOOKMARKED),
   });
 
-  const { data: likedBlogs } = useQuery({
-    queryFn: () => authAxios.getLikedBlogs({ sort, genre, pageSize, sortOrder }),
-    queryKey: [GET_LIKED_BLOGS, { sort, pageSize, sortOrder, genre, isPublished }],
-    enabled: cachedKey.includes('liked'),
+  const { data: likedBlogs, isLoading: isLikedBlogsLoading } = useQuery({
+    queryFn: () =>
+      authAxios.getLikedBlogs({ sort, genre, pageSize, sortOrder, search: search[LIKED] }),
+    queryKey: [GET_LIKED_BLOGS, { sort, pageSize, sortOrder, genre, search: search[LIKED] }],
+    enabled: cachedKey.includes(LIKED),
   });
 
   const { data: genreSelector } = useQuery({
@@ -105,9 +157,9 @@ const Profile = () => {
               value={sort}
             >
               <Space direction='vertical'>
-                <Radio value='likes'>Likes</Radio>
-                <Radio value='createdAt'>Created</Radio>
-                <Radio value='updatedAt'>Updated</Radio>
+                <Radio value={LIKES}>Likes</Radio>
+                <Radio value={CREATED_AT}>Created</Radio>
+                <Radio value={UPDATED_AT}>Updated</Radio>
               </Space>
             </Radio.Group>
           ),
@@ -124,10 +176,10 @@ const Profile = () => {
               value={sortOrder}
             >
               <Space direction='vertical'>
-                <Radio value='asc'>
+                <Radio value={ASCENDING}>
                   Ascending <AiOutlineSortAscending className='inline' />
                 </Radio>
-                <Radio value='desc'>
+                <Radio value={DESCENDING}>
                   Descending <AiOutlineSortDescending className='inline' />
                 </Radio>
               </Space>
@@ -162,7 +214,7 @@ const Profile = () => {
 
   const getTabItems = (
     label: string,
-    key: string,
+    key: MENUKEYS,
     Icon: IconType,
     blogs: IBlogData[] | undefined,
     emptyAlt: string,
@@ -180,8 +232,13 @@ const Profile = () => {
           <span className='w-full flex gap-3 items-center sm:px-8 pt-2 sticky top-2 z-10'>
             <Input
               className='rounded-lg py-[5px] bg-black'
+              defaultValue={search[key]}
               placeholder='Search title...'
               prefix={<BiSearch />}
+              onChange={({ target: { value } }) => {
+                if (timeout) clearTimeout(timeout);
+                timeout = setTimeout(() => dispatch(setSearch({ search: value })), 700);
+              }}
             />
 
             <Dropdown overlay={menuSort}>
@@ -198,7 +255,9 @@ const Profile = () => {
               </Button>
             </Dropdown>
 
-            {isLoading && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
+            {getLoadingState(key) && (
+              <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+            )}
           </span>
 
           <Divider />
@@ -217,8 +276,6 @@ const Profile = () => {
             blogs.map((blog) => (
               <BlogList
                 key={blog._id}
-                authorName={blog.authorName}
-                authorImage={blog.authorImage}
                 blog={blog}
                 editable={blog.author === (authUser && authUser._id)}
               />
@@ -230,22 +287,22 @@ const Profile = () => {
   };
 
   const items = [
-    { key: 'allblogs', icon: BsBook },
-    { key: 'published', icon: MdOutlinePublishedWithChanges },
-    { key: 'unpublished', icon: MdOutlineUnpublished },
-    { key: 'bookmarks', icon: BsBookmarkCheck },
-    { key: 'liked', icon: BsHeart },
+    { key: ALL_BLOGS, icon: BsBook },
+    { key: PUBLISHED, icon: MdOutlinePublishedWithChanges },
+    { key: UNPUBLISHED, icon: MdOutlineUnpublished },
+    { key: BOOKMARKED, icon: BsBookmarkCheck },
+    { key: LIKED, icon: BsHeart },
   ].map(({ key, icon }) => {
     switch (key) {
-      case 'allblogs':
-      case 'published':
-      case 'unpublished':
+      case ALL_BLOGS:
+      case PUBLISHED:
+      case UNPUBLISHED:
         return getTabItems(capitalize(key), key, icon, blogs, 'Create One', '/blog/create');
 
-      case 'bookmarks':
+      case BOOKMARKED:
         return getTabItems(capitalize(key), key, icon, bookmarkedBlogs, 'Browse Blogs', '/');
 
-      case 'liked':
+      case LIKED:
         return getTabItems(capitalize(key), key, icon, likedBlogs, 'Browse Blogs', '/');
     }
   });
@@ -311,7 +368,7 @@ const Profile = () => {
             className='w-full'
             defaultActiveKey='blogs'
             items={items as any}
-            onTabClick={(key) => dispatch(changeKey({ key }))}
+            onTabClick={(key: any) => dispatch(changeKey({ key }))}
             centered
           />
         </main>
@@ -342,7 +399,10 @@ export const getServerSideProps: GetServerSideProps = async (
 
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.getAllBlogs({}),
-    queryKey: [GET_AUTH_BLOGS, { genre: [], pageSize: 20, sort: 'likes', sortOrder: 'asc' }],
+    queryKey: [
+      GET_AUTH_BLOGS,
+      { genre: [], pageSize: 20, sort: LIKES, sortOrder: ASCENDING, search: '' },
+    ],
   });
 
   await queryClient.prefetchQuery({

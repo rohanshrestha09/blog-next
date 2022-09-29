@@ -32,22 +32,6 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
     onError: (err: Error) => errorNotification(err),
   });
 
-  const getDrawerItems = (
-    label: ReactNode,
-    key: Key,
-    Icon: IconType,
-    children?: MenuItem[],
-    type?: 'group'
-  ): MenuItem => {
-    return {
-      key,
-      icon: <Icon size={18} />,
-      children,
-      label,
-      type,
-    } as MenuItem;
-  };
-
   const getPopoverContent = (name: string) => (
     <Popover
       autoAdjustOverflow={false}
@@ -81,6 +65,22 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
     </Popover>
   );
 
+  const getDrawerItems = (
+    label: ReactNode,
+    key: Key,
+    Icon: IconType,
+    children?: MenuItem[],
+    type?: 'group'
+  ): MenuItem => {
+    return {
+      key,
+      icon: <Icon size={18} />,
+      children,
+      label,
+      type,
+    } as MenuItem;
+  };
+
   const items: MenuItem[] = [
     { key: 'logout', name: 'Logout', icon: AiOutlineLogout },
     { key: 'notifications', name: 'Notifications', icon: BsAppIndicator },
@@ -105,6 +105,9 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
       case 'notifications':
         return setIsPopOverOpen(true);
 
+      case 'blogsansar':
+        return push('/');
+
       default:
         return push(key);
     }
@@ -123,7 +126,6 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
               className={`font-megrim text-current font-black md:text-3xl text-2xl cursor-pointer lg:after:content-["BlogSansar"] ${
                 isDrawer ? 'after:content-["BlogSansar"]' : 'after:content-["B"]'
               }`}
-              onClick={() => push('/')}
             ></span>
           ),
         },

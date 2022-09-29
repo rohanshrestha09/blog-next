@@ -2,6 +2,9 @@ import axios, { AxiosResponse } from 'axios';
 import { IBlogs, IBookmarks, ILiked } from '../interface/blog';
 import IMessage from '../interface/message';
 import { IAuth, IUserData } from '../interface/user';
+import { SORT_TYPE, SORT_ORDER } from '../constants/reduxKeys';
+
+const { ASCENDING } = SORT_ORDER;
 
 class Auth {
   private readonly cookie;
@@ -17,7 +20,7 @@ class Auth {
   ): Promise<IAuth & IUserData & IBlogs & IBookmarks & ILiked & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `https://blogsansar.vercel.app/api/auth/${url}`,
+      url: `http://localhost:3000/api/auth/${url}`,
       data,
       headers: { Cookie: this.cookie },
       withCredentials: true,
@@ -42,19 +45,21 @@ class Auth {
     genre,
     sortOrder,
     isPublished,
+    search,
   }: {
-    sort?: string;
+    sort?: SORT_TYPE;
     pageSize?: number;
     genre?: string[] | [];
-    sortOrder?: string;
+    sortOrder?: SORT_ORDER;
     isPublished?: boolean;
+    search?: string;
   }): Promise<IBlogs['blogs']> =>
     await (
       await this.axiosFn(
         'get',
         `blog?genre=${genre || ''}&sort=${sort || ''}&pageSize=${pageSize || 20}&sortOrder=${
-          sortOrder || 'asc'
-        }&isPublished=${typeof isPublished === 'boolean' ? isPublished : ''}`
+          sortOrder || ASCENDING
+        }&isPublished=${typeof isPublished === 'boolean' ? isPublished : ''}&search=${search || ''}`
       )
     ).blogs;
 
@@ -63,18 +68,20 @@ class Auth {
     pageSize,
     genre,
     sortOrder,
+    search,
   }: {
-    sort?: string;
+    sort?: SORT_TYPE;
     pageSize?: number;
     genre?: string[] | [];
-    sortOrder?: string;
+    sortOrder?: SORT_ORDER;
+    search?: string;
   }): Promise<IBookmarks['bookmarks']> =>
     await (
       await this.axiosFn(
         'get',
         `blog/bookmark?genre=${genre || ''}&sort=${sort || ''}&sortOrder=${
-          sortOrder || 'asc'
-        }&pageSize=${pageSize || 20}`
+          sortOrder || ASCENDING
+        }&pageSize=${pageSize || 20}&search=${search || ''}`
       )
     ).bookmarks;
 
@@ -83,18 +90,20 @@ class Auth {
     pageSize,
     genre,
     sortOrder,
+    search,
   }: {
-    sort?: string;
+    sort?: SORT_TYPE;
     pageSize?: number;
     genre?: string[] | [];
-    sortOrder?: string;
+    sortOrder?: SORT_ORDER;
+    search?: string;
   }): Promise<ILiked['liked']> =>
     await (
       await this.axiosFn(
         'get',
         `blog/liked?genre=${genre || ''}&sort=${sort || ''}&sortOrder=${
-          sortOrder || 'asc'
-        }&pageSize=${pageSize || 20}`
+          sortOrder || ASCENDING
+        }&pageSize=${pageSize || 20}&search=${search || ''}`
       )
     ).liked;
 

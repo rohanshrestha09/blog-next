@@ -18,15 +18,16 @@ import ConfirmDelete from '../shared/ConfirmDelete';
 import { closeDeleteModal, openDeleteModal } from '../../store/deleteModalSlice';
 import { GET_AUTH_BLOGS } from '../../constants/queryKeys';
 import type IMessage from '../../interface/message';
+import { errorNotification, successNotification } from '../../utils/notification';
 
 interface Props {
   editable?: boolean;
-  authorName: string;
-  authorImage: string | null;
   blog: {
     _id: string;
     title: string;
     content: string;
+    authorName: string;
+    authorImage: string | null;
     image: string;
     genre: string[];
     likes: number;
@@ -37,9 +38,18 @@ interface Props {
 
 const BlogList: React.FC<Props> = ({
   editable,
-  authorName,
-  authorImage,
-  blog: { _id, title, content, image, genre, likes, isPublished, createdAt },
+  blog: {
+    _id: id,
+    title,
+    content,
+    authorName,
+    authorImage,
+    image,
+    genre,
+    likes,
+    isPublished,
+    createdAt,
+  },
 }) => {
   const router: NextRouter = useRouter();
 
@@ -54,27 +64,27 @@ const BlogList: React.FC<Props> = ({
       blogAxios.publishBlog({ id, shouldPublish }),
     {
       onSuccess: (res: IMessage) => {
-        message.success(res.message);
+        successNotification(res.message);
         queryClient.refetchQueries([GET_AUTH_BLOGS]);
       },
-      onError: (err: Error | any) => message.error(err.response.data.message),
+      onError: (err: Error | any) => errorNotification(err),
     }
   );
 
   const handleDeleteBlog = useMutation((id: string) => blogAxios.deleteBlog(id), {
     onSuccess: (res: IMessage) => {
-      message.success(res.message);
+      successNotification(res.message);
       queryClient.refetchQueries([GET_AUTH_BLOGS]);
       dispatch(closeDeleteModal());
     },
-    onError: (err: Error | any) => message.error(err.response.data.message),
+    onError: (err: Error | any) => errorNotification(err),
   });
 
   const popoverContent = (
     <>
       <Space
         className='cursor-pointer hover:bg-gray-200 hover:text-black rounded-lg px-2 py-1.5 transition-all'
-        onClick={() => router.push(`/blog/update/${_id}`)}
+        onClick={() => router.push(`/blog/update/${id}`)}
       >
         <FiEdit3 />
         Edit
@@ -87,7 +97,7 @@ const BlogList: React.FC<Props> = ({
           isPublished ? 'hover:bg-red-500' : 'hover:bg-green-500'
         } inline-flex items-center gap-2 border-0 focus:text-current hover:!text-white rounded-lg px-2 py-1.5 transition-all`}
         loading={handlePublishBlog.isLoading}
-        onClick={() => handlePublishBlog.mutate({ id: _id, shouldPublish: !isPublished })}
+        onClick={() => handlePublishBlog.mutate({ id, shouldPublish: !isPublished })}
       >
         <MdOutlinePublishedWithChanges />
         {isPublished ? 'Unpublish' : 'Publish'}
@@ -105,7 +115,7 @@ const BlogList: React.FC<Props> = ({
 
       <ConfirmDelete
         isLoading={handleDeleteBlog.isLoading}
-        deleteMutation={() => handleDeleteBlog.mutate(_id)}
+        deleteMutation={() => handleDeleteBlog.mutate(id)}
       />
     </>
   );

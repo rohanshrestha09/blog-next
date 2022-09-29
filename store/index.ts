@@ -13,10 +13,6 @@ const store = configureStore({
     drawer: drawerReducer,
     authBlog: authBlogReducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
 });
 
 export default store;

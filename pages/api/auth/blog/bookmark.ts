@@ -18,7 +18,7 @@ const handler: NextApiHandler = async (
 
   switch (method) {
     case 'GET':
-      let query = { blogs: bookmarks, isPublished: true };
+      let query = { _id: bookmarks, isPublished: true };
 
       if (genre)
         query = Object.assign(
@@ -31,9 +31,12 @@ const handler: NextApiHandler = async (
         );
 
       if (search)
-        query = Object.assign({
-          title: { $inc: typeof search === 'string' && search.toLowerCase() },
-        });
+        query = Object.assign(
+          {
+            $text: { $search: typeof search === 'string' && search.toLowerCase() },
+          },
+          query
+        );
 
       try {
         return res.status(200).json({
