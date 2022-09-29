@@ -54,7 +54,7 @@ const UpdateBlog: NextPage = () => {
 
   const { data: blog } = useQuery({
     queryFn: () => blogAxios.getBlog(blogId as string),
-    queryKey: [GET_BLOG],
+    queryKey: [GET_BLOG, blogId],
     onSuccess: (blog) => form.setFieldsValue({ title: blog.title, genre: blog.genre }),
   });
 
@@ -264,14 +264,16 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const blogAxios = new BlogAxios(ctx.req && ctx.req.headers.cookie);
 
+  ctx.res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
+
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.auth(),
     queryKey: [AUTH],
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getBlog(ctx.params ? (ctx.params._blogId as string) : ''),
-    queryKey: [GET_BLOG],
+    queryFn: () => blogAxios.getBlog(ctx.params ? (ctx.params.blogId as string) : ''),
+    queryKey: [GET_BLOG, ctx.params && ctx.params.blogId],
   });
 
   return {
