@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
 import moment from 'moment';
@@ -50,7 +51,6 @@ import {
 } from '../../constants/queryKeys';
 import type { IBlogData } from '../../interface/blog';
 import type { RootState } from '../../store';
-import { useEffect } from 'react';
 
 const Profile = () => {
   const router: NextRouter = useRouter();
@@ -92,12 +92,6 @@ const Profile = () => {
     queryFn: () => blogAxios.getGenre(),
     queryKey: [GET_GENRE],
   });
-
-  useEffect(() => {
-    if (key === 'allblogs') {
-      refetch();
-    }
-  }, [sort, sortOrder, genre, isPublished, pageSize, key, refetch]);
 
   const menuSort = (
     <Menu
@@ -259,6 +253,8 @@ const Profile = () => {
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
+      {console.log(isLoading)}
+
       {authUser && (
         <main className='2xl:w-3/4 w-full flex flex-col items-center sm:gap-8 gap-4 py-2'>
           <div className='w-full flex sm:flex-row flex-col items-center justify-center sm:gap-14 gap-4'>
@@ -332,7 +328,6 @@ export const getServerSideProps: GetServerSideProps = async (
   const queryClient = new QueryClient();
 
   const authAxios = new AuthAxios(ctx.req && ctx.req.headers.cookie);
-  const queryKey = { genre: [], pageSize: 20, sort: 'likes', sortOrder: 'asc' };
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
@@ -343,7 +338,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.getAllBlogs({}),
-    queryKey: [GET_AUTH_BLOGS, queryKey],
+    queryKey: [GET_AUTH_BLOGS, { genre: [], pageSize: 20, sort: 'likes', sortOrder: 'asc' }],
   });
 
   return {

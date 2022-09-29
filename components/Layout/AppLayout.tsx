@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { Layout, Drawer, Affix } from 'antd';
+import { Layout, Drawer } from 'antd';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { MdOutlineKeyboardArrowRight } from 'react-icons/md';
@@ -43,11 +43,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
         <Nav additionalProps='w-72' isDrawer />
       </Drawer>
 
-      <Affix offsetTop={1}>
-        <Sider breakpoint='lg' className='bg-inherit sm:block hidden' width={250}>
-          <Nav additionalProps='bg-inherit border-none' />
-        </Sider>
-      </Affix>
+      <Sider breakpoint='lg' className='bg-inherit sm:block hidden' width={250}>
+        <Nav additionalProps='bg-inherit border-none' />
+      </Sider>
 
       <Layout className='border-x border-gray-700 py-4 sm:px-8 px-4'>
         <Content>{children}</Content>

@@ -174,7 +174,7 @@ const UpdateBlog: NextPage = () => {
           </Form.Item>
 
           <div className='w-full flex md:flex-row flex-col md:gap-3'>
-            <Form.Item className='sm:mb-2'>
+            <Form.Item className='md:mb-2'>
               <Upload {...fileUploadOptions}>
                 <Button
                   className='rounded-lg flex items-center py-[1.23rem] text-sm'

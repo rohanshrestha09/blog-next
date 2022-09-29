@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { IBlogs } from '../interface/blog';
-import { ILogin, IToken, IUser, IAuth } from '../interface/user';
+import { ILogin, IToken, IUser } from '../interface/user';
 
 class User {
   private readonly cookie;
@@ -16,7 +16,7 @@ class User {
   ): Promise<IUser & IToken & ILogin & IBlogs> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `http://localhost:3000/api/user/${url}`,
+      url: `https://blogsansar.vercel.app/api/user/${url}`,
       data,
       headers: { Cookie: this.cookie },
       withCredentials: true,
