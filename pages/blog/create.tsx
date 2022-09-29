@@ -245,8 +245,6 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const authAxios = new AuthAxios(ctx.req && ctx.req.headers.cookie);
 
-  ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
-
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.auth(),
     queryKey: [AUTH],

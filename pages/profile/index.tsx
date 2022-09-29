@@ -124,8 +124,12 @@ const Profile = () => {
               value={sortOrder}
             >
               <Space direction='vertical'>
-                <Radio value='asc'>Ascending</Radio>
-                <Radio value='desc'>Descending</Radio>
+                <Radio value='asc'>
+                  Ascending <AiOutlineSortAscending className='inline' />
+                </Radio>
+                <Radio value='desc'>
+                  Descending <AiOutlineSortDescending className='inline' />
+                </Radio>
               </Space>
             </Radio.Group>
           ),
@@ -326,8 +330,6 @@ export const getServerSideProps: GetServerSideProps = async (
   const queryClient = new QueryClient();
 
   const authAxios = new AuthAxios(ctx.req && ctx.req.headers.cookie);
-
-  ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.auth(),

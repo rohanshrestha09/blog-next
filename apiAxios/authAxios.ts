@@ -17,7 +17,7 @@ class Auth {
   ): Promise<IAuth & IUserData & IBlogs & IBookmarks & ILiked & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `https://blogsansar.vercel.app/api/auth/${url}`,
+      url: `http://localhost:3000/api/auth/${url}`,
       data,
       headers: { Cookie: this.cookie },
       withCredentials: true,

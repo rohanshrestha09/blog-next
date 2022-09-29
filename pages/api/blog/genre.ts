@@ -13,6 +13,8 @@ const handler: NextApiHandler = async (
 ) => {
   const { method } = req;
 
+  res.setHeader('Cache-Control', 'public, s-maxage=86400');
+
   return method === 'GET'
     ? res.status(200).json({ genre, message: 'Genre Fetched Successfully' })
     : res.status(405).json({ message: 'Method not allowed' });
