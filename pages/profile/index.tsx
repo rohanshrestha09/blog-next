@@ -253,8 +253,6 @@ const Profile = () => {
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      {console.log(isLoading)}
-
       {authUser && (
         <main className='2xl:w-3/4 w-full flex flex-col items-center sm:gap-8 gap-4 py-2'>
           <div className='w-full flex sm:flex-row flex-col items-center justify-center sm:gap-14 gap-4'>
