@@ -14,7 +14,6 @@ import {
 import { Editor } from '@tinymce/tinymce-react';
 import { Form, Input, Button, Upload, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import AuthAxios from '../../../apiAxios/authAxios';
 import BlogAxios from '../../../apiAxios/blogAxios';
 import { closeDeleteModal, openDeleteModal } from '../../../store/deleteModalSlice';
 import ConfirmDelete from '../../../components/shared/ConfirmDelete';
@@ -55,7 +54,6 @@ const UpdateBlog: NextPage = () => {
   const { data: blog } = useQuery({
     queryFn: () => blogAxios.getBlog(blogId as string),
     queryKey: [GET_BLOG, blogId],
-    onSuccess: (blog) => form.setFieldsValue({ title: blog.title, genre: blog.genre }),
   });
 
   const fileUploadOptions = {
@@ -113,14 +111,15 @@ const UpdateBlog: NextPage = () => {
   });
 
   return (
-    <div className='w-full flex flex-col items-center'>
+    <div className='w-full flex justify-center'>
       <Head>
         <title>Update post</title>
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      <main className='2xl:w-4/5 xl:w-full md:w-4/5 w-full flex flex-col gap-4'>
-        <header className='text-2xl uppercase'>Edit blog</header>
+      <main className='xl:w-full md:w-4/5 w-full flex flex-col'>
+        <header className='text-2xl uppercase pb-4'>Edit Blog</header>
+
         <Form
           autoComplete='off'
           form={form}
@@ -129,7 +128,11 @@ const UpdateBlog: NextPage = () => {
           name='basic'
           requiredMark={false}
         >
-          <Form.Item name='title' rules={[{ required: true, message: 'Please input title' }]}>
+          <Form.Item
+            name='title'
+            initialValue={blog && blog.title}
+            rules={[{ required: true, message: 'Please input title' }]}
+          >
             <Input className='rounded-lg px-4 py-2.5 placeholder:text-base' placeholder='Title' />
           </Form.Item>
 
@@ -188,6 +191,7 @@ const UpdateBlog: NextPage = () => {
             <Form.Item
               className='w-full'
               name='genre'
+              initialValue={blog && blog.genre}
               rules={[
                 {
                   required: true,
@@ -218,7 +222,8 @@ const UpdateBlog: NextPage = () => {
 
           <Form.Item>
             <Button
-              className='h-10 uppercase border-white rounded-lg'
+              type='primary'
+              className='h-10 uppercase rounded-lg bg-[#1475D3]'
               loading={handleUpdateBlog.isLoading}
               onClick={() =>
                 form.validateFields().then((values) =>
@@ -233,6 +238,7 @@ const UpdateBlog: NextPage = () => {
             </Button>
 
             <Button
+              type='primary'
               className='h-10 mx-2 rounded-lg uppercase'
               onClick={() => dispatch(openDeleteModal())}
               danger
@@ -260,16 +266,9 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
-  const authAxios = new AuthAxios(ctx.req && ctx.req.headers.cookie);
-
   const blogAxios = new BlogAxios(ctx.req && ctx.req.headers.cookie);
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
-
-  await queryClient.prefetchQuery({
-    queryFn: () => authAxios.auth(),
-    queryKey: [AUTH],
-  });
 
   await queryClient.prefetchQuery({
     queryFn: () => blogAxios.getBlog(ctx.params ? (ctx.params.blogId as string) : ''),

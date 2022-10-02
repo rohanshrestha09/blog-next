@@ -13,11 +13,12 @@ export interface IBlogData extends IMessage {
   content: string;
   genre: string[];
   likers: string[] | [];
-  likes: number;
+  likesCount: number;
   viewers: string[] | [];
   views: number;
   isPublished: boolean;
   comments: { commenter: string; comment: string }[] | [];
+  commentsCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,10 +33,6 @@ export interface IBlogs extends IMessage {
 
 export interface IBookmarks extends IMessage {
   bookmarks: IBlogData[];
-}
-
-export interface ILiked extends IMessage {
-  liked: IBlogData[];
 }
 
 export interface IGetGenre extends IMessage {

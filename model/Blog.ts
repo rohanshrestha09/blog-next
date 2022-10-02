@@ -51,11 +51,10 @@ const BlogSchema = new mongoose.Schema(
       },
     },
     likers: { type: [Schema.Types.ObjectId], default: [] },
-    likes: { type: Number, default: 0 },
-    viewers: { type: [Schema.Types.ObjectId], default: [] },
-    views: { type: Number, default: 0 },
+    likesCount: { type: Number, default: 0 },
     isPublished: { type: Boolean, default: false },
     comments: { type: [{ commenter: Schema.Types.ObjectId, comment: String }], default: [] },
+    commentsCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

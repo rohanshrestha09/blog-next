@@ -1,9 +1,16 @@
-export enum MENUKEYS {
+export enum NAV_KEYS {
+  HOME = '/',
+  PROFILE = '/profile',
+  BOOKMARKS = '/blog/bookmarks',
+  CREATE = '/blog/create',
+  NOTIFICATIONS = '/notifications',
+  LOGOUT = 'logout',
+}
+
+export enum PROFILE_KEYS {
   ALL_BLOGS = 'allblogs',
   PUBLISHED = 'published',
   UNPUBLISHED = 'unpublished',
-  BOOKMARKED = 'bookmarked',
-  LIKED = 'liked',
 }
 
 export enum SORT_TYPE {

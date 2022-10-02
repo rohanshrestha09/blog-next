@@ -91,14 +91,14 @@ const CreateBlog: NextPage = () => {
   );
 
   return (
-    <div className='w-full flex flex-col items-center'>
+    <div className='w-full flex justify-center'>
       <Head>
         <title>Create a post</title>
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      <main className='2xl:w-4/5 xl:w-full md:w-4/5 w-full flex flex-col gap-4'>
-        <header className='text-2xl uppercase'>Create a blog</header>
+      <main className='xl:w-full md:w-4/5 w-full flex flex-col'>
+        <header className='text-2xl uppercase pb-4'>Create a blog</header>
 
         <Form
           autoComplete='off'
@@ -198,7 +198,8 @@ const CreateBlog: NextPage = () => {
 
           <Form.Item>
             <Button
-              className='h-10 uppercase border-white rounded-lg'
+              type='primary'
+              className='h-10 uppercase rounded-lg bg-[#1475D3]'
               loading={handlePostBlog.isLoading}
               onClick={() =>
                 form.validateFields().then((values) =>
@@ -214,7 +215,7 @@ const CreateBlog: NextPage = () => {
             </Button>
 
             <Button
-              className='h-10 mx-2 !bg-gray-200 border-gray-200 !text-black rounded-lg uppercase'
+              className='h-10 mx-2 !bg-gray-200 !text-black rounded-lg uppercase'
               loading={handlePostBlog.isLoading}
               onClick={() =>
                 form.validateFields().then((values) =>
@@ -243,16 +244,9 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
-  const authAxios = new AuthAxios(ctx.req && ctx.req.headers.cookie);
-
   const blogAxios = new BlogAxios(ctx.req && ctx.req.headers.cookie);
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
-
-  await queryClient.prefetchQuery({
-    queryFn: () => authAxios.auth(),
-    queryKey: [AUTH],
-  });
 
   await queryClient.prefetchQuery({
     queryFn: () => blogAxios.getGenre(),

@@ -30,7 +30,6 @@ export interface IUserData {
   imageName: string | null;
   bookmarks: string[] | [];
   blogs: string[] | [];
-  liked: string[] | [];
   bio: string | null;
   website: string | null;
   following: string[] | [];

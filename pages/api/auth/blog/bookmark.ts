@@ -12,7 +12,7 @@ const handler: NextApiHandler = async (
 ) => {
   const {
     method,
-    query: { sort, sortOrder, pageSize, genre, search },
+    query: { pageSize, genre, search },
     auth: { bookmarks },
   } = req;
 
@@ -40,9 +40,7 @@ const handler: NextApiHandler = async (
 
       try {
         return res.status(200).json({
-          bookmarks: await Blog.find(query)
-            .sort({ [(typeof sort === 'string' && sort) || 'likes']: sortOrder === 'asc' ? 1 : -1 })
-            .limit(Number(pageSize || 20)),
+          bookmarks: await Blog.find(query).limit(Number(pageSize || 20)),
           message: 'Blogs Fetched Successfully',
         });
       } catch (err: Error | any) {

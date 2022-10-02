@@ -4,6 +4,7 @@ import loginModalReducer from './loginModalSlice';
 import deleteModalReducer from './deleteModalSlice';
 import drawerReducer from './drawerSlice';
 import authBlogReducer from './authBlogSlice';
+import bookmarkReducer from './bookmarkSlice';
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     deleteModal: deleteModalReducer,
     drawer: drawerReducer,
     authBlog: authBlogReducer,
+    bookmark: bookmarkReducer,
   },
 });
 

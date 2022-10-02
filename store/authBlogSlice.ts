@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { MENUKEYS, SORT_TYPE, SORT_ORDER } from '../constants/reduxKeys';
+import { PROFILE_KEYS, SORT_TYPE, SORT_ORDER } from '../constants/reduxKeys';
 
-const { ALL_BLOGS, PUBLISHED, UNPUBLISHED, BOOKMARKED, LIKED } = MENUKEYS;
+const { ALL_BLOGS, PUBLISHED } = PROFILE_KEYS;
 
 const { LIKES } = SORT_TYPE;
 
@@ -11,19 +11,12 @@ const authBlogSlice = createSlice({
   name: 'authBlog',
   initialState: {
     key: ALL_BLOGS,
-    cachedKey: [] as Array<string>,
     pageSize: 20,
     sort: LIKES,
     sortOrder: ASCENDING,
     genre: [] as Array<string>,
     isPublished: undefined as boolean | undefined,
-    search: {
-      [ALL_BLOGS]: '',
-      [PUBLISHED]: '',
-      [UNPUBLISHED]: '',
-      [BOOKMARKED]: '',
-      [LIKED]: '',
-    },
+    search: '',
   },
   reducers: {
     setPageSize: (state, { payload: { pageSize } }: { payload: { pageSize: number } }) => {
@@ -35,7 +28,10 @@ const authBlogSlice = createSlice({
     ) => {
       return (state = checked
         ? { ...state, genre: [...state.genre, genre] }
-        : { ...state, genre: [...state.genre.filter((val) => val !== genre)] });
+        : {
+            ...state,
+            genre: state.genre.filter((val: string) => val !== genre),
+          });
     },
     setSort: (state, { payload: { sort } }: { payload: { sort: SORT_TYPE } }) => {
       return (state = { ...state, sort });
@@ -44,25 +40,13 @@ const authBlogSlice = createSlice({
       return (state = { ...state, sortOrder });
     },
     setSearch: (state, { payload: { search } }: { payload: { search: string } }) => {
-      return (state = { ...state, search: { ...state.search, [state.key]: search } });
+      return (state = { ...state, search });
     },
-    changeKey: (state, { payload: { key } }: { payload: { key: MENUKEYS } }) => {
+    changeKey: (state, { payload: { key } }: { payload: { key: PROFILE_KEYS } }) => {
       return (state = {
         ...state,
         key,
-        cachedKey:
-          key === BOOKMARKED || key === LIKED
-            ? [...state.cachedKey, key]
-            : state.cachedKey.filter((key) => key !== BOOKMARKED && key !== LIKED),
-        pageSize: 20,
-        sort: LIKES,
-        sortOrder: ASCENDING,
-        genre: [],
-        isPublished: [ALL_BLOGS, PUBLISHED, UNPUBLISHED].includes(key)
-          ? key === ALL_BLOGS
-            ? undefined
-            : key === PUBLISHED
-          : state.isPublished,
+        isPublished: key === ALL_BLOGS ? undefined : key === PUBLISHED,
       });
     },
   },

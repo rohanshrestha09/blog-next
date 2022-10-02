@@ -40,9 +40,9 @@ const ConfirmDelete: React.FC<Props> = ({ isLoading, deleteMutation }) => {
             Cancel
           </Button>
           <Button
+            type='primary'
             className='rounded-lg h-10 uppercase'
             disabled={isLoading}
-            type='primary'
             onClick={deleteMutation}
             danger
           >

@@ -26,7 +26,6 @@ const UserSchema = new mongoose.Schema(
     imageName: { type: String, default: null },
     bookmarks: { type: [Schema.Types.ObjectId], default: [] },
     blogs: { type: [Schema.Types.ObjectId], default: [] },
-    liked: { type: [Schema.Types.ObjectId], default: [] },
     bio: { type: String, default: null },
     website: { type: String, default: null },
     following: { type: [Schema.Types.ObjectId], default: [] },

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import he from 'he';
-import { Avatar, Button, Divider, message, Popover, Space, Tag, Tooltip } from 'antd';
+import { Avatar, Button, Divider, Popover, Space, Tag, Tooltip } from 'antd';
 import { BsHeart, BsThreeDots } from 'react-icons/bs';
 import { VscComment } from 'react-icons/vsc';
 import { FiEdit3 } from 'react-icons/fi';
@@ -16,24 +16,14 @@ import {
 import BlogAxios from '../../apiAxios/blogAxios';
 import ConfirmDelete from '../shared/ConfirmDelete';
 import { closeDeleteModal, openDeleteModal } from '../../store/deleteModalSlice';
+import { errorNotification, successNotification } from '../../utils/notification';
 import { GET_AUTH_BLOGS } from '../../constants/queryKeys';
 import type IMessage from '../../interface/message';
-import { errorNotification, successNotification } from '../../utils/notification';
+import type { IBlogData } from '../../interface/blog';
 
 interface Props {
   editable?: boolean;
-  blog: {
-    _id: string;
-    title: string;
-    content: string;
-    authorName: string;
-    authorImage: string | null;
-    image: string;
-    genre: string[];
-    likes: number;
-    isPublished: boolean;
-    createdAt: Date;
-  };
+  blog: IBlogData;
 }
 
 const BlogList: React.FC<Props> = ({
@@ -46,7 +36,8 @@ const BlogList: React.FC<Props> = ({
     authorImage,
     image,
     genre,
-    likes,
+    likesCount,
+    commentsCount,
     isPublished,
     createdAt,
   },
@@ -90,7 +81,7 @@ const BlogList: React.FC<Props> = ({
         Edit
       </Space>
 
-      <Divider className='bg-gray-200' type='vertical' />
+      <Divider type='vertical' />
 
       <Button
         className={`${
@@ -103,7 +94,7 @@ const BlogList: React.FC<Props> = ({
         {isPublished ? 'Unpublish' : 'Publish'}
       </Button>
 
-      <Divider className='bg-gray-200' type='vertical' />
+      <Divider type='vertical' />
 
       <Space
         className='cursor-pointer hover:bg-red-500 hover:text-white rounded-lg px-2 py-1.5 transition-all'
@@ -122,7 +113,7 @@ const BlogList: React.FC<Props> = ({
 
   return (
     <>
-      <div className='w-full flex flex-col gap-3 sm:px-8'>
+      <div className='w-full flex flex-col gap-3'>
         <Space className='relative'>
           {authorImage ? (
             <Avatar src={<Image alt='' src={authorImage} layout='fill' />} size='small' />
@@ -151,7 +142,7 @@ const BlogList: React.FC<Props> = ({
 
         <div className='w-full flex justify-between sm:gap-12 gap-6 break-words'>
           <Space direction='vertical' size={4}>
-            <p className='sm:text-xl text-base font-bold multiline-truncate-title'>{title}</p>
+            <p className='sm:text-xl text-base multiline-truncate-title'>{title}</p>
 
             <p className='leading-loose multiline-truncate-content'>
               {he.decode(content.replace(/<[^>]+>/g, ''))}
@@ -176,7 +167,7 @@ const BlogList: React.FC<Props> = ({
             <Tooltip title='Likes' placement='bottom'>
               <Space className='flex items-center'>
                 <BsHeart />
-                {likes}
+                {likesCount}
               </Space>
             </Tooltip>
 
@@ -185,7 +176,7 @@ const BlogList: React.FC<Props> = ({
             <Tooltip title='Comment' placement='bottom'>
               <Space className='flex items-center'>
                 <VscComment />
-                {1}
+                {commentsCount}
               </Space>
             </Tooltip>
 

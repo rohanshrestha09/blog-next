@@ -6,6 +6,7 @@ import { MdOutlineKeyboardArrowRight } from 'react-icons/md';
 import Login from './Login';
 import Register from './Register';
 import Nav from '../shared/Nav';
+import ProfileSider from '../Profile';
 import { closeDrawer, openDrawer } from '../../store/drawerSlice';
 import type { RootState } from '../../store';
 
@@ -17,7 +18,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
   const dispatch = useDispatch();
 
   return (
-    <Layout className='font-sans min-h-screen xl:px-36' hasSider>
+    <Layout className='font-sans min-h-screen 2xl:px-36' hasSider>
       <ToastContainer />
 
       <Login />
@@ -43,16 +44,16 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
         <Nav additionalProps='w-72' isDrawer />
       </Drawer>
 
-      <Sider breakpoint='lg' className='bg-inherit sm:block hidden' width={250}>
+      <Sider breakpoint='xl' className='bg-inherit sm:block hidden' width={270}>
         <Nav additionalProps='bg-inherit border-none' />
       </Sider>
 
-      <Layout className='border-x border-gray-700 py-4 sm:px-8 px-4'>
+      <Layout className='border-x border-gray-700 py-[1.20rem] xl:px-12 px-4'>
         <Content>{children}</Content>
       </Layout>
 
-      <Sider breakpoint='xl' className='bg-inherit xl:block hidden' width={250}>
-        <Nav />
+      <Sider className='bg-inherit lg:block hidden py-[1.20rem] xl:px-12 px-4' width={450}>
+        <ProfileSider />
       </Sider>
     </Layout>
   );

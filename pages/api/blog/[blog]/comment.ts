@@ -17,7 +17,7 @@ const handler: NextApiHandler = async (
   const {
     method,
     auth: { _id: authId },
-    blog: { _id: blogId },
+    blog: { _id: blogId, commentsCount },
     body: { comment },
   } = req;
 
@@ -26,6 +26,7 @@ const handler: NextApiHandler = async (
       try {
         await Blog.findByIdAndUpdate(blogId, {
           $push: { comments: { commenter: authId, comment } },
+          commentsCount: commentsCount + 1,
         });
 
         return res.status(200).json({ message: 'Comment Successfull' });
@@ -37,6 +38,7 @@ const handler: NextApiHandler = async (
       try {
         await Blog.findByIdAndUpdate(blogId, {
           $pull: { comments: { commenter: authId, comment } },
+          commentsCount: commentsCount - 1,
         });
 
         return res.status(200).json({ message: 'Comment Deleted Successfully' });
