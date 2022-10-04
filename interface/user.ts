@@ -44,6 +44,14 @@ export interface IUser extends IMessage {
   user: IUserData;
 }
 
-export interface IAuth {
+export interface IAuth extends IMessage {
   auth: IUserData;
+}
+
+export interface IFollowers extends IMessage {
+  followers: IUserData[];
+}
+
+export interface IFollowing extends IMessage {
+  following: IUserData[];
 }

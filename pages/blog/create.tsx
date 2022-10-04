@@ -97,7 +97,7 @@ const CreateBlog: NextPage = () => {
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      <main className='xl:w-full md:w-4/5 w-full flex flex-col'>
+      <main className='w-full flex flex-col'>
         <header className='text-2xl uppercase pb-4'>Create a blog</header>
 
         <Form
@@ -199,7 +199,7 @@ const CreateBlog: NextPage = () => {
           <Form.Item>
             <Button
               type='primary'
-              className='h-10 uppercase rounded-lg bg-[#1475D3]'
+              className='h-10 uppercase rounded-lg bg-[#2374E1]'
               loading={handlePostBlog.isLoading}
               onClick={() =>
                 form.validateFields().then((values) =>

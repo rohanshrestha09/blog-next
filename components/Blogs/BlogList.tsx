@@ -122,11 +122,11 @@ const BlogList: React.FC<Props> = ({
               {authorName[0]}
             </Avatar>
           )}
-          <p className='break-all'>{authorName}</p>
+          <p className='multiline-truncate-name'>{authorName}</p>
 
           <span className='text-2xl leading-none tracking-tighter text-gray-400'>&#x22C5;</span>
 
-          <p className='text-gray-400 text-xs'>{moment(createdAt).format('ll').slice(0, -6)}</p>
+          <p className='w-28 text-gray-400 text-xs'>{moment(createdAt).format('ll')}</p>
 
           {editable && (
             <Popover
@@ -140,7 +140,7 @@ const BlogList: React.FC<Props> = ({
           )}
         </Space>
 
-        <div className='w-full flex justify-between sm:gap-12 gap-6 break-words'>
+        <div className='w-full flex justify-between sm:gap-12 gap-6'>
           <Space direction='vertical' size={4}>
             <p className='sm:text-xl text-base multiline-truncate-title'>{title}</p>
 

@@ -7,7 +7,9 @@ import { IAuth } from '../interface/user';
 import IMessage from '../interface/message';
 
 const bypassAuth = (url: string | undefined, method: string | undefined): boolean =>
-  (url && url.startsWith('/api/blog') && method === 'GET') || false;
+  (url?.startsWith('/api/blog') && method === 'GET') ||
+  (url?.startsWith('/api/blog/genre') && method === 'GET') ||
+  false;
 
 const withAuth = (handler: NextApiHandler) => {
   return async (req: NextApiRequest & IAuth, res: NextApiResponse<IMessage>) => {

@@ -44,7 +44,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
         <Nav additionalProps='w-72' isDrawer />
       </Drawer>
 
-      <Sider breakpoint='xl' className='bg-inherit sm:block hidden' width={270}>
+      <Sider breakpoint='xl' className='bg-inherit sm:block hidden z-10' width={270}>
         <Nav additionalProps='bg-inherit border-none' />
       </Sider>
 
@@ -52,8 +52,8 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
         <Content>{children}</Content>
       </Layout>
 
-      <Sider className='bg-inherit lg:block hidden py-[1.20rem] xl:px-12 px-4' width={450}>
-        <ProfileSider />
+      <Sider className='bg-inherit lg:block hidden py-[1.20rem] xl:px-12 px-4 z-10' width={450}>
+        <ProfileSider isSider />
       </Sider>
     </Layout>
   );

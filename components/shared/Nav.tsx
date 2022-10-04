@@ -46,7 +46,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
       children,
       label,
       type,
-      danger: key === LOGOUT && true,
+      danger: key === LOGOUT,
     } as MenuItem;
   };
 

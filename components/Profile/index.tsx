@@ -1,44 +1,91 @@
-import { Image, Space } from 'antd';
+import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
-import { BiLink, BiUserPlus } from 'react-icons/bi';
-import {
-  BsFacebook,
-  BsTwitter,
-  BsInstagram,
-  BsLinkedin,
-  BsFillCalendarDateFill,
-  BsLink,
-  BsFillInfoCircleFill,
-} from 'react-icons/bs';
-import { FaUserCheck, FaUserPlus } from 'react-icons/fa';
+import { isEmpty, capitalize } from 'lodash';
+import { Empty, Tabs, Divider, Input, Modal } from 'antd';
+import { IconType } from 'react-icons';
+import { BiLink, BiSearch } from 'react-icons/bi';
+import { BsFillCalendarDateFill, BsFillInfoCircleFill } from 'react-icons/bs';
+import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/ri';
 import { useAuth } from '../../utils/UserAuth';
+import AuthAxios from '../../apiAxios/authAxios';
+import { GET_FOLLOWERS } from '../../constants/queryKeys';
+import { PROFILE_SIDER_KEYS } from '../../constants/reduxKeys';
 
-const Profile: React.FC = () => {
+interface Props {
+  isSider?: boolean;
+}
+
+const { FOLLOWERS, FOLLOWING } = PROFILE_SIDER_KEYS;
+
+const Profile: React.FC<Props> = ({ isSider }) => {
   const { authUser } = useAuth();
+
+  const authAxios = new AuthAxios();
+
+  const { data: followers, isLoading } = useQuery({
+    queryFn: () => authAxios.getFollowers({}),
+    queryKey: [GET_FOLLOWERS, { pageSize: 20, search: '' }],
+  });
+
+  let timeout: any = 0;
+
+  const getTabItems = (label: string, key: string, Icon: IconType) => {
+    return {
+      key,
+      label: (
+        <span className='sm:mx-2 mx-auto flex items-center gap-1.5'>
+          <Icon className='inline' /> {`${authUser?.followingCount} ${label}`}
+        </span>
+      ),
+      children: authUser && (
+        <div className='w-full pt-3'>
+          <Input
+            className='rounded-lg py-[5px] bg-black'
+            defaultValue={''}
+            placeholder='Search title...'
+            prefix={<BiSearch />}
+            onChange={({ target: { value } }) => {
+              if (timeout) clearTimeout(timeout);
+            }}
+          />
+
+          <Divider />
+
+          {isEmpty(followers) ? (
+            <Empty>
+              <p className='text-[#1890ff] cursor-pointer hover:text-blue-600'>View Suggestions</p>
+            </Empty>
+          ) : (
+            <></>
+          )}
+        </div>
+      ),
+    };
+  };
+
+  const items = [
+    { key: FOLLOWERS, icon: RiUserFollowLine },
+    { key: FOLLOWING, icon: RiUserAddLine },
+  ].map(({ key, icon }) => getTabItems(capitalize(key), key, icon));
+
   return (
-    <div className='w-full'>
+    <div className={`w-full sm:order-last ${!isSider && 'lg:hidden'}`}>
       {authUser && (
         <main className='w-full flex flex-col'>
-          <header className='text-2xl uppercase break-words pb-4'>More from Rohan Shrestha</header>
+          {isSider && (
+            <header className='text-2xl break-words pb-4'>More from {authUser.fullname}</header>
+          )}
 
-          <div className='flex flex-col gap-3 break-words [&>*]:flex [&>*]:items-center [&>*]:gap-2'>
+          <div
+            className='w-full flex flex-col gap-3 [&>*]:flex [&>*]:items-center [&>*]:gap-2'
+            style={{ overflowWrap: 'anywhere' }}
+          >
             {authUser.bio && (
-              <span>
-                <BsFillInfoCircleFill /> <p> {authUser.bio}</p>
+              <span className='flex-wrap'>
+                <BsFillInfoCircleFill />
+                <p>{authUser.bio}</p>
               </span>
             )}
-
-            <Space size={20}>
-              <span className='flex items-center gap-2'>
-                <FaUserPlus />
-                <p>{authUser.followingCount} following</p>
-              </span>
-
-              <span className='flex items-center gap-2'>
-                <FaUserCheck />
-                <p>{authUser.followerCount} followers</p>
-              </span>
-            </Space>
 
             {authUser.website && (
               <span>
@@ -54,13 +101,29 @@ const Profile: React.FC = () => {
               <p>{`Joined ${moment(authUser.createdAt).format('ll')}`}</p>
             </span>
 
-            <Space wrap size={15}>
-              <BsFacebook />
-              <BsTwitter />
-              <BsInstagram />
-              <BsLinkedin />
-            </Space>
+            {!isSider && (
+              <>
+                <span>
+                  <RiUserFollowFill />
+                  <p className='text-[#1890ff] cursor-pointer hover:text-blue-600'>
+                    Check Followers
+                  </p>
+                </span>
+
+                <Modal open={false} footer={null}>
+                  <Tabs className='w-full' items={items} />
+                </Modal>
+              </>
+            )}
           </div>
+
+          {isSider && (
+            <>
+              <Divider className='mb-3' />
+
+              <Tabs className='w-full' items={items} />
+            </>
+          )}
         </main>
       )}
     </div>

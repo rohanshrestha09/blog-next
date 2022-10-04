@@ -12,7 +12,7 @@ import BlogList from '../../components/Blogs/BlogList';
 import SearchFilter from '../../components/Blogs/SearchFilter';
 import { setSearch } from '../../store/bookmarkSlice';
 import { NAV_KEYS } from '../../constants/reduxKeys';
-import { AUTH, GET_BOOKMARKED_BLOGS, GET_GENRE } from '../../constants/queryKeys';
+import { AUTH, GET_BOOKMARKS, GET_GENRE } from '../../constants/queryKeys';
 import type { RootState } from '../../store';
 
 const { HOME } = NAV_KEYS;
@@ -27,8 +27,8 @@ const Bookmarks: NextPage = () => {
   const authAxios = new AuthAxios();
 
   const { data: blogs, isLoading } = useQuery({
-    queryFn: () => authAxios.getBookmarkedBlogs({ genre, pageSize, search }),
-    queryKey: [GET_BOOKMARKED_BLOGS, { genre, pageSize, search }],
+    queryFn: () => authAxios.getBookmarks({ genre, pageSize, search }),
+    queryKey: [GET_BOOKMARKS, { genre, pageSize, search }],
   });
 
   return (
@@ -48,10 +48,7 @@ const Bookmarks: NextPage = () => {
 
           {isEmpty(blogs) ? (
             <Empty>
-              <Button
-                className='h-10 border-white uppercase rounded-lg'
-                onClick={() => router.push(HOME)}
-              >
+              <Button className='h-10 uppercase rounded-lg' onClick={() => router.push(HOME)}>
                 Browse Blogs
               </Button>
             </Empty>
@@ -88,8 +85,8 @@ export const getServerSideProps: GetServerSideProps = async (
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => authAxios.getBookmarkedBlogs({}),
-    queryKey: [GET_BOOKMARKED_BLOGS, { genre: [], pageSize: 20, search: '' }],
+    queryFn: () => authAxios.getBookmarks({}),
+    queryKey: [GET_BOOKMARKS, { genre: [], pageSize: 20, search: '' }],
   });
 
   await queryClient.prefetchQuery({

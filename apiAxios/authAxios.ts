@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
-import { IBlogs, IBookmarks } from '../interface/blog';
-import IMessage from '../interface/message';
-import { IAuth, IUserData } from '../interface/user';
 import { SORT_TYPE, SORT_ORDER } from '../constants/reduxKeys';
+import { IBlogs, IBookmarks } from '../interface/blog';
+import { IAuth, IFollowers, IFollowing, IUserData } from '../interface/user';
+import IMessage from '../interface/message';
 
 const { LIKES } = SORT_TYPE;
 
@@ -19,7 +19,7 @@ class Auth {
     method: string,
     url: string,
     data?: any
-  ): Promise<IAuth & IUserData & IBlogs & IBookmarks & IMessage> => {
+  ): Promise<IAuth & IUserData & IBlogs & IBookmarks & IFollowers & IFollowing & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
       url: `http://localhost:3000/api/auth/${url}`,
@@ -65,7 +65,7 @@ class Auth {
       )
     ).blogs;
 
-  getBookmarkedBlogs = async ({
+  getBookmarks = async ({
     pageSize,
     genre,
     search,
@@ -77,9 +77,31 @@ class Auth {
     await (
       await this.axiosFn(
         'get',
-        `blog/bookmark?genre=${genre || ''}&pageSize=${pageSize || 20}&search=${search || ''}`
+        `blog/bookmarks?genre=${genre || ''}&pageSize=${pageSize || 20}&search=${search || ''}`
       )
     ).bookmarks;
+
+  getFollowers = async ({
+    pageSize,
+    search,
+  }: {
+    pageSize?: number;
+    search?: string;
+  }): Promise<IFollowers['followers']> =>
+    await (
+      await this.axiosFn('get', `followers?pageSize=${pageSize || 20}&search=${search || ''}`)
+    ).followers;
+
+  getFollowing = async ({
+    pageSize,
+    search,
+  }: {
+    pageSize?: number;
+    search?: string;
+  }): Promise<IFollowing['following']> =>
+    await (
+      await this.axiosFn('get', `following?pageSize=${pageSize || 20}&search=${search || ''}`)
+    ).following;
 
   followUser = async ({
     id,

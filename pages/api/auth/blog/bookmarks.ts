@@ -1,10 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../../../../interface/next';
 import Blog from '../../../../model/Blog';
+import init from '../../../../middleware/init';
 import withAuth from '../../../../middleware/withAuth';
 import { IAuth } from '../../../../interface/user';
 import IMessage from '../../../../interface/message';
 import { IBookmarks } from '../../../../interface/blog';
+
+init();
 
 const handler: NextApiHandler = async (
   req: NextApiRequest & IAuth,

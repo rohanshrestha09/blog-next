@@ -23,3 +23,8 @@ export enum SORT_ORDER {
   ASCENDING = 'asc',
   DESCENDING = 'desc',
 }
+
+export enum PROFILE_SIDER_KEYS {
+  FOLLOWERS = 'followers',
+  FOLLOWING = 'following',
+}

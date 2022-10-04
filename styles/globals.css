@@ -48,15 +48,21 @@
 }
 
 .multiline-truncate-content,
-.multiline-truncate-title {
+.multiline-truncate-title,
+.multiline-truncate-name {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
   overflow: hidden;
 }
 
 .multiline-truncate-title {
   -webkit-line-clamp: 2;
+}
+
+.multiline-truncate-name {
+  -webkit-line-clamp: 1;
 }
 
 @media screen and (max-width: 639px) {
