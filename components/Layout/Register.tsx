@@ -63,6 +63,7 @@ const Register: React.FC = () => {
       Object.keys(formValues).forEach((key) => {
         if (formValues[key]) formData.append(key, formValues[key]);
       });
+
       if (selectedImage) formData.append('image', selectedImage);
 
       return new UserAxios().register(formData);
@@ -105,7 +106,7 @@ const Register: React.FC = () => {
         <Form.Item
           label='Full Name'
           name='fullname'
-          rules={[{ required: true, message: 'Please input your Fullname!' }]}
+          rules={[{ required: true, message: 'Please input your fullname!' }]}
         >
           <Input
             className='rounded-lg p-2'
@@ -117,7 +118,7 @@ const Register: React.FC = () => {
         <Form.Item
           label='Email'
           name='email'
-          rules={[{ required: true, message: 'Please input your Email!' }]}
+          rules={[{ required: true, message: 'Please input your email!' }]}
         >
           <Input
             className='rounded-lg p-2'
@@ -131,7 +132,7 @@ const Register: React.FC = () => {
           label='Password'
           name='password'
           rules={[
-            { required: true, message: 'Please input your Password!' },
+            { required: true, message: 'Please input your password!' },
             {
               validator: (_, value) =>
                 value.length < 8
@@ -159,7 +160,7 @@ const Register: React.FC = () => {
           label='Confirm Password'
           name='confirmPassword'
           rules={[
-            { required: true, message: 'Please input your Password!' },
+            { required: true, message: 'Please input your password!' },
             {
               validator: (_, value) =>
                 value === form.getFieldValue('password')

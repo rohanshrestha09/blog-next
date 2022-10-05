@@ -11,18 +11,20 @@ import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../apiAxios/authAxios';
 import BlogAxios from '../../apiAxios/blogAxios';
-import ProfileSider from '../../components/Profile';
+import ProfileSider from '../../components/Profile/ProfileSider';
 import BlogList from '../../components/Blogs/BlogList';
+import EditProfile from '../../components/Profile/EditProfile';
 import SearchFilter from '../../components/Blogs/SearchFilter';
+import { openModal } from '../../store/modalSlice';
 import { changeKey, setGenre, setSearch, setSort, setSortOrder } from '../../store/authBlogSlice';
 import {
   AUTH,
   GET_AUTH_BLOGS,
   GET_FOLLOWERS,
   GET_FOLLOWING,
-  GET_GENRE
+  GET_GENRE,
 } from '../../constants/queryKeys';
-import { NAV_KEYS } from '../../constants/reduxKeys';
+import { MODAL_KEYS, NAV_KEYS } from '../../constants/reduxKeys';
 import { PROFILE_KEYS, SORT_TYPE, SORT_ORDER } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
 
@@ -33,6 +35,8 @@ const { LIKES } = SORT_TYPE;
 const { ASCENDING } = SORT_ORDER;
 
 const { CREATE } = NAV_KEYS;
+
+const { EDIT_PROFILE } = MODAL_KEYS;
 
 const Profile = () => {
   const router: NextRouter = useRouter();
@@ -61,7 +65,7 @@ const Profile = () => {
           <Icon className='inline' /> {label}
         </span>
       ),
-      children: authUser && (
+      children: (
         <div className='w-full pt-3'>
           <SearchFilter
             hasSort
@@ -95,7 +99,7 @@ const Profile = () => {
     { key: ALL_BLOGS, icon: BsBook },
     { key: PUBLISHED, icon: MdOutlinePublishedWithChanges },
     { key: UNPUBLISHED, icon: MdOutlineUnpublished },
-  ].map(({ key, icon }) => getTabItems(capitalize(key), key, icon));
+  ].map(({ key, icon }) => authUser && getTabItems(capitalize(key), key, icon));
 
   return (
     <div className='w-full flex justify-center'>
@@ -126,9 +130,15 @@ const Profile = () => {
 
             <ProfileSider />
 
-            <Button type='primary' className='sm:order-2 rounded-lg bg-[#2374E1]'>
+            <Button
+              type='primary'
+              className='sm:order-2 rounded-lg bg-[#057AFF]'
+              onClick={() => dispatch(openModal({ key: EDIT_PROFILE }))}
+            >
               Edit Profile
             </Button>
+
+            <EditProfile />
           </div>
 
           <Divider />

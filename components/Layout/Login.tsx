@@ -44,7 +44,6 @@ const Login: React.FC = () => {
       className='font-sans'
       open={isOpen[LOGIN]}
       onCancel={() => dispatch(closeModal({ key: LOGIN }))}
-      destroyOnClose
       footer={null}
     >
       <Form
@@ -54,16 +53,12 @@ const Login: React.FC = () => {
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
-        onFinish={async () =>
-          form.validateFields().then((values) => {
-            handleLogin.mutate(values);
-          })
-        }
+        onFinish={async () => form.validateFields().then((values) => handleLogin.mutate(values))}
       >
         <Form.Item
           label='Email'
           name='email'
-          rules={[{ required: true, message: 'Please input your Email!' }]}
+          rules={[{ required: true, message: 'Please input your email!' }]}
         >
           <Input
             className='rounded-lg p-2'
@@ -76,7 +71,7 @@ const Login: React.FC = () => {
         <Form.Item
           label='Password'
           name='password'
-          rules={[{ required: true, message: 'Please input your Password!' }]}
+          rules={[{ required: true, message: 'Please input your password!' }]}
         >
           <Input.Password
             className='rounded-lg p-2'

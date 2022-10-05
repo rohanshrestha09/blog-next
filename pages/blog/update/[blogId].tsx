@@ -15,7 +15,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { Form, Input, Button, Upload, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import BlogAxios from '../../../apiAxios/blogAxios';
-import { closeDeleteModal, openDeleteModal } from '../../../store/deleteModalSlice';
+import { openModal, closeModal } from '../../../store/modalSlice';
 import ConfirmDelete from '../../../components/shared/ConfirmDelete';
 import {
   errorNotification,
@@ -23,8 +23,11 @@ import {
   warningNotification,
 } from '../../../utils/notification';
 import { AUTH, GET_BLOG, GET_GENRE } from '../../../constants/queryKeys';
+import { MODAL_KEYS } from '../../../constants/reduxKeys';
 import type { IPostBlog } from '../../../interface/blog';
 import type IMessage from '../../../interface/message';
+
+const { DELETE } = MODAL_KEYS;
 
 const UpdateBlog: NextPage = () => {
   const {
@@ -104,7 +107,7 @@ const UpdateBlog: NextPage = () => {
     onSuccess: (res: IMessage) => {
       successNotification(res.message);
       queryClient.refetchQueries([AUTH]);
-      dispatch(closeDeleteModal());
+      dispatch(closeModal({ key: DELETE }));
       push('/profile');
     },
     onError: (err: Error) => errorNotification(err),
@@ -117,142 +120,144 @@ const UpdateBlog: NextPage = () => {
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      <main className='w-full flex flex-col'>
-        <header className='text-2xl uppercase pb-4'>Edit Blog</header>
+      {blog && (
+        <main className='w-full flex flex-col'>
+          <header className='text-2xl uppercase pb-4'>Edit Blog</header>
 
-        <Form
-          autoComplete='off'
-          form={form}
-          initialValues={{ remember: true }}
-          layout='vertical'
-          name='basic'
-          requiredMark={false}
-        >
-          <Form.Item
-            name='title'
-            initialValue={blog && blog.title}
-            rules={[{ required: true, message: 'Please input title' }]}
+          <Form
+            autoComplete='off'
+            form={form}
+            initialValues={{ remember: true }}
+            layout='vertical'
+            name='basic'
+            requiredMark={false}
           >
-            <Input className='rounded-lg px-4 py-2.5 placeholder:text-base' placeholder='Title' />
-          </Form.Item>
-
-          <Form.Item>
-            <Editor
-              apiKey={process.env.NEXT_PUBLIC_TINY_MCE}
-              init={{
-                height: 440,
-                menubar: true,
-                skin: 'oxide-dark',
-                content_css: 'dark',
-                plugins: [
-                  'advlist',
-                  'autolink',
-                  'lists',
-                  'link',
-                  'image',
-                  'charmap',
-                  'preview',
-                  'anchor',
-                  'searchreplace',
-                  'visualblocks',
-                  'code',
-                  'fullscreen',
-                  'insertdatetime',
-                  'media',
-                  'table',
-                  'code',
-                  'help',
-                  'wordcount',
-                ],
-                toolbar:
-                  'undo redo | blocks | ' +
-                  'bold italic forecolor | alignleft aligncenter ' +
-                  'alignright alignjustify | bullist numlist outdent indent | ' +
-                  'removeformat | help',
-                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-              }}
-              initialValue={blog && blog.content}
-              onInit={(evt, editor) => (editorRef.current = editor)}
-            />
-          </Form.Item>
-
-          <div className='w-full flex md:flex-row flex-col md:gap-3'>
-            <Form.Item className='md:mb-2'>
-              <Upload {...fileUploadOptions}>
-                <Button
-                  className='rounded-lg flex items-center py-[1.23rem] text-sm'
-                  icon={<UploadOutlined className='text-lg' />}
-                >
-                  Upload Blog Cover
-                </Button>
-              </Upload>
-            </Form.Item>
-
             <Form.Item
-              className='w-full'
-              name='genre'
-              initialValue={blog && blog.genre}
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select atleast a genre',
-                },
-                {
-                  validator: (_, value) =>
-                    value.length > 4 ? Promise.reject('Max 4 genre allowed.') : Promise.resolve(),
-                },
-              ]}
+              name='title'
+              initialValue={blog.title}
+              rules={[{ required: true, message: 'Please input title' }]}
             >
-              <Select
-                mode='multiple'
-                popupClassName='rounded-lg'
-                placeholder='Select genre (max 4)'
-                size='large'
-                allowClear
-              >
-                {genre &&
-                  genre.map((el) => (
-                    <Option key={el} value={el}>
-                      {el}
-                    </Option>
-                  ))}
-              </Select>
+              <Input className='rounded-lg px-4 py-2.5 placeholder:text-base' placeholder='Title' />
             </Form.Item>
-          </div>
 
-          <Form.Item>
-            <Button
-              type='primary'
-              className='h-10 uppercase rounded-lg bg-[#2374E1]'
-              loading={handleUpdateBlog.isLoading}
-              onClick={() =>
-                form.validateFields().then((values) =>
-                  handleUpdateBlog.mutate({
-                    ...values,
-                    content: editorRef.current && editorRef.current.getContent(),
-                  })
-                )
-              }
-            >
-              Update
-            </Button>
+            <Form.Item>
+              <Editor
+                apiKey={process.env.NEXT_PUBLIC_TINY_MCE}
+                init={{
+                  height: 440,
+                  menubar: true,
+                  skin: 'oxide-dark',
+                  content_css: 'dark',
+                  plugins: [
+                    'advlist',
+                    'autolink',
+                    'lists',
+                    'link',
+                    'image',
+                    'charmap',
+                    'preview',
+                    'anchor',
+                    'searchreplace',
+                    'visualblocks',
+                    'code',
+                    'fullscreen',
+                    'insertdatetime',
+                    'media',
+                    'table',
+                    'code',
+                    'help',
+                    'wordcount',
+                  ],
+                  toolbar:
+                    'undo redo | blocks | ' +
+                    'bold italic forecolor | alignleft aligncenter ' +
+                    'alignright alignjustify | bullist numlist outdent indent | ' +
+                    'removeformat | help',
+                  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                }}
+                initialValue={blog.content}
+                onInit={(evt, editor) => (editorRef.current = editor)}
+              />
+            </Form.Item>
 
-            <Button
-              type='primary'
-              className='h-10 mx-2 rounded-lg uppercase'
-              onClick={() => dispatch(openDeleteModal())}
-              danger
-            >
-              Delete Blog
-            </Button>
-          </Form.Item>
+            <div className='w-full flex md:flex-row flex-col md:gap-3'>
+              <Form.Item className='md:mb-2'>
+                <Upload {...fileUploadOptions}>
+                  <Button
+                    className='rounded-lg flex items-center py-[1.23rem] text-sm'
+                    icon={<UploadOutlined className='text-lg' />}
+                  >
+                    Upload Blog Cover
+                  </Button>
+                </Upload>
+              </Form.Item>
 
-          <ConfirmDelete
-            isLoading={handleDeleteBlog.isLoading}
-            deleteMutation={() => handleDeleteBlog.mutate(blogId as string)}
-          />
-        </Form>
-      </main>
+              <Form.Item
+                className='w-full'
+                name='genre'
+                initialValue={blog.genre}
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please select atleast a genre',
+                  },
+                  {
+                    validator: (_, value) =>
+                      value.length > 4 ? Promise.reject('Max 4 genre allowed.') : Promise.resolve(),
+                  },
+                ]}
+              >
+                <Select
+                  mode='multiple'
+                  popupClassName='rounded-lg'
+                  placeholder='Select genre (max 4)'
+                  size='large'
+                  allowClear
+                >
+                  {genre &&
+                    genre.map((el) => (
+                      <Option key={el} value={el}>
+                        {el}
+                      </Option>
+                    ))}
+                </Select>
+              </Form.Item>
+            </div>
+
+            <Form.Item>
+              <Button
+                type='primary'
+                className='h-10 uppercase rounded-lg bg-[#057AFF]'
+                loading={handleUpdateBlog.isLoading}
+                onClick={() =>
+                  form.validateFields().then((values) =>
+                    handleUpdateBlog.mutate({
+                      ...values,
+                      content: editorRef.current && editorRef.current.getContent(),
+                    })
+                  )
+                }
+              >
+                Update
+              </Button>
+
+              <Button
+                type='primary'
+                className='h-10 mx-2 rounded-lg uppercase'
+                onClick={() => dispatch(openModal({ key: DELETE }))}
+                danger
+              >
+                Delete Blog
+              </Button>
+            </Form.Item>
+
+            <ConfirmDelete
+              isLoading={handleDeleteBlog.isLoading}
+              deleteMutation={() => handleDeleteBlog.mutate(blogId as string)}
+            />
+          </Form>
+        </main>
+      )}
     </div>
   );
 };

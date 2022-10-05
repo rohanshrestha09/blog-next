@@ -6,7 +6,7 @@ import { MdOutlineKeyboardArrowRight } from 'react-icons/md';
 import Login from './Login';
 import Register from './Register';
 import Nav from '../shared/Nav';
-import ProfileSider from '../Profile';
+import ProfileSider from '../Profile/ProfileSider';
 import { closeDrawer, openDrawer } from '../../store/drawerSlice';
 import type { RootState } from '../../store';
 

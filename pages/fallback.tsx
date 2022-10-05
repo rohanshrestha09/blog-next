@@ -27,7 +27,8 @@ const Fallback: NextPage = () => {
           </Button>
 
           <Button
-            className='h-10 uppercase border-white rounded-lg'
+            type='primary'
+            className='h-10 uppercase rounded-lg bg-[#057AFF]'
             onClick={() => dispatch(openModal({ key: LOGIN }))}
           >
             Signin

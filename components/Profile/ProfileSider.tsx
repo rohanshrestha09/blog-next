@@ -63,10 +63,10 @@ const Profile: React.FC<Props> = ({ isSider }) => {
       key,
       label: (
         <span className='sm:mx-2 mx-auto flex items-center gap-1.5'>
-          <Icon className='inline' /> {`${authUser?.followingCount} ${label}`}
+          <Icon className='inline' /> {`${authUser.followingCount} ${label}`}
         </span>
       ),
-      children: authUser && (
+      children: (
         <div className='w-full pt-3'>
           <span className='w-full flex gap-3 items-center'>
             <Input
@@ -100,7 +100,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
   const items = [
     { key: FOLLOWERS, users: followers, icon: RiUserFollowLine },
     { key: FOLLOWING, users: following, icon: RiUserAddLine },
-  ].map(({ key, users, icon }) => getTabItems(capitalize(key), key, icon, users));
+  ].map(({ key, users, icon }) => authUser && getTabItems(capitalize(key), key, icon, users));
 
   return (
     <div className={`w-full sm:order-last ${!isSider && 'lg:hidden'}`}>
