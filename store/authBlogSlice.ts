@@ -19,6 +19,13 @@ const authBlogSlice = createSlice({
     search: '',
   },
   reducers: {
+    changeKey: (state, { payload: { key } }: { payload: { key: PROFILE_KEYS } }) => {
+      return (state = {
+        ...state,
+        key,
+        isPublished: key === ALL_BLOGS ? undefined : key === PUBLISHED,
+      });
+    },
     setPageSize: (state, { payload: { pageSize } }: { payload: { pageSize: number } }) => {
       return (state = { ...state, pageSize });
     },
@@ -41,13 +48,6 @@ const authBlogSlice = createSlice({
     },
     setSearch: (state, { payload: { search } }: { payload: { search: string } }) => {
       return (state = { ...state, search });
-    },
-    changeKey: (state, { payload: { key } }: { payload: { key: PROFILE_KEYS } }) => {
-      return (state = {
-        ...state,
-        key,
-        isPublished: key === ALL_BLOGS ? undefined : key === PUBLISHED,
-      });
     },
   },
 });

@@ -3,11 +3,7 @@ import { IBlogs } from '../interface/blog';
 import { ILogin, IToken, IUser } from '../interface/user';
 
 class User {
-  private readonly cookie;
-
-  constructor(cookie?: any) {
-    this.cookie = cookie;
-  }
+  constructor(private cookie?: any) {}
 
   axiosFn = async (
     method: string,

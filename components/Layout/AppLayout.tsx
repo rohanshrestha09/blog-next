@@ -50,6 +50,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
 
       <Layout className='border-x border-gray-700 py-[1.20rem] xl:px-12 px-4'>
         <Content>{children}</Content>
+        {console.log(1)}
       </Layout>
 
       <Sider className='bg-inherit lg:block hidden py-[1.20rem] xl:px-12 px-4 z-10' width={450}>

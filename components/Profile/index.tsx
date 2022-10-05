@@ -1,15 +1,26 @@
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
 import { isEmpty, capitalize } from 'lodash';
-import { Empty, Tabs, Divider, Input, Modal } from 'antd';
+import { Empty, Tabs, Divider, Input, Modal, Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import { IconType } from 'react-icons';
 import { BiLink, BiSearch } from 'react-icons/bi';
 import { BsFillCalendarDateFill, BsFillInfoCircleFill } from 'react-icons/bs';
 import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/ri';
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../apiAxios/authAxios';
-import { GET_FOLLOWERS } from '../../constants/queryKeys';
+import {
+  openModal,
+  closeModal,
+  changeKey,
+  setPageSize,
+  setSearch,
+} from '../../store/followersSlice';
+import { GET_FOLLOWERS, GET_FOLLOWING } from '../../constants/queryKeys';
 import { PROFILE_SIDER_KEYS } from '../../constants/reduxKeys';
+import type { IFollowers, IFollowing } from '../../interface/user';
+import type { RootState } from '../../store';
 
 interface Props {
   isSider?: boolean;
@@ -18,18 +29,37 @@ interface Props {
 const { FOLLOWERS, FOLLOWING } = PROFILE_SIDER_KEYS;
 
 const Profile: React.FC<Props> = ({ isSider }) => {
+  const { key, isOpen, pageSize, search } = useSelector(
+    (state: RootState) => state.followers,
+    shallowEqual
+  );
+
+  const dispatch = useDispatch();
+
   const { authUser } = useAuth();
 
   const authAxios = new AuthAxios();
 
   const { data: followers, isLoading } = useQuery({
-    queryFn: () => authAxios.getFollowers({}),
-    queryKey: [GET_FOLLOWERS, { pageSize: 20, search: '' }],
+    queryFn: () =>
+      authAxios.getFollowers({ pageSize: pageSize[FOLLOWERS], search: search[FOLLOWERS] }),
+    queryKey: [GET_FOLLOWERS, { pageSize: pageSize[FOLLOWERS], search: search[FOLLOWERS] }],
+  });
+
+  const { data: following } = useQuery({
+    queryFn: () =>
+      authAxios.getFollowing({ pageSize: pageSize[FOLLOWING], search: search[FOLLOWING] }),
+    queryKey: [GET_FOLLOWING, { pageSize: pageSize[FOLLOWING], search: search[FOLLOWING] }],
   });
 
   let timeout: any = 0;
 
-  const getTabItems = (label: string, key: string, Icon: IconType) => {
+  const getTabItems = (
+    label: string,
+    key: string,
+    Icon: IconType,
+    users?: IFollowers['followers'] | IFollowing['following']
+  ) => {
     return {
       key,
       label: (
@@ -39,19 +69,24 @@ const Profile: React.FC<Props> = ({ isSider }) => {
       ),
       children: authUser && (
         <div className='w-full pt-3'>
-          <Input
-            className='rounded-lg py-[5px] bg-black'
-            defaultValue={''}
-            placeholder='Search title...'
-            prefix={<BiSearch />}
-            onChange={({ target: { value } }) => {
-              if (timeout) clearTimeout(timeout);
-            }}
-          />
+          <span className='w-full flex gap-3 items-center'>
+            <Input
+              className='rounded-lg py-[5px] bg-black'
+              defaultValue={search[key as PROFILE_SIDER_KEYS]}
+              placeholder='Search title...'
+              prefix={<BiSearch />}
+              onChange={({ target: { value } }) => {
+                if (timeout) clearTimeout(timeout);
+                timeout = setTimeout(() => dispatch(setSearch({ search: value })), 700);
+              }}
+            />
+
+            {isLoading && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
+          </span>
 
           <Divider />
 
-          {isEmpty(followers) ? (
+          {isEmpty(users) ? (
             <Empty>
               <p className='text-[#1890ff] cursor-pointer hover:text-blue-600'>View Suggestions</p>
             </Empty>
@@ -64,9 +99,9 @@ const Profile: React.FC<Props> = ({ isSider }) => {
   };
 
   const items = [
-    { key: FOLLOWERS, icon: RiUserFollowLine },
-    { key: FOLLOWING, icon: RiUserAddLine },
-  ].map(({ key, icon }) => getTabItems(capitalize(key), key, icon));
+    { key: FOLLOWERS, users: followers, icon: RiUserFollowLine },
+    { key: FOLLOWING, users: following, icon: RiUserAddLine },
+  ].map(({ key, users, icon }) => getTabItems(capitalize(key), key, icon, users));
 
   return (
     <div className={`w-full sm:order-last ${!isSider && 'lg:hidden'}`}>
@@ -105,13 +140,23 @@ const Profile: React.FC<Props> = ({ isSider }) => {
               <>
                 <span>
                   <RiUserFollowFill />
-                  <p className='text-[#1890ff] cursor-pointer hover:text-blue-600'>
+                  <p
+                    className='text-[#1890ff] cursor-pointer hover:text-blue-600'
+                    onClick={() => dispatch(openModal())}
+                  >
                     Check Followers
                   </p>
                 </span>
 
-                <Modal open={false} footer={null}>
-                  <Tabs className='w-full' items={items} />
+                <Modal open={isOpen} onCancel={() => dispatch(closeModal())} footer={null}>
+                  <Tabs
+                    defaultActiveKey={key}
+                    className='w-full'
+                    items={items}
+                    onTabClick={(key) =>
+                      dispatch(changeKey({ key } as { key: PROFILE_SIDER_KEYS }))
+                    }
+                  />
                 </Modal>
               </>
             )}
@@ -121,7 +166,12 @@ const Profile: React.FC<Props> = ({ isSider }) => {
             <>
               <Divider className='mb-3' />
 
-              <Tabs className='w-full' items={items} />
+              <Tabs
+                defaultActiveKey={key}
+                className='w-full'
+                items={items}
+                onTabClick={(key) => dispatch(changeKey({ key } as { key: PROFILE_SIDER_KEYS }))}
+              />
             </>
           )}
         </main>

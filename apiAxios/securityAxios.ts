@@ -2,11 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import IMessage from '../interface/message';
 
 class Security {
-  private readonly cookie;
-
-  constructor(cookie?: any) {
-    this.cookie = cookie;
-  }
+  constructor(private cookie?: any) {}
 
   axiosFn = async (method: string, url: string, data?: any): Promise<IMessage> => {
     const res: AxiosResponse = await axios({

@@ -3,11 +3,7 @@ import { IBlog, IBlogData, IBlogs, IGetGenre } from '../interface/blog';
 import IMessage from '../interface/message';
 
 class Blog {
-  private readonly cookie;
-
-  constructor(cookie?: any) {
-    this.cookie = cookie;
-  }
+  constructor(private cookie?: any) {}
 
   axiosFn = async (
     method: string,

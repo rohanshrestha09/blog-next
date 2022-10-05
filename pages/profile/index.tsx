@@ -11,6 +11,7 @@ import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../apiAxios/authAxios';
 import BlogAxios from '../../apiAxios/blogAxios';
+import ProfileSider from '../../components/Profile';
 import BlogList from '../../components/Blogs/BlogList';
 import SearchFilter from '../../components/Blogs/SearchFilter';
 import { changeKey, setGenre, setSearch, setSort, setSortOrder } from '../../store/authBlogSlice';
@@ -19,12 +20,11 @@ import {
   GET_AUTH_BLOGS,
   GET_FOLLOWERS,
   GET_FOLLOWING,
-  GET_GENRE,
+  GET_GENRE
 } from '../../constants/queryKeys';
 import { NAV_KEYS } from '../../constants/reduxKeys';
 import { PROFILE_KEYS, SORT_TYPE, SORT_ORDER } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
-import ProfileSider from '../../components/Profile';
 
 const { ALL_BLOGS, PUBLISHED, UNPUBLISHED } = PROFILE_KEYS;
 
@@ -131,7 +131,6 @@ const Profile = () => {
             </Button>
           </div>
 
-
           <Divider />
 
           <header className='text-2xl uppercase pb-2'>Your Blogs</header>
@@ -140,7 +139,7 @@ const Profile = () => {
             className='w-full'
             defaultActiveKey={key}
             items={items}
-            onTabClick={(key: any) => dispatch(changeKey({ key }))}
+            onTabClick={(key) => dispatch(changeKey({ key } as { key: PROFILE_KEYS }))}
           />
         </main>
       )}

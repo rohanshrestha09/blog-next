@@ -9,11 +9,7 @@ const { LIKES } = SORT_TYPE;
 const { ASCENDING } = SORT_ORDER;
 
 class Auth {
-  private readonly cookie;
-
-  constructor(cookie?: any) {
-    this.cookie = cookie;
-  }
+  constructor(private cookie?: any) {}
 
   axiosFn = async (
     method: string,
