@@ -1,7 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import registerModalReducer from './registerModalSlice';
-import loginModalReducer from './loginModalSlice';
-import deleteModalReducer from './deleteModalSlice';
+import modalReducer from './modalSlice';
 import drawerReducer from './drawerSlice';
 import authBlogReducer from './authBlogSlice';
 import bookmarkReducer from './bookmarkSlice';
@@ -9,9 +7,7 @@ import followersReducer from './followersSlice';
 
 const store = configureStore({
   reducer: {
-    registerModal: registerModalReducer,
-    loginModal: loginModalReducer,
-    deleteModal: deleteModalReducer,
+    modal: modalReducer,
     drawer: drawerReducer,
     authBlog: authBlogReducer,
     bookmark: bookmarkReducer,

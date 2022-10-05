@@ -11,8 +11,7 @@ import {
   UploadOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { closeRegisterModal } from '../../store/registerModalSlice';
-import { openLoginModal } from '../../store/loginModalSlice';
+import { openModal, closeModal } from '../../store/modalSlice';
 import {
   errorNotification,
   successNotification,
@@ -20,11 +19,14 @@ import {
 } from '../../utils/notification';
 import UserAxios from '../../apiAxios/userAxios';
 import { AUTH } from '../../constants/queryKeys';
+import { MODAL_KEYS } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
 import type { IRegister, IToken } from '../../interface/user';
 
+const { LOGIN, REGISTER } = MODAL_KEYS;
+
 const Register: React.FC = () => {
-  const { isOpen: isRegisterModalOpen } = useSelector((state: RootState) => state.registerModal);
+  const { isOpen } = useSelector((state: RootState) => state.modal);
 
   const dispatch = useDispatch();
 
@@ -70,7 +72,7 @@ const Register: React.FC = () => {
         successNotification(res.message);
         form.resetFields();
         queryClient.refetchQueries([AUTH]);
-        dispatch(closeRegisterModal());
+        dispatch(closeModal({ key: REGISTER }));
       },
       onError: (err: Error) => errorNotification(err),
     }
@@ -80,8 +82,8 @@ const Register: React.FC = () => {
     <Modal
       centered
       className='font-sans'
-      open={isRegisterModalOpen}
-      onCancel={() => dispatch(closeRegisterModal())}
+      open={isOpen[REGISTER]}
+      onCancel={() => dispatch(closeModal({ key: REGISTER }))}
       footer={null}
     >
       <Form
@@ -240,8 +242,8 @@ const Register: React.FC = () => {
             <label
               className='modal-button text-[#0579FD] cursor-pointer'
               onClick={() => {
-                dispatch(openLoginModal());
-                dispatch(closeRegisterModal());
+                dispatch(openModal({ key: LOGIN }));
+                dispatch(closeModal({ key: REGISTER }));
               }}
             >
               Login

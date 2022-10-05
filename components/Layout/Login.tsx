@@ -5,16 +5,18 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Form, Input, Checkbox, Button, Modal } from 'antd';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { UserOutlined, LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
-import { closeLoginModal } from '../../store/loginModalSlice';
-import { openRegisterModal } from '../../store/registerModalSlice';
+import { openModal, closeModal } from '../../store/modalSlice';
 import { errorNotification, successNotification } from '../../utils/notification';
 import UserAxios from '../../apiAxios/userAxios';
 import { AUTH } from '../../constants/queryKeys';
+import { MODAL_KEYS } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
 import type { ILogin, IToken } from '../../interface/user';
 
+const { LOGIN, REGISTER } = MODAL_KEYS;
+
 const Login: React.FC = () => {
-  const { isOpen: isLoginModalOpen } = useSelector((state: RootState) => state.loginModal);
+  const { isOpen } = useSelector((state: RootState) => state.modal);
 
   const dispatch = useDispatch();
 
@@ -29,7 +31,7 @@ const Login: React.FC = () => {
       successNotification(res.message);
       form.resetFields();
       queryClient.refetchQueries([AUTH]);
-      dispatch(closeLoginModal());
+      dispatch(closeModal({ key: LOGIN }));
     },
     onError(err: Error) {
       errorNotification(err);
@@ -40,8 +42,8 @@ const Login: React.FC = () => {
     <Modal
       centered
       className='font-sans'
-      open={isLoginModalOpen}
-      onCancel={() => dispatch(closeLoginModal())}
+      open={isOpen[LOGIN]}
+      onCancel={() => dispatch(closeModal({ key: LOGIN }))}
       destroyOnClose
       footer={null}
     >
@@ -125,8 +127,8 @@ const Login: React.FC = () => {
             <label
               className='modal-button text-[#0579FD] cursor-pointer'
               onClick={() => {
-                dispatch(openRegisterModal());
-                dispatch(closeLoginModal());
+                dispatch(openModal({ key: REGISTER }));
+                dispatch(closeModal({ key: LOGIN }));
               }}
             >
               Create One

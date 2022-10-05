@@ -15,9 +15,10 @@ import {
 } from 'react-icons/md';
 import BlogAxios from '../../apiAxios/blogAxios';
 import ConfirmDelete from '../shared/ConfirmDelete';
-import { closeDeleteModal, openDeleteModal } from '../../store/deleteModalSlice';
+import { openModal, closeModal } from '../../store/modalSlice';
 import { errorNotification, successNotification } from '../../utils/notification';
 import { GET_AUTH_BLOGS } from '../../constants/queryKeys';
+import { MODAL_KEYS } from '../../constants/reduxKeys';
 import type IMessage from '../../interface/message';
 import type { IBlogData } from '../../interface/blog';
 
@@ -25,6 +26,8 @@ interface Props {
   editable?: boolean;
   blog: IBlogData;
 }
+
+const { DELETE } = MODAL_KEYS;
 
 const BlogList: React.FC<Props> = ({
   editable,
@@ -66,7 +69,7 @@ const BlogList: React.FC<Props> = ({
     onSuccess: (res: IMessage) => {
       successNotification(res.message);
       queryClient.refetchQueries([GET_AUTH_BLOGS]);
-      dispatch(closeDeleteModal());
+      dispatch(closeModal({ key: DELETE }));
     },
     onError: (err: Error | any) => errorNotification(err),
   });
@@ -98,7 +101,7 @@ const BlogList: React.FC<Props> = ({
 
       <Space
         className='cursor-pointer hover:bg-red-500 hover:text-white rounded-lg px-2 py-1.5 transition-all'
-        onClick={() => dispatch(openDeleteModal())}
+        onClick={() => dispatch(openModal({ key: DELETE }))}
       >
         <MdOutlineDelete />
         Delete

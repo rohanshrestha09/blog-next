@@ -10,15 +10,10 @@ import { BsFillCalendarDateFill, BsFillInfoCircleFill } from 'react-icons/bs';
 import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/ri';
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../apiAxios/authAxios';
-import {
-  openModal,
-  closeModal,
-  changeKey,
-  setPageSize,
-  setSearch,
-} from '../../store/followersSlice';
+import { changeKey, setPageSize, setSearch } from '../../store/followersSlice';
+import { openModal, closeModal } from '../../store/modalSlice';
 import { GET_FOLLOWERS, GET_FOLLOWING } from '../../constants/queryKeys';
-import { PROFILE_SIDER_KEYS } from '../../constants/reduxKeys';
+import { MODAL_KEYS, PROFILE_SIDER_KEYS } from '../../constants/reduxKeys';
 import type { IFollowers, IFollowing } from '../../interface/user';
 import type { RootState } from '../../store';
 
@@ -28,11 +23,15 @@ interface Props {
 
 const { FOLLOWERS, FOLLOWING } = PROFILE_SIDER_KEYS;
 
+const { FOLLOWERS_MODAL } = MODAL_KEYS;
+
 const Profile: React.FC<Props> = ({ isSider }) => {
-  const { key, isOpen, pageSize, search } = useSelector(
+  const { key, pageSize, search } = useSelector(
     (state: RootState) => state.followers,
     shallowEqual
   );
+
+  const { isOpen } = useSelector((state: RootState) => state.modal);
 
   const dispatch = useDispatch();
 
@@ -142,13 +141,17 @@ const Profile: React.FC<Props> = ({ isSider }) => {
                   <RiUserFollowFill />
                   <p
                     className='text-[#1890ff] cursor-pointer hover:text-blue-600'
-                    onClick={() => dispatch(openModal())}
+                    onClick={() => dispatch(openModal({ key: FOLLOWERS_MODAL }))}
                   >
                     Check Followers
                   </p>
                 </span>
 
-                <Modal open={isOpen} onCancel={() => dispatch(closeModal())} footer={null}>
+                <Modal
+                  open={isOpen[FOLLOWERS_MODAL]}
+                  onCancel={() => dispatch(closeModal({ key: FOLLOWERS_MODAL }))}
+                  footer={null}
+                >
                   <Tabs
                     defaultActiveKey={key}
                     className='w-full'

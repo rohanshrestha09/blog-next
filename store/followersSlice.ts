@@ -6,8 +6,7 @@ const { FOLLOWERS, FOLLOWING } = PROFILE_SIDER_KEYS;
 const followersSice = createSlice({
   name: 'followers',
   initialState: {
-    key: FOLLOWERS as PROFILE_SIDER_KEYS,
-    isOpen: false,
+    key: FOLLOWERS,
     pageSize: {
       [FOLLOWERS]: 20,
       [FOLLOWING]: 20,
@@ -18,12 +17,6 @@ const followersSice = createSlice({
     },
   },
   reducers: {
-    openModal: (state) => {
-      return (state = { ...state, isOpen: true });
-    },
-    closeModal: (state) => {
-      return (state = { ...state, isOpen: false });
-    },
     changeKey: (state, { payload: { key } }: { payload: { key: PROFILE_SIDER_KEYS } }) => {
       return (state = { ...state, key });
     },
@@ -37,6 +30,6 @@ const followersSice = createSlice({
   },
 });
 
-export const { openModal, closeModal, changeKey, setPageSize, setSearch } = followersSice.actions;
+export const { changeKey, setPageSize, setSearch } = followersSice.actions;
 
 export default followersSice.reducer;

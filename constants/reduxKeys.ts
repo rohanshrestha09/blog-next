@@ -7,6 +7,14 @@ export enum NAV_KEYS {
   LOGOUT = 'logout',
 }
 
+export enum MODAL_KEYS {
+  LOGIN = 'login',
+  REGISTER = 'register',
+  DELETE = 'delete',
+  EDIT_PROFILE = 'edit-profile',
+  FOLLOWERS_MODAL = 'followers-modal',
+}
+
 export enum PROFILE_KEYS {
   ALL_BLOGS = 'allblogs',
   PUBLISHED = 'published',
