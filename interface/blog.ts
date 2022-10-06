@@ -1,12 +1,11 @@
 import IMessage from './message';
+import { IUserData } from './user';
 
 type BlogKeys = Record<string, string | string[]>;
 
 export interface IBlogData extends IMessage {
   _id: string;
-  author: string;
-  authorName: string;
-  authorImage: string | null;
+  author: IUserData;
   image: string;
   imageName: string;
   title: string;

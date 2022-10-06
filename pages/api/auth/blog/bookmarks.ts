@@ -43,7 +43,9 @@ const handler: NextApiHandler = async (
 
       try {
         return res.status(200).json({
-          bookmarks: await Blog.find(query).limit(Number(pageSize || 20)),
+          bookmarks: await Blog.find(query)
+            .limit(Number(pageSize || 20))
+            .populate('author'),
           message: 'Blogs Fetched Successfully',
         });
       } catch (err: Error | any) {

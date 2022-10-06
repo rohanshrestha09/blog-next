@@ -1,4 +1,4 @@
-import Image from 'next/image';
+/*import Image from 'next/image';
 import { NextRouter, useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 import { Avatar, Button } from 'antd';
@@ -45,4 +45,5 @@ const NavBar: React.FC = () => {
   );
 };
 
-export default NavBar;
+export default NavBar;*/
+export {}

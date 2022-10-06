@@ -22,9 +22,7 @@ export const genre: string[] = [
 
 const BlogSchema = new mongoose.Schema(
   {
-    author: { type: Schema.Types.ObjectId, required: [true, 'Author missing'] },
-    authorName: { type: String, required: [true, 'Author name missing'] },
-    authorImage: { type: Schema.Types.Mixed, required: [true, 'Author image missing'] },
+    author: { type: Schema.Types.ObjectId, ref: 'User', required: [true, 'Author missing'] },
     image: String,
     imageName: String,
     title: {

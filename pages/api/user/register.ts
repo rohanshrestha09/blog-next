@@ -1,20 +1,17 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../../../interface/next';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
-import fs from 'fs';
 import jwt, { Secret } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { serialize } from 'cookie';
 import User from '../../../model/User';
 import init from '../../../middleware/init';
 import withParseMultipartForm from '../../../middleware/withParseMultipartForm';
+import uploadFile from '../../../middleware/uploadFile';
 import IMessage from '../../../interface/message';
 import IFiles from '../../../interface/files';
 import { IToken } from '../../../interface/user';
-
-const fsPromises = fs.promises;
 
 moment.suppressDeprecationWarnings = true;
 
@@ -34,8 +31,6 @@ const handler: NextApiHandler = async (
 
   if (method === 'POST') {
     const { fullname, email, password, confirmPassword, dateOfBirth } = req.body;
-
-    const storage = getStorage();
 
     try {
       const userExists = await User.findOne({ email });
@@ -68,18 +63,10 @@ const handler: NextApiHandler = async (
 
         const filename = file.mimetype.replace('image/', `${authId}.`);
 
-        const storageRef = ref(storage, `users/${filename}`);
-
-        const metadata = {
-          contentType: file.mimetype,
-        };
-
-        await uploadBytes(storageRef, await fsPromises.readFile(file.filepath), metadata);
-
-        const url = await getDownloadURL(storageRef);
+        const fileUrl = await uploadFile(file, filename);
 
         await User.findByIdAndUpdate(authId, {
-          image: url,
+          image: fileUrl,
           imageName: filename,
         });
       }

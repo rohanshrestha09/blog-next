@@ -1,7 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../../../../interface/next';
-import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-import fs from 'fs';
 import { isEmpty } from 'lodash';
 import User from '../../../../model/User';
 import Blog from '../../../../model/Blog';
@@ -9,6 +7,8 @@ import init from '../../../../middleware/init';
 import withAuth from '../../../../middleware/withAuth';
 import withValidateBlog from '../../../../middleware/withValidateBlog';
 import withParseMultipartForm from '../../../../middleware/withParseMultipartForm';
+import uploadFile from '../../../../middleware/uploadFile';
+import deleteFile from '../../../../middleware/deleteFile';
 import { IBlog } from '../../../../interface/blog';
 import { IAuth } from '../../../../interface/user';
 import IMessage from '../../../../interface/message';
@@ -20,8 +20,6 @@ export const config = {
   },
 };
 
-const fsPromises = fs.promises;
-
 init();
 
 const handler: NextApiHandler = async (
@@ -31,8 +29,6 @@ const handler: NextApiHandler = async (
   const { method } = req;
 
   const { _id: blogId, image, imageName } = req.blog;
-
-  const storage = getStorage();
 
   switch (method) {
     case 'GET':
@@ -54,22 +50,14 @@ const handler: NextApiHandler = async (
           if (!file.mimetype.startsWith('image/'))
             return res.status(403).json({ message: 'Please choose an image' });
 
-          if (image) deleteObject(ref(storage, `blogs/${imageName}`));
+          if (image && imageName) deleteFile(imageName);
 
           const filename = file.mimetype.replace('image/', `${blogId}.`);
 
-          const storageRef = ref(storage, `blogs/${filename}`);
-
-          const metadata = {
-            contentType: file.mimetype,
-          };
-
-          await uploadBytes(storageRef, await fsPromises.readFile(file.filepath), metadata);
-
-          const url = await getDownloadURL(storageRef);
+          const fileUrl = await uploadFile(file, filename);
 
           await Blog.findByIdAndUpdate(blogId, {
-            image: url,
+            image: fileUrl,
             imageName: filename,
           });
         }
@@ -89,7 +77,7 @@ const handler: NextApiHandler = async (
       const { _id: authId } = req.auth;
 
       try {
-        if (image) deleteObject(ref(storage, `blogs/${imageName}`));
+        if (image && imageName) deleteFile(imageName);
 
         await Blog.findByIdAndDelete(blogId);
 

@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+/*import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { AiOutlineHome, AiOutlineLogout } from 'react-icons/ai';
 import { BiMessageSquareEdit, BiUserCircle, BiNotification } from 'react-icons/bi';
@@ -64,4 +64,5 @@ const NavMenu: React.FC = () => {
   );
 };
 
-export default NavMenu;
+export default NavMenu;*/
+export {}

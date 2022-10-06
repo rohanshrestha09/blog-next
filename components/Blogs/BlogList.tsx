@@ -33,10 +33,9 @@ const BlogList: React.FC<Props> = ({
   editable,
   blog: {
     _id: id,
+    author,
     title,
     content,
-    authorName,
-    authorImage,
     image,
     genre,
     likesCount,
@@ -118,14 +117,14 @@ const BlogList: React.FC<Props> = ({
     <>
       <div className='w-full flex flex-col gap-3'>
         <Space className='relative'>
-          {authorImage ? (
-            <Avatar src={<Image alt='' src={authorImage} layout='fill' />} size='small' />
+          {author.image ? (
+            <Avatar src={<Image alt='' src={author.image} layout='fill' />} size='small' />
           ) : (
             <Avatar className='bg-[#1890ff]' size='small'>
-              {authorName[0]}
+              {author.fullname[0]}
             </Avatar>
           )}
-          <p className='multiline-truncate-name'>{authorName}</p>
+          <p className='multiline-truncate-name'>{author.fullname}</p>
 
           <span className='text-2xl leading-none tracking-tighter text-gray-400'>&#x22C5;</span>
 

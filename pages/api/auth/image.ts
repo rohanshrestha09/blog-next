@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../../../interface/next';
-import { deleteObject, getStorage, ref } from 'firebase/storage';
 import User from '../../../model/User';
 import init from '../../../middleware/init';
 import withAuth from '../../../middleware/withAuth';
+import deleteFile from '../../../middleware/deleteFile';
 import { IAuth } from '../../../interface/user';
 import IMessage from '../../../interface/message';
 
@@ -18,10 +18,8 @@ const handler: NextApiHandler = async (
   if (method === 'DELETE') {
     const { _id: authId, image, imageName } = req.auth;
 
-    const storage = getStorage();
-
     try {
-      if (image) deleteObject(ref(storage, `users/${imageName}`));
+      if (image && imageName) deleteFile(imageName);
 
       await User.findByIdAndUpdate(authId, {
         $unset: { image: '', imageName: '' },

@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+/*import { Button } from 'antd';
 import { NextRouter, useRouter } from 'next/router';
 import { useState } from 'react';
 import { IconType } from 'react-icons';
@@ -84,4 +84,5 @@ const Nav: React.FC = () => {
   );
 };
 
-export default Nav;
+export default Nav;*/
+export {}

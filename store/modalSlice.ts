@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { MODAL_KEYS } from '../constants/reduxKeys';
 
-const { LOGIN, REGISTER, DELETE, EDIT_PROFILE, FOLLOWERS_MODAL } = MODAL_KEYS;
+const { LOGIN, REGISTER, DELETE, EDIT_PROFILE, FOLLOWERS_MODAL, PASSWORD_VERIFICATION } =
+  MODAL_KEYS;
 
 const modalSlice = createSlice({
   name: 'modal',
@@ -12,6 +13,7 @@ const modalSlice = createSlice({
       [DELETE]: false,
       [EDIT_PROFILE]: false,
       [FOLLOWERS_MODAL]: false,
+      [PASSWORD_VERIFICATION]: false,
     },
   },
   reducers: {

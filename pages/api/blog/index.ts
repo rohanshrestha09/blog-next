@@ -1,13 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../../../interface/next';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { isEmpty } from 'lodash';
-import fs from 'fs';
 import User from '../../../model/User';
 import Blog from '../../../model/Blog';
 import init from '../../../middleware/init';
 import withAuth from '../../../middleware/withAuth';
 import withParseMultipartForm from '../../../middleware/withParseMultipartForm';
+import uploadFile from '../../../middleware/uploadFile';
 import { IAuth } from '../../../interface/user';
 import IMessage from '../../../interface/message';
 import { IBlogs } from '../../../interface/blog';
@@ -18,8 +17,6 @@ export const config = {
     bodyParser: false,
   },
 };
-
-const fsPromises = fs.promises;
 
 init();
 
@@ -38,7 +35,8 @@ const handler: NextApiHandler = async (
           return res.status(200).json({
             blogs: await Blog.find(genre ? { isPublished: true, genre } : { isPublished: true })
               .sort({ [sort as string]: -1 })
-              .limit(Number(pageSize) || 10),
+              .limit(Number(pageSize) || 10)
+              .populate('author'),
             message: 'Blogs Fetched Successfully',
           });
         } catch (err: Error | any) {
@@ -48,19 +46,15 @@ const handler: NextApiHandler = async (
       break;
 
     case 'POST':
-      const { _id: authId, fullname: authorName, image: authorImage } = req.auth;
+      const { _id: authId } = req.auth;
 
       const { title, content, genre, isPublished } = req.body;
-
-      const storage = getStorage();
 
       try {
         if (isEmpty(req.files)) return res.status(403).json({ message: 'Image required' });
 
         const { _id: blogId } = await Blog.create({
           author: authId,
-          authorName,
-          authorImage,
           title,
           content,
           genre,
@@ -74,18 +68,10 @@ const handler: NextApiHandler = async (
 
         const filename = file.mimetype.replace('image/', `${blogId}.`);
 
-        const storageRef = ref(storage, `blogs/${filename}`);
-
-        const metadata = {
-          contentType: file.mimetype,
-        };
-
-        await uploadBytes(storageRef, await fsPromises.readFile(file.filepath), metadata);
-
-        const url = await getDownloadURL(storageRef);
+        const fileUrl = await uploadFile(file, filename);
 
         await Blog.findByIdAndUpdate(blogId, {
-          image: url,
+          image: fileUrl,
           imageName: filename,
         });
 

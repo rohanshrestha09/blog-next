@@ -9,7 +9,7 @@ const withValidateBlog = (handler: NextApiHandler) => {
     const { blog: blogId } = req.query;
 
     try {
-      const blog = await Blog.findById(blogId);
+      const blog = await Blog.findById(blogId).populate('author');
 
       if (!blog) return res.status(404).json({ message: 'Blog does not exist' });
 

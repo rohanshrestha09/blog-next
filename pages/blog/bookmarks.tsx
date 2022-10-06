@@ -55,7 +55,7 @@ const Bookmarks: NextPage = () => {
           ) : (
             blogs &&
             blogs.map((blog) => (
-              <BlogList key={blog._id} blog={blog} editable={blog.author === authUser._id} />
+              <BlogList key={blog._id} blog={blog} editable={blog.author._id === authUser._id} />
             ))
           )}
         </main>

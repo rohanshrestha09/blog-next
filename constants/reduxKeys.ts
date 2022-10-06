@@ -13,6 +13,7 @@ export enum MODAL_KEYS {
   DELETE = 'delete',
   EDIT_PROFILE = 'edit-profile',
   FOLLOWERS_MODAL = 'followers-modal',
+  PASSWORD_VERIFICATION = 'password',
 }
 
 export enum PROFILE_KEYS {

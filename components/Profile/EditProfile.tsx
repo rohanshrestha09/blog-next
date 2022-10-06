@@ -3,9 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import { Button, DatePicker, Form, Input, Modal, Upload } from 'antd';
-import { UserOutlined, UploadOutlined } from '@ant-design/icons';
-import { BiLink } from 'react-icons/bi';
-import { BsInfoCircle } from 'react-icons/bs';
+import { UserOutlined, UploadOutlined, InfoCircleOutlined, LinkOutlined } from '@ant-design/icons';
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../apiAxios/authAxios';
 import {
@@ -13,13 +11,14 @@ import {
   successNotification,
   warningNotification,
 } from '../../utils/notification';
+import PasswordVerification from '../shared/PasswordVerification';
 import { closeModal, openModal } from '../../store/modalSlice';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
 import { AUTH } from '../../constants/queryKeys';
 import type { RootState } from '../../store';
 import type IMessage from '../../interface/message';
 
-const { EDIT_PROFILE, DELETE } = MODAL_KEYS;
+const { EDIT_PROFILE, PASSWORD_VERIFICATION } = MODAL_KEYS;
 
 const EditProfile = () => {
   const { isOpen } = useSelector((state: RootState) => state.modal);
@@ -70,6 +69,7 @@ const EditProfile = () => {
         form.resetFields();
         queryClient.refetchQueries([AUTH]);
         dispatch(closeModal({ key: EDIT_PROFILE }));
+        dispatch(closeModal({ key: PASSWORD_VERIFICATION }));
       },
       onError: (err: Error) => errorNotification(err),
     }
@@ -77,6 +77,7 @@ const EditProfile = () => {
 
   return (
     <Modal
+      centered
       className='font-sans'
       open={isOpen[EDIT_PROFILE]}
       onCancel={() => dispatch(closeModal({ key: EDIT_PROFILE }))}
@@ -90,12 +91,7 @@ const EditProfile = () => {
         name='form_in_modal'
         requiredMark={false}
         onFinish={async () =>
-          form.validateFields().then((values) =>
-            handleEditProfile.mutate({
-              ...values,
-              dateOfBirth: values.dateOfBirth._d.toString(),
-            })
-          )
+          form.validateFields().then(() => dispatch(openModal({ key: PASSWORD_VERIFICATION })))
         }
       >
         <Form.Item
@@ -110,12 +106,26 @@ const EditProfile = () => {
             prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
           />
         </Form.Item>
+        <Form.Item
+          label='Email'
+          name='email'
+          initialValue={authUser.email}
+          rules={[{ required: true, message: 'Please input your email!' }]}
+        >
+          <Input
+            className='rounded-lg p-2'
+            placeholder='Email'
+            prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
+            type='email'
+            disabled
+          />
+        </Form.Item>
 
         <Form.Item label='Bio' name='bio' initialValue={authUser.bio}>
           <Input
             className='rounded-lg p-2'
             placeholder='Bio'
-            prefix={<BsInfoCircle className='text-gray-600 text-lg mr-2' />}
+            prefix={<InfoCircleOutlined className='text-gray-600 text-lg mr-2' />}
           />
         </Form.Item>
 
@@ -123,10 +133,9 @@ const EditProfile = () => {
           <Input
             className='rounded-lg p-2'
             placeholder='Website'
-            prefix={<BiLink className='text-gray-600 text-lg mr-2' />}
+            prefix={<LinkOutlined className='text-gray-600 text-lg mr-2' />}
           />
         </Form.Item>
-
         <div className='w-full grid grid-cols-5'>
           <Form.Item className='sm:col-span-2 col-span-full' label='Display Picture'>
             <Upload {...fileUploadOptions}>
@@ -154,26 +163,22 @@ const EditProfile = () => {
             <DatePicker className='rounded-lg p-3 w-full' />
           </Form.Item>
         </div>
-
         <Form.Item className='mb-0'>
-          <Button
-            type='primary'
-            className='h-10 bg-[#057AFF] rounded-lg'
-            htmlType='submit'
-            loading={handleEditProfile.isLoading}
-          >
+          <Button type='primary' className='h-10 bg-[#057AFF] rounded-lg' htmlType='submit'>
             Update
           </Button>
-
-          <Button
-            type='primary'
-            className='h-10 mx-2 rounded-lg uppercase'
-            onClick={() => dispatch(openModal({ key: DELETE }))}
-            danger
-          >
-            Delete Profile
-          </Button>
         </Form.Item>
+
+        <PasswordVerification
+          isLoading={handleEditProfile.isLoading}
+          mutation={({ password }) =>
+            handleEditProfile.mutate({
+              ...form.getFieldsValue(true),
+              dateOfBirth: form.getFieldValue('dateOfBirth')._d.toString(),
+              password,
+            })
+          }
+        />
       </Form>
     </Modal>
   );

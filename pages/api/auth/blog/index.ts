@@ -47,7 +47,8 @@ const handler: NextApiHandler = async (
         return res.status(200).json({
           blogs: await Blog.find(query)
             .sort({ [(typeof sort === 'string' && sort) || 'likes']: sortOrder === 'asc' ? 1 : -1 })
-            .limit(Number(pageSize || 20)),
+            .limit(Number(pageSize || 20))
+            .populate('author'),
           message: 'Blogs Fetched Successfully',
         });
       } catch (err: Error | any) {

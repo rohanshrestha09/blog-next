@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../../../interface/next';
-import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { isEmpty } from 'lodash';
 import moment from 'moment';
-import fs from 'fs';
 import init from '../../../middleware/init';
 import withAuth from '../../../middleware/withAuth';
 import User from '../../../model/User';
 import withParseMultipartForm from '../../../middleware/withParseMultipartForm';
 import withValidatePassword from '../../../middleware/withValidatePassword';
+import uploadFile from '../../../middleware/uploadFile';
+import deleteFile from '../../../middleware/deleteFile';
 import { IAuth } from '../../../interface/user';
 import IFiles from '../../../interface/files';
 import IMessage from '../../../interface/message';
@@ -21,8 +21,6 @@ export const config = {
   },
 };
 
-const fsPromises = fs.promises;
-
 init();
 
 const handler: NextApiHandler = async (
@@ -33,8 +31,6 @@ const handler: NextApiHandler = async (
     method,
     auth: { _id: authId, image, imageName },
   } = req;
-
-  const storage = getStorage();
 
   switch (method) {
     case 'GET':
@@ -50,22 +46,14 @@ const handler: NextApiHandler = async (
           if (!file.mimetype.startsWith('image/'))
             return res.status(403).json({ message: 'Please choose an image' });
 
-          if (image) deleteObject(ref(storage, `users/${imageName}`));
+          if (image && imageName) deleteFile(imageName);
 
           const filename = file.mimetype.replace('image/', `${authId}.`);
 
-          const storageRef = ref(storage, `users/${filename}`);
-
-          const metadata = {
-            contentType: file.mimetype,
-          };
-
-          await uploadBytes(storageRef, await fsPromises.readFile(file.filepath), metadata);
-
-          const url = await getDownloadURL(storageRef);
+          const fileUrl = await uploadFile(file, filename);
 
           await User.findByIdAndUpdate(authId, {
-            image: url,
+            image: fileUrl,
             imageName: filename,
           });
         }
@@ -84,7 +72,7 @@ const handler: NextApiHandler = async (
 
     case 'DELETE':
       try {
-        if (image) deleteObject(ref(storage, `users/${imageName}`));
+        if (image && imageName) deleteFile(imageName);
 
         await User.findByIdAndDelete(authId);
 
