@@ -108,7 +108,7 @@ const Login: React.FC = () => {
         <Form.Item>
           <Button
             type='primary'
-            className='w-full h-[3.2rem] bg-[#057AFF] rounded-lg text-base'
+            className='w-full h-[3.2rem] rounded-lg text-base'
             htmlType='submit'
             loading={handleLogin.isLoading}
           >
@@ -120,7 +120,7 @@ const Login: React.FC = () => {
           <span>
             Don&apos;t have an account?{' '}
             <label
-              className='modal-button text-[#0579FD] cursor-pointer'
+              className='text-[#0579FD] cursor-pointer'
               onClick={() => {
                 dispatch(openModal({ key: REGISTER }));
                 dispatch(closeModal({ key: LOGIN }));

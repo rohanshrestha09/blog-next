@@ -57,12 +57,7 @@ const PasswordVerification: React.FC<Props> = ({ isLoading, mutation }) => {
         </Form.Item>
 
         <Form.Item className='mb-0'>
-          <Button
-            type='primary'
-            className='h-10 bg-[#057AFF] rounded-lg'
-            htmlType='submit'
-            loading={isLoading}
-          >
+          <Button type='primary' className='h-10 rounded-lg' htmlType='submit' loading={isLoading}>
             Submit
           </Button>
         </Form.Item>

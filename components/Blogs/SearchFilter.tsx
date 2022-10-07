@@ -98,7 +98,7 @@ const SearchFilter: React.FC<Props> = ({
 
         {hasSort && (
           <Dropdown overlay={menuSort}>
-            <Button className='w-[8.5rem] bg-gray-200 border-gray-200 text-black rounded-lg text-sm flex items-center justify-between px-2'>
+            <Button className='w-[8.5rem] btn-secondary rounded-lg text-sm flex items-center justify-between px-2'>
               <span>{sort && getSortVal(sort)}</span>
               <FaSort />
             </Button>

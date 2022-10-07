@@ -105,6 +105,7 @@ const EditProfile = () => {
             prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
           />
         </Form.Item>
+
         <Form.Item
           label='Email'
           name='email'
@@ -165,7 +166,7 @@ const EditProfile = () => {
         </div>
 
         <Form.Item className='mb-0'>
-          <Button type='primary' className='h-10 bg-[#057AFF] rounded-lg' htmlType='submit'>
+          <Button type='primary' className='h-10 rounded-lg' htmlType='submit'>
             Update
           </Button>
         </Form.Item>

@@ -229,7 +229,7 @@ const Register: React.FC = () => {
         <Form.Item>
           <Button
             type='primary'
-            className='w-full h-[3.2rem] bg-[#057AFF] rounded-lg text-base text-white'
+            className='w-full h-[3.2rem] rounded-lg text-base text-white'
             htmlType='submit'
             loading={handleRegister.isLoading}
           >
@@ -241,7 +241,7 @@ const Register: React.FC = () => {
           <span>
             Already have an account?{' '}
             <label
-              className='modal-button text-[#0579FD] cursor-pointer'
+              className='text-[#0579FD] cursor-pointer'
               onClick={() => {
                 dispatch(openModal({ key: LOGIN }));
                 dispatch(closeModal({ key: REGISTER }));

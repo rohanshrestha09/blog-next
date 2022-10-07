@@ -20,7 +20,7 @@ const Fallback: NextPage = () => {
       <main className='h-full flex justify-center items-center'>
         <Space>
           <Button
-            className='h-10 mx-2 bg-gray-200 border-gray-200 text-black rounded-lg uppercase'
+            className='h-10 mx-2 btn-secondary rounded-lg uppercase'
             onClick={() => dispatch(openModal({ key: REGISTER }))}
           >
             Signup
