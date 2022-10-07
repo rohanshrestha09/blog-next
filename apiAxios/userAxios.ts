@@ -12,7 +12,7 @@ class User {
   ): Promise<IUser & IToken & ILogin & IBlogs> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `http://localhost:3000/api/user/${url}`,
+      url: `https://blogsansar.vercel.app/api/user/${url}`,
       data,
       headers: { Cookie: this.cookie },
       withCredentials: true,
