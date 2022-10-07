@@ -7,6 +7,9 @@ module.exports = {
         sans: ['Poppins', 'sans-serif'],
         megrim: ['Megrim', 'sans-serif'],
       },
+      screens: {
+        '2xl': '1600px',
+      },
     },
   },
 };

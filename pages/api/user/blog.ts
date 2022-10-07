@@ -20,10 +20,11 @@ const handler: NextApiHandler = async (
     case 'GET':
       try {
         return res.status(200).json({
-          blogs: await Blog.find(genre ? { blogs, genre } : { blogs })
+          data: await Blog.find(genre ? { blogs, genre } : { blogs })
             .sort({ [(sort as string) || 'likes']: -1 })
             .limit(Number(pageSize) || 20)
-            .populate('author'),
+            .populate('author', '-password'),
+          count: await Blog.countDocuments(genre ? { blogs, genre } : { blogs }),
           message: 'Blogs Fetched Successfully',
         });
       } catch (err: Error | any) {

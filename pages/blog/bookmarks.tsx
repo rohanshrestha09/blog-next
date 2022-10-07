@@ -46,15 +46,14 @@ const Bookmarks: NextPage = () => {
 
           <SearchFilter search={search} setSearch={setSearch} isLoading={isLoading} />
 
-          {isEmpty(blogs) ? (
+          {isEmpty(blogs?.data) ? (
             <Empty>
               <Button className='h-10 uppercase rounded-lg' onClick={() => router.push(HOME)}>
                 Browse Blogs
               </Button>
             </Empty>
           ) : (
-            blogs &&
-            blogs.map((blog) => (
+            blogs?.data.map((blog) => (
               <BlogList key={blog._id} blog={blog} editable={blog.author._id === authUser._id} />
             ))
           )}

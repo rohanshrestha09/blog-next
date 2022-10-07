@@ -5,13 +5,13 @@ import init from '../../../../middleware/init';
 import withAuth from '../../../../middleware/withAuth';
 import { IAuth } from '../../../../interface/user';
 import IMessage from '../../../../interface/message';
-import { IBookmarks } from '../../../../interface/blog';
+import { IBlogs } from '../../../../interface/blog';
 
 init();
 
 const handler: NextApiHandler = async (
   req: NextApiRequest & IAuth,
-  res: NextApiResponse<IBookmarks | IMessage>
+  res: NextApiResponse<IBlogs | IMessage>
 ) => {
   const {
     method,
@@ -43,9 +43,10 @@ const handler: NextApiHandler = async (
 
       try {
         return res.status(200).json({
-          bookmarks: await Blog.find(query)
+          data: await Blog.find(query)
             .limit(Number(pageSize || 20))
-            .populate('author'),
+            .populate('author', '-password'),
+          count: await Blog.countDocuments(query),
           message: 'Blogs Fetched Successfully',
         });
       } catch (err: Error | any) {

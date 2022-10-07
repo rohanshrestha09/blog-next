@@ -63,7 +63,7 @@ const handler: NextApiHandler = async (
 
         const filename = file.mimetype.replace('image/', `${authId}.`);
 
-        const fileUrl = await uploadFile(file, filename);
+        const fileUrl = await uploadFile(file, `users/${filename}`);
 
         await User.findByIdAndUpdate(authId, {
           image: fileUrl,

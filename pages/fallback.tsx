@@ -11,14 +11,14 @@ const Fallback: NextPage = () => {
   const dispatch = useDispatch();
 
   return (
-    <div>
+    <div className='h-full'>
       <Head>
         <title>Create Next App</title>
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      <main>
-        <Space className='absolute top-0 left-0 right-0 bottom-0 flex justify-center'>
+      <main className='h-full flex justify-center items-center'>
+        <Space>
           <Button
             className='h-10 mx-2 !bg-gray-200 border-gray-200 !text-black rounded-lg uppercase'
             onClick={() => dispatch(openModal({ key: REGISTER }))}

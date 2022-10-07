@@ -33,10 +33,13 @@ const handler: NextApiHandler = async (
 
         try {
           return res.status(200).json({
-            blogs: await Blog.find(genre ? { isPublished: true, genre } : { isPublished: true })
+            data: await Blog.find(genre ? { isPublished: true, genre } : { isPublished: true })
               .sort({ [sort as string]: -1 })
               .limit(Number(pageSize) || 10)
-              .populate('author'),
+              .populate('author', '-password'),
+            count: await Blog.countDocuments(
+              genre ? { isPublished: true, genre } : { isPublished: true }
+            ),
             message: 'Blogs Fetched Successfully',
           });
         } catch (err: Error | any) {
@@ -68,7 +71,7 @@ const handler: NextApiHandler = async (
 
         const filename = file.mimetype.replace('image/', `${blogId}.`);
 
-        const fileUrl = await uploadFile(file, filename);
+        const fileUrl = await uploadFile(file, `blogs/${filename}`);
 
         await Blog.findByIdAndUpdate(blogId, {
           image: fileUrl,

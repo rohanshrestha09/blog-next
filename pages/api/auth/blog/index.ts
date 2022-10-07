@@ -45,10 +45,11 @@ const handler: NextApiHandler = async (
 
       try {
         return res.status(200).json({
-          blogs: await Blog.find(query)
+          data: await Blog.find(query)
             .sort({ [(typeof sort === 'string' && sort) || 'likes']: sortOrder === 'asc' ? 1 : -1 })
             .limit(Number(pageSize || 20))
-            .populate('author'),
+            .populate('author', '-password'),
+          count: await Blog.countDocuments(query),
           message: 'Blogs Fetched Successfully',
         });
       } catch (err: Error | any) {

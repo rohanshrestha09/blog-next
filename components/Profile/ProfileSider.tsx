@@ -10,11 +10,12 @@ import { BsFillCalendarDateFill, BsFillInfoCircleFill } from 'react-icons/bs';
 import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/ri';
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../apiAxios/authAxios';
+import UserSkeleton from '../shared/UserSkeleton';
 import { changeKey, setPageSize, setSearch } from '../../store/followersSlice';
 import { openModal, closeModal } from '../../store/modalSlice';
 import { GET_FOLLOWERS, GET_FOLLOWING } from '../../constants/queryKeys';
 import { MODAL_KEYS, PROFILE_SIDER_KEYS } from '../../constants/reduxKeys';
-import type { IFollowers, IFollowing } from '../../interface/user';
+import type { IUsers } from '../../interface/user';
 import type { RootState } from '../../store';
 
 interface Props {
@@ -39,13 +40,13 @@ const Profile: React.FC<Props> = ({ isSider }) => {
 
   const authAxios = new AuthAxios();
 
-  const { data: followers, isLoading } = useQuery({
+  const { data: followers, isLoading: isFollowersLoading } = useQuery({
     queryFn: () =>
       authAxios.getFollowers({ pageSize: pageSize[FOLLOWERS], search: search[FOLLOWERS] }),
     queryKey: [GET_FOLLOWERS, { pageSize: pageSize[FOLLOWERS], search: search[FOLLOWERS] }],
   });
 
-  const { data: following } = useQuery({
+  const { data: following, isLoading: isFollowingLoading } = useQuery({
     queryFn: () =>
       authAxios.getFollowing({ pageSize: pageSize[FOLLOWING], search: search[FOLLOWING] }),
     queryKey: [GET_FOLLOWING, { pageSize: pageSize[FOLLOWING], search: search[FOLLOWING] }],
@@ -53,17 +54,13 @@ const Profile: React.FC<Props> = ({ isSider }) => {
 
   let timeout: any = 0;
 
-  const getTabItems = (
-    label: string,
-    key: string,
-    Icon: IconType,
-    users?: IFollowers['followers'] | IFollowing['following']
-  ) => {
+  const getTabItems = (label: string, key: string, Icon: IconType, users?: IUsers) => {
     return {
       key,
       label: (
         <span className='sm:mx-2 mx-auto flex items-center gap-1.5'>
-          <Icon className='inline' /> {`${authUser.followingCount} ${label}`}
+          <Icon className='inline' />{' '}
+          {`${authUser[key === FOLLOWERS ? 'followersCount' : 'followingCount']} ${label}`}
         </span>
       ),
       children: (
@@ -80,17 +77,25 @@ const Profile: React.FC<Props> = ({ isSider }) => {
               }}
             />
 
-            {isLoading && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
+            {(key === FOLLOWERS ? isFollowersLoading : isFollowingLoading) && (
+              <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+            )}
           </span>
 
           <Divider />
 
-          {isEmpty(users) ? (
+          {isEmpty(users?.data) ? (
             <Empty>
               <p className='text-[#1890ff] cursor-pointer hover:text-blue-600'>View Suggestions</p>
             </Empty>
           ) : (
-            <></>
+            users?.data.map((user) => (
+              <UserSkeleton
+                key={user._id}
+                user={user}
+                shouldFollow={!authUser.following.includes(user._id as never)}
+              />
+            ))
           )}
         </div>
       ),
@@ -124,8 +129,17 @@ const Profile: React.FC<Props> = ({ isSider }) => {
             {authUser.website && (
               <span>
                 <BiLink />
-                <a className='!underline' href={authUser.website} target='_blank' rel='noreferrer'>
-                  https://rohanshrestha09.com.np
+                <a
+                  className='!underline'
+                  href={
+                    !authUser.website.startsWith('https://')
+                      ? `https://${authUser.website}`
+                      : authUser.website
+                  }
+                  target='_blank'
+                  rel='noreferrer'
+                >
+                  {authUser.website}
                 </a>
               </span>
             )}

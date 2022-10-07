@@ -27,11 +27,8 @@ export interface IBlog extends IMessage {
 }
 
 export interface IBlogs extends IMessage {
-  blogs: IBlogData[];
-}
-
-export interface IBookmarks extends IMessage {
-  bookmarks: IBlogData[];
+  data: IBlogData[];
+  count: number;
 }
 
 export interface IGetGenre extends IMessage {

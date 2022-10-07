@@ -27,7 +27,6 @@ const BlogSchema = new mongoose.Schema(
     imageName: String,
     title: {
       type: String,
-      index: true,
       required: [true, 'Title missing'],
     },
     content: {

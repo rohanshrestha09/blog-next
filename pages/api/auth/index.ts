@@ -46,11 +46,11 @@ const handler: NextApiHandler = async (
           if (!file.mimetype.startsWith('image/'))
             return res.status(403).json({ message: 'Please choose an image' });
 
-          if (image && imageName) deleteFile(imageName);
+          if (image && imageName) deleteFile(`users/${imageName}`);
 
           const filename = file.mimetype.replace('image/', `${authId}.`);
 
-          const fileUrl = await uploadFile(file, filename);
+          const fileUrl = await uploadFile(file, `users/${filename}`);
 
           await User.findByIdAndUpdate(authId, {
             image: fileUrl,
@@ -72,7 +72,7 @@ const handler: NextApiHandler = async (
 
     case 'DELETE':
       try {
-        if (image && imageName) deleteFile(imageName);
+        if (image && imageName) deleteFile(`users/${imageName}`);
 
         await User.findByIdAndDelete(authId);
 

@@ -27,11 +27,11 @@ const UserSchema = new mongoose.Schema(
     bookmarks: { type: [Schema.Types.ObjectId], default: [] },
     blogs: { type: [Schema.Types.ObjectId], default: [] },
     bio: { type: String, default: null },
-    website: { type: String, default: null },
+    website: { type: String, default: null, lowercase: true },
     following: { type: [Schema.Types.ObjectId], default: [] },
     followers: { type: [Schema.Types.ObjectId], default: [] },
     followingCount: { type: Number, default: 0 },
-    followerCount: { type: Number, default: 0 },
+    followersCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

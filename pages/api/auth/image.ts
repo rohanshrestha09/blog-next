@@ -22,7 +22,8 @@ const handler: NextApiHandler = async (
       if (image && imageName) deleteFile(imageName);
 
       await User.findByIdAndUpdate(authId, {
-        $unset: { image: '', imageName: '' },
+        image: null,
+        imageName: null,
       });
 
       return res.status(200).json({ message: 'Profile Image Removed Successfully' });

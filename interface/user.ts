@@ -35,7 +35,7 @@ export interface IUserData {
   following: string[] | [];
   followers: string[] | [];
   followingCount: number;
-  followerCount: number;
+  followersCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -48,10 +48,7 @@ export interface IAuth extends IMessage {
   auth: IUserData;
 }
 
-export interface IFollowers extends IMessage {
-  followers: IUserData[];
-}
-
-export interface IFollowing extends IMessage {
-  following: IUserData[];
+export interface IUsers extends IMessage {
+  data: IUserData[];
+  count: number;
 }

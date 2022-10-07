@@ -66,7 +66,6 @@ const EditProfile = () => {
     {
       onSuccess: (res: IMessage) => {
         successNotification(res.message);
-        form.resetFields();
         queryClient.refetchQueries([AUTH]);
         dispatch(closeModal({ key: EDIT_PROFILE }));
         dispatch(closeModal({ key: PASSWORD_VERIFICATION }));
@@ -136,6 +135,7 @@ const EditProfile = () => {
             prefix={<LinkOutlined className='text-gray-600 text-lg mr-2' />}
           />
         </Form.Item>
+
         <div className='w-full grid grid-cols-5'>
           <Form.Item className='sm:col-span-2 col-span-full' label='Display Picture'>
             <Upload {...fileUploadOptions}>
@@ -163,6 +163,7 @@ const EditProfile = () => {
             <DatePicker className='rounded-lg p-3 w-full' />
           </Form.Item>
         </div>
+
         <Form.Item className='mb-0'>
           <Button type='primary' className='h-10 bg-[#057AFF] rounded-lg' htmlType='submit'>
             Update

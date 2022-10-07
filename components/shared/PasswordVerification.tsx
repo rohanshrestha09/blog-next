@@ -24,7 +24,9 @@ const PasswordVerification: React.FC<Props> = ({ isLoading, mutation }) => {
       className='font-sans'
       open={isOpen[PASSWORD_VERIFICATION]}
       onCancel={() => dispatch(closeModal({ key: PASSWORD_VERIFICATION }))}
+      afterClose={() => form.resetFields()}
       footer={null}
+      destroyOnClose
     >
       <Form
         autoComplete='off'
