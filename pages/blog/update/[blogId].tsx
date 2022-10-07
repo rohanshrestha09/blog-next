@@ -227,7 +227,7 @@ const UpdateBlog: NextPage = () => {
             <Form.Item>
               <Button
                 type='primary'
-                className='h-10 uppercase rounded-lg bg-[#057AFF]'
+                className='h-10 uppercase rounded-lg'
                 loading={handleUpdateBlog.isLoading}
                 onClick={() =>
                   form.validateFields().then((values) =>

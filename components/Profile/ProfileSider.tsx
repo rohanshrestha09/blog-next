@@ -130,7 +130,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
               <span>
                 <BiLink />
                 <a
-                  className='!underline'
+                  className='underline'
                   href={
                     !authUser.website.startsWith('https://')
                       ? `https://${authUser.website}`

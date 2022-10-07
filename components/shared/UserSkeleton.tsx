@@ -58,7 +58,7 @@ const UserSkeleton: React.FC<Props> = ({
 
       <Button
         type='primary'
-        className='rounded-lg text-xs bg-[#057AFF]'
+        className='rounded-lg text-xs'
         size='small'
         danger={!shouldFollow}
         loading={handleFollowUser.isLoading}

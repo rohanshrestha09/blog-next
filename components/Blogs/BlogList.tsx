@@ -88,7 +88,7 @@ const BlogList: React.FC<Props> = ({
       <Button
         className={`${
           isPublished ? 'hover:bg-red-500' : 'hover:bg-green-500'
-        } inline-flex items-center gap-2 border-0 focus:text-current hover:!text-white rounded-lg px-2 py-1.5 transition-all`}
+        } inline-flex items-center gap-2 border-0 focus:text-current hover:text-white rounded-lg px-2 py-1.5 transition-all`}
         loading={handlePublishBlog.isLoading}
         onClick={() => handlePublishBlog.mutate({ id, shouldPublish: !isPublished })}
       >

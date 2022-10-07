@@ -131,7 +131,7 @@ const Profile = () => {
 
             <Button
               type='primary'
-              className='sm:order-2 rounded-lg bg-[#057AFF]'
+              className='sm:order-2 rounded-lg'
               onClick={() => dispatch(openModal({ key: EDIT_PROFILE }))}
             >
               Edit Profile

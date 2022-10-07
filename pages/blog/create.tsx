@@ -199,7 +199,7 @@ const CreateBlog: NextPage = () => {
           <Form.Item>
             <Button
               type='primary'
-              className='h-10 uppercase rounded-lg bg-[#057AFF]'
+              className='h-10 uppercase rounded-lg'
               loading={handlePostBlog.isLoading}
               onClick={() =>
                 form.validateFields().then((values) =>
@@ -215,7 +215,7 @@ const CreateBlog: NextPage = () => {
             </Button>
 
             <Button
-              className='h-10 mx-2 !bg-gray-200 !text-black rounded-lg uppercase'
+              className='h-10 mx-2 bg-gray-200 text-black rounded-lg uppercase'
               loading={handlePostBlog.isLoading}
               onClick={() =>
                 form.validateFields().then((values) =>
