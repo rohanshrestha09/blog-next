@@ -74,7 +74,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
 
   return (
     <Menu
-      className={`${additionalProps} !font-sans !h-full !flex !flex-col !gap-3`}
+      className={`${additionalProps} !font-sans h-full flex flex-col gap-3`}
       mode='inline'
       defaultSelectedKeys={[pathname]}
       items={[

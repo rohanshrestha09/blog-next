@@ -45,7 +45,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
       </Drawer>
 
       <Sider breakpoint='xl' className='bg-inherit sm:block hidden z-10' width={270}>
-        <Nav additionalProps='!bg-inherit !border-none' />
+        <Nav additionalProps='bg-inherit border-none' />
       </Sider>
 
       <Layout className='border-x border-gray-700 py-[1.20rem] xl:px-12 px-4'>

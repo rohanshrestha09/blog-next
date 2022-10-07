@@ -44,7 +44,7 @@
 }
 
 .ant-modal-content {
-  border-radius: 0.9rem;
+  border-radius: 0.9rem !important;
 }
 
 .multiline-truncate-content,
