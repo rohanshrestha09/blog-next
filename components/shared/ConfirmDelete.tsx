@@ -5,7 +5,7 @@ import DeleteIcon from './DeleteIcon';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
 
-const { DELETE } = MODAL_KEYS;
+const { DELETE_MODAL } = MODAL_KEYS;
 
 interface Props {
   isLoading: boolean;
@@ -20,9 +20,9 @@ const ConfirmDelete: React.FC<Props> = ({ isLoading, deleteMutation }) => {
   return (
     <Modal
       className='font-sans'
-      open={isOpen[DELETE]}
+      open={isOpen[DELETE_MODAL]}
       footer={null}
-      onCancel={() => dispatch(closeModal({ key: DELETE }))}
+      onCancel={() => dispatch(closeModal({ key: DELETE_MODAL }))}
       zIndex={2000}
     >
       <div className='flex flex-col items-center'>
@@ -38,7 +38,7 @@ const ConfirmDelete: React.FC<Props> = ({ isLoading, deleteMutation }) => {
           <Button
             className='rounded-lg h-10 uppercase'
             disabled={isLoading}
-            onClick={() => dispatch(closeModal({ key: DELETE }))}
+            onClick={() => dispatch(closeModal({ key: DELETE_MODAL }))}
           >
             Cancel
           </Button>

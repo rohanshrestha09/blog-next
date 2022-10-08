@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { NextRouter, useRouter } from 'next/router';
-import { useSelector } from 'react-redux';
+import { shallowEqual, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
 import { Button, Divider, Empty } from 'antd';
 import { isEmpty } from 'lodash';
@@ -9,18 +9,23 @@ import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../apiAxios/authAxios';
 import BlogAxios from '../../apiAxios/blogAxios';
 import BlogList from '../../components/Blogs/BlogList';
-import SearchFilter from '../../components/Blogs/SearchFilter';
-import { setSearch } from '../../store/bookmarkSlice';
-import { NAV_KEYS } from '../../constants/reduxKeys';
+import SearchFilter from '../../components/Blogs/SortFilter';
+import { NAV_KEYS, SORT_FILTER_KEYS } from '../../constants/reduxKeys';
 import { AUTH, GET_BOOKMARKS, GET_GENRE } from '../../constants/queryKeys';
 import type { RootState } from '../../store';
 
-const { HOME } = NAV_KEYS;
+const { HOME_NAV } = NAV_KEYS;
+
+const { BOOKMARKS_SORT } = SORT_FILTER_KEYS;
 
 const Bookmarks: NextPage = () => {
   const router: NextRouter = useRouter();
 
-  const { genre, pageSize, search } = useSelector((state: RootState) => state.bookmark);
+  const {
+    genre: { [BOOKMARKS_SORT]: genre },
+    pageSize: { [BOOKMARKS_SORT]: pageSize },
+    search: { [BOOKMARKS_SORT]: search },
+  } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const { authUser } = useAuth();
 
@@ -44,11 +49,11 @@ const Bookmarks: NextPage = () => {
 
           <Divider />
 
-          <SearchFilter search={search} setSearch={setSearch} isLoading={isLoading} />
+          <SearchFilter sortFilterKey={BOOKMARKS_SORT} isLoading={isLoading} />
 
           {isEmpty(blogs?.data) ? (
             <Empty>
-              <Button className='h-10 uppercase rounded-lg' onClick={() => router.push(HOME)}>
+              <Button className='h-10 uppercase rounded-lg' onClick={() => router.push(HOME_NAV)}>
                 Browse Blogs
               </Button>
             </Empty>

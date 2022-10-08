@@ -1,25 +1,37 @@
 export enum NAV_KEYS {
-  HOME = '/',
-  PROFILE = '/profile',
-  BOOKMARKS = '/blog/bookmarks',
-  CREATE = '/blog/create',
-  NOTIFICATIONS = '/notifications',
-  LOGOUT = 'logout',
+  HOME_NAV = '/',
+  PROFILE_NAV = '/profile',
+  BOOKMARKS_NAV = '/blog/bookmarks',
+  CREATE_NAV = '/blog/create',
+  NOTIF_NAV = '/notifications',
+  LOGOUT_NAV = 'logout',
 }
 
 export enum MODAL_KEYS {
-  LOGIN = 'login',
-  REGISTER = 'register',
-  DELETE = 'delete',
-  EDIT_PROFILE = 'edit-profile',
+  LOGIN_MODAL = 'login-modal',
+  REGISTER_MODAL = 'register-modal',
+  DELETE_MODAL = 'delete-modal',
+  EDIT_PROFILE_MODAL = 'edit-profile-modal',
   FOLLOWERS_MODAL = 'followers-modal',
-  PASSWORD_VERIFICATION = 'password',
+  PWD_AUTH_MODAL = 'password-auth-modal',
+}
+
+export enum SORT_FILTER_KEYS {
+  HOME_SORT = 'home-sort',
+  AUTH_PROFILE_SORT = 'auth-profile-search',
+  USER_PROFILE_SORT = 'user-profile-search',
+  BOOKMARKS_SORT = 'bookmarks-sort',
 }
 
 export enum PROFILE_KEYS {
   ALL_BLOGS = 'allblogs',
   PUBLISHED = 'published',
   UNPUBLISHED = 'unpublished',
+}
+
+export enum PROFILE_SIDER_KEYS {
+  FOLLOWERS = 'followers',
+  FOLLOWING = 'following',
 }
 
 export enum SORT_TYPE {
@@ -31,9 +43,4 @@ export enum SORT_TYPE {
 export enum SORT_ORDER {
   ASCENDING = 'asc',
   DESCENDING = 'desc',
-}
-
-export enum PROFILE_SIDER_KEYS {
-  FOLLOWERS = 'followers',
-  FOLLOWING = 'following',
 }

@@ -1,20 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { MODAL_KEYS } from '../constants/reduxKeys';
 
-const { LOGIN, REGISTER, DELETE, EDIT_PROFILE, FOLLOWERS_MODAL, PASSWORD_VERIFICATION } =
-  MODAL_KEYS;
-
 const modalSlice = createSlice({
   name: 'modal',
   initialState: {
-    isOpen: {
-      [LOGIN]: false,
-      [REGISTER]: false,
-      [DELETE]: false,
-      [EDIT_PROFILE]: false,
-      [FOLLOWERS_MODAL]: false,
-      [PASSWORD_VERIFICATION]: false,
-    },
+    isOpen: Object.values(MODAL_KEYS)
+      .map((key) => ({ [key]: false }))
+      .reduce((prev, curr) => ({ ...prev, ...curr })),
   },
   reducers: {
     openModal: (state, { payload: { key } }: { payload: { key: MODAL_KEYS } }) => {

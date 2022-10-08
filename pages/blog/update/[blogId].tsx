@@ -27,7 +27,7 @@ import { MODAL_KEYS } from '../../../constants/reduxKeys';
 import type { IPostBlog } from '../../../interface/blog';
 import type IMessage from '../../../interface/message';
 
-const { DELETE } = MODAL_KEYS;
+const { DELETE_MODAL } = MODAL_KEYS;
 
 const UpdateBlog: NextPage = () => {
   const {
@@ -107,7 +107,7 @@ const UpdateBlog: NextPage = () => {
     onSuccess: (res: IMessage) => {
       successNotification(res.message);
       queryClient.refetchQueries([AUTH]);
-      dispatch(closeModal({ key: DELETE }));
+      dispatch(closeModal({ key: DELETE_MODAL }));
       push('/profile');
     },
     onError: (err: Error) => errorNotification(err),
@@ -244,7 +244,7 @@ const UpdateBlog: NextPage = () => {
               <Button
                 type='primary'
                 className='h-10 mx-2 rounded-lg uppercase'
-                onClick={() => dispatch(openModal({ key: DELETE }))}
+                onClick={() => dispatch(openModal({ key: DELETE_MODAL }))}
                 danger
               >
                 Delete Blog

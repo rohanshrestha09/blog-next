@@ -5,7 +5,7 @@ import { Button, Space } from 'antd';
 import { openModal } from '../store/modalSlice';
 import { MODAL_KEYS } from '../constants/reduxKeys';
 
-const { LOGIN, REGISTER } = MODAL_KEYS;
+const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
 
 const Fallback: NextPage = () => {
   const dispatch = useDispatch();
@@ -21,7 +21,7 @@ const Fallback: NextPage = () => {
         <Space>
           <Button
             className='h-10 mx-2 btn-secondary rounded-lg uppercase'
-            onClick={() => dispatch(openModal({ key: REGISTER }))}
+            onClick={() => dispatch(openModal({ key: REGISTER_MODAL }))}
           >
             Signup
           </Button>
@@ -29,7 +29,7 @@ const Fallback: NextPage = () => {
           <Button
             type='primary'
             className='h-10 uppercase rounded-lg'
-            onClick={() => dispatch(openModal({ key: LOGIN }))}
+            onClick={() => dispatch(openModal({ key: LOGIN_MODAL }))}
           >
             Signin
           </Button>

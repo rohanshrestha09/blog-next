@@ -16,7 +16,7 @@ interface Props {
   isDrawer?: boolean;
 }
 
-const { HOME, PROFILE, CREATE, BOOKMARKS, NOTIFICATIONS, LOGOUT } = NAV_KEYS;
+const { HOME_NAV, PROFILE_NAV, CREATE_NAV, BOOKMARKS_NAV, NOTIF_NAV, LOGOUT_NAV } = NAV_KEYS;
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -46,17 +46,17 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
       children,
       label,
       type,
-      danger: key === LOGOUT,
+      danger: key === LOGOUT_NAV,
     } as MenuItem;
   };
 
   const items: MenuItem[] = [
-    { key: LOGOUT, name: 'Logout', icon: AiOutlineLogout },
-    { key: NOTIFICATIONS, name: 'Notifications', icon: BsAppIndicator },
-    { key: CREATE, name: 'Create', icon: BiMessageSquareEdit },
-    { key: BOOKMARKS, name: 'Bookmarks', icon: BiBookmark },
-    { key: PROFILE, name: 'Profile', icon: AiOutlineUser },
-    { key: HOME, name: 'Feed', icon: BsHouse },
+    { key: LOGOUT_NAV, name: 'Logout', icon: AiOutlineLogout },
+    { key: NOTIF_NAV, name: 'Notifications', icon: BsAppIndicator },
+    { key: CREATE_NAV, name: 'Create', icon: BiMessageSquareEdit },
+    { key: BOOKMARKS_NAV, name: 'Bookmarks', icon: BiBookmark },
+    { key: PROFILE_NAV, name: 'Profile', icon: AiOutlineUser },
+    { key: HOME_NAV, name: 'Feed', icon: BsHouse },
   ].map(({ key, name, icon }) => getDrawerItems(name, key, icon));
 
   const routingFn = (key: string) => {

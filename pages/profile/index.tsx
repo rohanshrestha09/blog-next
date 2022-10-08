@@ -4,7 +4,7 @@ import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
 import { isEmpty, capitalize } from 'lodash';
-import { Button, Empty, Tabs, Image, Divider, Space } from 'antd';
+import { Button, Empty, Tabs, Image, Divider } from 'antd';
 import { IconType } from 'react-icons';
 import { BsBook } from 'react-icons/bs';
 import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md';
@@ -14,9 +14,9 @@ import BlogAxios from '../../apiAxios/blogAxios';
 import ProfileSider from '../../components/Profile/ProfileSider';
 import BlogList from '../../components/Blogs/BlogList';
 import EditProfile from '../../components/Profile/EditProfile';
-import SearchFilter from '../../components/Blogs/SearchFilter';
+import SearchFilter from '../../components/Blogs/SortFilter';
 import { openModal } from '../../store/modalSlice';
-import { changeKey, setGenre, setSearch, setSort, setSortOrder } from '../../store/authBlogSlice';
+import { changeKey } from '../../store/authBlogSlice';
 import {
   AUTH,
   GET_AUTH_BLOGS,
@@ -24,27 +24,34 @@ import {
   GET_FOLLOWING,
   GET_GENRE,
 } from '../../constants/queryKeys';
-import { MODAL_KEYS, NAV_KEYS } from '../../constants/reduxKeys';
+import { MODAL_KEYS, NAV_KEYS, SORT_FILTER_KEYS } from '../../constants/reduxKeys';
 import { PROFILE_KEYS, SORT_TYPE, SORT_ORDER } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
 
 const { ALL_BLOGS, PUBLISHED, UNPUBLISHED } = PROFILE_KEYS;
 
+const { AUTH_PROFILE_SORT } = SORT_FILTER_KEYS;
+
 const { LIKES } = SORT_TYPE;
 
 const { ASCENDING } = SORT_ORDER;
 
-const { CREATE } = NAV_KEYS;
+const { CREATE_NAV } = NAV_KEYS;
 
-const { EDIT_PROFILE } = MODAL_KEYS;
+const { EDIT_PROFILE_MODAL } = MODAL_KEYS;
 
 const Profile = () => {
   const router: NextRouter = useRouter();
 
-  const { key, sort, sortOrder, genre, pageSize, isPublished, search } = useSelector(
-    (state: RootState) => state.authBlog,
-    shallowEqual
-  );
+  const { key, isPublished } = useSelector((state: RootState) => state.authBlog, shallowEqual);
+
+  const {
+    search: { [AUTH_PROFILE_SORT]: search },
+    pageSize: { [AUTH_PROFILE_SORT]: pageSize },
+    sort: { [AUTH_PROFILE_SORT]: sort },
+    sortOrder: { [AUTH_PROFILE_SORT]: sortOrder },
+    genre: { [AUTH_PROFILE_SORT]: genre },
+  } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const dispatch = useDispatch();
 
@@ -53,8 +60,8 @@ const Profile = () => {
   const authAxios = new AuthAxios();
 
   const { data: blogs, isLoading } = useQuery({
-    queryFn: () => authAxios.getAllBlogs({ sort, genre, pageSize, sortOrder, search, isPublished }),
-    queryKey: [GET_AUTH_BLOGS, { sort, genre, pageSize, sortOrder, search, isPublished }],
+    queryFn: () => authAxios.getAllBlogs({ sortOrder, isPublished, sort, genre, pageSize, search }),
+    queryKey: [GET_AUTH_BLOGS, { sortOrder, isPublished, sort, genre, pageSize, search }],
   });
 
   const getTabItems = (label: string, key: PROFILE_KEYS, Icon: IconType) => {
@@ -67,20 +74,11 @@ const Profile = () => {
       ),
       children: (
         <div className='w-full pt-3'>
-          <SearchFilter
-            hasSort
-            sort={sort}
-            search={search}
-            sortOrder={sortOrder}
-            setSort={setSort}
-            setSearch={setSearch}
-            setSortOrder={setSortOrder}
-            isLoading={isLoading}
-          />
+          <SearchFilter sortFilterKey={AUTH_PROFILE_SORT} isLoading={isLoading} />
 
           {isEmpty(blogs?.data) ? (
             <Empty>
-              <Button className='h-10 uppercase rounded-lg' onClick={() => router.push(CREATE)}>
+              <Button className='h-10 uppercase rounded-lg' onClick={() => router.push(CREATE_NAV)}>
                 Create One
               </Button>
             </Empty>
@@ -132,7 +130,7 @@ const Profile = () => {
             <Button
               type='primary'
               className='sm:order-2 rounded-lg'
-              onClick={() => dispatch(openModal({ key: EDIT_PROFILE }))}
+              onClick={() => dispatch(openModal({ key: EDIT_PROFILE_MODAL }))}
             >
               Edit Profile
             </Button>

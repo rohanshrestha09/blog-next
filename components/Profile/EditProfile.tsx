@@ -11,14 +11,14 @@ import {
   successNotification,
   warningNotification,
 } from '../../utils/notification';
-import PasswordVerification from '../shared/PasswordVerification';
+import PwdAuth from '../shared/PwdAuth';
 import { closeModal, openModal } from '../../store/modalSlice';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
 import { AUTH } from '../../constants/queryKeys';
 import type { RootState } from '../../store';
 import type IMessage from '../../interface/message';
 
-const { EDIT_PROFILE, PASSWORD_VERIFICATION } = MODAL_KEYS;
+const { EDIT_PROFILE_MODAL, PWD_AUTH_MODAL } = MODAL_KEYS;
 
 const EditProfile = () => {
   const { isOpen } = useSelector((state: RootState) => state.modal);
@@ -67,8 +67,8 @@ const EditProfile = () => {
       onSuccess: (res: IMessage) => {
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
-        dispatch(closeModal({ key: EDIT_PROFILE }));
-        dispatch(closeModal({ key: PASSWORD_VERIFICATION }));
+        dispatch(closeModal({ key: EDIT_PROFILE_MODAL }));
+        dispatch(closeModal({ key: PWD_AUTH_MODAL }));
       },
       onError: (err: Error) => errorNotification(err),
     }
@@ -78,8 +78,8 @@ const EditProfile = () => {
     <Modal
       centered
       className='font-sans'
-      open={isOpen[EDIT_PROFILE]}
-      onCancel={() => dispatch(closeModal({ key: EDIT_PROFILE }))}
+      open={isOpen[EDIT_PROFILE_MODAL]}
+      onCancel={() => dispatch(closeModal({ key: EDIT_PROFILE_MODAL }))}
       footer={null}
     >
       <Form
@@ -90,7 +90,7 @@ const EditProfile = () => {
         name='form_in_modal'
         requiredMark={false}
         onFinish={async () =>
-          form.validateFields().then(() => dispatch(openModal({ key: PASSWORD_VERIFICATION })))
+          form.validateFields().then(() => dispatch(openModal({ key: PWD_AUTH_MODAL })))
         }
       >
         <Form.Item
@@ -171,7 +171,7 @@ const EditProfile = () => {
           </Button>
         </Form.Item>
 
-        <PasswordVerification
+        <PwdAuth
           isLoading={handleEditProfile.isLoading}
           mutation={({ password }) =>
             handleEditProfile.mutate({

@@ -10,9 +10,9 @@ interface Props {
   mutation: ({ password }: { password: string }) => void;
 }
 
-const { PASSWORD_VERIFICATION } = MODAL_KEYS;
+const { PWD_AUTH_MODAL } = MODAL_KEYS;
 
-const PasswordVerification: React.FC<Props> = ({ isLoading, mutation }) => {
+const PwdAuth: React.FC<Props> = ({ isLoading, mutation }) => {
   const { isOpen } = useSelector((state: RootState) => state.modal);
 
   const dispatch = useDispatch();
@@ -22,8 +22,8 @@ const PasswordVerification: React.FC<Props> = ({ isLoading, mutation }) => {
   return (
     <Modal
       className='font-sans'
-      open={isOpen[PASSWORD_VERIFICATION]}
-      onCancel={() => dispatch(closeModal({ key: PASSWORD_VERIFICATION }))}
+      open={isOpen[PWD_AUTH_MODAL]}
+      onCancel={() => dispatch(closeModal({ key: PWD_AUTH_MODAL }))}
       afterClose={() => form.resetFields()}
       footer={null}
       destroyOnClose
@@ -66,4 +66,4 @@ const PasswordVerification: React.FC<Props> = ({ isLoading, mutation }) => {
   );
 };
 
-export default PasswordVerification;
+export default PwdAuth;

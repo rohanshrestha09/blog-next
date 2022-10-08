@@ -27,7 +27,7 @@ interface Props {
   blog: IBlogData;
 }
 
-const { DELETE } = MODAL_KEYS;
+const { DELETE_MODAL } = MODAL_KEYS;
 
 const BlogList: React.FC<Props> = ({
   editable,
@@ -68,7 +68,7 @@ const BlogList: React.FC<Props> = ({
     onSuccess: (res: IMessage) => {
       successNotification(res.message);
       queryClient.refetchQueries([GET_AUTH_BLOGS]);
-      dispatch(closeModal({ key: DELETE }));
+      dispatch(closeModal({ key: DELETE_MODAL }));
     },
     onError: (err: Error | any) => errorNotification(err),
   });
@@ -100,7 +100,7 @@ const BlogList: React.FC<Props> = ({
 
       <Space
         className='cursor-pointer hover:bg-red-500 hover:text-white rounded-lg px-2 py-1.5 transition-all'
-        onClick={() => dispatch(openModal({ key: DELETE }))}
+        onClick={() => dispatch(openModal({ key: DELETE_MODAL }))}
       >
         <MdOutlineDelete />
         Delete
@@ -146,9 +146,7 @@ const BlogList: React.FC<Props> = ({
           <Space direction='vertical' size={4}>
             <p className='sm:text-xl text-base multiline-truncate-title'>{title}</p>
 
-            <p className='leading-loose multiline-truncate-content'>
-              {he.decode(content.replace(/<[^>]+>/g, ''))}
-            </p>
+            <p>{he.decode(content.replace(/<[^>]+>/g, ''))}</p>
           </Space>
 
           <span className='relative min-w-[4rem] min-h-[4rem] sm:min-w-[7.5rem] sm:min-h-[7.5rem] sm:max-h-[7.5rem]'>

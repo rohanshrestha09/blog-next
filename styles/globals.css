@@ -25,6 +25,10 @@
   background: rgba(170 170 170 / 0.5);
 }
 
+p {
+  @apply my-0 !important;
+}
+
 .btn-secondary {
   @apply bg-gray-200 hover:bg-gray-400 border-gray-200 hover:border-gray-400 transition-all duration-300 text-black !important;
 }
@@ -37,10 +41,6 @@
   right: 0;
   bottom: 0;
   left: 0;
-}
-
-.tox .tox-tooltip__body .tox.tox-tinymce-aux .tox-toolbar__overflow {
-  background-color: black !important;
 }
 
 .ant-select-multiple .ant-select-selector {
