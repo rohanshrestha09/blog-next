@@ -23,7 +23,7 @@ import { MODAL_KEYS } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
 import type { IRegister, IToken } from '../../interface/user';
 
-const { LOGIN, REGISTER } = MODAL_KEYS;
+const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
 
 const Register: React.FC = () => {
   const { isOpen } = useSelector((state: RootState) => state.modal);
@@ -73,7 +73,7 @@ const Register: React.FC = () => {
         successNotification(res.message);
         form.resetFields();
         queryClient.refetchQueries([AUTH]);
-        dispatch(closeModal({ key: REGISTER }));
+        dispatch(closeModal({ key: REGISTER_MODAL }));
       },
       onError: (err: Error) => errorNotification(err),
     }
@@ -83,8 +83,8 @@ const Register: React.FC = () => {
     <Modal
       centered
       className='font-sans'
-      open={isOpen[REGISTER]}
-      onCancel={() => dispatch(closeModal({ key: REGISTER }))}
+      open={isOpen[REGISTER_MODAL]}
+      onCancel={() => dispatch(closeModal({ key: REGISTER_MODAL }))}
       footer={null}
     >
       <Form
@@ -243,8 +243,8 @@ const Register: React.FC = () => {
             <label
               className='text-[#0579FD] cursor-pointer'
               onClick={() => {
-                dispatch(openModal({ key: LOGIN }));
-                dispatch(closeModal({ key: REGISTER }));
+                dispatch(openModal({ key: LOGIN_MODAL }));
+                dispatch(closeModal({ key: REGISTER_MODAL }));
               }}
             >
               Login

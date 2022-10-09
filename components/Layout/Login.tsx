@@ -13,7 +13,7 @@ import { MODAL_KEYS } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
 import type { ILogin, IToken } from '../../interface/user';
 
-const { LOGIN, REGISTER } = MODAL_KEYS;
+const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
 
 const Login: React.FC = () => {
   const { isOpen } = useSelector((state: RootState) => state.modal);
@@ -31,7 +31,7 @@ const Login: React.FC = () => {
       successNotification(res.message);
       form.resetFields();
       queryClient.refetchQueries([AUTH]);
-      dispatch(closeModal({ key: LOGIN }));
+      dispatch(closeModal({ key: LOGIN_MODAL }));
     },
     onError(err: Error) {
       errorNotification(err);
@@ -42,8 +42,8 @@ const Login: React.FC = () => {
     <Modal
       centered
       className='font-sans'
-      open={isOpen[LOGIN]}
-      onCancel={() => dispatch(closeModal({ key: LOGIN }))}
+      open={isOpen[LOGIN_MODAL]}
+      onCancel={() => dispatch(closeModal({ key: LOGIN_MODAL }))}
       footer={null}
     >
       <Form
@@ -122,8 +122,8 @@ const Login: React.FC = () => {
             <label
               className='text-[#0579FD] cursor-pointer'
               onClick={() => {
-                dispatch(openModal({ key: REGISTER }));
-                dispatch(closeModal({ key: LOGIN }));
+                dispatch(openModal({ key: REGISTER_MODAL }));
+                dispatch(closeModal({ key: LOGIN_MODAL }));
               }}
             >
               Create One
