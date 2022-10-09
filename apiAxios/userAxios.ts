@@ -26,7 +26,10 @@ class User {
 
   login = async (data: ILogin): Promise<IToken> => await this.axiosFn('post', 'login', data);
 
-  getUser = async (id: string): Promise<IUser> => await this.axiosFn('get', id);
+  getUser = async (id: string): Promise<IUser['user']> =>
+    await (
+      await this.axiosFn('get', id)
+    ).user;
 
   getUserBlogs = async ({
     user,
