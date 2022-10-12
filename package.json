@@ -31,7 +31,8 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
     "react-redux": "^8.0.4",
-    "react-toastify": "^9.0.8"
+    "react-toastify": "^9.0.8",
+    "uuid-v4": "^0.1.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
