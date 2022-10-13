@@ -23,30 +23,17 @@ const handler: NextApiHandler = async (
     case 'GET':
       let query = { _id: blogs };
 
-      if (genre)
-        query = Object.assign(
-          {
-            genre: {
-              $in: Array.isArray(genre) ? genre : typeof genre === 'string' && genre.split(','),
-            },
-          },
-          query
-        );
+      if (genre) query = Object.assign({ genre: { $in: String(genre).split(',') } }, query);
 
       if (isPublished) query = Object.assign({ isPublished: isPublished === 'true' }, query);
 
       if (search)
-        query = Object.assign(
-          {
-            $text: { $search: typeof search === 'string' && search.toLowerCase() },
-          },
-          query
-        );
+        query = Object.assign({ $text: { $search: String(search).toLowerCase() } }, query);
 
       try {
         return res.status(200).json({
           data: await Blog.find(query)
-            .sort({ [(typeof sort === 'string' && sort) || 'likes']: sortOrder === 'asc' ? 1 : -1 })
+            .sort({ [String(sort) || 'likes']: sortOrder === 'asc' ? 1 : -1 })
             .limit(Number(pageSize || 20))
             .populate('author', '-password'),
           count: await Blog.countDocuments(query),

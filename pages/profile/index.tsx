@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
 import { isEmpty, capitalize } from 'lodash';
@@ -40,7 +40,7 @@ const { CREATE_NAV } = NAV_KEYS;
 
 const { EDIT_PROFILE_MODAL } = MODAL_KEYS;
 
-const Profile = () => {
+const Profile: NextPage = () => {
   const router: NextRouter = useRouter();
 
   const { key, isPublished } = useSelector((state: RootState) => state.authBlog, shallowEqual);
@@ -74,7 +74,7 @@ const Profile = () => {
       ),
       children: (
         <div className='w-full pt-3'>
-          <SearchFilter sortFilterKey={AUTH_PROFILE_SORT} isLoading={isLoading} />
+          <SearchFilter sortFilterKey={AUTH_PROFILE_SORT} isLoading={isLoading} hasSort />
 
           {isEmpty(blogs?.data) ? (
             <Empty>

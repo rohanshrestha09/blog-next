@@ -23,23 +23,10 @@ const handler: NextApiHandler = async (
     case 'GET':
       let query = { _id: bookmarks, isPublished: true };
 
-      if (genre)
-        query = Object.assign(
-          {
-            genre: {
-              $in: Array.isArray(genre) ? genre : typeof genre === 'string' && genre.split(','),
-            },
-          },
-          query
-        );
+      if (genre) query = Object.assign({ genre: { $in: String(genre).split(',') } }, query);
 
       if (search)
-        query = Object.assign(
-          {
-            $text: { $search: typeof search === 'string' && search.toLowerCase() },
-          },
-          query
-        );
+        query = Object.assign({ $text: { $search: String(search).toLowerCase() } }, query);
 
       try {
         return res.status(200).json({

@@ -37,7 +37,6 @@ export enum PROFILE_SIDER_KEYS {
 export enum SORT_TYPE {
   LIKES = 'likes',
   CREATED_AT = 'createdAt',
-  UPDATED_AT = 'updatedAt',
 }
 
 export enum SORT_ORDER {

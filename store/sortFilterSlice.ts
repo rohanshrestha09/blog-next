@@ -1,8 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { SORT_FILTER_KEYS, SORT_ORDER, SORT_TYPE } from '../constants/reduxKeys';
 
-const { HOME_SORT, AUTH_PROFILE_SORT } = SORT_FILTER_KEYS;
-
 const { LIKES } = SORT_TYPE;
 
 const { ASCENDING } = SORT_ORDER;
@@ -19,13 +17,12 @@ const sortFilterSlice = createSlice({
     search: Object.values(SORT_FILTER_KEYS)
       .map((key) => ({ [key]: '' }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
-    sort: {
-      [HOME_SORT]: LIKES,
-      [AUTH_PROFILE_SORT]: LIKES,
-    },
-    sortOrder: {
-      [AUTH_PROFILE_SORT]: ASCENDING,
-    },
+    sort: Object.values(SORT_FILTER_KEYS)
+      .map((key) => ({ [key]: LIKES }))
+      .reduce((prev, curr) => ({ ...prev, ...curr })),
+    sortOrder: Object.values(SORT_FILTER_KEYS)
+      .map((key) => ({ [key]: ASCENDING }))
+      .reduce((prev, curr) => ({ ...prev, ...curr })),
   },
   reducers: {
     setSearch: (
@@ -42,22 +39,13 @@ const sortFilterSlice = createSlice({
     },
     setSort: (
       state,
-      {
-        payload: { key, sort },
-      }: {
-        payload: {
-          key: SORT_FILTER_KEYS.HOME_SORT | SORT_FILTER_KEYS.AUTH_PROFILE_SORT;
-          sort: SORT_TYPE;
-        };
-      }
+      { payload: { key, sort } }: { payload: { key: SORT_FILTER_KEYS; sort: SORT_TYPE } }
     ) => {
       return (state = { ...state, sort: { ...state.sort, [key]: sort } });
     },
     setSortOrder: (
       state,
-      {
-        payload: { key, sortOrder },
-      }: { payload: { key: SORT_FILTER_KEYS.AUTH_PROFILE_SORT; sortOrder: SORT_ORDER } }
+      { payload: { key, sortOrder } }: { payload: { key: SORT_FILTER_KEYS; sortOrder: SORT_ORDER } }
     ) => {
       return (state = { ...state, sortOrder: { ...state.sortOrder, [key]: sortOrder } });
     },

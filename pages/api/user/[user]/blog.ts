@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextApiHandler from '../../../interface/next';
-import Blog from '../../../model/Blog';
-import withValidateUser from '../../../middleware/withValidateUser';
-import { IUser } from '../../../interface/user';
-import { IBlogs } from '../../../interface/blog';
-import IMessage from '../../../interface/message';
+import NextApiHandler from '../../../../interface/next';
+import Blog from '../../../../model/Blog';
+import withValidateUser from '../../../../middleware/withValidateUser';
+import { IUser } from '../../../../interface/user';
+import { IBlogs } from '../../../../interface/blog';
+import IMessage from '../../../../interface/message';
 
 const handler: NextApiHandler = async (
   req: NextApiRequest & IUser,
@@ -12,7 +12,7 @@ const handler: NextApiHandler = async (
 ) => {
   const {
     method,
-    query: { sort, pageSize, genre },
+    query: { pageSize },
     user: { blogs },
   } = req;
 
@@ -20,11 +20,11 @@ const handler: NextApiHandler = async (
     case 'GET':
       try {
         return res.status(200).json({
-          data: await Blog.find(genre ? { blogs, genre } : { blogs })
-            .sort({ [(sort as string) || 'likes']: -1 })
-            .limit(Number(pageSize) || 20)
+          data: await Blog.find({ _id: blogs, isPublished: true })
+            .sort({ likes: -1 })
+            .limit(Number(pageSize || 20))
             .populate('author', '-password'),
-          count: await Blog.countDocuments(genre ? { blogs, genre } : { blogs }),
+          count: await Blog.countDocuments({ _id: blogs, isPublished: true }),
           message: 'Blogs Fetched Successfully',
         });
       } catch (err: Error | any) {

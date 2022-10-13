@@ -23,12 +23,7 @@ const handler: NextApiHandler = async (
       let query = { _id: following };
 
       if (search)
-        query = Object.assign(
-          {
-            $text: { $search: typeof search === 'string' && search.toLowerCase() },
-          },
-          query
-        );
+        query = Object.assign({ $text: { $search: String(search).toLowerCase() } }, query);
 
       try {
         return res.status(200).json({

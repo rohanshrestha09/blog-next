@@ -31,21 +31,8 @@ class User {
       await this.axiosFn('get', id)
     ).user;
 
-  getUserBlogs = async ({
-    user,
-    sort,
-    pageSize,
-    genre,
-  }: {
-    user: string;
-    sort?: string;
-    pageSize: number;
-    genre?: string[] | [];
-  }): Promise<IBlogs> =>
-    await this.axiosFn(
-      'get',
-      `user/blog?user=${user}&genre=${genre || ''}sort=${sort || ''}&pageSize=${pageSize}`
-    );
+  getUserBlogs = async ({ user, pageSize }: { user: string; pageSize?: number }): Promise<IBlogs> =>
+    await this.axiosFn('get', `${user}/blog?pageSize=${pageSize || 20}`);
 }
 
 export default User;

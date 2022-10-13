@@ -18,7 +18,7 @@ const handler: NextApiHandler = async (
   const {
     method,
     auth: { _id: authId },
-    blog: { _id: blogId, likers },
+    blog: { _id: blogId, likesCount },
   } = req;
 
   switch (method) {
@@ -32,7 +32,7 @@ const handler: NextApiHandler = async (
 
         await Blog.findByIdAndUpdate(blogId, {
           $push: { likers: authId },
-          likes: likers.length + 1,
+          likes: likesCount + 1,
         });
 
         await User.findByIdAndUpdate(authId, {
@@ -54,7 +54,7 @@ const handler: NextApiHandler = async (
 
         await Blog.findByIdAndUpdate(blogId, {
           $pull: { likers: authId },
-          likes: likers.length - 1,
+          likes: likesCount - 1,
         });
 
         await User.findByIdAndUpdate(authId, {

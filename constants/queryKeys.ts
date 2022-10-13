@@ -1,6 +1,6 @@
 export const AUTH = 'get@auth';
 
-export const GET_USER='get@user'
+export const GET_USER = 'get@user';
 
 export const GET_GENRE = 'get@blog/genre';
 

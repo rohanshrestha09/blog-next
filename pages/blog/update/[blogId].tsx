@@ -22,7 +22,7 @@ import {
   successNotification,
   warningNotification,
 } from '../../../utils/notification';
-import { AUTH, GET_BLOG, GET_GENRE } from '../../../constants/queryKeys';
+import { AUTH, GET_AUTH_BLOGS, GET_BLOG, GET_GENRE } from '../../../constants/queryKeys';
 import { MODAL_KEYS } from '../../../constants/reduxKeys';
 import type { IPostBlog } from '../../../interface/blog';
 import type IMessage from '../../../interface/message';
@@ -55,7 +55,7 @@ const UpdateBlog: NextPage = () => {
   });
 
   const { data: blog } = useQuery({
-    queryFn: () => blogAxios.getBlog(blogId as string),
+    queryFn: () => blogAxios.getBlog(String(blogId)),
     queryKey: [GET_BLOG, blogId],
   });
 
@@ -98,6 +98,7 @@ const UpdateBlog: NextPage = () => {
       onSuccess: (res: IMessage) => {
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
+        queryClient.refetchQueries([GET_AUTH_BLOGS]);
       },
       onError: (err: Error) => errorNotification(err),
     }
@@ -107,6 +108,7 @@ const UpdateBlog: NextPage = () => {
     onSuccess: (res: IMessage) => {
       successNotification(res.message);
       queryClient.refetchQueries([AUTH]);
+      queryClient.refetchQueries([GET_AUTH_BLOGS]);
       dispatch(closeModal({ key: DELETE_MODAL }));
       push('/profile');
     },
@@ -276,7 +278,7 @@ export const getServerSideProps: GetServerSideProps = async (
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
   await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getBlog(ctx.params ? (ctx.params.blogId as string) : ''),
+    queryFn: () => blogAxios.getBlog(ctx.params ? String(ctx.params.blogId) : ''),
     queryKey: [GET_BLOG, ctx.params && ctx.params.blogId],
   });
 

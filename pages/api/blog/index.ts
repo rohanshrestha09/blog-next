@@ -29,17 +29,22 @@ const handler: NextApiHandler = async (
   switch (method) {
     case 'GET':
       (async () => {
-        const { sort, pageSize, genre } = req.query;
+        const { sort, pageSize, genre, search } = req.query;
+
+        let query = { isPublished: true };
+
+        if (genre) query = Object.assign({ genre: { $in: String(genre).split(',') } }, query);
+
+        if (search)
+          query = Object.assign({ $text: { $search: String(search).toLowerCase() } }, query);
 
         try {
           return res.status(200).json({
-            data: await Blog.find(genre ? { isPublished: true, genre } : { isPublished: true })
-              .sort({ [sort as string]: -1 })
-              .limit(Number(pageSize) || 10)
+            data: await Blog.find(query)
+              .sort({ [String(sort) || 'likes']: -1 })
+              .limit(Number(pageSize || 20))
               .populate('author', '-password'),
-            count: await Blog.countDocuments(
-              genre ? { isPublished: true, genre } : { isPublished: true }
-            ),
+            count: await Blog.countDocuments(query),
             message: 'Blogs Fetched Successfully',
           });
         } catch (err: Error | any) {

@@ -15,7 +15,7 @@ const withAuth = (handler: NextApiHandler) => {
   return async (req: NextApiRequest & IAuth, res: NextApiResponse<IMessage>) => {
     if (bypassAuth(req.url, req.method)) return handler(req, res);
 
-    const token = req.cookies.token;
+    const { token } = req.cookies;
 
     if (!token) return res.status(401).json({ message: 'Not authorised' });
 

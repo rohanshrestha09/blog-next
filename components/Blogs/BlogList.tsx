@@ -124,7 +124,12 @@ const BlogList: React.FC<Props> = ({
               {author.fullname[0]}
             </Avatar>
           )}
-          <p className='multiline-truncate-name'>{author.fullname}</p>
+          <p
+            className='multiline-truncate-name cursor-pointer'
+            onClick={() => router.push(`/profile/${author._id}`)}
+          >
+            {author.fullname}
+          </p>
 
           <span className='text-2xl leading-none tracking-tighter text-gray-400'>&#x22C5;</span>
 
