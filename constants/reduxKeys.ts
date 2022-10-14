@@ -12,7 +12,8 @@ export enum MODAL_KEYS {
   REGISTER_MODAL = 'register-modal',
   DELETE_MODAL = 'delete-modal',
   EDIT_PROFILE_MODAL = 'edit-profile-modal',
-  FOLLOWERS_MODAL = 'followers-modal',
+  AUTH_FOLLOWERS_MODAL = 'auth-followers-modal',
+  USER_FOLLOWERS_MODAL = 'user-followers-modal',
   PWD_AUTH_MODAL = 'password-auth-modal',
 }
 
@@ -30,8 +31,10 @@ export enum PROFILE_KEYS {
 }
 
 export enum PROFILE_SIDER_KEYS {
-  FOLLOWERS = 'followers',
-  FOLLOWING = 'following',
+  AUTH_FOLLOWERS = 'auth-followers',
+  AUTH_FOLLOWING = 'auth-following',
+  USER_FOLLOWERS = 'user-followers',
+  USER_FOLLOWING = 'user-following',
 }
 
 export enum SORT_TYPE {

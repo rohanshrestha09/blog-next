@@ -1,18 +1,35 @@
 import Head from 'next/head';
 import { useRouter, NextRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
-import { useSelector } from 'react-redux';
-import { DehydratedState, QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
+import { shallowEqual, useSelector } from 'react-redux';
+import {
+  DehydratedState,
+  QueryClient,
+  dehydrate,
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { isEmpty } from 'lodash';
 import { Image, Button, Divider, Empty } from 'antd';
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../apiAxios/authAxios';
 import UserAxios from '../../apiAxios/userAxios';
 import BlogList from '../../components/Blogs/BlogList';
-import { AUTH, GET_USER, GET_USER_BLOGS } from '../../constants/queryKeys';
+import UserProfileSider from '../../components/Profile/UserProfileSider';
+import { errorNotification, successNotification } from '../../utils/notification';
+import {
+  AUTH,
+  GET_AUTH_FOLLOWERS,
+  GET_AUTH_FOLLOWING,
+  GET_USER,
+  GET_USER_BLOGS,
+  GET_USER_FOLLOWERS,
+  GET_USER_FOLLOWING,
+} from '../../constants/queryKeys';
 import { NAV_KEYS, SORT_FILTER_KEYS } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
-import Profile from '.';
+import type IMessage from '../../interface/message';
 
 const { USER_PROFILE_SORT } = SORT_FILTER_KEYS;
 
@@ -26,7 +43,9 @@ const UserProfile: NextPage = () => {
 
   const {
     pageSize: { [USER_PROFILE_SORT]: pageSize },
-  } = useSelector((state: RootState) => state.sortFilter);
+  } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
+
+  const queryClient = useQueryClient();
 
   const { authUser } = useAuth();
 
@@ -41,6 +60,22 @@ const UserProfile: NextPage = () => {
     queryFn: () => userAxios.getUserBlogs({ user: String(userId), pageSize }),
     queryKey: [GET_USER_BLOGS, userId, { pageSize }],
   });
+
+  const handleFollowUser = useMutation(
+    ({ id, shouldFollow }: { id: string; shouldFollow: boolean }) =>
+      new AuthAxios().followUser({ id, shouldFollow }),
+    {
+      onSuccess: (res: IMessage) => {
+        successNotification(res.message);
+        queryClient.refetchQueries([AUTH]);
+        queryClient.refetchQueries([GET_AUTH_FOLLOWERS]);
+        queryClient.refetchQueries([GET_AUTH_FOLLOWING]);
+        queryClient.refetchQueries([GET_USER_FOLLOWERS]);
+        queryClient.refetchQueries([GET_USER_FOLLOWING]);
+      },
+      onError: (err: Error | any) => errorNotification(err),
+    }
+  );
 
   return (
     <div className='w-full flex justify-center'>
@@ -69,11 +104,19 @@ const UserProfile: NextPage = () => {
               </p>
             </span>
 
+            <UserProfileSider />
+
             <Button
               type='primary'
               className='sm:order-2 rounded-lg'
               danger={authUser.following.includes(user._id as never)}
               disabled={authUser._id === user._id}
+              onClick={() =>
+                handleFollowUser.mutate({
+                  id: user._id,
+                  shouldFollow: !authUser.following.includes(user._id as never),
+                })
+              }
             >
               {authUser.following.includes(user._id as never) ? 'Unfollow' : 'Follow'}
             </Button>
@@ -128,6 +171,18 @@ export const getServerSideProps: GetServerSideProps = async (
   await queryClient.prefetchQuery({
     queryFn: () => userAxios.getUserBlogs({ user: ctx.params ? String(ctx.params.userId) : '' }),
     queryKey: [GET_USER_BLOGS, ctx.params && ctx.params.userId, { pageSize: 20 }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () =>
+      userAxios.getUserFollowers({ user: ctx.params ? String(ctx.params.userId) : '' }),
+    queryKey: [GET_USER_FOLLOWERS, ctx.params && ctx.params.userId, { pageSize: 20, search: '' }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () =>
+      userAxios.getUserFollowing({ user: ctx.params ? String(ctx.params.userId) : '' }),
+    queryKey: [GET_USER_FOLLOWING, ctx.params && ctx.params.userId, { pageSize: 20, search: '' }],
   });
 
   return {

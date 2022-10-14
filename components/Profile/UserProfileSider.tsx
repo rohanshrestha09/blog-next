@@ -1,5 +1,6 @@
+import { NextRouter, useRouter } from 'next/router';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import { Empty, Tabs, Divider, Input, Modal, Spin } from 'antd';
@@ -9,11 +10,11 @@ import { BiLink, BiSearch } from 'react-icons/bi';
 import { BsFillCalendarDateFill, BsFillInfoCircleFill } from 'react-icons/bs';
 import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/ri';
 import { useAuth } from '../../utils/UserAuth';
-import AuthAxios from '../../apiAxios/authAxios';
+import UserAxios from '../../apiAxios/userAxios';
 import UserSkeleton from '../shared/UserSkeleton';
 import { changeKey, setPageSize, setSearch } from '../../store/followersSlice';
 import { openModal, closeModal } from '../../store/modalSlice';
-import { GET_AUTH_FOLLOWERS, GET_AUTH_FOLLOWING } from '../../constants/queryKeys';
+import { GET_USER_FOLLOWERS, GET_USER_FOLLOWING, GET_USER } from '../../constants/queryKeys';
 import { MODAL_KEYS, PROFILE_SIDER_KEYS } from '../../constants/reduxKeys';
 import type { IUsers } from '../../interface/user';
 import type { RootState } from '../../store';
@@ -22,12 +23,16 @@ interface Props {
   isSider?: boolean;
 }
 
-const { AUTH_FOLLOWERS, AUTH_FOLLOWING } = PROFILE_SIDER_KEYS;
+const { USER_FOLLOWERS, USER_FOLLOWING } = PROFILE_SIDER_KEYS;
 
-const { AUTH_FOLLOWERS_MODAL } = MODAL_KEYS;
+const { USER_FOLLOWERS_MODAL } = MODAL_KEYS;
 
-const Profile: React.FC<Props> = ({ isSider }) => {
-  const { authKey, pageSize, search } = useSelector(
+const UserProfileSider: React.FC<Props> = ({ isSider }) => {
+  const {
+    query: { userId },
+  }: NextRouter = useRouter();
+
+  const { userKey, pageSize, search } = useSelector(
     (state: RootState) => state.followers,
     shallowEqual
   );
@@ -36,31 +41,42 @@ const Profile: React.FC<Props> = ({ isSider }) => {
 
   const dispatch = useDispatch();
 
+  const queryClient = useQueryClient();
+
   const { authUser } = useAuth();
 
-  const authAxios = new AuthAxios();
+  const userAxios = new UserAxios();
+
+  const { data: user } = useQuery({
+    queryFn: () => userAxios.getUser(String(userId)),
+    queryKey: [GET_USER, userId],
+  });
 
   const { data: followers, isLoading: isFollowersLoading } = useQuery({
     queryFn: () =>
-      authAxios.getFollowers({
-        pageSize: pageSize[AUTH_FOLLOWERS],
-        search: search[AUTH_FOLLOWERS],
+      userAxios.getUserFollowers({
+        user: String(userId),
+        pageSize: pageSize[USER_FOLLOWERS],
+        search: search[USER_FOLLOWERS],
       }),
     queryKey: [
-      GET_AUTH_FOLLOWERS,
-      { pageSize: pageSize[AUTH_FOLLOWERS], search: search[AUTH_FOLLOWERS] },
+      GET_USER_FOLLOWERS,
+      userId,
+      { pageSize: pageSize[USER_FOLLOWERS], search: search[USER_FOLLOWERS] },
     ],
   });
 
   const { data: following, isLoading: isFollowingLoading } = useQuery({
     queryFn: () =>
-      authAxios.getFollowing({
-        pageSize: pageSize[AUTH_FOLLOWING],
-        search: search[AUTH_FOLLOWING],
+      userAxios.getUserFollowing({
+        user: String(userId),
+        pageSize: pageSize[USER_FOLLOWING],
+        search: search[USER_FOLLOWING],
       }),
     queryKey: [
-      GET_AUTH_FOLLOWING,
-      { pageSize: pageSize[AUTH_FOLLOWING], search: search[AUTH_FOLLOWING] },
+      GET_USER_FOLLOWING,
+      userId,
+      { pageSize: pageSize[USER_FOLLOWING], search: search[USER_FOLLOWING] },
     ],
   });
 
@@ -72,7 +88,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
       label: (
         <span className='sm:mx-2 mx-auto flex items-center gap-1.5'>
           <Icon className='inline' />{' '}
-          {`${authUser[key === AUTH_FOLLOWERS ? 'followersCount' : 'followingCount']} ${label}`}
+          {`${user?.[key === USER_FOLLOWERS ? 'followersCount' : 'followingCount']} ${label}`}
         </span>
       ),
       children: (
@@ -89,7 +105,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
               }}
             />
 
-            {(key === AUTH_FOLLOWERS ? isFollowersLoading : isFollowingLoading) && (
+            {(key === USER_FOLLOWERS ? isFollowersLoading : isFollowingLoading) && (
               <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
             )}
           </span>
@@ -97,9 +113,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
           <Divider />
 
           {isEmpty(users?.data) ? (
-            <Empty>
-              <p className='text-[#1890ff] cursor-pointer hover:text-blue-600'>View Suggestions</p>
-            </Empty>
+            <Empty />
           ) : (
             users?.data.map((user) => (
               <UserSkeleton
@@ -115,50 +129,48 @@ const Profile: React.FC<Props> = ({ isSider }) => {
   };
 
   const items = [
-    { key: AUTH_FOLLOWERS, label: 'Followers', users: followers, icon: RiUserFollowLine },
-    { key: AUTH_FOLLOWING, label: 'Following', users: following, icon: RiUserAddLine },
-  ].map(({ key, label, users, icon }) => authUser && getTabItems(label, key, icon, users));
+    { key: USER_FOLLOWERS, label: 'Followers', users: followers, icon: RiUserFollowLine },
+    { key: USER_FOLLOWING, label: 'Following', users: following, icon: RiUserAddLine },
+  ].map(({ key, label, users, icon }) => user && getTabItems(label, key, icon, users));
 
   return (
     <div className={`w-full sm:order-last ${!isSider && 'lg:hidden'}`}>
-      {authUser && (
+      {user && (
         <main className='w-full flex flex-col'>
           {isSider && (
-            <header className='text-2xl break-words pb-4'>More from {authUser.fullname}</header>
+            <header className='text-2xl break-words pb-4'>More from {user.fullname}</header>
           )}
 
           <div
             className='w-full flex flex-col gap-3 [&>*]:flex [&>*]:items-center [&>*]:gap-2'
             style={{ overflowWrap: 'anywhere' }}
           >
-            {authUser.bio && (
+            {user.bio && (
               <span className='flex-wrap'>
                 <BsFillInfoCircleFill />
-                <p>{authUser.bio}</p>
+                <p>{user.bio}</p>
               </span>
             )}
 
-            {authUser.website && (
+            {user.website && (
               <span>
                 <BiLink />
                 <a
                   className='underline'
                   href={
-                    !authUser.website.startsWith('https://')
-                      ? `https://${authUser.website}`
-                      : authUser.website
+                    !user.website.startsWith('https://') ? `https://${user.website}` : user.website
                   }
                   target='_blank'
                   rel='noreferrer'
                 >
-                  {authUser.website}
+                  {user.website}
                 </a>
               </span>
             )}
 
             <span>
               <BsFillCalendarDateFill />
-              <p>{`Joined ${moment(authUser.createdAt).format('ll')}`}</p>
+              <p>{`Joined ${moment(user.createdAt).format('ll')}`}</p>
             </span>
 
             {!isSider && (
@@ -167,22 +179,22 @@ const Profile: React.FC<Props> = ({ isSider }) => {
                   <RiUserFollowFill />
                   <p
                     className='text-[#1890ff] cursor-pointer hover:text-blue-600'
-                    onClick={() => dispatch(openModal({ key: AUTH_FOLLOWERS_MODAL }))}
+                    onClick={() => dispatch(openModal({ key: USER_FOLLOWERS_MODAL }))}
                   >
                     Check Followers
                   </p>
                 </span>
 
                 <Modal
-                  open={isOpen[AUTH_FOLLOWERS_MODAL]}
-                  onCancel={() => dispatch(closeModal({ key: AUTH_FOLLOWERS_MODAL }))}
+                  open={isOpen[USER_FOLLOWERS_MODAL]}
+                  onCancel={() => dispatch(closeModal({ key: USER_FOLLOWERS_MODAL }))}
                   footer={null}
                 >
                   <Tabs
-                    defaultActiveKey={authKey}
+                    defaultActiveKey={userKey}
                     className='w-full'
-                    items={items}
-                    onTabClick={(key: any) => dispatch(changeKey({ key, type: 'authKey' }))}
+                    items={items as []}
+                    onTabClick={(key: any) => dispatch(changeKey({ key, type: 'userKey' }))}
                   />
                 </Modal>
               </>
@@ -194,10 +206,10 @@ const Profile: React.FC<Props> = ({ isSider }) => {
               <Divider className='mb-3' />
 
               <Tabs
-                defaultActiveKey={authKey}
+                defaultActiveKey={userKey}
                 className='w-full'
-                items={items}
-                onTabClick={(key: any) => dispatch(changeKey({ key, type: 'authKey' }))}
+                items={items as []}
+                onTabClick={(key: any) => dispatch(changeKey({ key, type: 'userKey' }))}
               />
             </>
           )}
@@ -207,4 +219,4 @@ const Profile: React.FC<Props> = ({ isSider }) => {
   );
 };
 
-export default Profile;
+export default UserProfileSider;

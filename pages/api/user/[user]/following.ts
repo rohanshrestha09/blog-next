@@ -1,21 +1,21 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextApiHandler from '../../../interface/next';
-import User from '../../../model/User';
-import init from '../../../middleware/init';
-import withAuth from '../../../middleware/withAuth';
-import { IAuth, IUsers } from '../../../interface/user';
-import IMessage from '../../../interface/message';
+import NextApiHandler from '../../../../interface/next';
+import User from '../../../../model/User';
+import init from '../../../../middleware/init';
+import withValidateUser from '../../../../middleware/withValidateUser';
+import { IUser, IUsers } from '../../../../interface/user';
+import IMessage from '../../../../interface/message';
 
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IAuth,
+  req: NextApiRequest & IUser,
   res: NextApiResponse<IUsers | IMessage>
 ) => {
   const {
     method,
     query: { pageSize, search },
-    auth: { following },
+    user: { following },
   } = req;
 
   switch (method) {
@@ -42,4 +42,4 @@ const handler: NextApiHandler = async (
   }
 };
 
-export default withAuth(handler);
+export default withValidateUser(handler);

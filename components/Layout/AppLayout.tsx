@@ -1,3 +1,4 @@
+import { NextRouter, useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import { Layout, Drawer } from 'antd';
 import { ToastContainer } from 'react-toastify';
@@ -9,13 +10,26 @@ import Nav from '../shared/Nav';
 import ProfileSider from '../Profile/ProfileSider';
 import { closeDrawer, openDrawer } from '../../store/drawerSlice';
 import type { RootState } from '../../store';
+import UserProfileSider from '../Profile/UserProfileSider';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.Element => {
   const { Content, Sider } = Layout;
 
+  const { pathname }: NextRouter = useRouter();
+
   const { isOpen: isDrawerOpen } = useSelector((state: RootState) => state.drawer);
 
   const dispatch = useDispatch();
+
+  const getSider = (pathname: NextRouter['pathname']) => {
+    switch (pathname) {
+      case '/profile':
+        return <ProfileSider isSider />;
+
+      case '/profile/[userId]':
+        return <UserProfileSider isSider />;
+    }
+  };
 
   return (
     <Layout className='font-sans min-h-screen 2xl:px-36' hasSider>
@@ -53,7 +67,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
       </Layout>
 
       <Sider className='bg-inherit lg:block hidden py-[1.20rem] xl:px-12 px-4 z-10' width={450}>
-        <ProfileSider isSider />
+        {getSider(pathname)}
       </Sider>
     </Layout>
   );

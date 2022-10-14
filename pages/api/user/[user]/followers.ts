@@ -1,33 +1,33 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextApiHandler from '../../../interface/next';
-import User from '../../../model/User';
-import init from '../../../middleware/init';
-import withAuth from '../../../middleware/withAuth';
-import { IAuth, IUsers } from '../../../interface/user';
-import IMessage from '../../../interface/message';
+import NextApiHandler from '../../../../interface/next';
+import User from '../../../../model/User';
+import init from '../../../../middleware/init';
+import { IUser, IUsers } from '../../../../interface/user';
+import IMessage from '../../../../interface/message';
+import withValidateUser from '../../../../middleware/withValidateUser';
 
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IAuth,
+  req: NextApiRequest & IUser,
   res: NextApiResponse<IUsers | IMessage>
 ) => {
   const {
     method,
     query: { pageSize, search },
-    auth: { following },
+    user: { followers },
   } = req;
 
   switch (method) {
     case 'GET':
-      let query = { _id: following };
+      let query = { _id: followers };
 
       if (search)
         query = Object.assign({ $text: { $search: String(search).toLowerCase() } }, query);
 
       try {
         return res.status(200).json({
-          message: 'Following fetched successfully',
+          message: 'Followers fetched successfully',
           data: await User.find(query)
             .select('-password')
             .limit(Number(pageSize || 20)),
@@ -42,4 +42,4 @@ const handler: NextApiHandler = async (
   }
 };
 
-export default withAuth(handler);
+export default withValidateUser(handler);

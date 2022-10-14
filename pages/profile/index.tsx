@@ -20,8 +20,8 @@ import { changeKey } from '../../store/authBlogSlice';
 import {
   AUTH,
   GET_AUTH_BLOGS,
-  GET_FOLLOWERS,
-  GET_FOLLOWING,
+  GET_AUTH_FOLLOWERS,
+  GET_AUTH_FOLLOWING,
   GET_GENRE,
 } from '../../constants/queryKeys';
 import { MODAL_KEYS, NAV_KEYS, SORT_FILTER_KEYS } from '../../constants/reduxKeys';
@@ -184,12 +184,12 @@ export const getServerSideProps: GetServerSideProps = async (
 
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.getFollowers({}),
-    queryKey: [GET_FOLLOWERS, { pageSize: 20, search: '' }],
+    queryKey: [GET_AUTH_FOLLOWERS, { pageSize: 20, search: '' }],
   });
 
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.getFollowing({}),
-    queryKey: [GET_FOLLOWING, { pageSize: 20, search: '' }],
+    queryKey: [GET_AUTH_FOLLOWING, { pageSize: 20, search: '' }],
   });
 
   await queryClient.prefetchQuery({

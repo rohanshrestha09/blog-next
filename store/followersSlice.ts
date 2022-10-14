@@ -1,31 +1,40 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { PROFILE_SIDER_KEYS } from '../constants/reduxKeys';
 
-const { FOLLOWERS, FOLLOWING } = PROFILE_SIDER_KEYS;
+const { AUTH_FOLLOWERS, USER_FOLLOWERS } = PROFILE_SIDER_KEYS;
 
 const followersSice = createSlice({
   name: 'followers',
   initialState: {
-    key: FOLLOWERS,
-    pageSize: {
-      [FOLLOWERS]: 20,
-      [FOLLOWING]: 20,
-    },
-    search: {
-      [FOLLOWERS]: '',
-      [FOLLOWING]: '',
-    },
+    authKey: AUTH_FOLLOWERS,
+    userKey: USER_FOLLOWERS,
+    pageSize: Object.values(PROFILE_SIDER_KEYS)
+      .map((key) => ({ [key]: 20 }))
+      .reduce((prev, curr) => ({ ...prev, ...curr })),
+    search: Object.values(PROFILE_SIDER_KEYS)
+      .map((key) => ({ [key]: '' }))
+      .reduce((prev, curr) => ({ ...prev, ...curr })),
   },
   reducers: {
-    changeKey: (state, { payload: { key } }: { payload: { key: PROFILE_SIDER_KEYS } }) => {
-      return (state = { ...state, key });
+    changeKey: (
+      state,
+      {
+        payload: { key, type },
+      }: { payload: { key: PROFILE_SIDER_KEYS; type: 'authKey' | 'userKey' } }
+    ) => {
+      return (state = { ...state, [type]: key });
     },
-    setPageSize: (state, { payload: { pageSize } }: { payload: { pageSize: number } }) => {
-      return (state = { ...state, pageSize: { ...state.pageSize, [state.key]: pageSize } });
+    setPageSize: (
+      state,
+      { payload: { key, pageSize } }: { payload: { key: PROFILE_SIDER_KEYS; pageSize: number } }
+    ) => {
+      return (state = { ...state, pageSize: { ...state.pageSize, [key]: pageSize } });
     },
-    setSearch: (state, { payload: { search } }: { payload: { search: string } }) => {
-      console.log(search);
-      return (state = { ...state, search: { ...state.search, [state.key]: search } });
+    setSearch: (
+      state,
+      { payload: { key, search } }: { payload: { key: PROFILE_SIDER_KEYS; search: string } }
+    ) => {
+      return (state = { ...state, search: { ...state.search, [key]: search } });
     },
   },
 });

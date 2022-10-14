@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { IBlogs } from '../interface/blog';
-import { ILogin, IToken, IUser } from '../interface/user';
+import { ILogin, IToken, IUser, IUserData, IUsers } from '../interface/user';
 
 class User {
   constructor(private cookie?: any) {}
@@ -9,7 +9,7 @@ class User {
     method: string,
     url: string,
     data?: any
-  ): Promise<IUser & IToken & ILogin & IBlogs> => {
+  ): Promise<IUser & IToken & ILogin & IBlogs & IUsers> => {
     const res: AxiosResponse = await axios({
       method,
       url: `http://localhost:3000/api/user/${url}`,
@@ -26,13 +26,38 @@ class User {
 
   login = async (data: ILogin): Promise<IToken> => await this.axiosFn('post', 'login', data);
 
-  getUser = async (id: string): Promise<IUser['user']> =>
-    await (
-      await this.axiosFn('get', id)
-    ).user;
+  getUser = async (id: string): Promise<IUserData> => await (await this.axiosFn('get', id)).user;
 
   getUserBlogs = async ({ user, pageSize }: { user: string; pageSize?: number }): Promise<IBlogs> =>
     await this.axiosFn('get', `${user}/blog?pageSize=${pageSize || 20}`);
+
+  getUserFollowers = async ({
+    user,
+    pageSize,
+    search,
+  }: {
+    user: string;
+    pageSize?: number;
+    search?: string;
+  }): Promise<IUsers> =>
+    await this.axiosFn(
+      'get',
+      `${user}/followers?pageSize=${pageSize || 20}&search=${search || ''}`
+    );
+
+  getUserFollowing = async ({
+    user,
+    pageSize,
+    search,
+  }: {
+    user: string;
+    pageSize?: number;
+    search?: string;
+  }): Promise<IUsers> =>
+    await this.axiosFn(
+      'get',
+      `${user}/following?pageSize=${pageSize || 20}&search=${search || ''}`
+    );
 }
 
 export default User;

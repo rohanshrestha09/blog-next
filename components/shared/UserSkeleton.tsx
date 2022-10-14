@@ -3,7 +3,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Avatar, Button, Space } from 'antd';
 import AuthAxios from '../../apiAxios/authAxios';
 import { errorNotification, successNotification } from '../../utils/notification';
-import { AUTH, GET_FOLLOWERS, GET_FOLLOWING } from '../../constants/queryKeys';
+import {
+  AUTH,
+  GET_AUTH_FOLLOWERS,
+  GET_AUTH_FOLLOWING,
+  GET_USER,
+  GET_USER_FOLLOWERS,
+  GET_USER_FOLLOWING,
+} from '../../constants/queryKeys';
 import type { IUserData } from '../../interface/user';
 import type IMessage from '../../interface/message';
 
@@ -25,8 +32,11 @@ const UserSkeleton: React.FC<Props> = ({
       onSuccess: (res: IMessage) => {
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
-        queryClient.refetchQueries([GET_FOLLOWERS]);
-        queryClient.refetchQueries([GET_FOLLOWING]);
+        queryClient.refetchQueries([GET_USER]);
+        queryClient.refetchQueries([GET_AUTH_FOLLOWERS]);
+        queryClient.refetchQueries([GET_AUTH_FOLLOWING]);
+        queryClient.refetchQueries([GET_USER_FOLLOWERS]);
+        queryClient.refetchQueries([GET_USER_FOLLOWING]);
       },
       onError: (err: Error | any) => errorNotification(err),
     }
