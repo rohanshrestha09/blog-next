@@ -3,7 +3,7 @@ import { NextRouter, useRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
-import { isEmpty, capitalize } from 'lodash';
+import { isEmpty } from 'lodash';
 import { Button, Empty, Tabs, Image, Divider } from 'antd';
 import { IconType } from 'react-icons';
 import { BsBook } from 'react-icons/bs';
@@ -14,7 +14,7 @@ import BlogAxios from '../../apiAxios/blogAxios';
 import ProfileSider from '../../components/Profile/ProfileSider';
 import BlogList from '../../components/Blogs/BlogList';
 import EditProfile from '../../components/Profile/EditProfile';
-import SearchFilter from '../../components/Blogs/SortFilter';
+import SortFilter from '../../components/Blogs/SortFilter';
 import { openModal } from '../../store/modalSlice';
 import { changeKey } from '../../store/authBlogSlice';
 import {
@@ -24,13 +24,19 @@ import {
   GET_AUTH_FOLLOWING,
   GET_GENRE,
 } from '../../constants/queryKeys';
-import { MODAL_KEYS, NAV_KEYS, SORT_FILTER_KEYS } from '../../constants/reduxKeys';
-import { PROFILE_KEYS, SORT_TYPE, SORT_ORDER } from '../../constants/reduxKeys';
+import {
+  PROFILE_KEYS,
+  AUTH_PROFILE_KEYS,
+  MODAL_KEYS,
+  NAV_KEYS,
+  SORT_TYPE,
+  SORT_ORDER,
+} from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
 
-const { ALL_BLOGS, PUBLISHED, UNPUBLISHED } = PROFILE_KEYS;
+const { ALL_BLOGS, PUBLISHED, UNPUBLISHED } = AUTH_PROFILE_KEYS;
 
-const { AUTH_PROFILE_SORT } = SORT_FILTER_KEYS;
+const { AUTH_PROFILE } = PROFILE_KEYS;
 
 const { LIKES } = SORT_TYPE;
 
@@ -46,11 +52,11 @@ const Profile: NextPage = () => {
   const { key, isPublished } = useSelector((state: RootState) => state.authBlog, shallowEqual);
 
   const {
-    search: { [AUTH_PROFILE_SORT]: search },
-    pageSize: { [AUTH_PROFILE_SORT]: pageSize },
-    sort: { [AUTH_PROFILE_SORT]: sort },
-    sortOrder: { [AUTH_PROFILE_SORT]: sortOrder },
-    genre: { [AUTH_PROFILE_SORT]: genre },
+    search: { [AUTH_PROFILE]: search },
+    pageSize: { [AUTH_PROFILE]: pageSize },
+    sort: { [AUTH_PROFILE]: sort },
+    sortOrder: { [AUTH_PROFILE]: sortOrder },
+    genre: { [AUTH_PROFILE]: genre },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const dispatch = useDispatch();
@@ -64,7 +70,7 @@ const Profile: NextPage = () => {
     queryKey: [GET_AUTH_BLOGS, { sortOrder, isPublished, sort, genre, pageSize, search }],
   });
 
-  const getTabItems = (label: string, key: PROFILE_KEYS, Icon: IconType) => {
+  const getTabItems = (label: string, key: AUTH_PROFILE_KEYS, Icon: IconType) => {
     return {
       key,
       label: (
@@ -74,7 +80,7 @@ const Profile: NextPage = () => {
       ),
       children: (
         <div className='w-full pt-3'>
-          <SearchFilter sortFilterKey={AUTH_PROFILE_SORT} isLoading={isLoading} hasSort />
+          <SortFilter sortFilterKey={AUTH_PROFILE} isLoading={isLoading} hasSort hasSortOrder />
 
           {isEmpty(blogs?.data) ? (
             <Empty>
@@ -93,10 +99,10 @@ const Profile: NextPage = () => {
   };
 
   const items = [
-    { key: ALL_BLOGS, icon: BsBook },
-    { key: PUBLISHED, icon: MdOutlinePublishedWithChanges },
-    { key: UNPUBLISHED, icon: MdOutlineUnpublished },
-  ].map(({ key, icon }) => authUser && getTabItems(capitalize(key), key, icon));
+    { key: ALL_BLOGS, label: 'All Blogs', icon: BsBook },
+    { key: PUBLISHED, label: 'Published', icon: MdOutlinePublishedWithChanges },
+    { key: UNPUBLISHED, label: 'Unpublished', icon: MdOutlineUnpublished },
+  ].map(({ key, label, icon }) => authUser && getTabItems(label, key, icon));
 
   return (
     <div className='w-full flex justify-center'>
@@ -146,7 +152,7 @@ const Profile: NextPage = () => {
             className='w-full'
             defaultActiveKey={key}
             items={items}
-            onTabClick={(key) => dispatch(changeKey({ key } as { key: PROFILE_KEYS }))}
+            onTabClick={(key) => dispatch(changeKey({ key } as { key: AUTH_PROFILE_KEYS }))}
           />
         </main>
       )}

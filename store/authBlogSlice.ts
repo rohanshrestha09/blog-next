@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { PROFILE_KEYS } from '../constants/reduxKeys';
+import { AUTH_PROFILE_KEYS } from '../constants/reduxKeys';
 
-const { ALL_BLOGS, PUBLISHED } = PROFILE_KEYS;
+const { ALL_BLOGS, PUBLISHED } = AUTH_PROFILE_KEYS;
 
 const authBlogSlice = createSlice({
   name: 'authBlog',
@@ -10,7 +10,7 @@ const authBlogSlice = createSlice({
     isPublished: undefined as boolean | undefined,
   },
   reducers: {
-    changeKey: (state, { payload: { key } }: { payload: { key: PROFILE_KEYS } }) => {
+    changeKey: (state, { payload: { key } }: { payload: { key: AUTH_PROFILE_KEYS } }) => {
       return (state = {
         ...state,
         key,

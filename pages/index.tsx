@@ -1,18 +1,80 @@
 import Head from 'next/head';
+import { NextRouter, useRouter } from 'next/router';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
-import { DehydratedState, QueryClient, dehydrate } from '@tanstack/react-query';
+import { shallowEqual, useSelector } from 'react-redux';
+import { DehydratedState, QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
+import { isEmpty } from 'lodash';
+import { Empty, Tabs } from 'antd';
 import AuthAxios from '../apiAxios/authAxios';
-import { AUTH } from '../constants/queryKeys';
+import BlogAxios from '../apiAxios/blogAxios';
+import BlogList from '../components/Blogs/BlogList';
+import SortFilter from '../components/Blogs/SortFilter';
+import { AUTH, GET_ALL_BLOGS, GET_GENRE } from '../constants/queryKeys';
+import { SORT_TYPE, HOME_KEYS } from '../constants/reduxKeys';
+import { useAuth } from '../utils/UserAuth';
+import type { IBlogs } from '../interface/blog';
+import type { RootState } from '../store';
+
+const { HOME, FOLLOWING } = HOME_KEYS;
+
+const { LIKES } = SORT_TYPE;
 
 const Home: NextPage = () => {
+  const router: NextRouter = useRouter();
+
+  const { authUser } = useAuth();
+
+  const {
+    sort: { [HOME]: sort },
+    search: { [HOME]: search },
+    genre: { [HOME]: genre },
+    pageSize: { [HOME]: pageSize },
+  } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
+
+  const blogAxios = new BlogAxios();
+
+  const { data: blogs, isLoading } = useQuery({
+    queryFn: () => blogAxios.getAllBlog({ sort, genre, pageSize, search }),
+    queryKey: [GET_ALL_BLOGS, { genre, sort, pageSize, search }],
+  });
+
+  const getTabItems = (label: string, key: HOME_KEYS, blogs?: IBlogs) => {
+    return {
+      key,
+      label: <span className='sm:mx-2 mx-auto flex items-center gap-1.5'>{label}</span>,
+      children: (
+        <div className='w-full pt-3'>
+          {key === HOME && <SortFilter sortFilterKey={HOME} isLoading={isLoading} hasSort />}
+
+          {isEmpty(blogs?.data) ? (
+            <Empty />
+          ) : (
+            blogs?.data.map((blog) => (
+              <BlogList key={blog._id} blog={blog} editable={blog.author._id === authUser?._id} />
+            ))
+          )}
+        </div>
+      ),
+    };
+  };
+
+  const items = [
+    { key: HOME, label: 'For You', blogs },
+    { key: FOLLOWING, label: 'Following', blogs },
+  ].map(({ key, label, blogs }) => getTabItems(label, key, blogs));
+
   return (
-    <div>
+    <div className='w-full flex justify-center'>
       <Head>
-        <title>Create Next App</title>
+        <title>Home | BlogSansar</title>
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      <main></main>
+      <main className='w-full flex flex-col'>
+        <header className='text-2xl uppercase pb-2'>Home</header>
+
+        <Tabs className='w-full' defaultActiveKey={HOME} items={items as []} />
+      </main>
     </div>
   );
 };
@@ -28,11 +90,23 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const authAxios = new AuthAxios(ctx.req && ctx.req.headers.cookie);
 
+  const blogAxios = new BlogAxios(ctx.req && ctx.req.headers.cookie);
+
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.auth(),
     queryKey: [AUTH],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => blogAxios.getAllBlog({}),
+    queryKey: [GET_ALL_BLOGS, { genre: [], sort: LIKES, pageSize: 20, search: '' }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => blogAxios.getGenre(),
+    queryKey: [GET_GENRE],
   });
 
   return {

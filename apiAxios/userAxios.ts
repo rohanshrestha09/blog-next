@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { IBlogs } from '../interface/blog';
-import { ILogin, IToken, IUser, IUserData, IUsers } from '../interface/user';
+import { ILogin, IToken, IUserData, IUser, IUsers } from '../interface/user';
 
 class User {
   constructor(private cookie?: any) {}
@@ -14,7 +14,7 @@ class User {
       method,
       url: `http://localhost:3000/api/user/${url}`,
       data,
-      headers: { Cookie: this.cookie },
+      headers: { Cookie: this.cookie || '' },
       withCredentials: true,
     });
 
@@ -26,7 +26,7 @@ class User {
 
   login = async (data: ILogin): Promise<IToken> => await this.axiosFn('post', 'login', data);
 
-  getUser = async (id: string): Promise<IUserData> => await (await this.axiosFn('get', id)).user;
+  getUser = async (id: string): Promise<IUserData> => await (await this.axiosFn('get', id)).data;
 
   getUserBlogs = async ({ user, pageSize }: { user: string; pageSize?: number }): Promise<IBlogs> =>
     await this.axiosFn('get', `${user}/blog?pageSize=${pageSize || 20}`);

@@ -1,12 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 import { SORT_TYPE, SORT_ORDER } from '../constants/reduxKeys';
 import { IBlogs } from '../interface/blog';
-import { IAuth, IUsers, IUserData } from '../interface/user';
+import { IUsers, IUserData, IAuth } from '../interface/user';
 import IMessage from '../interface/message';
-
-const { LIKES } = SORT_TYPE;
-
-const { ASCENDING } = SORT_ORDER;
 
 class Auth {
   constructor(private cookie?: any) {}
@@ -20,14 +16,14 @@ class Auth {
       method,
       url: `http://localhost:3000/api/auth/${url}`,
       data,
-      headers: { Cookie: this.cookie },
+      headers: { Cookie: this.cookie || '' },
       withCredentials: true,
     });
 
     return res.data;
   };
 
-  auth = async (): Promise<IUserData> => await (await this.axiosFn('get', '')).auth;
+  auth = async (): Promise<IUserData> => await (await this.axiosFn('get', '')).data;
 
   logout = async (): Promise<IMessage> => await this.axiosFn('delete', 'logout');
 
@@ -54,8 +50,8 @@ class Auth {
   }): Promise<IBlogs> =>
     await this.axiosFn(
       'get',
-      `blog?genre=${genre || ''}&sort=${sort || LIKES}&pageSize=${pageSize || 20}&sortOrder=${
-        sortOrder || ASCENDING
+      `blog?genre=${genre || []}&sort=${sort || 'likes'}&pageSize=${pageSize || 20}&sortOrder=${
+        sortOrder || 'asc'
       }&isPublished=${typeof isPublished === 'boolean' ? isPublished : ''}&search=${search || ''}`
     );
 
@@ -70,8 +66,11 @@ class Auth {
   }): Promise<IBlogs> =>
     await this.axiosFn(
       'get',
-      `blog/bookmarks?genre=${genre || ''}&pageSize=${pageSize || 20}&search=${search || ''}`
+      `blog/bookmarks?genre=${genre || []}&pageSize=${pageSize || 20}&search=${search || ''}`
     );
+
+  getFollowingBlogs = async ({ pageSize }: { pageSize?: number }): Promise<IBlogs> =>
+    await this.axiosFn('get', `blog/following?pageSize=${pageSize || 20}`);
 
   getFollowers = async ({
     pageSize,

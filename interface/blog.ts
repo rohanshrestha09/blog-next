@@ -22,8 +22,12 @@ export interface IBlogData extends IMessage {
   updatedAt: Date;
 }
 
-export interface IBlog extends IMessage {
+export interface IBlogReq extends IMessage {
   blog: IBlogData;
+}
+
+export interface IBlog extends IMessage {
+  data: IBlogData;
 }
 
 export interface IBlogs extends IMessage {
@@ -31,8 +35,8 @@ export interface IBlogs extends IMessage {
   count: number;
 }
 
-export interface IGetGenre extends IMessage {
-  genre: string[];
+export interface IGenre extends IMessage {
+  data: string[];
 }
 
 export interface IPostBlog extends BlogKeys {

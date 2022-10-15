@@ -15,18 +15,13 @@ const handler: NextApiHandler = async (
 ) => {
   const {
     method,
-    query: { pageSize, genre, search },
-    auth: { bookmarks },
+    query: { pageSize },
+    auth: { following },
   } = req;
 
   switch (method) {
     case 'GET':
-      let query = { _id: bookmarks, isPublished: true };
-
-      if (genre) query = Object.assign({ genre: { $in: String(genre).split(',') } }, query);
-
-      if (search)
-        query = Object.assign({ $text: { $search: String(search).toLowerCase() } }, query);
+      let query = { author: following, isPublished: true };
 
       try {
         return res.status(200).json({
@@ -34,7 +29,7 @@ const handler: NextApiHandler = async (
             .limit(Number(pageSize || 20))
             .populate('author', '-password'),
           count: await Blog.countDocuments(query),
-          message: 'Blogs Fetched Successfully',
+          message: 'Following Blogs Fetched Successfully',
         });
       } catch (err: Error | any) {
         return res.status(404).json({ message: err.message });

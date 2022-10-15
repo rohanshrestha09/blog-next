@@ -9,7 +9,7 @@ import withParseMultipartForm from '../../../middleware/withParseMultipartForm';
 import withValidatePassword from '../../../middleware/withValidatePassword';
 import uploadFile from '../../../middleware/uploadFile';
 import deleteFile from '../../../middleware/deleteFile';
-import { IAuth } from '../../../interface/user';
+import { IAuthReq, IAuth } from '../../../interface/user';
 import IFiles from '../../../interface/files';
 import IMessage from '../../../interface/message';
 
@@ -24,7 +24,7 @@ export const config = {
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IAuth & IFiles,
+  req: NextApiRequest & IAuthReq & IFiles,
   res: NextApiResponse<IAuth | IMessage>
 ) => {
   const {
@@ -34,7 +34,7 @@ const handler: NextApiHandler = async (
 
   switch (method) {
     case 'GET':
-      return res.status(200).json({ auth: req.auth, message: 'Authentication Success' });
+      return res.status(200).json({ data: req.auth, message: 'Authentication Success' });
 
     case 'PUT':
       const { fullname, bio, website, dateOfBirth } = req.body;

@@ -2,10 +2,10 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../interface/next';
 import User from '../model/User';
 import IMessage from '../interface/message';
-import { IUser } from '../interface/user';
+import { IUserReq } from '../interface/user';
 
 const withValidateUser = (handler: NextApiHandler) => {
-  return async (req: NextApiRequest & IUser, res: NextApiResponse<IMessage>) => {
+  return async (req: NextApiRequest & IUserReq, res: NextApiResponse<IMessage>) => {
     const { user: userId } = req.query;
 
     try {

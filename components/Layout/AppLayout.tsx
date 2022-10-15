@@ -11,6 +11,7 @@ import ProfileSider from '../Profile/ProfileSider';
 import { closeDrawer, openDrawer } from '../../store/drawerSlice';
 import type { RootState } from '../../store';
 import UserProfileSider from '../Profile/UserProfileSider';
+import { useCallback } from 'react';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.Element => {
   const { Content, Sider } = Layout;
@@ -21,7 +22,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
 
   const dispatch = useDispatch();
 
-  const getSider = (pathname: NextRouter['pathname']) => {
+  const getSider = useCallback(() => {
     switch (pathname) {
       case '/profile':
         return <ProfileSider isSider />;
@@ -29,7 +30,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
       case '/profile/[userId]':
         return <UserProfileSider isSider />;
     }
-  };
+  }, [pathname]);
 
   return (
     <Layout className='font-sans min-h-screen 2xl:px-36' hasSider>
@@ -67,7 +68,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
       </Layout>
 
       <Sider className='bg-inherit lg:block hidden py-[1.20rem] xl:px-12 px-4 z-10' width={450}>
-        {getSider(pathname)}
+        {getSider()}
       </Sider>
     </Layout>
   );

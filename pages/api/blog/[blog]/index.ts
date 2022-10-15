@@ -9,8 +9,8 @@ import withValidateBlog from '../../../../middleware/withValidateBlog';
 import withParseMultipartForm from '../../../../middleware/withParseMultipartForm';
 import uploadFile from '../../../../middleware/uploadFile';
 import deleteFile from '../../../../middleware/deleteFile';
-import { IBlog } from '../../../../interface/blog';
-import { IAuth } from '../../../../interface/user';
+import { IBlogReq, IBlog } from '../../../../interface/blog';
+import { IAuthReq } from '../../../../interface/user';
 import IMessage from '../../../../interface/message';
 import IFiles from '../../../../interface/files';
 
@@ -23,7 +23,7 @@ export const config = {
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IBlog & IFiles & IAuth,
+  req: NextApiRequest & IBlogReq & IFiles & IAuthReq,
   res: NextApiResponse<IBlog | IMessage>
 ) => {
   const { method } = req;
@@ -35,7 +35,7 @@ const handler: NextApiHandler = async (
       const blog = req.blog;
 
       try {
-        return res.status(200).json({ blog, message: 'Blog Fetched Successfully' });
+        return res.status(200).json({ data: blog, message: 'Blog Fetched Successfully' });
       } catch (err: Error | any) {
         return res.status(404).json({ message: err.message });
       }

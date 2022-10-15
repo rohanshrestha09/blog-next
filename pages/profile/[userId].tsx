@@ -27,11 +27,11 @@ import {
   GET_USER_FOLLOWERS,
   GET_USER_FOLLOWING,
 } from '../../constants/queryKeys';
-import { NAV_KEYS, SORT_FILTER_KEYS } from '../../constants/reduxKeys';
+import { NAV_KEYS, PROFILE_KEYS } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
 import type IMessage from '../../interface/message';
 
-const { USER_PROFILE_SORT } = SORT_FILTER_KEYS;
+const { USER_PROFILE } = PROFILE_KEYS;
 
 const { HOME_NAV } = NAV_KEYS;
 
@@ -42,7 +42,7 @@ const UserProfile: NextPage = () => {
   }: NextRouter = useRouter();
 
   const {
-    pageSize: { [USER_PROFILE_SORT]: pageSize },
+    pageSize: { [USER_PROFILE]: pageSize },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const queryClient = useQueryClient();

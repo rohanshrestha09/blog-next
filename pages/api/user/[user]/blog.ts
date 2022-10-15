@@ -2,12 +2,12 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../../../../interface/next';
 import Blog from '../../../../model/Blog';
 import withValidateUser from '../../../../middleware/withValidateUser';
-import { IUser } from '../../../../interface/user';
+import { IUserReq } from '../../../../interface/user';
 import { IBlogs } from '../../../../interface/blog';
 import IMessage from '../../../../interface/message';
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IUser,
+  req: NextApiRequest & IUserReq,
   res: NextApiResponse<IBlogs | IMessage>
 ) => {
   const {

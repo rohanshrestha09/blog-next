@@ -3,7 +3,7 @@ import NextApiHandler from '../interface/next';
 import { Secret, JwtPayload, verify } from 'jsonwebtoken';
 import { serialize } from 'cookie';
 import User from '../model/User';
-import { IAuth } from '../interface/user';
+import { IAuthReq } from '../interface/user';
 import IMessage from '../interface/message';
 
 const bypassAuth = (url: string | undefined, method: string | undefined): boolean =>
@@ -12,7 +12,7 @@ const bypassAuth = (url: string | undefined, method: string | undefined): boolea
   false;
 
 const withAuth = (handler: NextApiHandler) => {
-  return async (req: NextApiRequest & IAuth, res: NextApiResponse<IMessage>) => {
+  return async (req: NextApiRequest & IAuthReq, res: NextApiResponse<IMessage>) => {
     if (bypassAuth(req.url, req.method)) return handler(req, res);
 
     const { token } = req.cookies;

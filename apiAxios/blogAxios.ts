@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { IBlog, IBlogData, IBlogs, IGetGenre } from '../interface/blog';
+import { SORT_TYPE } from '../constants/reduxKeys';
+import { IBlog, IBlogData, IBlogs, IGenre } from '../interface/blog';
 import IMessage from '../interface/message';
 
 class Blog {
@@ -9,30 +10,37 @@ class Blog {
     method: string,
     url: string,
     data?: any
-  ): Promise<IGetGenre & IBlogData & IBlog & IBlogs & IMessage> => {
+  ): Promise<IGenre & IBlogData & IBlog & IBlogs & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
       url: `http://localhost:3000/api/blog/${url}`,
       data,
-      headers: { Cookie: this.cookie },
+      headers: { Cookie: this.cookie || '' },
       withCredentials: true,
     });
 
     return res.data;
   };
 
-  getBlog = async (id: string): Promise<IBlogData> => await (await this.axiosFn('get', id)).blog;
+  getBlog = async (id: string): Promise<IBlogData> => await (await this.axiosFn('get', id)).data;
 
   getAllBlog = async ({
     sort,
     pageSize,
     genre,
+    search,
   }: {
-    sort: string;
-    pageSize: number;
-    genre: string[] | [];
+    sort?: SORT_TYPE;
+    pageSize?: number;
+    genre?: string[] | [];
+    search?: string;
   }): Promise<IBlogs> =>
-    await this.axiosFn('get', `?genre=${genre}&sort=${sort}&pageSize=${pageSize}`);
+    await this.axiosFn(
+      'get',
+      `?genre=${genre || []}&sort=${sort || 'likes'}&pageSize=${pageSize || 20}&search=${
+        search || ''
+      }`
+    );
 
   postBlog = async (data: FormData): Promise<IMessage> => await this.axiosFn('post', '', data);
 
@@ -73,10 +81,7 @@ class Blog {
   }): Promise<IMessage> =>
     await this.axiosFn(`${shouldComment ? 'post' : 'delete'}`, `${id}/comment`, data);
 
-  getGenre = async (): Promise<IGetGenre['genre']> =>
-    await (
-      await this.axiosFn('get', 'genre')
-    ).genre;
+  getGenre = async (): Promise<IGenre['data']> => await (await this.axiosFn('get', 'genre')).data;
 }
 
 export default Blog;

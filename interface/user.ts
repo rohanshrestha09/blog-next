@@ -40,12 +40,20 @@ export interface IUserData {
   updatedAt: Date;
 }
 
-export interface IUser extends IMessage {
+export interface IUserReq extends IMessage {
   user: IUserData;
 }
 
-export interface IAuth extends IMessage {
+export interface IUser extends IMessage {
+  data: IUserData;
+}
+
+export interface IAuthReq extends IMessage {
   auth: IUserData;
+}
+
+export interface IAuth extends IMessage {
+  data: IUserData;
 }
 
 export interface IUsers extends IMessage {

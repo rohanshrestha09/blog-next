@@ -11,10 +11,11 @@ import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/r
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../apiAxios/authAxios';
 import UserSkeleton from '../shared/UserSkeleton';
-import { changeKey, setPageSize, setSearch } from '../../store/followersSlice';
+import { changeKey } from '../../store/followersSlice';
+import { setPageSize, setSearch } from '../../store/sortFilterSlice';
 import { openModal, closeModal } from '../../store/modalSlice';
 import { GET_AUTH_FOLLOWERS, GET_AUTH_FOLLOWING } from '../../constants/queryKeys';
-import { MODAL_KEYS, PROFILE_SIDER_KEYS } from '../../constants/reduxKeys';
+import { MODAL_KEYS, FOLLOWERS_KEYS } from '../../constants/reduxKeys';
 import type { IUsers } from '../../interface/user';
 import type { RootState } from '../../store';
 
@@ -22,15 +23,14 @@ interface Props {
   isSider?: boolean;
 }
 
-const { AUTH_FOLLOWERS, AUTH_FOLLOWING } = PROFILE_SIDER_KEYS;
+const { AUTH_FOLLOWERS, AUTH_FOLLOWING } = FOLLOWERS_KEYS;
 
 const { AUTH_FOLLOWERS_MODAL } = MODAL_KEYS;
 
 const Profile: React.FC<Props> = ({ isSider }) => {
-  const { authKey, pageSize, search } = useSelector(
-    (state: RootState) => state.followers,
-    shallowEqual
-  );
+  const { authKey } = useSelector((state: RootState) => state.followers, shallowEqual);
+
+  const { pageSize, search } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const { isOpen } = useSelector((state: RootState) => state.modal);
 
@@ -66,7 +66,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
 
   let timeout: any = 0;
 
-  const getTabItems = (label: string, key: PROFILE_SIDER_KEYS, Icon: IconType, users?: IUsers) => {
+  const getTabItems = (label: string, key: FOLLOWERS_KEYS, Icon: IconType, users?: IUsers) => {
     return {
       key,
       label: (
@@ -124,7 +124,9 @@ const Profile: React.FC<Props> = ({ isSider }) => {
       {authUser && (
         <main className='w-full flex flex-col'>
           {isSider && (
-            <header className='text-2xl break-words pb-4'>More from {authUser.fullname}</header>
+            <header className='text-2xl break-words pb-4 uppercase'>
+              About {authUser.fullname}
+            </header>
           )}
 
           <div

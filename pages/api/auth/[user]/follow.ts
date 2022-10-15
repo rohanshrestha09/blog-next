@@ -5,12 +5,12 @@ import init from '../../../../middleware/init';
 import withAuth from '../../../../middleware/withAuth';
 import withValidateUser from '../../../../middleware/withValidateUser';
 import IMessage from '../../../../interface/message';
-import { IAuth, IUser } from '../../../../interface/user';
+import { IAuthReq, IUserReq } from '../../../../interface/user';
 
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IUser & IAuth,
+  req: NextApiRequest & IUserReq & IAuthReq,
   res: NextApiResponse<IMessage>
 ) => {
   const {

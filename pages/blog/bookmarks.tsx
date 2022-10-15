@@ -10,21 +10,21 @@ import AuthAxios from '../../apiAxios/authAxios';
 import BlogAxios from '../../apiAxios/blogAxios';
 import BlogList from '../../components/Blogs/BlogList';
 import SearchFilter from '../../components/Blogs/SortFilter';
-import { NAV_KEYS, SORT_FILTER_KEYS } from '../../constants/reduxKeys';
+import { NAV_KEYS, BOOKMARKS_KEY } from '../../constants/reduxKeys';
 import { AUTH, GET_BOOKMARKS, GET_GENRE } from '../../constants/queryKeys';
 import type { RootState } from '../../store';
 
 const { HOME_NAV } = NAV_KEYS;
 
-const { BOOKMARKS_SORT } = SORT_FILTER_KEYS;
+const { BOOKMARKS } = BOOKMARKS_KEY;
 
 const Bookmarks: NextPage = () => {
   const router: NextRouter = useRouter();
 
   const {
-    genre: { [BOOKMARKS_SORT]: genre },
-    pageSize: { [BOOKMARKS_SORT]: pageSize },
-    search: { [BOOKMARKS_SORT]: search },
+    genre: { [BOOKMARKS]: genre },
+    pageSize: { [BOOKMARKS]: pageSize },
+    search: { [BOOKMARKS]: search },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const { authUser } = useAuth();
@@ -49,7 +49,7 @@ const Bookmarks: NextPage = () => {
 
           <Divider />
 
-          <SearchFilter sortFilterKey={BOOKMARKS_SORT} isLoading={isLoading} />
+          <SearchFilter sortFilterKey={BOOKMARKS} isLoading={isLoading} />
 
           {isEmpty(blogs?.data) ? (
             <Empty>

@@ -17,20 +17,13 @@ export enum MODAL_KEYS {
   PWD_AUTH_MODAL = 'password-auth-modal',
 }
 
-export enum SORT_FILTER_KEYS {
-  HOME_SORT = 'home-sort',
-  AUTH_PROFILE_SORT = 'auth-profile-search',
-  USER_PROFILE_SORT = 'user-profile-search',
-  BOOKMARKS_SORT = 'bookmarks-sort',
-}
-
-export enum PROFILE_KEYS {
+export enum AUTH_PROFILE_KEYS {
   ALL_BLOGS = 'allblogs',
   PUBLISHED = 'published',
   UNPUBLISHED = 'unpublished',
 }
 
-export enum PROFILE_SIDER_KEYS {
+export enum FOLLOWERS_KEYS {
   AUTH_FOLLOWERS = 'auth-followers',
   AUTH_FOLLOWING = 'auth-following',
   USER_FOLLOWERS = 'user-followers',
@@ -46,3 +39,38 @@ export enum SORT_ORDER {
   ASCENDING = 'asc',
   DESCENDING = 'desc',
 }
+
+export enum PROFILE_KEYS {
+  AUTH_PROFILE = 'auth-profile',
+  USER_PROFILE = 'user-profile',
+}
+
+export enum HOME_KEYS {
+  HOME = 'home',
+  FOLLOWING = 'following',
+}
+
+export enum BOOKMARKS_KEY {
+  BOOKMARKS = 'bookmarks',
+}
+
+const { HOME } = HOME_KEYS;
+
+const { AUTH_PROFILE } = PROFILE_KEYS;
+
+const { BOOKMARKS } = BOOKMARKS_KEY;
+
+export const getSortFilterKeys = {
+  pageSize: { ...HOME_KEYS, ...PROFILE_KEYS, ...FOLLOWERS_KEYS },
+  search: {
+    HOME,
+    AUTH_PROFILE,
+    BOOKMARKS,
+    ...FOLLOWERS_KEYS,
+  },
+  genre: { HOME, AUTH_PROFILE, BOOKMARKS },
+  sort: { HOME, AUTH_PROFILE },
+  sortOrder: { AUTH_PROFILE },
+};
+
+export type SORT_FILTER_KEYS = HOME_KEYS | PROFILE_KEYS | FOLLOWERS_KEYS | BOOKMARKS_KEY;

@@ -4,13 +4,13 @@ import Blog from '../../../../model/Blog';
 import init from '../../../../middleware/init';
 import withAuth from '../../../../middleware/withAuth';
 import withValidateBlog from '../../../../middleware/withValidateBlog';
-import { IBlog } from '../../../../interface/blog';
+import { IBlogReq } from '../../../../interface/blog';
 import IMessage from '../../../../interface/message';
 
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IBlog,
+  req: NextApiRequest & IBlogReq,
   res: NextApiResponse<IMessage>
 ) => {
   const {

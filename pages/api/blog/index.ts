@@ -7,7 +7,7 @@ import init from '../../../middleware/init';
 import withAuth from '../../../middleware/withAuth';
 import withParseMultipartForm from '../../../middleware/withParseMultipartForm';
 import uploadFile from '../../../middleware/uploadFile';
-import { IAuth } from '../../../interface/user';
+import { IAuthReq } from '../../../interface/user';
 import IMessage from '../../../interface/message';
 import { IBlogs } from '../../../interface/blog';
 import IFiles from '../../../interface/files';
@@ -21,7 +21,7 @@ export const config = {
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IAuth & IFiles,
+  req: NextApiRequest & IAuthReq & IFiles,
   res: NextApiResponse<IBlogs | IMessage>
 ) => {
   const { method } = req;

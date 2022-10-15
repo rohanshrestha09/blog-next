@@ -3,13 +3,13 @@ import NextApiHandler from '../../../interface/next';
 import User from '../../../model/User';
 import init from '../../../middleware/init';
 import withAuth from '../../../middleware/withAuth';
-import { IAuth, IUsers } from '../../../interface/user';
+import { IAuthReq, IUsers } from '../../../interface/user';
 import IMessage from '../../../interface/message';
 
 init();
 
 const handler: NextApiHandler = async (
-  req: NextApiRequest & IAuth,
+  req: NextApiRequest & IAuthReq,
   res: NextApiResponse<IUsers | IMessage>
 ) => {
   const {

@@ -12,18 +12,17 @@ import { RootState } from '../../store';
 import { useRef } from 'react';
 
 interface Props {
-  sortFilterKey: SORT_FILTER_KEYS;
+  sortFilterKey: any;
   isLoading: boolean;
   hasSort?: boolean;
+  hasSortOrder?: boolean;
 }
-
-const { HOME_SORT, AUTH_PROFILE_SORT } = SORT_FILTER_KEYS;
 
 const { LIKES, CREATED_AT } = SORT_TYPE;
 
 const { ASCENDING, DESCENDING } = SORT_ORDER;
 
-const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort }) => {
+const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, hasSortOrder }) => {
   const { search, genre, sort, sortOrder } = useSelector(
     (state: RootState) => state.sortFilter,
     shallowEqual
@@ -31,8 +30,10 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort })
 
   const dispatch = useDispatch();
 
+  const blogAxios = new BlogAxios();
+
   const { data: genreSelector } = useQuery({
-    queryFn: () => new BlogAxios().getGenre(),
+    queryFn: () => blogAxios.getGenre(),
     queryKey: [GET_GENRE],
   });
 
@@ -64,17 +65,23 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort })
         </Space>
       </Radio.Group>
 
-      <Divider className='my-0' />
+      {hasSortOrder && (
+        <>
+          <Divider className='my-0' />
 
-      <Radio.Group
-        onChange={({ target: { value: sortOrder } }) => dispatch(setSortOrder({ key, sortOrder }))}
-        value={sortOrder[key]}
-      >
-        <Space direction='vertical'>
-          <Radio value={ASCENDING}>Ascending</Radio>
-          <Radio value={DESCENDING}>Descending</Radio>
-        </Space>
-      </Radio.Group>
+          <Radio.Group
+            onChange={({ target: { value: sortOrder } }) =>
+              dispatch(setSortOrder({ key, sortOrder }))
+            }
+            value={sortOrder[key]}
+          >
+            <Space direction='vertical'>
+              <Radio value={ASCENDING}>Ascending</Radio>
+              <Radio value={DESCENDING}>Descending</Radio>
+            </Space>
+          </Radio.Group>
+        </>
+      )}
     </span>
   );
 

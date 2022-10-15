@@ -1,26 +1,28 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { SORT_FILTER_KEYS, SORT_ORDER, SORT_TYPE } from '../constants/reduxKeys';
+import { getSortFilterKeys, SORT_FILTER_KEYS, SORT_ORDER, SORT_TYPE } from '../constants/reduxKeys';
 
 const { LIKES } = SORT_TYPE;
 
 const { ASCENDING } = SORT_ORDER;
 
+const { pageSize, genre, search, sort, sortOrder } = getSortFilterKeys;
+
 const sortFilterSlice = createSlice({
   name: 'sortFilter',
   initialState: {
-    pageSize: Object.values(SORT_FILTER_KEYS)
+    pageSize: Object.values(pageSize)
       .map((key) => ({ [key]: 20 }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
-    genre: Object.values(SORT_FILTER_KEYS)
+    genre: Object.values(genre)
       .map((key) => ({ [key]: <string[]>[] }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
-    search: Object.values(SORT_FILTER_KEYS)
+    search: Object.values(search)
       .map((key) => ({ [key]: '' }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
-    sort: Object.values(SORT_FILTER_KEYS)
+    sort: Object.values(sort)
       .map((key) => ({ [key]: LIKES }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
-    sortOrder: Object.values(SORT_FILTER_KEYS)
+    sortOrder: Object.values(sortOrder)
       .map((key) => ({ [key]: ASCENDING }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
   },

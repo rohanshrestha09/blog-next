@@ -1,6 +1,6 @@
 import { NextRouter, useRouter } from 'next/router';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import { Empty, Tabs, Divider, Input, Modal, Spin } from 'antd';
@@ -12,10 +12,11 @@ import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/r
 import { useAuth } from '../../utils/UserAuth';
 import UserAxios from '../../apiAxios/userAxios';
 import UserSkeleton from '../shared/UserSkeleton';
-import { changeKey, setPageSize, setSearch } from '../../store/followersSlice';
+import { changeKey } from '../../store/followersSlice';
+import { setPageSize, setSearch } from '../../store/sortFilterSlice';
 import { openModal, closeModal } from '../../store/modalSlice';
 import { GET_USER_FOLLOWERS, GET_USER_FOLLOWING, GET_USER } from '../../constants/queryKeys';
-import { MODAL_KEYS, PROFILE_SIDER_KEYS } from '../../constants/reduxKeys';
+import { MODAL_KEYS, FOLLOWERS_KEYS } from '../../constants/reduxKeys';
 import type { IUsers } from '../../interface/user';
 import type { RootState } from '../../store';
 
@@ -23,7 +24,7 @@ interface Props {
   isSider?: boolean;
 }
 
-const { USER_FOLLOWERS, USER_FOLLOWING } = PROFILE_SIDER_KEYS;
+const { USER_FOLLOWERS, USER_FOLLOWING } = FOLLOWERS_KEYS;
 
 const { USER_FOLLOWERS_MODAL } = MODAL_KEYS;
 
@@ -32,10 +33,9 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
     query: { userId },
   }: NextRouter = useRouter();
 
-  const { userKey, pageSize, search } = useSelector(
-    (state: RootState) => state.followers,
-    shallowEqual
-  );
+  const { userKey } = useSelector((state: RootState) => state.followers, shallowEqual);
+
+  const { pageSize, search } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const { isOpen } = useSelector((state: RootState) => state.modal);
 
@@ -82,7 +82,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
 
   let timeout: any = 0;
 
-  const getTabItems = (label: string, key: PROFILE_SIDER_KEYS, Icon: IconType, users?: IUsers) => {
+  const getTabItems = (label: string, key: FOLLOWERS_KEYS, Icon: IconType, users?: IUsers) => {
     return {
       key,
       label: (
