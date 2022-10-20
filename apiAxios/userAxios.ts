@@ -58,6 +58,9 @@ class User {
       'get',
       `${user}/following?pageSize=${pageSize || 20}&search=${search || ''}`
     );
+
+  getUserSuggestions = async ({ pageSize }: { pageSize: number }): Promise<IUsers> =>
+    await this.axiosFn('get', `suggestions?pageSize=${pageSize || 20}`);
 }
 
 export default User;

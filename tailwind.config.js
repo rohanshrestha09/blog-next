@@ -6,7 +6,8 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],
-        megrim: ['Megrim', 'sans-serif'],
+        satisfy: ['Satisfy', 'sans-serif'],
+        shalimar: ['Shalimar', 'sans-serif'],
       },
       screens: {
         '2xl': '1600px',

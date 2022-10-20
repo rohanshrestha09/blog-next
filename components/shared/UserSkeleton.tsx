@@ -7,22 +7,28 @@ import {
   AUTH,
   GET_AUTH_FOLLOWERS,
   GET_AUTH_FOLLOWING,
+  GET_FOLLOWING_BLOGS,
   GET_USER,
   GET_USER_FOLLOWERS,
   GET_USER_FOLLOWING,
 } from '../../constants/queryKeys';
 import type { IUserData } from '../../interface/user';
 import type IMessage from '../../interface/message';
+import { NextRouter, useRouter } from 'next/router';
 
 interface Props {
   user: IUserData;
   shouldFollow: boolean;
+  bioAsDesc?: boolean;
 }
 
 const UserSkeleton: React.FC<Props> = ({
-  user: { _id: id, image, fullname, followersCount },
+  user: { _id: id, bio, image, fullname, followersCount },
   shouldFollow,
+  bioAsDesc,
 }) => {
+  const router: NextRouter = useRouter();
+
   const queryClient = useQueryClient();
 
   const handleFollowUser = useMutation(
@@ -37,13 +43,14 @@ const UserSkeleton: React.FC<Props> = ({
         queryClient.refetchQueries([GET_AUTH_FOLLOWING]);
         queryClient.refetchQueries([GET_USER_FOLLOWERS]);
         queryClient.refetchQueries([GET_USER_FOLLOWING]);
+        queryClient.refetchQueries([GET_FOLLOWING_BLOGS]);
       },
       onError: (err: Error | any) => errorNotification(err),
     }
   );
 
   return (
-    <div className='w-full flex items-center justify-between pb-2'>
+    <div className='w-full flex items-center justify-between mb-5'>
       <span className='flex items-center gap-4'>
         {image ? (
           <Avatar
@@ -56,13 +63,19 @@ const UserSkeleton: React.FC<Props> = ({
           </Avatar>
         )}
 
-        <Space direction='vertical' size={0}>
-          <p className='text-sm' style={{ overflowWrap: 'anywhere' }}>
+        <Space className='w-48' direction='vertical' size={0}>
+          <p
+            className='text-sm text-white multiline-truncate-title break-words cursor-pointer'
+            onClick={() => router.push(`/profile/${id}`)}
+          >
             {fullname}
           </p>
-          <p className='text-sm text-stone-600' style={{ overflowWrap: 'anywhere' }}>
-            {followersCount} followers
-          </p>
+
+          {bioAsDesc && bio ? (
+            <p className='multiline-truncate-title text-xs text-zinc-500 break-words'>{bio}</p>
+          ) : (
+            <p className='text-sm text-zinc-500 break-words'>{followersCount} followers</p>
+          )}
         </Space>
       </span>
 

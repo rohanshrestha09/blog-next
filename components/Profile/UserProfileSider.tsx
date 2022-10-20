@@ -1,6 +1,6 @@
 import { NextRouter, useRouter } from 'next/router';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import { Empty, Tabs, Divider, Input, Modal, Spin } from 'antd';
@@ -40,8 +40,6 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
   const { isOpen } = useSelector((state: RootState) => state.modal);
 
   const dispatch = useDispatch();
-
-  const queryClient = useQueryClient();
 
   const { authUser } = useAuth();
 
@@ -119,7 +117,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
               <UserSkeleton
                 key={user._id}
                 user={user}
-                shouldFollow={!authUser.following.includes(user._id as never)}
+                shouldFollow={!authUser?.following.includes(user._id as never)}
               />
             ))
           )}

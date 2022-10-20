@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Megrim&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Shalimar&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -23,6 +24,10 @@
 /* scrollbar Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(170 170 170 / 0.5);
+}
+
+header {
+  @apply text-white;
 }
 
 p {

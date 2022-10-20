@@ -125,7 +125,7 @@ const BlogList: React.FC<Props> = ({
             </Avatar>
           )}
           <p
-            className='multiline-truncate-name cursor-pointer'
+            className='multiline-truncate-name cursor-pointer text-white'
             onClick={() => router.push(`/profile/${author._id}`)}
           >
             {author.fullname}
@@ -133,7 +133,7 @@ const BlogList: React.FC<Props> = ({
 
           <span className='text-2xl leading-none tracking-tighter text-gray-400'>&#x22C5;</span>
 
-          <p className='w-28 text-gray-400 text-xs'>{moment(createdAt).format('ll')}</p>
+          <p className='w-28 text-zinc-400 text-xs'>{moment(createdAt).format('ll')}</p>
 
           {editable && (
             <Popover
@@ -149,7 +149,7 @@ const BlogList: React.FC<Props> = ({
 
         <div className='w-full flex justify-between sm:gap-12 gap-6'>
           <Space direction='vertical' size={4}>
-            <p className='sm:text-xl text-base multiline-truncate-title'>{title}</p>
+            <p className='sm:text-xl text-base multiline-truncate-title text-white'>{title}</p>
 
             <p>{he.decode(content.replace(/<[^>]+>/g, ''))}</p>
           </Space>
@@ -162,7 +162,11 @@ const BlogList: React.FC<Props> = ({
         <div className='w-full flex items-center justify-between'>
           <span className='truncate'>
             {genre.map((tag) => (
-              <Tag className='rounded-full' key={tag}>
+              <Tag
+                key={tag}
+                className='rounded-full cursor-pointer'
+                onClick={() => router.push(`/${tag.toLowerCase()}`)}
+              >
                 {tag}
               </Tag>
             ))}

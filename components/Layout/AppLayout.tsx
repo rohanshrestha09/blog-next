@@ -12,6 +12,7 @@ import { closeDrawer, openDrawer } from '../../store/drawerSlice';
 import type { RootState } from '../../store';
 import UserProfileSider from '../Profile/UserProfileSider';
 import { useCallback } from 'react';
+import HomeSider from '../HomeSider';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.Element => {
   const { Content, Sider } = Layout;
@@ -24,6 +25,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
 
   const getSider = useCallback(() => {
     switch (pathname) {
+      case '/':
+        return <HomeSider />;
+
       case '/profile':
         return <ProfileSider isSider />;
 

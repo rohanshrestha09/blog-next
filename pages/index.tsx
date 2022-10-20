@@ -7,9 +7,16 @@ import { isEmpty } from 'lodash';
 import { Empty, Tabs } from 'antd';
 import AuthAxios from '../apiAxios/authAxios';
 import BlogAxios from '../apiAxios/blogAxios';
+import UserAxios from '../apiAxios/userAxios';
 import BlogList from '../components/Blogs/BlogList';
 import SortFilter from '../components/Blogs/SortFilter';
-import { AUTH, GET_ALL_BLOGS, GET_GENRE } from '../constants/queryKeys';
+import {
+  AUTH,
+  GET_ALL_BLOGS,
+  GET_FOLLOWING_BLOGS,
+  GET_GENRE,
+  GET_USER_SUGGESTIONS,
+} from '../constants/queryKeys';
 import { SORT_TYPE, HOME_KEYS } from '../constants/reduxKeys';
 import { useAuth } from '../utils/UserAuth';
 import type { IBlogs } from '../interface/blog';
@@ -20,23 +27,30 @@ const { HOME, FOLLOWING } = HOME_KEYS;
 const { LIKES } = SORT_TYPE;
 
 const Home: NextPage = () => {
-  const router: NextRouter = useRouter();
+    const router: NextRouter = useRouter();
 
-  const { authUser } = useAuth();
+    const { authUser } = useAuth();
 
-  const {
-    sort: { [HOME]: sort },
-    search: { [HOME]: search },
-    genre: { [HOME]: genre },
-    pageSize: { [HOME]: pageSize },
-  } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
+    const {
+        sort: { [HOME]: sort },
+        search: { [HOME]: search },
+        genre: { [HOME]: genre },
+        pageSize,
+    } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
-  const blogAxios = new BlogAxios();
+    const authAxios = new AuthAxios();
 
-  const { data: blogs, isLoading } = useQuery({
-    queryFn: () => blogAxios.getAllBlog({ sort, genre, pageSize, search }),
-    queryKey: [GET_ALL_BLOGS, { genre, sort, pageSize, search }],
-  });
+    const blogAxios = new BlogAxios();
+
+    const { data: allBlogs, isLoading } = useQuery({
+        queryFn: () => blogAxios.getAllBlog({ sort, genre, pageSize: pageSize[HOME], search }),
+        queryKey: [GET_ALL_BLOGS, { genre, sort, pageSize: pageSize[HOME], search }],
+    });
+
+    const { data: followingBlogs } = useQuery({
+        queryFn: () => authAxios.getFollowingBlogs({ pageSize: pageSize[FOLLOWING] }),
+        queryKey: [GET_FOLLOWING_BLOGS, { pageSize: pageSize[FOLLOWING] }],
+    });
 
   const getTabItems = (label: string, key: HOME_KEYS, blogs?: IBlogs) => {
     return {
@@ -59,8 +73,8 @@ const Home: NextPage = () => {
   };
 
   const items = [
-    { key: HOME, label: 'For You', blogs },
-    { key: FOLLOWING, label: 'Following', blogs },
+    { key: HOME, label: 'For You', blogs: allBlogs },
+    { key: FOLLOWING, label: 'Following', blogs: followingBlogs },
   ].map(({ key, label, blogs }) => getTabItems(label, key, blogs));
 
   return (
@@ -92,6 +106,8 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const blogAxios = new BlogAxios(ctx.req && ctx.req.headers.cookie);
 
+  const userAxios = new UserAxios(ctx.req && ctx.req.headers.cookie);
+
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
   await queryClient.prefetchQuery({
@@ -102,6 +118,16 @@ export const getServerSideProps: GetServerSideProps = async (
   await queryClient.prefetchQuery({
     queryFn: () => blogAxios.getAllBlog({}),
     queryKey: [GET_ALL_BLOGS, { genre: [], sort: LIKES, pageSize: 20, search: '' }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => authAxios.getFollowingBlogs({}),
+    queryKey: [GET_FOLLOWING_BLOGS, { pageSize: 20 }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => userAxios.getUserSuggestions({ pageSize: 4 }),
+    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 4 }],
   });
 
   await queryClient.prefetchQuery({
