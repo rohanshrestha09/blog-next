@@ -27,30 +27,30 @@ const { HOME, FOLLOWING } = HOME_KEYS;
 const { LIKES } = SORT_TYPE;
 
 const Home: NextPage = () => {
-    const router: NextRouter = useRouter();
+  const router: NextRouter = useRouter();
 
-    const { authUser } = useAuth();
+  const { authUser } = useAuth();
 
-    const {
-        sort: { [HOME]: sort },
-        search: { [HOME]: search },
-        genre: { [HOME]: genre },
-        pageSize,
-    } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
+  const {
+    sort: { [HOME]: sort },
+    search: { [HOME]: search },
+    genre: { [HOME]: genre },
+    pageSize,
+  } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
-    const authAxios = new AuthAxios();
+  const authAxios = new AuthAxios();
 
-    const blogAxios = new BlogAxios();
+  const blogAxios = new BlogAxios();
 
-    const { data: allBlogs, isLoading } = useQuery({
-        queryFn: () => blogAxios.getAllBlog({ sort, genre, pageSize: pageSize[HOME], search }),
-        queryKey: [GET_ALL_BLOGS, { genre, sort, pageSize: pageSize[HOME], search }],
-    });
+  const { data: allBlogs, isLoading } = useQuery({
+    queryFn: () => blogAxios.getAllBlog({ sort, genre, pageSize: pageSize[HOME], search }),
+    queryKey: [GET_ALL_BLOGS, { genre, sort, pageSize: pageSize[HOME], search }],
+  });
 
-    const { data: followingBlogs } = useQuery({
-        queryFn: () => authAxios.getFollowingBlogs({ pageSize: pageSize[FOLLOWING] }),
-        queryKey: [GET_FOLLOWING_BLOGS, { pageSize: pageSize[FOLLOWING] }],
-    });
+  const { data: followingBlogs } = useQuery({
+    queryFn: () => authAxios.getFollowingBlogs({ pageSize: pageSize[FOLLOWING] }),
+    queryKey: [GET_FOLLOWING_BLOGS, { pageSize: pageSize[FOLLOWING] }],
+  });
 
   const getTabItems = (label: string, key: HOME_KEYS, blogs?: IBlogs) => {
     return {
@@ -102,11 +102,11 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
-  const authAxios = new AuthAxios(ctx.req && ctx.req.headers.cookie);
+  const authAxios = new AuthAxios(ctx.req.headers.cookie);
 
-  const blogAxios = new BlogAxios(ctx.req && ctx.req.headers.cookie);
+  const blogAxios = new BlogAxios(ctx.req.headers.cookie);
 
-  const userAxios = new UserAxios(ctx.req && ctx.req.headers.cookie);
+  const userAxios = new UserAxios(ctx.req.headers.cookie);
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 

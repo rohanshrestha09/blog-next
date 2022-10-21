@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { NextRouter, useRouter } from 'next/router';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -26,6 +27,8 @@ import type { IRegister, IToken } from '../../interface/user';
 const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
 
 const Register: React.FC = () => {
+  const router: NextRouter = useRouter();
+
   const { isOpen } = useSelector((state: RootState) => state.modal);
 
   const dispatch = useDispatch();
@@ -74,6 +77,7 @@ const Register: React.FC = () => {
         form.resetFields();
         queryClient.refetchQueries([AUTH]);
         dispatch(closeModal({ key: REGISTER_MODAL }));
+        router.push('/profile');
       },
       onError: (err: Error) => errorNotification(err),
     }

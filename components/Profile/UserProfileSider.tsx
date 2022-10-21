@@ -135,9 +135,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
     <div className={`w-full sm:order-last ${!isSider && 'lg:hidden'}`}>
       {user && (
         <main className='w-full flex flex-col'>
-          {isSider && (
-            <header className='text-2xl break-words pb-4'>More from {user.fullname}</header>
-          )}
+          {isSider && <header className='text-xl break-words pb-4'>About {user.fullname}</header>}
 
           <div
             className='w-full flex flex-col gap-3 [&>*]:flex [&>*]:items-center [&>*]:gap-2'

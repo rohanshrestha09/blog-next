@@ -273,13 +273,13 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
-  const blogAxios = new BlogAxios(ctx.req && ctx.req.headers.cookie);
+  const blogAxios = new BlogAxios(ctx.req.headers.cookie);
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
   await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getBlog(ctx.params ? String(ctx.params.blogId) : ''),
-    queryKey: [GET_BLOG, ctx.params && ctx.params.blogId],
+    queryFn: () => blogAxios.getBlog(String(ctx.params?.blogId)),
+    queryKey: [GET_BLOG, ctx.params?.blogId],
   });
 
   await queryClient.prefetchQuery({

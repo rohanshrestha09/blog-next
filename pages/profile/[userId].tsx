@@ -156,9 +156,9 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
-  const userAxios = new UserAxios(ctx.req && ctx.req.headers.cookie);
+  const userAxios = new UserAxios(ctx.req.headers.cookie);
 
-  const authAxios = new AuthAxios(ctx.req && ctx.req.headers.cookie);
+  const authAxios = new AuthAxios(ctx.req.headers.cookie);
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
@@ -168,25 +168,23 @@ export const getServerSideProps: GetServerSideProps = async (
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => userAxios.getUser(ctx.params ? String(ctx.params.userId) : ''),
-    queryKey: [GET_USER, ctx.params && ctx.params.userId],
+    queryFn: () => userAxios.getUser(String(ctx.params?.userId)),
+    queryKey: [GET_USER, ctx.params?.userId],
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => userAxios.getUserBlogs({ user: ctx.params ? String(ctx.params.userId) : '' }),
-    queryKey: [GET_USER_BLOGS, ctx.params && ctx.params.userId, { pageSize: 20 }],
+    queryFn: () => userAxios.getUserBlogs({ user: String(ctx.params?.userId) }),
+    queryKey: [GET_USER_BLOGS, ctx.params?.userId, { pageSize: 20 }],
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () =>
-      userAxios.getUserFollowers({ user: ctx.params ? String(ctx.params.userId) : '' }),
-    queryKey: [GET_USER_FOLLOWERS, ctx.params && ctx.params.userId, { pageSize: 20, search: '' }],
+    queryFn: () => userAxios.getUserFollowers({ user: String(ctx.params?.userId) }),
+    queryKey: [GET_USER_FOLLOWERS, ctx.params?.userId, { pageSize: 20, search: '' }],
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () =>
-      userAxios.getUserFollowing({ user: ctx.params ? String(ctx.params.userId) : '' }),
-    queryKey: [GET_USER_FOLLOWING, ctx.params && ctx.params.userId, { pageSize: 20, search: '' }],
+    queryFn: () => userAxios.getUserFollowing({ user: String(ctx.params?.userId) }),
+    queryKey: [GET_USER_FOLLOWING, ctx.params?.userId, { pageSize: 20, search: '' }],
   });
 
   return {

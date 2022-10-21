@@ -124,9 +124,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
       {authUser && (
         <main className='w-full flex flex-col'>
           {isSider && (
-            <header className='text-2xl break-words pb-4 uppercase'>
-              About {authUser.fullname}
-            </header>
+            <header className='text-xl break-words pb-4'>About {authUser.fullname}</header>
           )}
 
           <div

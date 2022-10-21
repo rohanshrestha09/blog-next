@@ -3,6 +3,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
 
 @tailwind base;
+
+@layer base {
+  h1 {
+    @apply text-2xl font-semibold;
+  }
+  h2 {
+    @apply text-xl font-semibold;
+  }
+  h3 {
+    @apply text-lg;
+  }
+  a {
+    @apply text-blue-600 underline;
+  }
+  header {
+    @apply text-white;
+  }
+  p {
+    @apply my-0 !important;
+  }
+}
+
 @tailwind components;
 @tailwind utilities;
 
@@ -24,14 +46,6 @@
 /* scrollbar Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(170 170 170 / 0.5);
-}
-
-header {
-  @apply text-white;
-}
-
-p {
-  @apply my-0 !important;
 }
 
 .btn-secondary {

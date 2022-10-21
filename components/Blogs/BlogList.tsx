@@ -147,11 +147,16 @@ const BlogList: React.FC<Props> = ({
           )}
         </Space>
 
-        <div className='w-full flex justify-between sm:gap-12 gap-6'>
+        <div
+          className='w-full flex justify-between sm:gap-12 gap-6 cursor-pointer'
+          onClick={() => router.push(`/${id}`)}
+        >
           <Space direction='vertical' size={4}>
             <p className='sm:text-xl text-base multiline-truncate-title text-white'>{title}</p>
 
-            <p>{he.decode(content.replace(/<[^>]+>/g, ''))}</p>
+            <p className='multiline-truncate-content leading-loose'>
+              {he.decode(content.replace(/<[^>]+>/g, ''))}
+            </p>
           </Space>
 
           <span className='relative min-w-[4rem] min-h-[4rem] sm:min-w-[7.5rem] sm:min-h-[7.5rem] sm:max-h-[7.5rem]'>

@@ -244,7 +244,7 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
-  const blogAxios = new BlogAxios(ctx.req && ctx.req.headers.cookie);
+  const blogAxios = new BlogAxios(ctx.req.headers.cookie);
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
