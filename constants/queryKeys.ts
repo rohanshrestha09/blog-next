@@ -24,4 +24,6 @@ export const GET_USER_FOLLOWERS = 'get@user/followers';
 
 export const GET_USER_FOLLOWING = 'get@user/following';
 
-export const GET_USER_SUGGESTIONS = 'get@user/suggestions'
+export const GET_USER_SUGGESTIONS = 'get@user/suggestions';
+
+export const GET_BLOG_SUGGESTIONS = 'get@blog/suggestions';

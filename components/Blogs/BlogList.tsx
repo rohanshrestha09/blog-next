@@ -131,7 +131,7 @@ const BlogList: React.FC<Props> = ({
             {author.fullname}
           </p>
 
-          <span className='text-2xl leading-none tracking-tighter text-gray-400'>&#x22C5;</span>
+          <span className='text-2xl leading-none tracking-tighter text-zinc-400'>&#x22C5;</span>
 
           <p className='w-28 text-zinc-400 text-xs'>{moment(createdAt).format('ll')}</p>
 

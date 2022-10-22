@@ -109,6 +109,8 @@ const Profile: React.FC<Props> = ({ isSider }) => {
               />
             ))
           )}
+
+          <p className='text-[#1890ff] cursor-pointer hover:text-blue-600'>View More Suggestions</p>
         </div>
       ),
     };

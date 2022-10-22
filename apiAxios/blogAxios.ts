@@ -42,8 +42,8 @@ class Blog {
       }`
     );
 
-  getRandomBlogs = async ({ pageSize }: { pageSize: number }):Promise<IBlogs> =>
-    await this.axiosFn('get', `random?pageSize=${pageSize || 4}`);
+  getBlogSuggestions = async ({ pageSize }: { pageSize: number }): Promise<IBlogs> =>
+    await this.axiosFn('get', `suggestions?pageSize=${pageSize || 4}`);
 
   postBlog = async (data: FormData): Promise<IMessage> => await this.axiosFn('post', '', data);
 
