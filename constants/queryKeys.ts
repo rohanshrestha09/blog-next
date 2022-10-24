@@ -27,3 +27,7 @@ export const GET_USER_FOLLOWING = 'get@user/following';
 export const GET_USER_SUGGESTIONS = 'get@user/suggestions';
 
 export const GET_BLOG_SUGGESTIONS = 'get@blog/suggestions';
+
+export const GET_LIKERS = 'get@blog/like';
+
+export const GET_COMMENTS = 'get@blog/comment';

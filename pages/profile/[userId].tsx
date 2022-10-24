@@ -20,9 +20,6 @@ import UserProfileSider from '../../components/Profile/UserProfileSider';
 import { errorNotification, successNotification } from '../../utils/notification';
 import {
   AUTH,
-  GET_AUTH_FOLLOWERS,
-  GET_AUTH_FOLLOWING,
-  GET_FOLLOWING_BLOGS,
   GET_USER,
   GET_USER_BLOGS,
   GET_USER_FOLLOWERS,
@@ -69,11 +66,8 @@ const UserProfile: NextPage = () => {
       onSuccess: (res: IMessage) => {
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
-        queryClient.refetchQueries([GET_AUTH_FOLLOWERS]);
-        queryClient.refetchQueries([GET_AUTH_FOLLOWING]);
         queryClient.refetchQueries([GET_USER_FOLLOWERS]);
         queryClient.refetchQueries([GET_USER_FOLLOWING]);
-        queryClient.refetchQueries([GET_FOLLOWING_BLOGS]);
       },
       onError: (err: Error | any) => errorNotification(err),
     }
@@ -138,7 +132,9 @@ const UserProfile: NextPage = () => {
                 </Button>
               </Empty>
             ) : (
-              blogs?.data.map((blog) => <BlogList key={blog._id} blog={blog} editable={false} />)
+              blogs?.data.map((blog) => (
+                <BlogList key={blog._id} blog={blog} editable={blog.author._id === authUser?._id} />
+              ))
             )}
           </div>
         </main>

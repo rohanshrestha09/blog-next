@@ -28,24 +28,22 @@
 @tailwind components;
 @tailwind utilities;
 
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  background-color: transparent;
+body::-webkit-scrollbar {
+  width: 14px;
+  background-color: #3a3b3c;
 }
 
-::-webkit-scrollbar-track {
-  margin: 10px 0;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgb(170, 170, 170);
-  border-radius: 10px;
+body::-webkit-scrollbar-thumb {
+  background: rgb(110 110 110);
 }
 
 /* scrollbar Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(170 170 170 / 0.5);
+body::-webkit-scrollbar-thumb:hover {
+  background: rgba(110 110 110 / 0.5);
+}
+
+.hideScrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 .btn-secondary {

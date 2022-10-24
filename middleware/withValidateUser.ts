@@ -9,7 +9,7 @@ const withValidateUser = (handler: NextApiHandler) => {
     const { user: userId } = req.query;
 
     try {
-      const user = await User.findById(userId).select('-password');
+      const user = await User.findById(userId).select('-password -email');
 
       if (!user) return res.status(404).json({ message: 'User does not exist' });
 

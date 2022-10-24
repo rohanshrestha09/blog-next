@@ -1,6 +1,8 @@
 import Image from 'next/image';
+import { NextRouter, useRouter } from 'next/router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Avatar, Button, Space } from 'antd';
+import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../apiAxios/authAxios';
 import { errorNotification, successNotification } from '../../utils/notification';
 import {
@@ -11,10 +13,10 @@ import {
   GET_USER,
   GET_USER_FOLLOWERS,
   GET_USER_FOLLOWING,
+  GET_USER_SUGGESTIONS,
 } from '../../constants/queryKeys';
 import type { IUserData } from '../../interface/user';
 import type IMessage from '../../interface/message';
-import { NextRouter, useRouter } from 'next/router';
 
 interface Props {
   user: IUserData;
@@ -29,6 +31,8 @@ const UserSkeleton: React.FC<Props> = ({
 }) => {
   const router: NextRouter = useRouter();
 
+  const { authUser } = useAuth();
+
   const queryClient = useQueryClient();
 
   const handleFollowUser = useMutation(
@@ -39,6 +43,7 @@ const UserSkeleton: React.FC<Props> = ({
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
         queryClient.refetchQueries([GET_USER]);
+        queryClient.refetchQueries([GET_USER_SUGGESTIONS]);
         queryClient.refetchQueries([GET_AUTH_FOLLOWERS]);
         queryClient.refetchQueries([GET_AUTH_FOLLOWING]);
         queryClient.refetchQueries([GET_USER_FOLLOWERS]);
@@ -82,6 +87,7 @@ const UserSkeleton: React.FC<Props> = ({
       <Button
         type='primary'
         className='rounded-lg text-xs'
+        hidden={authUser?._id === id}
         size='small'
         danger={!shouldFollow}
         loading={handleFollowUser.isLoading}

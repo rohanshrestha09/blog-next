@@ -1,7 +1,7 @@
 import 'antd/dist/antd.dark.min.css';
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { QueryClientProvider, QueryClient, Hydrate } from '@tanstack/react-query';
 import store from '../store';
@@ -18,6 +18,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         },
       })
   );
+
+  useEffect(() => {
+    document.designMode = 'on';
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

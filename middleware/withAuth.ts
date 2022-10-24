@@ -5,11 +5,10 @@ import { serialize } from 'cookie';
 import User from '../model/User';
 import { IAuthReq } from '../interface/user';
 import IMessage from '../interface/message';
+import type { IncomingMessage } from 'http';
 
-const bypassAuth = (url: string | undefined, method: string | undefined): boolean =>
-  (url?.startsWith('/api/blog') && method === 'GET') ||
-  (url?.startsWith('/api/blog/genre') && method === 'GET') ||
-  false;
+const bypassAuth = (url: IncomingMessage['url'], method: IncomingMessage['method']): boolean =>
+  (url?.startsWith('/api/blog') && method === 'GET') || false;
 
 const withAuth = (handler: NextApiHandler) => {
   return async (req: NextApiRequest & IAuthReq, res: NextApiResponse<IMessage>) => {

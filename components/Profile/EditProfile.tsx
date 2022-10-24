@@ -14,14 +14,16 @@ import {
 import PwdAuth from '../shared/PwdAuth';
 import { closeModal, openModal } from '../../store/modalSlice';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
-import { AUTH, GET_AUTH_BLOGS } from '../../constants/queryKeys';
+import { AUTH } from '../../constants/queryKeys';
 import type { RootState } from '../../store';
 import type IMessage from '../../interface/message';
 
 const { EDIT_PROFILE_MODAL, PWD_AUTH_MODAL } = MODAL_KEYS;
 
 const EditProfile = () => {
-  const { isOpen } = useSelector((state: RootState) => state.modal);
+  const {
+    isOpen: { [EDIT_PROFILE_MODAL]: isOpen },
+  } = useSelector((state: RootState) => state.modal);
 
   const dispatch = useDispatch();
 
@@ -67,7 +69,6 @@ const EditProfile = () => {
       onSuccess: (res: IMessage) => {
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
-        queryClient.refetchQueries([GET_AUTH_BLOGS]);
         dispatch(closeModal({ key: EDIT_PROFILE_MODAL }));
         dispatch(closeModal({ key: PWD_AUTH_MODAL }));
       },
@@ -79,7 +80,7 @@ const EditProfile = () => {
     <Modal
       centered
       className='font-sans'
-      open={isOpen[EDIT_PROFILE_MODAL]}
+      open={isOpen}
       onCancel={() => dispatch(closeModal({ key: EDIT_PROFILE_MODAL }))}
       footer={null}
     >

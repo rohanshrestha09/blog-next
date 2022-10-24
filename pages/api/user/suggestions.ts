@@ -19,10 +19,10 @@ const handler: NextApiHandler = async (
 
       try {
         return res.status(200).json({
-          data: await User.find({})
-            .select('-password')
-            .sort({ followersCount: -1 })
-            .limit(Number(pageSize || 20)),
+          data: await User.aggregate([
+            { $sample: { size: Number(pageSize || 4) } },
+            { $project: { password: 0, email: 0 } },
+          ]),
           count: await User.countDocuments({}),
           message: 'Users Fetched Successfully',
         });

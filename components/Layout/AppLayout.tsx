@@ -26,6 +26,8 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
   const getSider = useCallback(() => {
     switch (pathname) {
       case '/':
+      case '/[blogId]':
+      case 'bookmarks':
         return <HomeSider />;
 
       case '/profile':

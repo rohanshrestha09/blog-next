@@ -5,7 +5,7 @@ import Blog from '../../../../model/Blog';
 import init from '../../../../middleware/init';
 import withAuth from '../../../../middleware/withAuth';
 import withValidateBlog from '../../../../middleware/withValidateBlog';
-import { IAuthReq } from '../../../../interface/user';
+import { IAuthReq, IUsers } from '../../../../interface/user';
 import { IBlogReq } from '../../../../interface/blog';
 import IMessage from '../../../../interface/message';
 
@@ -13,15 +13,30 @@ init();
 
 const handler: NextApiHandler = async (
   req: NextApiRequest & IAuthReq & IBlogReq,
-  res: NextApiResponse<IMessage>
+  res: NextApiResponse<IUsers | IMessage>
 ) => {
   const {
     method,
-    auth: { _id: authId },
-    blog: { _id: blogId, likesCount },
+    auth: { _id: authId } = {},
+    blog: { _id: blogId, likesCount, likers },
   } = req;
 
   switch (method) {
+    case 'GET':
+      const { pageSize } = req.query;
+
+      try {
+        return res.status(200).json({
+          data: await User.find({ _id: likers })
+            .select('-password -email')
+            .limit(Number(pageSize || 20)),
+          count: await User.countDocuments({ _id: likers }),
+          message: 'Likers fetched successfully',
+        });
+      } catch (err: Error | any) {
+        return res.status(404).json({ message: err.message });
+      }
+
     case 'POST':
       try {
         const likeExist = await Blog.findOne({
@@ -32,7 +47,7 @@ const handler: NextApiHandler = async (
 
         await Blog.findByIdAndUpdate(blogId, {
           $push: { likers: authId },
-          likes: likesCount + 1,
+          likesCount: likesCount + 1,
         });
 
         await User.findByIdAndUpdate(authId, {
@@ -54,7 +69,7 @@ const handler: NextApiHandler = async (
 
         await Blog.findByIdAndUpdate(blogId, {
           $pull: { likers: authId },
-          likes: likesCount - 1,
+          likesCount: likesCount - 1,
         });
 
         await User.findByIdAndUpdate(authId, {

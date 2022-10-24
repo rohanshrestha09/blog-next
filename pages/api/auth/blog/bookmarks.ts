@@ -32,7 +32,7 @@ const handler: NextApiHandler = async (
         return res.status(200).json({
           data: await Blog.find(query)
             .limit(Number(pageSize || 20))
-            .populate('author', '-password'),
+            .populate('author', 'fullname image'),
           count: await Blog.countDocuments(query),
           message: 'Blogs Fetched Successfully',
         });

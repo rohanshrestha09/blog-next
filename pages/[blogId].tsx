@@ -10,24 +10,44 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import moment from 'moment';
-import { Button, Divider, Image, Tooltip } from 'antd';
+import { Divider, Image, Tooltip } from 'antd';
 import parse from 'html-react-parser';
-import { BsBookmark, BsBookmarkFill } from 'react-icons/bs';
+import { BsBookmark, BsBookmarkFill, BsHeart, BsHeartFill } from 'react-icons/bs';
+import { VscComment } from 'react-icons/vsc';
 import { useAuth } from '../utils/UserAuth';
 import BlogAxios from '../apiAxios/blogAxios';
 import UserAxios from '../apiAxios/userAxios';
 import AuthAxios from '../apiAxios/authAxios';
 import BlogList from '../components/Blogs/BlogList';
-import { AUTH, GET_BLOG, GET_BOOKMARKS, GET_USER_BLOGS } from '../constants/queryKeys';
-import type { IBlogData } from '../interface/blog';
+import { openModal } from '../store/modalSlice';
 import { errorNotification, successNotification } from '../utils/notification';
+import {
+  AUTH,
+  GET_BLOG,
+  GET_BLOG_SUGGESTIONS,
+  GET_COMMENTS,
+  GET_GENRE,
+  GET_LIKERS,
+  GET_USER_BLOGS,
+  GET_USER_SUGGESTIONS,
+} from '../constants/queryKeys';
+import { MODAL_KEYS } from '../constants/reduxKeys';
+import type { IBlogData } from '../interface/blog';
+import { useDispatch } from 'react-redux';
+import Discussions from '../components/Blogs/Discussions';
+import Likes from '../components/Blogs/Likes';
+
+const { DISCUSSIONS_MODAL, LIKERS_MODAL } = MODAL_KEYS;
 
 const Blog: NextPage = () => {
   const {
     query: { blogId },
+    push,
   }: NextRouter = useRouter();
 
   const queryClient = useQueryClient();
+
+  const dispatch = useDispatch();
 
   const blogAxios = new BlogAxios();
 
@@ -35,7 +55,7 @@ const Blog: NextPage = () => {
 
   const { authUser } = useAuth();
 
-  const { data: blog } = useQuery({
+  const { data: blog, refetch: refetchBlog } = useQuery({
     queryFn: () => blogAxios.getBlog(String(blogId)),
     queryKey: [GET_BLOG, blogId],
   });
@@ -53,7 +73,19 @@ const Blog: NextPage = () => {
       onSuccess: (res) => {
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
-        queryClient.refetchQueries([GET_BOOKMARKS]);
+      },
+      onError: (err: Error | any) => errorNotification(err),
+    }
+  );
+
+  const handleLike = useMutation(
+    ({ id, shouldLike }: { id: string; shouldLike: boolean }) =>
+      blogAxios.likeBlog({ id, shouldLike }),
+    {
+      onSuccess: (res) => {
+        successNotification(res.message);
+        refetchBlog();
+        queryClient.refetchQueries([GET_LIKERS]);
       },
       onError: (err: Error | any) => errorNotification(err),
     }
@@ -65,6 +97,7 @@ const Blog: NextPage = () => {
         <title>{blog && blog.title}</title>
         <link href='/favicon.ico' rel='icon' />
       </Head>
+
       {blog && (
         <main className='w-full flex flex-col gap-9 py-4' style={{ overflowWrap: 'anywhere' }}>
           <div className='flex items-center gap-4 relative'>
@@ -80,7 +113,11 @@ const Blog: NextPage = () => {
             />
 
             <span>
-              <p className='text-base text-white' style={{ overflowWrap: 'anywhere' }}>
+              <p
+                className='text-base text-white cursor-pointer'
+                style={{ overflowWrap: 'anywhere' }}
+                onClick={() => push(`/profile/${blog.author._id}`)}
+              >
                 {blog.author.fullname}
               </p>
 
@@ -125,15 +162,57 @@ const Blog: NextPage = () => {
           <div className='w-full text-base'>{parse(blog.content)}</div>
 
           <div className='w-full'>
-            <Divider className='mt-0' />
+            <span className='flex justify-between'>
+              <p
+                className='text-[#1890ff] text-base cursor-pointer hover:text-blue-600'
+                onClick={() => dispatch(openModal({ key: LIKERS_MODAL }))}
+              >
+                View {blog.likesCount} Likes
+              </p>
+
+              <p className='text-[#1890ff] text-base cursor-pointer hover:text-blue-600'>
+                {blog.commentsCount} Discussions
+              </p>
+            </span>
+
+            <Divider className='mt-4 mb-2' />
+
+            <span className='flex items-center [&>*]:py-2 [&>*]:basis-1/2 [&>*]:rounded-lg [&>*]:text-base [&>*]:cursor-pointer [&>*]:transition-all hover:[&>*]:bg-zinc-800'>
+              <span
+                className={`flex items-center justify-center gap-2 ${
+                  blog.likers.includes(authUser?._id as never) && 'text-blue-500'
+                }`}
+                onClick={() =>
+                  handleLike.mutate({
+                    id: String(blogId),
+                    shouldLike: !blog.likers.includes(authUser?._id as never),
+                  })
+                }
+              >
+                {blog.likers.includes(authUser?._id as never) ? <BsHeartFill /> : <BsHeart />} Like
+              </span>
+
+              <span
+                className='flex items-center justify-center gap-2'
+                onClick={() => dispatch(openModal({ key: DISCUSSIONS_MODAL }))}
+              >
+                <VscComment size='17' /> Discussions
+              </span>
+            </span>
+
+            <Divider className='mt-2' />
 
             <header className='text-2xl pb-4 uppercase'>More from {blog.author.fullname}</header>
 
             {userBlogs &&
               userBlogs.data.map((blog) => (
-                <BlogList blog={blog} editable={blog.author._id === authUser?._id} />
+                <BlogList key={blog._id} blog={blog} editable={blog.author._id === authUser?._id} />
               ))}
           </div>
+
+          <Likes />
+
+          <Discussions />
         </main>
       )}
     </div>
@@ -172,6 +251,31 @@ export const getServerSideProps: GetServerSideProps = async (
   await queryClient.prefetchQuery({
     queryFn: () => userAxios.getUserBlogs({ user: String(blog?.author._id) }),
     queryKey: [GET_USER_BLOGS, blog?.author._id, { pageSize: 4 }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => blogAxios.getLikers({ id: String(ctx.params?.blogId), pageSize: 20 }),
+    queryKey: [GET_LIKERS, ctx.params?.blogId, { pageSize: 20 }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => blogAxios.getComments({ id: String(ctx.params?.blogId), pageSize: 20 }),
+    queryKey: [GET_COMMENTS, ctx.params?.blogId, { pageSize: 20 }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => userAxios.getUserSuggestions({ pageSize: 4 }),
+    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 4 }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
+    queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => blogAxios.getGenre(),
+    queryKey: [GET_GENRE],
   });
 
   return {

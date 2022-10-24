@@ -9,7 +9,7 @@ import { setSearch, setGenre, setSort, setSortOrder } from '../../store/sortFilt
 import { SORT_FILTER_KEYS, SORT_ORDER, SORT_TYPE } from '../../constants/reduxKeys';
 import { GET_GENRE } from '../../constants/queryKeys';
 import { RootState } from '../../store';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 interface Props {
   sortFilterKey: any;
@@ -40,6 +40,8 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, h
   const initialRef = useRef<HTMLButtonElement>(null);
 
   const finalRef = useRef<HTMLButtonElement>(null);
+
+  const [refPosition, setRefPosition] = useState(10);
 
   let timeout: any = 0;
 
@@ -116,20 +118,17 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, h
       <div className='w-full items-center flex gap-2'>
         <LeftOutlined
           className='cursor-pointer'
-          onClick={() =>
-            initialRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-          }
+          onClick={() => {
+            initialRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            setRefPosition(10);
+          }}
         />
-        <span className='flex gap-2 overflow-x-hidden items-center'>
+        <span className='flex gap-2 sm:overflow-x-hidden overflow-x-scroll hideScrollbar items-center'>
           {genreSelector &&
             genreSelector.map((val, index) => (
               <Button
                 key={val}
-                ref={
-                  (index === 0 && initialRef) ||
-                  (index === genreSelector.length - 1 && finalRef) ||
-                  null
-                }
+                ref={(index === 0 && initialRef) || (index === refPosition && finalRef) || null}
                 className={`rounded-full ${
                   genre[key].includes(val) && 'text-[#165996] border-[#165996]'
                 } bg-transparent focus:border-current`}
@@ -144,7 +143,13 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, h
         </span>
         <RightOutlined
           className='cursor-pointer'
-          onClick={() => finalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })}
+          onClick={() => {
+            finalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            if (genreSelector && refPosition + 4 > genreSelector?.length - 1)
+              setRefPosition(genreSelector.length - 1);
+            else setRefPosition((prev) => prev + 4);
+          }}
         />
       </div>
 

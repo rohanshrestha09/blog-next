@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { SORT_TYPE } from '../constants/reduxKeys';
-import { IBlog, IBlogData, IBlogs, IGenre } from '../interface/blog';
+import { IBlog, IBlogData, IBlogs, IComments, IGenre } from '../interface/blog';
+import { IUsers } from '../interface/user';
 import IMessage from '../interface/message';
 
 class Blog {
@@ -10,7 +11,7 @@ class Blog {
     method: string,
     url: string,
     data?: any
-  ): Promise<IGenre & IBlogData & IBlog & IBlogs & IMessage> => {
+  ): Promise<IGenre & IBlogData & IBlog & IBlogs & IUsers & IComments & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
       url: `http://localhost:3000/api/blog/${url}`,
@@ -61,6 +62,9 @@ class Blog {
   }): Promise<IMessage> =>
     await this.axiosFn(`${shouldPublish ? 'post' : 'delete'}`, `${id}/publish`);
 
+  getLikers = async ({ id, pageSize }: { id: string; pageSize: number }): Promise<IUsers> =>
+    await this.axiosFn('get', `${id}/like?pageSize=${pageSize || 20}`);
+
   likeBlog = async ({ id, shouldLike }: { id: string; shouldLike: boolean }): Promise<IMessage> =>
     await this.axiosFn(`${shouldLike ? 'post' : 'delete'}`, `${id}/like`);
 
@@ -72,6 +76,9 @@ class Blog {
     shouldBookmark: boolean;
   }): Promise<IMessage> =>
     await this.axiosFn(`${shouldBookmark ? 'post' : 'delete'}`, `${id}/bookmark`);
+
+  getComments = async ({ id, pageSize }: { id: string; pageSize: number }): Promise<IComments> =>
+    await this.axiosFn('get', `${id}/comment?pageSize=${pageSize || 20}`);
 
   commentBlog = async ({
     id,

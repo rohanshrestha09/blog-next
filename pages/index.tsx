@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import { NextRouter, useRouter } from 'next/router';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { shallowEqual, useSelector } from 'react-redux';
 import { DehydratedState, QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
@@ -13,6 +12,7 @@ import SortFilter from '../components/Blogs/SortFilter';
 import {
   AUTH,
   GET_ALL_BLOGS,
+  GET_BLOG_SUGGESTIONS,
   GET_FOLLOWING_BLOGS,
   GET_GENRE,
   GET_USER_SUGGESTIONS,
@@ -27,8 +27,6 @@ const { HOME, FOLLOWING } = HOME_KEYS;
 const { LIKES } = SORT_TYPE;
 
 const Home: NextPage = () => {
-  const router: NextRouter = useRouter();
-
   const { authUser } = useAuth();
 
   const {
@@ -128,6 +126,11 @@ export const getServerSideProps: GetServerSideProps = async (
   await queryClient.prefetchQuery({
     queryFn: () => userAxios.getUserSuggestions({ pageSize: 4 }),
     queryKey: [GET_USER_SUGGESTIONS, { pageSize: 4 }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
+    queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
   });
 
   await queryClient.prefetchQuery({

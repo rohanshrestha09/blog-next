@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { Button, Divider, Space, Tag } from 'antd';
+import { Button, Divider } from 'antd';
 import UserAxios from '../apiAxios/userAxios';
 import BlogAxios from '../apiAxios/blogAxios';
-import { GET_GENRE, GET_USER_SUGGESTIONS } from '../constants/queryKeys';
+import { GET_BLOG_SUGGESTIONS, GET_GENRE, GET_USER_SUGGESTIONS } from '../constants/queryKeys';
 import { useAuth } from '../utils/UserAuth';
 import UserSkeleton from './shared/UserSkeleton';
+import BlogList from './Blogs/BlogList';
 
 const HomeSider: React.FC = () => {
   const { authUser } = useAuth();
@@ -16,6 +17,11 @@ const HomeSider: React.FC = () => {
   const { data: userSuggestions } = useQuery({
     queryFn: () => userAxios.getUserSuggestions({ pageSize: 4 }),
     queryKey: [GET_USER_SUGGESTIONS, { pageSize: 4 }],
+  });
+
+  const { data: blogSuggestions } = useQuery({
+    queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
+    queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
   });
 
   const { data: genre } = useQuery({
@@ -51,6 +57,13 @@ const HomeSider: React.FC = () => {
         <p className='text-[#1890ff] cursor-pointer hover:text-blue-600'>View More Suggestions</p>
 
         <Divider />
+
+        <header className='text-xl pb-4'>More Blogs</header>
+
+        {blogSuggestions &&
+          blogSuggestions.data.map((blog) => (
+            <BlogList key={blog._id} blog={blog} smallContainer />
+          ))}
 
         <header className='text-xl pb-4'>Pick a genre</header>
 

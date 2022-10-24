@@ -5,7 +5,11 @@ type BlogKeys = Record<string, string | string[]>;
 
 export interface IBlogData extends IMessage {
   _id: string;
-  author: IUserData;
+  author: {
+    _id: IUserData['_id'];
+    fullname: IUserData['fullname'];
+    image: IUserData['image'];
+  };
   image: string;
   imageName: string;
   title: string;
@@ -16,7 +20,7 @@ export interface IBlogData extends IMessage {
   viewers: string[] | [];
   views: number;
   isPublished: boolean;
-  comments: { commenter: string; comment: string }[] | [];
+  comments: { user: string; comment: string }[] | [];
   commentsCount: number;
   createdAt: Date;
   updatedAt: Date;
@@ -37,6 +41,17 @@ export interface IBlogs extends IMessage {
 
 export interface IGenre extends IMessage {
   data: string[];
+}
+
+export interface IComments extends IMessage {
+  data: {
+    user: {
+      _id: IUserData['_id'];
+      fullname: IUserData['fullname'];
+      image: IUserData['image'];
+    };
+  }[];
+  count: number;
 }
 
 export interface IPostBlog extends BlogKeys {

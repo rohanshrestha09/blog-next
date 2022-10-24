@@ -21,7 +21,8 @@ const handler: NextApiHandler = async (
 
   switch (method) {
     case 'POST':
-      if (authId === userId) return res.status(403).json({ message: "Can't follow same user" });
+      if (authId.toString() === userId.toString())
+        return res.status(403).json({ message: "Can't follow same user" });
 
       try {
         const followingExists = await User.findOne({
@@ -46,7 +47,8 @@ const handler: NextApiHandler = async (
       }
 
     case 'DELETE':
-      if (authId === userId) return res.status(403).json({ message: "Can't unfollow same user" });
+      if (authId.toString() === userId.toString())
+        return res.status(403).json({ message: "Can't unfollow same user" });
 
       try {
         const followingExists = await User.findOne({

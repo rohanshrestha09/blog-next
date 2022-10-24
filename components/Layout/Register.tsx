@@ -29,7 +29,9 @@ const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
 const Register: React.FC = () => {
   const router: NextRouter = useRouter();
 
-  const { isOpen } = useSelector((state: RootState) => state.modal);
+  const {
+    isOpen: { [REGISTER_MODAL]: isOpen },
+  } = useSelector((state: RootState) => state.modal);
 
   const dispatch = useDispatch();
 
@@ -87,7 +89,7 @@ const Register: React.FC = () => {
     <Modal
       centered
       className='font-sans'
-      open={isOpen[REGISTER_MODAL]}
+      open={isOpen}
       onCancel={() => dispatch(closeModal({ key: REGISTER_MODAL }))}
       footer={null}
     >

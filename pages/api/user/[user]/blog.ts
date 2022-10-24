@@ -23,7 +23,7 @@ const handler: NextApiHandler = async (
           data: await Blog.find({ _id: blogs, isPublished: true })
             .sort({ likes: -1 })
             .limit(Number(pageSize || 20))
-            .populate('author', '-password'),
+            .populate('author', 'fullname image'),
           count: await Blog.countDocuments({ _id: blogs, isPublished: true }),
           message: 'Blogs Fetched Successfully',
         });

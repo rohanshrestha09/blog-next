@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../../../interface/next';
 import Blog from '../../../model/Blog';
+import User from '../../../model/User';
 import init from '../../../middleware/init';
 import IMessage from '../../../interface/message';
 import { IBlogs } from '../../../interface/blog';
@@ -17,11 +18,16 @@ const handler: NextApiHandler = async (
     case 'GET':
       const { pageSize } = req.query;
 
+      const blogs = await Blog.aggregate([
+        { $sample: { size: Number(pageSize || 4) } },
+        { $match: { isPublished: true } },
+      ]);
+
+      await User.populate(blogs, { path: 'author', select: 'fullname image' });
+
       try {
         return res.status(200).json({
-          data: await Blog.aggregate([
-            { $sample: { size: Number(pageSize || 4) }, $match: { isPublished: true } },
-          ]),
+          data: blogs,
           count: await Blog.countDocuments({ isPublished: true }),
           message: 'Blogs Fetched Successfully',
         });

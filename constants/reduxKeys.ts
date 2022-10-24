@@ -15,6 +15,8 @@ export enum MODAL_KEYS {
   AUTH_FOLLOWERS_MODAL = 'auth-followers-modal',
   USER_FOLLOWERS_MODAL = 'user-followers-modal',
   PWD_AUTH_MODAL = 'password-auth-modal',
+  DISCUSSIONS_MODAL = 'discussions-modal',
+  LIKERS_MODAL = 'likers-modal',
 }
 
 export enum AUTH_PROFILE_KEYS {
@@ -54,6 +56,11 @@ export enum BOOKMARKS_KEY {
   BOOKMARKS = 'bookmarks',
 }
 
+export enum BLOG_KEYS {
+  LIKES = 'likes',
+  COMMENTS = 'comments',
+}
+
 const { HOME } = HOME_KEYS;
 
 const { AUTH_PROFILE } = PROFILE_KEYS;
@@ -61,7 +68,7 @@ const { AUTH_PROFILE } = PROFILE_KEYS;
 const { BOOKMARKS } = BOOKMARKS_KEY;
 
 export const getSortFilterKeys = {
-  pageSize: { ...HOME_KEYS, ...PROFILE_KEYS, ...FOLLOWERS_KEYS },
+  pageSize: { ...HOME_KEYS, ...PROFILE_KEYS, ...FOLLOWERS_KEYS, ...BLOG_KEYS, BOOKMARKS },
   search: {
     HOME,
     AUTH_PROFILE,
@@ -73,4 +80,9 @@ export const getSortFilterKeys = {
   sortOrder: { AUTH_PROFILE },
 };
 
-export type SORT_FILTER_KEYS = HOME_KEYS | PROFILE_KEYS | FOLLOWERS_KEYS | BOOKMARKS_KEY;
+export type SORT_FILTER_KEYS =
+  | HOME_KEYS
+  | PROFILE_KEYS
+  | FOLLOWERS_KEYS
+  | BLOG_KEYS
+  | BOOKMARKS_KEY;

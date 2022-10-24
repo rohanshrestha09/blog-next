@@ -19,7 +19,7 @@ import {
   successNotification,
   warningNotification,
 } from '../../utils/notification';
-import { AUTH, GET_GENRE } from '../../constants/queryKeys';
+import { AUTH, GET_AUTH_BLOGS, GET_GENRE } from '../../constants/queryKeys';
 import type { IPostBlog } from '../../interface/blog';
 import type IMessage from '../../interface/message';
 
@@ -85,6 +85,7 @@ const CreateBlog: NextPage = () => {
         setSelectedImage(null);
         setRenderEditor(Math.random() * 100);
         queryClient.refetchQueries([AUTH]);
+        queryClient.refetchQueries([GET_AUTH_BLOGS]);
       },
       onError: (err: Error) => errorNotification(err),
     }

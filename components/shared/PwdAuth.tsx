@@ -13,7 +13,9 @@ interface Props {
 const { PWD_AUTH_MODAL } = MODAL_KEYS;
 
 const PwdAuth: React.FC<Props> = ({ isLoading, mutation }) => {
-  const { isOpen } = useSelector((state: RootState) => state.modal);
+  const {
+    isOpen: { [PWD_AUTH_MODAL]: isOpen },
+  } = useSelector((state: RootState) => state.modal);
 
   const dispatch = useDispatch();
 
@@ -22,7 +24,7 @@ const PwdAuth: React.FC<Props> = ({ isLoading, mutation }) => {
   return (
     <Modal
       className='font-sans'
-      open={isOpen[PWD_AUTH_MODAL]}
+      open={isOpen}
       onCancel={() => dispatch(closeModal({ key: PWD_AUTH_MODAL }))}
       afterClose={() => form.resetFields()}
       footer={null}

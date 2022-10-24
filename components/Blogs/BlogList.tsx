@@ -25,12 +25,14 @@ import type { IBlogData } from '../../interface/blog';
 interface Props {
   editable?: boolean;
   blog: IBlogData;
+  smallContainer?: boolean;
 }
 
 const { DELETE_MODAL } = MODAL_KEYS;
 
 const BlogList: React.FC<Props> = ({
   editable,
+  smallContainer,
   blog: {
     _id: id,
     author,
@@ -154,14 +156,18 @@ const BlogList: React.FC<Props> = ({
           <Space direction='vertical' size={4}>
             <p className='sm:text-xl text-base multiline-truncate-title text-white'>{title}</p>
 
-            <p className='multiline-truncate-content leading-loose'>
-              {he.decode(content.replace(/<[^>]+>/g, ''))}
-            </p>
+            {!smallContainer && (
+              <p className='multiline-truncate-content leading-loose'>
+                {he.decode(content.replace(/<[^>]+>/g, ''))}
+              </p>
+            )}
           </Space>
 
-          <span className='relative min-w-[4rem] min-h-[4rem] sm:min-w-[7.5rem] sm:min-h-[7.5rem] sm:max-h-[7.5rem]'>
-            <Image alt='' className='object-cover' src={image} layout='fill' />
-          </span>
+          {!smallContainer && (
+            <span className='relative min-w-[4rem] min-h-[4rem] sm:min-w-[7.5rem] sm:min-h-[7.5rem] sm:max-h-[7.5rem]'>
+              <Image alt='' className='object-cover' src={image} layout='fill' />
+            </span>
+          )}
         </div>
 
         <div className='w-full flex items-center justify-between'>

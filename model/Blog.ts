@@ -37,7 +37,7 @@ const BlogSchema = new mongoose.Schema(
       type: [String],
       required: [true, 'Atleast one genre required'],
       validate: [
-        function arrayLimit(val: any) {
+        function (val: any) {
           return val.length <= 4;
         },
         'Only 4 genre allowed',
@@ -50,7 +50,7 @@ const BlogSchema = new mongoose.Schema(
     likers: { type: [Schema.Types.ObjectId], default: [] },
     likesCount: { type: Number, default: 0 },
     isPublished: { type: Boolean, default: false },
-    comments: { type: [{ commenter: Schema.Types.ObjectId, comment: String }], default: [] },
+    comments: { type: [{ user: Schema.Types.ObjectId, comment: String }], default: [] },
     commentsCount: { type: Number, default: 0 },
   },
   { timestamps: true }

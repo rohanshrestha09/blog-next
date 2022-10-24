@@ -29,7 +29,7 @@ const handler: NextApiHandler = async (
         return res.status(200).json({
           message: 'Followers fetched successfully',
           data: await User.find(query)
-            .select('-password')
+            .select('-password -email')
             .limit(Number(pageSize || 20)),
           count: await User.countDocuments(query),
         });

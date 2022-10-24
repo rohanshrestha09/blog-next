@@ -82,7 +82,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
           key: 'blogsansar',
           label: (
             <span
-              className={`font-shalimar text-white md:text-5xl text-2xl cursor-pointer xl:after:content-["BlogSansar"] ${
+              className={`font-shalimar text-white text-5xl cursor-pointer xl:after:content-["BlogSansar"] ${
                 isDrawer ? 'after:content-["BlogSansar"]' : 'after:content-["B"]'
               }`}
             ></span>
