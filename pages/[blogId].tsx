@@ -61,7 +61,7 @@ const Blog: NextPage = () => {
   });
 
   const { data: userBlogs } = useQuery({
-    queryFn: () => userAxios.getUserBlogs({ user: String(blog?.author._id) }),
+    queryFn: () => userAxios.getUserBlogs({ user: String(blog?.author._id), pageSize: 4 }),
     queryKey: [GET_USER_BLOGS, blog?.author._id, { pageSize: 4 }],
     enabled: !!blog,
   });
@@ -170,7 +170,10 @@ const Blog: NextPage = () => {
                 View {blog.likesCount} Likes
               </p>
 
-              <p className='text-[#1890ff] text-base cursor-pointer hover:text-blue-600'>
+              <p
+                className='text-[#1890ff] text-base cursor-pointer hover:text-blue-600'
+                onClick={() => dispatch(openModal({ key: DISCUSSIONS_MODAL }))}
+              >
                 {blog.commentsCount} Discussions
               </p>
             </span>
@@ -249,7 +252,7 @@ export const getServerSideProps: GetServerSideProps = async (
   const blog = queryClient.getQueryData([GET_BLOG, ctx.params?.blogId]) as IBlogData;
 
   await queryClient.prefetchQuery({
-    queryFn: () => userAxios.getUserBlogs({ user: String(blog?.author._id) }),
+    queryFn: () => userAxios.getUserBlogs({ user: String(blog?.author._id), pageSize: 4 }),
     queryKey: [GET_USER_BLOGS, blog?.author._id, { pageSize: 4 }],
   });
 

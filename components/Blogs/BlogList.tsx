@@ -163,7 +163,7 @@ const BlogList: React.FC<Props> = ({
             )}
           </Space>
 
-          {!smallContainer && (
+          {!smallContainer && image && (
             <span className='relative min-w-[4rem] min-h-[4rem] sm:min-w-[7.5rem] sm:min-h-[7.5rem] sm:max-h-[7.5rem]'>
               <Image alt='' className='object-cover' src={image} layout='fill' />
             </span>
@@ -172,7 +172,7 @@ const BlogList: React.FC<Props> = ({
 
         <div className='w-full flex items-center justify-between'>
           <span className='truncate'>
-            {genre.map((tag) => (
+            {genre.map((tag: string) => (
               <Tag
                 key={tag}
                 className='rounded-full cursor-pointer'

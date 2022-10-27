@@ -1,6 +1,6 @@
 import { NextRouter, useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
-import { Layout, Drawer } from 'antd';
+import { Layout, Drawer, Affix } from 'antd';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { MdOutlineKeyboardArrowRight } from 'react-icons/md';
@@ -11,13 +11,15 @@ import ProfileSider from '../Profile/ProfileSider';
 import { closeDrawer, openDrawer } from '../../store/drawerSlice';
 import type { RootState } from '../../store';
 import UserProfileSider from '../Profile/UserProfileSider';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import HomeSider from '../HomeSider';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.Element => {
   const { Content, Sider } = Layout;
 
   const { pathname }: NextRouter = useRouter();
+
+  const sidebarAffix = useRef<any>();
 
   const { isOpen: isDrawerOpen } = useSelector((state: RootState) => state.drawer);
 
@@ -37,6 +39,10 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
         return <UserProfileSider isSider />;
     }
   }, [pathname]);
+
+  useEffect(() => {
+    window && window.addEventListener('scroll', () => sidebarAffix?.current.updatePosition(), true);
+  }, []);
 
   return (
     <Layout className='font-sans min-h-screen 2xl:px-36' hasSider>
@@ -65,9 +71,11 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
         <Nav additionalProps='w-72' isDrawer />
       </Drawer>
 
-      <Sider breakpoint='xl' className='bg-inherit sm:block hidden z-10' width={270}>
-        <Nav additionalProps='bg-inherit border-none' />
-      </Sider>
+      <Affix ref={sidebarAffix} offsetTop={1}>
+        <Sider breakpoint='xl' className='bg-inherit sm:block hidden z-10' width={270}>
+          <Nav additionalProps='bg-inherit border-none' />
+        </Sider>
+      </Affix>
 
       <Layout className='border-x border-gray-700 py-[1.20rem] xl:px-12 px-4'>
         <Content>{children}</Content>

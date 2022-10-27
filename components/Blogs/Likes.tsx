@@ -36,7 +36,7 @@ const Likes: React.FC = () => {
 
   const { data: likers } = useQuery({
     queryFn: () => blogAxios.getLikers({ id: String(blogId), pageSize }),
-    queryKey: [GET_LIKERS, blogId, pageSize],
+    queryKey: [GET_LIKERS, blogId, { pageSize }],
   });
 
   return (

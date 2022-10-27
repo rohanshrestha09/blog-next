@@ -1,3 +1,5 @@
+import { Document, Types } from 'mongoose';
+import { IUserSchema } from './schema';
 import IMessage from './message';
 
 type RegisterKeys = Record<string, string | boolean>;
@@ -21,24 +23,10 @@ export interface ILogin {
   remember: boolean;
 }
 
-export interface IUserData {
-  _id: string;
-  fullname: string;
-  email: string;
-  dateOfBirth: Date;
-  image: string | null;
-  imageName: string | null;
-  bookmarks: string[] | [];
-  blogs: string[] | [];
-  bio: string | null;
-  website: string | null;
-  following: string[] | [];
-  followers: string[] | [];
-  followingCount: number;
-  followersCount: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
+export type IUserData = Omit<
+  Document<unknown, any, IUserSchema> & IUserSchema & { _id: Types.ObjectId & string },
+  never
+>;
 
 export interface IUserReq extends IMessage {
   user: IUserData;

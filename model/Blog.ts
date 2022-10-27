@@ -1,4 +1,6 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema, models, model } from 'mongoose';
+import { IBlogSchema } from '../interface/schema';
+
 export const genre: string[] = [
   'Technology',
   'Science',
@@ -20,11 +22,15 @@ export const genre: string[] = [
   'Political',
 ];
 
-const BlogSchema = new mongoose.Schema(
+const BlogSchema = new Schema<IBlogSchema>(
   {
-    author: { type: Schema.Types.ObjectId, ref: 'User', required: [true, 'Author missing'] },
-    image: String,
-    imageName: String,
+    author: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'Author missing'],
+    },
+    image: { type: String, default: null },
+    imageName: { type: String, default: null },
     title: {
       type: String,
       required: [true, 'Title missing'],
@@ -49,11 +55,11 @@ const BlogSchema = new mongoose.Schema(
     },
     likers: { type: [Schema.Types.ObjectId], default: [] },
     likesCount: { type: Number, default: 0 },
-    isPublished: { type: Boolean, default: false },
-    comments: { type: [{ user: Schema.Types.ObjectId, comment: String }], default: [] },
+    comments: { type: [Schema.Types.ObjectId], default: [] },
     commentsCount: { type: Number, default: 0 },
+    isPublished: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
-export default mongoose.models.Blog || mongoose.model('Blog', BlogSchema);
+export default models.Blog || model<IBlogSchema>('Blog', BlogSchema);

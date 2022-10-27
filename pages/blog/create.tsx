@@ -118,7 +118,7 @@ const CreateBlog: NextPage = () => {
               key={renderEditor}
               apiKey={process.env.NEXT_PUBLIC_TINY_MCE}
               init={{
-                height: 440,
+                height: 430,
                 menubar: true,
                 skin: 'oxide-dark',
                 content_css: 'dark',

@@ -92,12 +92,11 @@ const UpdateBlog: NextPage = () => {
       });
       if (selectedImage) formData.append('image', selectedImage);
 
-      return blogAxios.updateBlog({ id: blogId as string, data: formData });
+      return blogAxios.updateBlog({ id: String(blogId), data: formData });
     },
     {
       onSuccess: (res: IMessage) => {
         successNotification(res.message);
-        queryClient.refetchQueries([AUTH]);
         queryClient.refetchQueries([GET_AUTH_BLOGS]);
       },
       onError: (err: Error) => errorNotification(err),
@@ -146,7 +145,7 @@ const UpdateBlog: NextPage = () => {
               <Editor
                 apiKey={process.env.NEXT_PUBLIC_TINY_MCE}
                 init={{
-                  height: 440,
+                  height: 430,
                   menubar: true,
                   skin: 'oxide-dark',
                   content_css: 'dark',

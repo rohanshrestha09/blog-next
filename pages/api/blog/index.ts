@@ -59,8 +59,6 @@ const handler: NextApiHandler = async (
       const { title, content, genre, isPublished } = req.body;
 
       try {
-        if (isEmpty(req.files)) return res.status(403).json({ message: 'Image required' });
-
         const { _id: blogId } = await Blog.create({
           author: authId,
           title,
@@ -69,19 +67,21 @@ const handler: NextApiHandler = async (
           isPublished,
         });
 
-        const file = req.files.image as any;
+        if (!isEmpty(req.files)) {
+          const file = req.files.image as any;
 
-        if (!file.mimetype.startsWith('image/'))
-          return res.status(403).json({ message: 'Please choose an image' });
+          if (!file.mimetype.startsWith('image/'))
+            return res.status(403).json({ message: 'Please choose an image' });
 
-        const filename = file.mimetype.replace('image/', `${blogId}.`);
+          const filename = file.mimetype.replace('image/', `${blogId}.`);
 
-        const fileUrl = await uploadFile(file, `blogs/${filename}`);
+          const fileUrl = await uploadFile(file, `blogs/${filename}`);
 
-        await Blog.findByIdAndUpdate(blogId, {
-          image: fileUrl,
-          imageName: filename,
-        });
+          await Blog.findByIdAndUpdate(blogId, {
+            image: fileUrl,
+            imageName: filename,
+          });
+        }
 
         await User.findByIdAndUpdate(authId, { $push: { blogs: blogId } });
 

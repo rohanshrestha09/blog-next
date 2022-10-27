@@ -14,7 +14,7 @@ import {
 import PwdAuth from '../shared/PwdAuth';
 import { closeModal, openModal } from '../../store/modalSlice';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
-import { AUTH } from '../../constants/queryKeys';
+import { AUTH, GET_AUTH_BLOGS } from '../../constants/queryKeys';
 import type { RootState } from '../../store';
 import type IMessage from '../../interface/message';
 
@@ -69,6 +69,7 @@ const EditProfile = () => {
       onSuccess: (res: IMessage) => {
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
+        queryClient.refetchQueries([GET_AUTH_BLOGS]);
         dispatch(closeModal({ key: EDIT_PROFILE_MODAL }));
         dispatch(closeModal({ key: PWD_AUTH_MODAL }));
       },

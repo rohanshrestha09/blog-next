@@ -80,16 +80,35 @@ class Blog {
   getComments = async ({ id, pageSize }: { id: string; pageSize: number }): Promise<IComments> =>
     await this.axiosFn('get', `${id}/comment?pageSize=${pageSize || 20}`);
 
-  commentBlog = async ({
+  postComment = async ({
     id,
-    shouldComment,
     data,
   }: {
     id: string;
-    shouldComment: boolean;
-    data: FormData;
+    data: { comment: string };
+  }): Promise<IMessage> => await this.axiosFn('post', `${id}/comment`, data);
+
+  deleteComment = async ({
+    blogId,
+    commentId,
+  }: {
+    blogId: string;
+    commentId: string;
+  }): Promise<IMessage> => await this.axiosFn('delete', `${blogId}/comment?commentId=${commentId}`);
+
+  likeComment = async ({
+    blogId,
+    commentId,
+    shouldLike,
+  }: {
+    blogId: string;
+    commentId: string;
+    shouldLike: boolean;
   }): Promise<IMessage> =>
-    await this.axiosFn(`${shouldComment ? 'post' : 'delete'}`, `${id}/comment`, data);
+    this.axiosFn(
+      `${shouldLike ? 'post' : 'delete'}`,
+      `${blogId}/comment/like?commentId=${commentId}`
+    );
 
   getGenre = async (): Promise<IGenre['data']> => await (await this.axiosFn('get', 'genre')).data;
 }
