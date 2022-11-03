@@ -157,7 +157,7 @@ const Blog: NextPage = () => {
 
           <p className='text-3xl text-white'>{blog.title}</p>
 
-          {blog.image && <Image src={blog.image} />}
+          {blog.image && <Image alt='' src={blog.image} />}
 
           <div className='w-full text-base'>{parse(blog.content)}</div>
 
@@ -267,8 +267,8 @@ export const getServerSideProps: GetServerSideProps = async (
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => userAxios.getUserSuggestions({ pageSize: 4 }),
-    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 4 }],
+    queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
+    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
   });
 
   await queryClient.prefetchQuery({

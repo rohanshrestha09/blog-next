@@ -1,13 +1,24 @@
+import { NextRouter, useRouter } from 'next/router';
+import { useDispatch } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Divider } from 'antd';
 import UserAxios from '../apiAxios/userAxios';
 import BlogAxios from '../apiAxios/blogAxios';
+import { openModal } from '../store/modalSlice';
 import { GET_BLOG_SUGGESTIONS, GET_GENRE, GET_USER_SUGGESTIONS } from '../constants/queryKeys';
 import { useAuth } from '../utils/UserAuth';
 import UserSkeleton from './shared/UserSkeleton';
 import BlogList from './Blogs/BlogList';
+import UserSuggestions from './shared/UserSuggestions';
+import { MODAL_KEYS } from '../constants/reduxKeys';
+
+const { USER_SUGGESTIONS_MODAL } = MODAL_KEYS;
 
 const HomeSider: React.FC = () => {
+  const router: NextRouter = useRouter();
+
+  const dispatch = useDispatch();
+
   const { authUser } = useAuth();
 
   const userAxios = new UserAxios();
@@ -15,8 +26,8 @@ const HomeSider: React.FC = () => {
   const blogAxios = new BlogAxios();
 
   const { data: userSuggestions } = useQuery({
-    queryFn: () => userAxios.getUserSuggestions({ pageSize: 4 }),
-    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 4 }],
+    queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
+    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
   });
 
   const { data: blogSuggestions } = useQuery({
@@ -33,11 +44,12 @@ const HomeSider: React.FC = () => {
     <div className='w-full'>
       <main className='w-full flex flex-col'>
         <Button
-          className='w-full font-semibold font-shalimar btn-secondary text-xl'
+          className='w-full font-semibold font-shalimar uppercase btn-secondary text-xl'
           shape='round'
           size='large'
+          onClick={() => router.push('/blog/create')}
         >
-          BECOME AN AUTHOR
+          Write a Blog
         </Button>
 
         <Divider />
@@ -54,7 +66,12 @@ const HomeSider: React.FC = () => {
             />
           ))}
 
-        <p className='text-[#1890ff] cursor-pointer hover:text-blue-600'>View More Suggestions</p>
+        <p
+          className='text-[#1890ff] cursor-pointer hover:text-blue-600'
+          onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
+        >
+          View More Suggestions
+        </p>
 
         <Divider />
 
@@ -80,6 +97,8 @@ const HomeSider: React.FC = () => {
               </span>
             ))}
         </div>
+
+        <UserSuggestions />
       </main>
     </div>
   );

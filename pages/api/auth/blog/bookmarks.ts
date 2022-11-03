@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../../../../interface/next';
+import { PipelineStage } from 'mongoose';
 import Blog from '../../../../model/Blog';
+import User from '../../../../model/User';
 import init from '../../../../middleware/init';
 import withAuth from '../../../../middleware/withAuth';
 import { IAuthReq } from '../../../../interface/user';
@@ -21,19 +23,31 @@ const handler: NextApiHandler = async (
 
   switch (method) {
     case 'GET':
-      let query = { _id: bookmarks, isPublished: true };
+      const query: PipelineStage[] = [{ $match: { _id: { $in: bookmarks }, isPublished: true } }];
 
-      if (genre) query = Object.assign({ genre: { $in: String(genre).split(',') } }, query);
+      if (genre) query.push({ $match: { genre: { $in: String(genre).split(',') } } });
 
       if (search)
-        query = Object.assign({ $text: { $search: String(search).toLowerCase() } }, query);
+        query.unshift({
+          $search: {
+            index: 'blog-search',
+            autocomplete: { query: String(search), path: 'title' },
+          },
+        });
+
+      const blogs = await Blog.aggregate([...query, { $limit: Number(pageSize || 20) }]);
+
+      await User.populate(blogs, { path: 'author', select: 'fullname image' });
+
+      const [{ totalCount } = { totalCount: 0 }] = await Blog.aggregate([
+        ...query,
+        { $count: 'totalCount' },
+      ]);
 
       try {
         return res.status(200).json({
-          data: await Blog.find(query)
-            .limit(Number(pageSize || 20))
-            .populate('author', 'fullname image'),
-          count: await Blog.countDocuments(query),
+          data: blogs,
+          count: totalCount,
           message: 'Blogs Fetched Successfully',
         });
       } catch (err: Error | any) {

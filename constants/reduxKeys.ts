@@ -17,6 +17,7 @@ export enum MODAL_KEYS {
   PWD_AUTH_MODAL = 'password-auth-modal',
   DISCUSSIONS_MODAL = 'discussions-modal',
   LIKERS_MODAL = 'likers-modal',
+  USER_SUGGESTIONS_MODAL = 'user-suggestions-modal',
 }
 
 export enum AUTH_PROFILE_KEYS {
@@ -50,6 +51,7 @@ export enum PROFILE_KEYS {
 export enum HOME_KEYS {
   HOME = 'home',
   FOLLOWING = 'following',
+  USER_SUGGESTIONS = 'user-suggestions',
 }
 
 export enum BOOKMARKS_KEY {
@@ -61,7 +63,7 @@ export enum BLOG_KEYS {
   COMMENTS = 'comments',
 }
 
-const { HOME } = HOME_KEYS;
+const { HOME, USER_SUGGESTIONS } = HOME_KEYS;
 
 const { AUTH_PROFILE } = PROFILE_KEYS;
 
@@ -71,6 +73,7 @@ export const getSortFilterKeys = {
   pageSize: { ...HOME_KEYS, ...PROFILE_KEYS, ...FOLLOWERS_KEYS, ...BLOG_KEYS, BOOKMARKS },
   search: {
     HOME,
+    USER_SUGGESTIONS,
     AUTH_PROFILE,
     BOOKMARKS,
     ...FOLLOWERS_KEYS,

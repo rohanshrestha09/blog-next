@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../../../interface/next';
+import { PipelineStage } from 'mongoose';
 import { isEmpty } from 'lodash';
 import User from '../../../model/User';
 import Blog from '../../../model/Blog';
@@ -31,20 +32,34 @@ const handler: NextApiHandler = async (
       (async () => {
         const { sort, pageSize, genre, search } = req.query;
 
-        let query = { isPublished: true };
+        const query: PipelineStage[] = [
+          { $match: { isPublished: true } },
+          { $sort: { [String(sort || 'likes')]: -1 } },
+        ];
 
-        if (genre) query = Object.assign({ genre: { $in: String(genre).split(',') } }, query);
+        if (genre) query.push({ $match: { genre: { $in: String(genre).split(',') } } });
 
         if (search)
-          query = Object.assign({ $text: { $search: String(search).toLowerCase() } }, query);
+          query.unshift({
+            $search: {
+              index: 'blog-search',
+              autocomplete: { query: String(search), path: 'title' },
+            },
+          });
+
+        const blogs = await Blog.aggregate([...query, { $limit: Number(pageSize || 20) }]);
+
+        await User.populate(blogs, { path: 'author', select: 'fullname image' });
+
+        const [{ totalCount } = { totalCount: 0 }] = await Blog.aggregate([
+          ...query,
+          { $count: 'totalCount' },
+        ]);
 
         try {
           return res.status(200).json({
-            data: await Blog.find(query)
-              .sort({ [String(sort || 'likes')]: -1 })
-              .limit(Number(pageSize || 20))
-              .populate('author', 'fullname image'),
-            count: await Blog.countDocuments(query),
+            data: blogs,
+            count: totalCount,
             message: 'Blogs Fetched Successfully',
           });
         } catch (err: Error | any) {

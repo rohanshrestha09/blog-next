@@ -29,7 +29,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
     switch (pathname) {
       case '/':
       case '/[blogId]':
-      case 'bookmarks':
+      case '/blog/bookmarks':
         return <HomeSider />;
 
       case '/profile':

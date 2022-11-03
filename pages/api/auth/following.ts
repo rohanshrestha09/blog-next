@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextApiHandler from '../../../interface/next';
+import { PipelineStage } from 'mongoose';
 import User from '../../../model/User';
 import init from '../../../middleware/init';
 import withAuth from '../../../middleware/withAuth';
@@ -20,18 +21,31 @@ const handler: NextApiHandler = async (
 
   switch (method) {
     case 'GET':
-      let query = { _id: following };
+      const query: PipelineStage[] = [
+        { $match: { _id: { $in: following } } },
+        { $project: { password: 0, email: 0 } },
+      ];
 
       if (search)
-        query = Object.assign({ $text: { $search: String(search).toLowerCase() } }, query);
+        query.unshift({
+          $search: {
+            index: 'blog-user-search',
+            autocomplete: { query: String(search), path: 'fullname' },
+          },
+        });
+
+      const users = await User.aggregate([...query, { $limit: Number(pageSize || 20) }]);
+
+      const [{ totalCount } = { totalCount: 0 }] = await User.aggregate([
+        ...query,
+        { $count: 'totalCount' },
+      ]);
 
       try {
         return res.status(200).json({
+          data: users,
+          count: totalCount,
           message: 'Following fetched successfully',
-          data: await User.find(query)
-            .select('-password -email')
-            .limit(Number(pageSize || 20)),
-          count: await User.countDocuments(query),
         });
       } catch (err: Error | any) {
         return res.status(404).json({ message: err.message });

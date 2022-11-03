@@ -124,8 +124,8 @@ export const getServerSideProps: GetServerSideProps = async (
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => userAxios.getUserSuggestions({ pageSize: 4 }),
-    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 4 }],
+    queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
+    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
   });
 
   await queryClient.prefetchQuery({

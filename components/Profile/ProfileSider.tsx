@@ -11,6 +11,7 @@ import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/r
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../apiAxios/authAxios';
 import UserSkeleton from '../shared/UserSkeleton';
+import UserSuggestions from '../shared/UserSuggestions';
 import { changeKey } from '../../store/followersSlice';
 import { setPageSize, setSearch } from '../../store/sortFilterSlice';
 import { openModal, closeModal } from '../../store/modalSlice';
@@ -25,7 +26,7 @@ interface Props {
 
 const { AUTH_FOLLOWERS, AUTH_FOLLOWING } = FOLLOWERS_KEYS;
 
-const { AUTH_FOLLOWERS_MODAL } = MODAL_KEYS;
+const { AUTH_FOLLOWERS_MODAL, USER_SUGGESTIONS_MODAL } = MODAL_KEYS;
 
 const Profile: React.FC<Props> = ({ isSider }) => {
   const { authKey } = useSelector((state: RootState) => state.followers, shallowEqual);
@@ -98,19 +99,31 @@ const Profile: React.FC<Props> = ({ isSider }) => {
 
           {isEmpty(users?.data) ? (
             <Empty>
-              <p className='text-[#1890ff] cursor-pointer hover:text-blue-600'>View Suggestions</p>
+              <p
+                className='text-[#1890ff] cursor-pointer hover:text-blue-600'
+                onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
+              >
+                View Suggestions
+              </p>
             </Empty>
           ) : (
-            users?.data.map((user) => (
-              <UserSkeleton
-                key={user._id}
-                user={user}
-                shouldFollow={!authUser.following.includes(user._id as never)}
-              />
-            ))
-          )}
+            <>
+              {users?.data.map((user) => (
+                <UserSkeleton
+                  key={user._id}
+                  user={user}
+                  shouldFollow={!authUser.following.includes(user._id as never)}
+                />
+              ))}
 
-          <p className='text-[#1890ff] cursor-pointer hover:text-blue-600'>View More Suggestions</p>
+              <p
+                className='text-[#1890ff] cursor-pointer hover:text-blue-600'
+                onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
+              >
+                View More Suggestions
+              </p>
+            </>
+          )}
         </div>
       ),
     };
@@ -203,6 +216,8 @@ const Profile: React.FC<Props> = ({ isSider }) => {
               />
             </>
           )}
+
+          <UserSuggestions />
         </main>
       )}
     </div>
