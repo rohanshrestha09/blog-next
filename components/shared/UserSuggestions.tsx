@@ -74,7 +74,7 @@ const UserSuggestions: React.FC = () => {
           <UserSkeleton
             key={user._id}
             user={user}
-            shouldFollow={!authUser.following.includes(user._id as never)}
+            shouldFollow={!authUser?.following.includes(user._id as never)}
             bioAsDesc
           />
         ))
