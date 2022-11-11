@@ -1,5 +1,5 @@
 import { Schema, model, Types } from 'mongoose';
-import { genre } from '../misc';
+import { genre } from '../enum';
 
 interface IBlogSchema {
   author: Types.ObjectId;

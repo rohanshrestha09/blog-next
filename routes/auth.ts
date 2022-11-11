@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import auth from '../middleware/auth';
-import validateUser from '../middleware/validateUser';
-import validatePassword from '../middleware/validatePassword';
+import verifyUser from '../middleware/verifyUser';
+import verifyPassword from '../middleware/verifyPassword';
 import { authHandler, deleteImage, deleteProfile, logout, updateProfile } from '../controller/auth';
 import { blogs, bookmarks, followingBlogs } from '../controller/auth/blog';
 import { follow, unfollow } from '../controller/auth/follow';
@@ -11,13 +11,13 @@ const router: Router = Router();
 
 router.use(['/auth', '/auth/*'], auth);
 
-router.param('user', validateUser);
+router.param('user', verifyUser);
 
 router.get('/auth', authHandler);
 
-router.put('/auth', validatePassword, updateProfile);
+router.put('/auth', verifyPassword, updateProfile);
 
-router.delete('/auth', validatePassword, deleteProfile);
+router.delete('/auth', verifyPassword, deleteProfile);
 
 router.delete('/auth/image', deleteImage);
 

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import auth from '../middleware/auth';
-import validateBlog from '../middleware/validateBlog';
+import verifyBlog from '../middleware/verifyBlog';
 import { blog, blogs, suggestions, postBlog, updateBlog, deleteBlog } from '../controller/blog';
 import { genre } from '../controller/blog/genre';
 import { publish, unpublish } from '../controller/blog/publish';
@@ -17,7 +17,7 @@ router.get('/blog/suggestions', suggestions);
 
 router.get('/blog/genre', genre);
 
-router.param('blog', validateBlog);
+router.param('blog', verifyBlog);
 
 router.get('/blog/:blog', blog);
 

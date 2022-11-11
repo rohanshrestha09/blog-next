@@ -1,18 +1,19 @@
 import { Router } from 'express';
-import validateUser from '../middleware/validateUser';
+import verifyUser from '../middleware/verifyUser';
+import verifyEmail from '../middleware/verifyEmail';
 import { login, register, suggestions, user } from '../controller/user';
 import { blog } from '../controller/user/blog';
 import { followers, following } from '../controller/user/followers';
 
 const router: Router = Router();
 
-router.post('/user/register', register);
+router.post('/user/register', verifyEmail, register);
 
 router.post('/user/login', login);
 
 router.get('/user/suggestions', suggestions);
 
-router.param('user', validateUser);
+router.param('user', verifyUser);
 
 router.get('/user/:user', user);
 
