@@ -37,6 +37,10 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
 
       case '/profile/[userId]':
         return <UserProfileSider isSider />;
+
+      case '/blog/create':
+      case '/blog/update/[blogId]':
+        return false;
     }
   }, [pathname]);
 
@@ -72,16 +76,25 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
       </Drawer>
 
       <Affix ref={sidebarAffix} offsetTop={1}>
-        <Sider breakpoint='xl' className='bg-inherit sm:block hidden z-10' width={270}>
+        <Sider
+          breakpoint='xl'
+          className={`${!getSider() && 'sm:hidden'} bg-inherit sm:block hidden z-10`}
+          width={270}
+        >
           <Nav additionalProps='bg-inherit border-none' />
         </Sider>
       </Affix>
 
-      <Layout className='border-x border-gray-700 py-[1.20rem] xl:px-12 px-4'>
+      <Layout className={`${getSider() && 'border-x'} border-gray-700 py-[1.20rem] xl:px-12 px-4`}>
         <Content>{children}</Content>
       </Layout>
 
-      <Sider className='bg-inherit lg:block hidden py-[1.20rem] xl:px-12 px-4 z-10' width={450}>
+      <Sider
+        className={`${
+          !getSider() && 'lg:hidden'
+        } bg-inherit lg:block hidden py-[1.20rem] xl:px-12 px-4 z-10`}
+        width={450}
+      >
         {getSider()}
       </Sider>
     </Layout>

@@ -98,7 +98,7 @@ const CreateBlog: NextPage = () => {
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      <main className='w-full flex flex-col'>
+      <main className='flex flex-col'>
         <header className='text-2xl uppercase pb-4'>Create a blog</header>
 
         <Form
@@ -122,6 +122,8 @@ const CreateBlog: NextPage = () => {
                 menubar: true,
                 skin: 'oxide-dark',
                 content_css: 'dark',
+                toolbar_sticky: true,
+                toolbar_mode: 'sliding',
                 plugins: [
                   'advlist',
                   'autolink',
@@ -147,15 +149,16 @@ const CreateBlog: NextPage = () => {
                   'bold italic forecolor | alignleft aligncenter ' +
                   'alignright alignjustify | bullist numlist outdent indent | ' +
                   'removeformat | help',
-                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                content_style:
+                  'body { font-family:Helvetica,Arial,sans-serif; font-size:16px; background-color:black; }',
               }}
               initialValue='<p>Write something...</p>'
               onInit={(evt, editor) => (editorRef.current = editor)}
             />
           </Form.Item>
 
-          <div className='w-full flex md:flex-row flex-col md:gap-3'>
-            <Form.Item className='md:mb-2'>
+          <div className='w-full grid grid-cols-8'>
+            <Form.Item className='sm:col-span-2 col-span-full'>
               <Upload {...fileUploadOptions}>
                 <Button
                   className='rounded-lg flex items-center py-[1.23rem] text-sm'
@@ -167,7 +170,7 @@ const CreateBlog: NextPage = () => {
             </Form.Item>
 
             <Form.Item
-              className='w-full'
+              className='sm:col-span-6 col-span-full'
               name='genre'
               rules={[
                 {

@@ -91,3 +91,35 @@ body::-webkit-scrollbar-thumb:hover {
     display: none;
   }
 }
+
+.tox-tinymce {
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.tox-editor-container {
+  overflow: hidden !important;
+}
+
+.tox-statusbar,
+.tox-sidebar,
+.tox-menubar,
+.tox-promotion,
+.tox-editor-header,
+.tox-dialog-wrap__backdrop--opaque,
+.tox-pop__dialog,
+.tox-toolbar__overflow,
+.tox-toolbar,
+.tox-toolbar__primary,
+.tox-toolbar-overlord,
+.tox-toolbar__overflow,
+.tox-collection--list,
+.tox-collection--horizontal,
+.tox-comment__overlay,
+.tox-dialog__header,
+.tox-dialog__footer,
+.tox-dialog,
+.tox-menu,
+.tox-listbox--select {
+  background-color: #0c132c !important;
+}

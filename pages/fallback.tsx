@@ -13,7 +13,7 @@ const Fallback: NextPage = () => {
   return (
     <div className='h-full'>
       <Head>
-        <title>Create Next App</title>
+        <title>Login / Register</title>
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
