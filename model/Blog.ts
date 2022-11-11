@@ -1,26 +1,24 @@
-import { Schema, models, model } from 'mongoose';
-import { IBlogSchema } from '../interface/schema';
+import { Schema, model, Types } from 'mongoose';
+import { genre } from '../misc';
 
-export const genre: string[] = [
-  'Technology',
-  'Science',
-  'Programming',
-  'Fashion',
-  'Food',
-  'Travel',
-  'Music',
-  'Lifestyle',
-  'Fitness',
-  'DIY',
-  'Sports',
-  'Finance',
-  'Gaming',
-  'News',
-  'Movie',
-  'Personal',
-  'Business',
-  'Political',
-];
+interface IBlogSchema {
+  author: Types.ObjectId;
+  image: string;
+  imageName: string;
+  title: string;
+  content: string;
+  genre: {
+    type: StringConstructor[];
+    required: [true, string];
+    validate: [(val: any) => boolean, string];
+    enum: { values: String[]; message: string };
+  };
+  likers: Types.ObjectId[];
+  likesCount: number;
+  comments: Types.ObjectId[];
+  commentsCount: number;
+  isPublished: boolean;
+}
 
 const BlogSchema = new Schema<IBlogSchema>(
   {
@@ -62,4 +60,4 @@ const BlogSchema = new Schema<IBlogSchema>(
   { timestamps: true }
 );
 
-export default models.Blog || model<IBlogSchema>('Blog', BlogSchema);
+export default model<IBlogSchema>('Blog', BlogSchema);

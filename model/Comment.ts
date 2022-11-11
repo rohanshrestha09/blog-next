@@ -1,5 +1,12 @@
-import { Schema, model, models, Model } from 'mongoose';
-import { ICommentSchema } from '../interface/schema';
+import { Schema, model, Types } from 'mongoose';
+
+interface ICommentSchema {
+  blog: Types.ObjectId;
+  user: Types.ObjectId;
+  comment: string;
+  likers: Types.ObjectId[];
+  likesCount: number;
+}
 
 const CommentSchema = new Schema<ICommentSchema>(
   {
@@ -23,5 +30,4 @@ const CommentSchema = new Schema<ICommentSchema>(
   { timestamps: true }
 );
 
-export default (models.Comment as Model<ICommentSchema>) ||
-  model<ICommentSchema>('Comment', CommentSchema);
+export default model<ICommentSchema>('Comment', CommentSchema);

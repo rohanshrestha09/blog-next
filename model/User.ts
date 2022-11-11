@@ -1,5 +1,21 @@
-import { Schema, models, model } from 'mongoose';
-import { IUserSchema } from '../interface/schema';
+import { Schema, model, Types } from 'mongoose';
+
+interface IUserSchema {
+  fullname: string;
+  email: string;
+  password: string;
+  dateOfBirth: Date;
+  image: string;
+  imageName: string;
+  bookmarks: Types.ObjectId[];
+  blogs: Types.ObjectId[];
+  bio: string;
+  website: string;
+  following: Types.ObjectId[];
+  followingCount: number;
+  followers: Types.ObjectId[];
+  followersCount: number;
+}
 
 const UserSchema = new Schema<IUserSchema>(
   {
@@ -37,4 +53,4 @@ const UserSchema = new Schema<IUserSchema>(
   { timestamps: true }
 );
 
-export default models.User || model<IUserSchema>('User', UserSchema);
+export default model<IUserSchema>('User', UserSchema);

@@ -1,0 +1,7 @@
+{
+  "verbose": true,
+  "ignore": ["node_modules", ".next"],
+  "watch": ["server.ts", "controller", "middleware", "routes", "model", "misc"],
+  "exec": "ts-node --project tsconfig.server.json server.ts",
+  "ext": "js ts"
+}
