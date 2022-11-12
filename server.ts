@@ -5,7 +5,6 @@ import mongoose from 'mongoose';
 import fileUpload from 'express-fileupload';
 
 const rateLimit = require('express-rate-limit');
-const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
@@ -23,13 +22,6 @@ server.prepare().then(() => {
   const app: Application = express();
 
   app.use(express.urlencoded({ extended: false }));
-
-  app.use(
-    cors({
-      origin: 'http://localhost:3000',
-      credentials: true,
-    })
-  );
 
   app.use(cookieParser());
 

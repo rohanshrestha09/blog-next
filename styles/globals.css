@@ -37,13 +37,45 @@ body::-webkit-scrollbar-thumb {
   background: rgb(110 110 110);
 }
 
-/* scrollbar Handle on hover */
 body::-webkit-scrollbar-thumb:hover {
   background: rgba(110 110 110 / 0.5);
 }
 
-.hideScrollbar::-webkit-scrollbar {
-  display: none;
+.scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: transparent;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(110 110 110);
+  border-radius: 10px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(110 110 110 / 0.5);
+}
+
+.scrollbar {
+  overflow-y: scroll;
+  mask-image: linear-gradient(to top, transparent, black),
+    linear-gradient(to left, transparent 17px, black 17px);
+  mask-size: 100% 20000px;
+  mask-position: left bottom;
+  -webkit-mask-image: linear-gradient(to top, transparent, black),
+    linear-gradient(to left, transparent 17px, black 17px);
+  -webkit-mask-size: 100% 20000px;
+  -webkit-mask-position: left bottom;
+  transition: mask-position 0.3s, -webkit-mask-position 0.3s;
+}
+
+.scrollbar:hover {
+  -webkit-mask-position: left top;
 }
 
 .btn-secondary {

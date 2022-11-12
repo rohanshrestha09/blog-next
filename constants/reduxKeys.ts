@@ -52,6 +52,7 @@ export enum HOME_KEYS {
   HOME = 'home',
   FOLLOWING = 'following',
   USER_SUGGESTIONS = 'user-suggestions',
+  GENERIC_BLOGS = 'generic-blogs',
 }
 
 export enum BOOKMARKS_KEY {

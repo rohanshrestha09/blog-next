@@ -1,5 +1,6 @@
 import { NextRouter, useRouter } from 'next/router';
 import { ReactNode, Key } from 'react';
+import { useDispatch } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
 import { Menu, MenuProps } from 'antd';
 import { IconType } from 'react-icons';
@@ -10,6 +11,7 @@ import AuthAxios from '../../apiAxios/authAxios';
 import { successNotification, errorNotification } from '../../utils/notification';
 import { NAV_KEYS } from '../../constants/reduxKeys';
 import type IMessage from '../../interface/message';
+import { closeDrawer } from '../../store/drawerSlice';
 
 interface Props {
   additionalProps?: string;
@@ -22,6 +24,8 @@ type MenuItem = Required<MenuProps>['items'][number];
 
 const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
   const { pathname, push }: NextRouter = useRouter();
+
+  const dispatch = useDispatch();
 
   const authAxios = new AuthAxios();
 
@@ -90,7 +94,10 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
         },
         ...items,
       ]}
-      onClick={({ key }) => routingFn(key)}
+      onClick={({ key }) => {
+        routingFn(key);
+        dispatch(closeDrawer());
+      }}
     />
   );
 };

@@ -176,7 +176,7 @@ const BlogList: React.FC<Props> = ({
               <Tag
                 key={tag}
                 className='rounded-full cursor-pointer'
-                onClick={() => router.push(`/${tag.toLowerCase()}`)}
+                onClick={() => router.push(`/blog/${tag.toLowerCase()}`)}
               >
                 {tag}
               </Tag>

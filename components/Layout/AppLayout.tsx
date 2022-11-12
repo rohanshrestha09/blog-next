@@ -30,6 +30,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
       case '/':
       case '/[blogId]':
       case '/blog/bookmarks':
+      case '/blog/[genre]':
         return <HomeSider />;
 
       case '/profile':
@@ -49,7 +50,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
   }, []);
 
   return (
-    <Layout className='font-sans min-h-screen 2xl:px-36' hasSider>
+    <Layout className='font-sans min-h-screen 2xl:px-36 pr-1' hasSider>
       <ToastContainer />
 
       <Login />
@@ -57,14 +58,16 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
       <Register />
 
       <MdOutlineKeyboardArrowRight
-        className='sm:hidden block fixed left-4 top-[51%] cursor-pointer hover:bg-gray-200 rounded-full z-50'
+        className={`${
+          getSider() && 'sm:hidden'
+        } block fixed left-4 top-[51%] cursor-pointer hover:bg-slate-700 rounded-full z-50`}
         size={40}
         onClick={() => dispatch(openDrawer())}
       />
 
       <Drawer
         placement='left'
-        className='sm:hidden block'
+        className={`${getSider() && 'sm:hidden'} block`}
         closable={false}
         onClose={() => dispatch(closeDrawer())}
         open={isDrawerOpen}
@@ -89,14 +92,16 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
         <Content>{children}</Content>
       </Layout>
 
-      <Sider
-        className={`${
-          !getSider() && 'lg:hidden'
-        } bg-inherit lg:block hidden py-[1.20rem] xl:px-12 px-4 z-10`}
-        width={450}
-      >
-        {getSider()}
-      </Sider>
+      <Affix ref={sidebarAffix} offsetTop={1}>
+        <Sider
+          className={`${
+            !getSider() && 'lg:hidden'
+          } h-screen scrollbar bg-inherit lg:block hidden py-[1.20rem] xl:pl-12 xl:pr-10 px-4 z-10`}
+          width={450}
+        >
+          {getSider()}
+        </Sider>
+      </Affix>
     </Layout>
   );
 };

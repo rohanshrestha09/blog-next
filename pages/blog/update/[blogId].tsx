@@ -1,6 +1,6 @@
-import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
