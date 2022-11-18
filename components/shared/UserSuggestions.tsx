@@ -5,7 +5,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { isEmpty } from 'lodash';
 import { BiSearch } from 'react-icons/bi';
 import { useAuth } from '../../utils/UserAuth';
-import UserAxios from '../../apiAxios/userAxios';
+import UserAxios from '../../api/UserAxios';
 import UserSkeleton from './UserSkeleton';
 import { setSearch } from '../../store/sortFilterSlice';
 import { closeModal } from '../../store/modalSlice';

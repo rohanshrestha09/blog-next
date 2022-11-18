@@ -5,7 +5,7 @@ import moment from 'moment';
 import { Button, DatePicker, Form, Input, Modal, Upload } from 'antd';
 import { UserOutlined, UploadOutlined, InfoCircleOutlined, LinkOutlined } from '@ant-design/icons';
 import { useAuth } from '../../utils/UserAuth';
-import AuthAxios from '../../apiAxios/authAxios';
+import AuthAxios from '../../api/AuthAxios';
 import {
   errorNotification,
   successNotification,

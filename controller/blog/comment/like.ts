@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import Comment from '../../../model/Comment';
 import Notification from '../../../model/Notification';
-import { NOTIFICATION } from '../../../serverInterface';
+import { NOTIFICATION } from '../../../server.interface';
 const asyncHandler = require('express-async-handler');
 
 const { LIKE_COMMENT } = NOTIFICATION;

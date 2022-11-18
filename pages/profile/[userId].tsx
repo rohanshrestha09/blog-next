@@ -13,8 +13,8 @@ import {
 import { isEmpty } from 'lodash';
 import { Image, Button, Divider, Empty } from 'antd';
 import { useAuth } from '../../utils/UserAuth';
-import AuthAxios from '../../apiAxios/authAxios';
-import UserAxios from '../../apiAxios/userAxios';
+import AuthAxios from '../../api/AuthAxios';
+import UserAxios from '../../api/UserAxios';
 import BlogList from '../../components/Blogs/BlogList';
 import UserProfileSider from '../../components/Profile/UserProfileSider';
 import { errorNotification, successNotification } from '../../utils/notification';

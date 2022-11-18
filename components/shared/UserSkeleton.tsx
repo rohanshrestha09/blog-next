@@ -3,7 +3,7 @@ import { NextRouter, useRouter } from 'next/router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Avatar, Button, Space } from 'antd';
 import { useAuth } from '../../utils/UserAuth';
-import AuthAxios from '../../apiAxios/authAxios';
+import AuthAxios from '../../api/AuthAxios';
 import { errorNotification, successNotification } from '../../utils/notification';
 import {
   AUTH,

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Blog from '../../model/Blog';
 import Notification from '../../model/Notification';
 import User from '../../model/User';
-import { NOTIFICATION } from '../../serverInterface';
+import { NOTIFICATION } from '../../server.interface';
 const asyncHandler = require('express-async-handler');
 
 const { LIKE_BLOG } = NOTIFICATION;

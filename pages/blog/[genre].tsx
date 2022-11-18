@@ -4,9 +4,9 @@ import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { shallowEqual, useSelector } from 'react-redux';
 import { dehydrate, QueryClient, DehydratedState, useQuery } from '@tanstack/react-query';
 import { capitalize, isEmpty } from 'lodash';
-import BlogAxios from '../../apiAxios/blogAxios';
-import AuthAxios from '../../apiAxios/authAxios';
-import UserAxios from '../../apiAxios/userAxios';
+import BlogAxios from '../../api/BlogAxios';
+import AuthAxios from '../../api/AuthAxios';
+import UserAxios from '../../api/UserAxios';
 import {
   AUTH,
   GET_ALL_BLOGS,

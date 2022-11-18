@@ -10,7 +10,7 @@ import { BiLink, BiSearch } from 'react-icons/bi';
 import { BsFillCalendarDateFill, BsFillInfoCircleFill } from 'react-icons/bs';
 import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/ri';
 import { useAuth } from '../../utils/UserAuth';
-import UserAxios from '../../apiAxios/userAxios';
+import UserAxios from '../../api/UserAxios';
 import UserSkeleton from '../shared/UserSkeleton';
 import { changeKey } from '../../store/followersSlice';
 import { setPageSize, setSearch } from '../../store/sortFilterSlice';

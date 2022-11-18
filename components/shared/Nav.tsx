@@ -7,7 +7,7 @@ import { IconType } from 'react-icons';
 import { AiOutlineLogout, AiOutlineUser } from 'react-icons/ai';
 import { BiBookmark, BiMessageSquareEdit } from 'react-icons/bi';
 import { BsAppIndicator, BsHouse } from 'react-icons/bs';
-import AuthAxios from '../../apiAxios/authAxios';
+import AuthAxios from '../../api/AuthAxios';
 import { closeDrawer } from '../../store/drawerSlice';
 import { successNotification, errorNotification } from '../../utils/notification';
 import { NAV_KEYS } from '../../constants/reduxKeys';

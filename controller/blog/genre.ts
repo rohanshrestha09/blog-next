@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { genre as genreCollection } from '../../serverInterface';
+import { genre as genreCollection } from '../../server.interface';
 const asyncHandler = require('express-async-handler');
 
 export const genre = asyncHandler(async (req: Request, res: Response): Promise<Response> => {

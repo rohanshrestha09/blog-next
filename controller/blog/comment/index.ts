@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Blog from '../../../model/Blog';
 import Comment from '../../../model/Comment';
 import Notification from '../../../model/Notification';
-import { NOTIFICATION } from '../../../serverInterface';
+import { NOTIFICATION } from '../../../server.interface';
 const asyncHandler = require('express-async-handler');
 
 const { POST_COMMENT } = NOTIFICATION;

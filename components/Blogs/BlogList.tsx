@@ -13,7 +13,7 @@ import {
   MdOutlinePublishedWithChanges,
   MdOutlineUnpublished,
 } from 'react-icons/md';
-import BlogAxios from '../../apiAxios/blogAxios';
+import BlogAxios from '../../api/BlogAxios';
 import ConfirmDelete from '../shared/ConfirmDelete';
 import { openModal, closeModal } from '../../store/modalSlice';
 import { errorNotification, successNotification } from '../../utils/notification';

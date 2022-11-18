@@ -4,9 +4,9 @@ import { shallowEqual, useSelector } from 'react-redux';
 import { DehydratedState, QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import { isEmpty } from 'lodash';
 import { Empty, Tabs } from 'antd';
-import AuthAxios from '../apiAxios/authAxios';
-import BlogAxios from '../apiAxios/blogAxios';
-import UserAxios from '../apiAxios/userAxios';
+import AuthAxios from '../api/AuthAxios';
+import BlogAxios from '../api/BlogAxios';
+import UserAxios from '../api/UserAxios';
 import BlogList from '../components/Blogs/BlogList';
 import SortFilter from '../components/Blogs/SortFilter';
 import {

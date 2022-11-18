@@ -6,9 +6,9 @@ import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/rea
 import { Button, Divider, Empty } from 'antd';
 import { isEmpty } from 'lodash';
 import { useAuth } from '../../utils/UserAuth';
-import AuthAxios from '../../apiAxios/authAxios';
-import BlogAxios from '../../apiAxios/blogAxios';
-import UserAxios from '../../apiAxios/userAxios';
+import AuthAxios from '../../api/AuthAxios';
+import BlogAxios from '../../api/BlogAxios';
+import UserAxios from '../../api/UserAxios';
 import BlogList from '../../components/Blogs/BlogList';
 import SearchFilter from '../../components/Blogs/SortFilter';
 import { NAV_KEYS, BOOKMARKS_KEY } from '../../constants/reduxKeys';

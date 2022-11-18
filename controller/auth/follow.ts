@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../../model/User';
 import Notification from '../../model/Notification';
-import { NOTIFICATION } from '../../serverInterface';
+import { NOTIFICATION } from '../../server.interface';
 const asyncHandler = require('express-async-handler');
 
 const { FOLLOW_USER } = NOTIFICATION;

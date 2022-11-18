@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { INotificationSchema, NOTIFICATION, NOTIFICATION_STATUS } from '../serverInterface';
+import { INotificationSchema, NOTIFICATION, NOTIFICATION_STATUS } from '../server.interface';
 
 const { UNREAD } = NOTIFICATION_STATUS;
 

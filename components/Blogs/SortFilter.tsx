@@ -4,7 +4,7 @@ import { Radio, Space, Divider, Input, Dropdown, Button, Spin } from 'antd';
 import { LoadingOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { BiSearch } from 'react-icons/bi';
 import { FaSort } from 'react-icons/fa';
-import BlogAxios from '../../apiAxios/blogAxios';
+import BlogAxios from '../../api/BlogAxios';
 import { setSearch, setGenre, setSort, setSortOrder } from '../../store/sortFilterSlice';
 import { SORT_FILTER_KEYS, SORT_ORDER, SORT_TYPE } from '../../constants/reduxKeys';
 import { GET_GENRE } from '../../constants/queryKeys';

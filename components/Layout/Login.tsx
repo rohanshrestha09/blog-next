@@ -8,7 +8,7 @@ import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { UserOutlined, LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
 import { openModal, closeModal } from '../../store/modalSlice';
 import { errorNotification, successNotification } from '../../utils/notification';
-import UserAxios from '../../apiAxios/userAxios';
+import UserAxios from '../../api/UserAxios';
 import { AUTH } from '../../constants/queryKeys';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';

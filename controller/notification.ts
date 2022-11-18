@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import Notification from '../model/Notification';
-import { NOTIFICATION_STATUS } from '../serverInterface';
+import { NOTIFICATION_STATUS } from '../server.interface';
 
 const asyncHandler = require('express-async-handler');
 

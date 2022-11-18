@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Empty, Modal } from 'antd';
 import { isEmpty } from 'lodash';
 import { useAuth } from '../../utils/UserAuth';
-import BlogAxios from '../../apiAxios/blogAxios';
+import BlogAxios from '../../api/BlogAxios';
 import UserSkeleton from '../shared/UserSkeleton';
 import { closeModal } from '../../store/modalSlice';
 import { BLOG_KEYS, MODAL_KEYS } from '../../constants/reduxKeys';

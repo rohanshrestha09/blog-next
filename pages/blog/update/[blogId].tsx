@@ -14,7 +14,7 @@ import {
 import { Editor } from '@tinymce/tinymce-react';
 import { Form, Input, Button, Upload, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import BlogAxios from '../../../apiAxios/blogAxios';
+import BlogAxios from '../../../api/BlogAxios';
 import { openModal, closeModal } from '../../../store/modalSlice';
 import ConfirmDelete from '../../../components/shared/ConfirmDelete';
 import {

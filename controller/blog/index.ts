@@ -5,7 +5,7 @@ import deleteFile from '../../middleware/deleteFile';
 import Blog from '../../model/Blog';
 import User from '../../model/User';
 import Notification from '../../model/Notification';
-import { NOTIFICATION } from '../../serverInterface';
+import { NOTIFICATION } from '../../server.interface';
 const asyncHandler = require('express-async-handler');
 
 const { POST_BLOG } = NOTIFICATION;

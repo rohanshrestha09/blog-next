@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import AuthAxios from '../apiAxios/authAxios';
+import AuthAxios from '../api/AuthAxios';
 import AppLayout from '../components/Layout/AppLayout';
 import { AUTH } from '../constants/queryKeys';
 import UserContext from './userContext';

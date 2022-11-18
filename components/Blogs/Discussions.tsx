@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Modal, List, Comment, Tooltip, Avatar, Form, Input } from 'antd';
 import { LikeFilled, LikeOutlined } from '@ant-design/icons';
 import { useAuth } from '../../utils/UserAuth';
-import BlogAxios from '../../apiAxios/blogAxios';
+import BlogAxios from '../../api/BlogAxios';
 import { openModal, closeModal } from '../../store/modalSlice';
 import { errorNotification, successNotification } from '../../utils/notification';
 import { BLOG_KEYS, MODAL_KEYS } from '../../constants/reduxKeys';

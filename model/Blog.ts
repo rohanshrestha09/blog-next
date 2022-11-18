@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { genre, IBlogSchema } from '../serverInterface';
+import { genre, IBlogSchema } from '../server.interface';
 
 const BlogSchema = new Schema<IBlogSchema>(
   {
