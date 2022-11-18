@@ -1,7 +1,11 @@
 import { Request, Response } from 'express';
 import Blog from '../../../model/Blog';
 import Comment from '../../../model/Comment';
+import Notification from '../../../model/Notification';
+import { NOTIFICATION } from '../../../serverInterface';
 const asyncHandler = require('express-async-handler');
+
+const { POST_COMMENT } = NOTIFICATION;
 
 export const comments = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const { comments } = res.locals.blog;
@@ -26,8 +30,8 @@ export const comments = asyncHandler(async (req: Request, res: Response): Promis
 
 export const comment = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const {
-    auth: { _id: authId },
-    blog: { _id: blogId, commentsCount },
+    auth: { _id: authId, fullname },
+    blog: { _id: blogId, author, commentsCount },
   } = res.locals;
 
   const { comment } = req.body;
@@ -42,6 +46,14 @@ export const comment = asyncHandler(async (req: Request, res: Response): Promise
     await Blog.findByIdAndUpdate(blogId, {
       $push: { comments: commentId },
       commentsCount: commentsCount + 1,
+    });
+
+    await Notification.create({
+      type: POST_COMMENT,
+      user: authId,
+      listener: author._id,
+      comment: commentId,
+      description: `${fullname} commented on your blog.`,
     });
 
     return res.status(200).json({ message: 'Comment Successfull' });

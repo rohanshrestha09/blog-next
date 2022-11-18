@@ -1,22 +1,7 @@
-import { Schema, model, Types } from 'mongoose';
+import { Schema, model } from 'mongoose';
+import { INotificationSchema, NOTIFICATION, NOTIFICATION_STATUS } from '../serverInterface';
 
-interface INotificationSchema {
-  type: {
-    type: StringConstructor;
-    required: [true, string];
-    enum: { values: String[]; message: string };
-  };
-  user: Types.ObjectId;
-  listener: Types.ObjectId;
-  blog: Types.ObjectId;
-  comment: Types.ObjectId;
-  description: string;
-  status: {
-    type: StringConstructor;
-    enum: { values: String[]; message: string };
-    default: 'unread';
-  };
-}
+const { UNREAD } = NOTIFICATION_STATUS;
 
 const NotificationSchema = new Schema<INotificationSchema>(
   {
@@ -24,7 +9,7 @@ const NotificationSchema = new Schema<INotificationSchema>(
       type: String,
       required: [true, 'Please provide notification type'],
       enum: {
-        values: ['followUser', 'likeBlog', 'likeComment', 'postComment', 'postBlog'],
+        values: Object.values(NOTIFICATION),
         message: '{VALUE} not supported',
       },
     },
@@ -53,10 +38,10 @@ const NotificationSchema = new Schema<INotificationSchema>(
     status: {
       type: String,
       enum: {
-        values: ['read', 'unread'],
+        values: Object.values(NOTIFICATION_STATUS),
         message: '{VALUE} not supported',
       },
-      default: 'unread',
+      default: UNREAD,
     },
   },
   { timestamps: true }

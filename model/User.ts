@@ -1,21 +1,5 @@
-import { Schema, model, Types } from 'mongoose';
-
-interface IUserSchema {
-  fullname: string;
-  email: string;
-  password: string;
-  dateOfBirth: Date;
-  image: string;
-  imageName: string;
-  bookmarks: Types.ObjectId[];
-  blogs: Types.ObjectId[];
-  bio: string;
-  website: string;
-  following: Types.ObjectId[];
-  followingCount: number;
-  followers: Types.ObjectId[];
-  followersCount: number;
-}
+import { Schema, model } from 'mongoose';
+import { IUserSchema } from '../serverInterface';
 
 const UserSchema = new Schema<IUserSchema>(
   {

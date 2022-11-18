@@ -1,10 +1,14 @@
 import { Request, Response } from 'express';
 import User from '../../model/User';
+import Notification from '../../model/Notification';
+import { NOTIFICATION } from '../../serverInterface';
 const asyncHandler = require('express-async-handler');
+
+const { FOLLOW_USER } = NOTIFICATION;
 
 export const follow = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const {
-    auth: { _id: authId, followingCount },
+    auth: { _id: authId, fullname, followingCount },
     user: { _id: userId, followersCount },
   } = res.locals;
 
@@ -26,6 +30,13 @@ export const follow = asyncHandler(async (req: Request, res: Response): Promise<
     await User.findByIdAndUpdate(userId, {
       $push: { followers: authId },
       followersCount: followersCount + 1,
+    });
+
+    await Notification.create({
+      type: FOLLOW_USER,
+      user: authId,
+      listener: userId,
+      description: `${fullname} followed you.`,
     });
 
     return res.status(200).json({ message: 'Follow Successful' });

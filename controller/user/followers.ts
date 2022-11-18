@@ -30,9 +30,9 @@ export const followers = asyncHandler(async (req: Request, res: Response): Promi
 
   try {
     return res.status(200).json({
-      message: 'Followers fetched successfully',
       data: users,
       count: totalCount,
+      message: 'Followers fetched successfully',
     });
   } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
@@ -66,9 +66,9 @@ export const following = asyncHandler(async (req: Request, res: Response): Promi
 
   try {
     return res.status(200).json({
-      message: 'Following fetched successfully',
       data: users,
       count: totalCount,
+      message: 'Following fetched successfully',
     });
   } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });

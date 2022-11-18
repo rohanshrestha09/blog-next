@@ -4,7 +4,11 @@ import uploadFile from '../../middleware/uploadFile';
 import deleteFile from '../../middleware/deleteFile';
 import Blog from '../../model/Blog';
 import User from '../../model/User';
+import Notification from '../../model/Notification';
+import { NOTIFICATION } from '../../serverInterface';
 const asyncHandler = require('express-async-handler');
+
+const { POST_BLOG } = NOTIFICATION;
 
 export const blogs = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const { sort, pageSize, genre, search } = req.query;
@@ -53,7 +57,7 @@ export const blog = asyncHandler(async (req: Request, res: Response): Promise<Re
 });
 
 export const postBlog = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { _id: authId } = res.locals.auth;
+  const { _id: authId, fullname, followers } = res.locals.auth;
 
   const { title, content, genre, isPublished } = req.body;
 
@@ -83,6 +87,14 @@ export const postBlog = asyncHandler(async (req: Request, res: Response): Promis
     }
 
     await User.findByIdAndUpdate(authId, { $push: { blogs: blogId } });
+
+    await Notification.create({
+      type: POST_BLOG,
+      user: authId,
+      listener: followers,
+      blog: blogId,
+      description: `${fullname} posted a new blog.`,
+    });
 
     return res.status(200).json({ message: 'Blog Posted Successfully' });
   } catch (err: Error | any) {

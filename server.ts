@@ -58,9 +58,11 @@ server.prepare().then(() => {
 
   app.use('/api', require('./routes/user'));
 
+  app.use('/api', require('./routes/blog'));
+
   app.use('/api', require('./routes/security'));
 
-  app.use('/api', require('./routes/blog'));
+  app.use('/api', require('./routes/notification'));
 
   app.all('*', (req: Request, res: Response) => handler(req, res));
 

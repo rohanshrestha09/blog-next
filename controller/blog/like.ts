@@ -1,7 +1,11 @@
 import { Request, Response } from 'express';
 import Blog from '../../model/Blog';
+import Notification from '../../model/Notification';
 import User from '../../model/User';
+import { NOTIFICATION } from '../../serverInterface';
 const asyncHandler = require('express-async-handler');
+
+const { LIKE_BLOG } = NOTIFICATION;
 
 export const likes = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const { likers } = res.locals.blog;
@@ -23,8 +27,8 @@ export const likes = asyncHandler(async (req: Request, res: Response): Promise<R
 
 export const like = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const {
-    auth: { _id: authId },
-    blog: { _id: blogId, likesCount },
+    auth: { _id: authId, fullname },
+    blog: { _id: blogId, author, likesCount },
   } = res.locals;
 
   try {
@@ -41,6 +45,14 @@ export const like = asyncHandler(async (req: Request, res: Response): Promise<Re
 
     await User.findByIdAndUpdate(authId, {
       $push: { liked: blogId },
+    });
+
+    await Notification.create({
+      type: LIKE_BLOG,
+      user: authId,
+      listener: author._id,
+      blog: blogId,
+      description: `${fullname} liked your blog.`,
     });
 
     return res.status(200).json({ message: 'Liked' });

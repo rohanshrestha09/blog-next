@@ -15,52 +15,33 @@ export interface IUserSchema {
   followingCount: number;
   followers: Types.ObjectId[];
   followersCount: number;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface IBlogSchema {
-  author: {
-    type: Types.ObjectId;
-    ref: 'User';
-    _id: Types.ObjectId;
-    fullname: string;
-    image: string;
-  };
+  author: Types.ObjectId;
   image: string;
   imageName: string;
   title: string;
   content: string;
   genre: {
-    type: StringConstructor[] | string[];
+    type: StringConstructor[];
     required: [true, string];
     validate: [(val: any) => boolean, string];
     enum: { values: String[]; message: string };
-    map: (tag: any) => JSX.Element;
   };
   likers: Types.ObjectId[];
   likesCount: number;
   comments: Types.ObjectId[];
   commentsCount: number;
   isPublished: boolean;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface ICommentSchema {
-  blog: { type: Types.ObjectId; ref: 'Blog' };
-  user: {
-    type: Types.ObjectId;
-    ref: 'User';
-    _id: Types.ObjectId;
-    fullname: string;
-    image: string;
-  };
+  blog: Types.ObjectId;
+  user: Types.ObjectId;
   comment: string;
   likers: Types.ObjectId[];
   likesCount: number;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface INotificationSchema {
@@ -69,34 +50,48 @@ export interface INotificationSchema {
     required: [true, string];
     enum: { values: String[]; message: string };
   };
-  user: {
-    type: Types.ObjectId;
-    ref: 'User';
-    _id: Types.ObjectId;
-    fullname: string;
-    image: string;
-  };
+  user: Types.ObjectId;
   listener: Types.ObjectId | Types.ObjectId[];
-  blog?: {
-    type: Types.ObjectId;
-    ref: 'Blog';
-    _id: Types.ObjectId;
-    title: string;
-    image: string;
-  };
-  comment?: {
-    type: Types.ObjectId;
-    ref: 'Comment';
-    _id: Types.ObjectId;
-    blog: Types.ObjectId;
-    comment: string;
-  };
+  blog: Types.ObjectId;
+  comment: Types.ObjectId;
   description: string;
   status: {
     type: StringConstructor;
     enum: { values: String[]; message: string };
-    default: 'unread';
+    default: NOTIFICATION_STATUS.UNREAD;
   };
-  createdAt: Date;
-  updatedAt: Date;
+}
+
+export const genre: string[] = [
+  'Technology',
+  'Science',
+  'Programming',
+  'Fashion',
+  'Food',
+  'Travel',
+  'Music',
+  'Lifestyle',
+  'Fitness',
+  'DIY',
+  'Sports',
+  'Finance',
+  'Gaming',
+  'News',
+  'Movie',
+  'Personal',
+  'Business',
+  'Political',
+];
+
+export enum NOTIFICATION {
+  FOLLOW_USER = 'followUser',
+  LIKE_BLOG = 'likeBlog',
+  LIKE_COMMENT = 'likeComment',
+  POST_COMMENT = 'postComment',
+  POST_BLOG = 'postBlog',
+}
+
+export enum NOTIFICATION_STATUS {
+  READ = 'read',
+  UNREAD = 'unread',
 }

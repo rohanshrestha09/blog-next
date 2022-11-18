@@ -1,24 +1,5 @@
-import { Schema, model, Types } from 'mongoose';
-import { genre } from '../enum';
-
-interface IBlogSchema {
-  author: Types.ObjectId;
-  image: string;
-  imageName: string;
-  title: string;
-  content: string;
-  genre: {
-    type: StringConstructor[];
-    required: [true, string];
-    validate: [(val: any) => boolean, string];
-    enum: { values: String[]; message: string };
-  };
-  likers: Types.ObjectId[];
-  likesCount: number;
-  comments: Types.ObjectId[];
-  commentsCount: number;
-  isPublished: boolean;
-}
+import { Schema, model } from 'mongoose';
+import { genre, IBlogSchema } from '../serverInterface';
 
 const BlogSchema = new Schema<IBlogSchema>(
   {
