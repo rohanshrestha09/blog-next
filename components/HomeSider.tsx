@@ -12,7 +12,7 @@ import BlogList from './Blogs/BlogList';
 import UserSuggestions from './shared/UserSuggestions';
 import { MODAL_KEYS } from '../constants/reduxKeys';
 
-const { USER_SUGGESTIONS_MODAL } = MODAL_KEYS;
+const { USER_SUGGESTIONS_MODAL, LOGIN_MODAL } = MODAL_KEYS;
 
 const HomeSider: React.FC = () => {
   const router: NextRouter = useRouter();
@@ -47,9 +47,11 @@ const HomeSider: React.FC = () => {
           className='w-full font-semibold font-shalimar uppercase btn-secondary text-xl'
           shape='round'
           size='large'
-          onClick={() => router.push('/blog/create')}
+          onClick={() =>
+            authUser ? router.push('/blog/create') : dispatch(openModal({ key: LOGIN_MODAL }))
+          }
         >
-          Write a Blog
+          {authUser ? 'Write a Blog' : 'Login / Register'}
         </Button>
 
         <Divider />

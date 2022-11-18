@@ -49,13 +49,15 @@ const Likes: React.FC = () => {
       {isEmpty(likers?.data) ? (
         <Empty />
       ) : (
-        likers?.data.map((user) => (
-          <UserSkeleton
-            key={user._id}
-            user={user}
-            shouldFollow={!authUser.following.includes(user._id as never)}
-          />
-        ))
+        <div className='pt-7'>
+          {likers?.data.map((user) => (
+            <UserSkeleton
+              key={user._id}
+              user={user}
+              shouldFollow={!authUser?.following.includes(user._id as never)}
+            />
+          ))}
+        </div>
       )}
     </Modal>
   );

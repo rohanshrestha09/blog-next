@@ -163,11 +163,11 @@ const Discussions: React.FC = () => {
                         handleLikeComment.mutate({
                           blogId: String(blogId),
                           commentId,
-                          shouldLike: !likers.includes(authUser._id as never),
+                          shouldLike: !likers.includes(authUser?._id as never),
                         })
                       }
                     >
-                      {likers.includes(authUser._id as never) ? <LikeFilled /> : <LikeOutlined />}
+                      {likers.includes(authUser?._id as never) ? <LikeFilled /> : <LikeOutlined />}
                       <span>{likesCount}</span>
                     </span>
                   </Tooltip>,

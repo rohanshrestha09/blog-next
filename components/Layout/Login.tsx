@@ -107,7 +107,9 @@ const Login: React.FC = () => {
           </Form.Item>
 
           <Link href='/' passHref={true}>
-            <a className='text-[#0579FD] absolute right-0'>Forgot password</a>
+            <a className='absolute right-0 no-underline text-[#1890ff] hover:text-blue-600'>
+              Forgot password
+            </a>
           </Link>
         </Form.Item>
 

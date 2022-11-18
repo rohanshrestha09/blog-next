@@ -10,13 +10,11 @@ const cookieParser = require('cookie-parser');
 
 const dev = process.env.NODE_ENV !== 'production';
 
-const hostname = 'localhost';
+const PORT = process.env.PORT || 3000;
 
-const PORT = 3000;
+const server = next({ dir: '.', dev });
 
-const server = next({ dev, hostname, port: PORT });
-
-const handle = server.getRequestHandler();
+const handler = server.getRequestHandler();
 
 server.prepare().then(() => {
   const app: Application = express();
@@ -64,7 +62,7 @@ server.prepare().then(() => {
 
   app.use('/api', require('./routes/blog'));
 
-  app.all('*', (req: Request, res: Response) => handle(req, res));
+  app.all('*', (req: Request, res: Response) => handler(req, res));
 
   app.listen(PORT);
 });

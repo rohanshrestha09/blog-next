@@ -62,3 +62,39 @@ export interface ICommentSchema {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface INotificationSchema {
+  type: {
+    type: StringConstructor;
+    required: [true, string];
+    enum: { values: String[]; message: string };
+  };
+  user: {
+    type: Types.ObjectId;
+    ref: 'User';
+    _id: Types.ObjectId;
+    fullname: string;
+    image: string;
+  };
+  listener: Types.ObjectId;
+  blog?: {
+    type: Types.ObjectId;
+    ref: 'Blog';
+    _id: Types.ObjectId;
+    title: string;
+    image: string;
+  };
+  comment?: {
+    type: Types.ObjectId;
+    ref: 'Comment';
+    _id: Types.ObjectId;
+    blog: Types.ObjectId;
+    comment: string;
+  };
+  description: string;
+  status: {
+    type: StringConstructor;
+    enum: { values: String[]; message: string };
+    default: 'unread';
+  };
+}

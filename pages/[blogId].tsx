@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import { useDispatch } from 'react-redux';
 import {
   dehydrate,
   DehydratedState,
@@ -20,6 +21,8 @@ import UserAxios from '../apiAxios/userAxios';
 import AuthAxios from '../apiAxios/authAxios';
 import BlogList from '../components/Blogs/BlogList';
 import { openModal } from '../store/modalSlice';
+import Likes from '../components/Blogs/Likes';
+import Discussions from '../components/Blogs/Discussions';
 import { errorNotification, successNotification } from '../utils/notification';
 import {
   AUTH,
@@ -33,9 +36,6 @@ import {
 } from '../constants/queryKeys';
 import { MODAL_KEYS } from '../constants/reduxKeys';
 import type { IBlogData } from '../interface/blog';
-import { useDispatch } from 'react-redux';
-import Discussions from '../components/Blogs/Discussions';
-import Likes from '../components/Blogs/Likes';
 
 const { DISCUSSIONS_MODAL, LIKERS_MODAL } = MODAL_KEYS;
 

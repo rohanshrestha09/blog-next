@@ -14,7 +14,7 @@ class Blog {
   ): Promise<IGenre & IBlogData & IBlog & IBlogs & IUsers & IComments & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `https://blogsansar.vercel.app/api/blog/${url}`,
+      url: `http://localhost:3000/api/blog/${url}`,
       data,
       headers: { Cookie: this.cookie || '' },
       withCredentials: true,

@@ -2,16 +2,16 @@ import { NextRouter, useRouter } from 'next/router';
 import { ReactNode, Key } from 'react';
 import { useDispatch } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
-import { Menu, MenuProps } from 'antd';
+import { Menu, MenuProps, Badge } from 'antd';
 import { IconType } from 'react-icons';
 import { AiOutlineLogout, AiOutlineUser } from 'react-icons/ai';
 import { BiBookmark, BiMessageSquareEdit } from 'react-icons/bi';
 import { BsAppIndicator, BsHouse } from 'react-icons/bs';
 import AuthAxios from '../../apiAxios/authAxios';
+import { closeDrawer } from '../../store/drawerSlice';
 import { successNotification, errorNotification } from '../../utils/notification';
 import { NAV_KEYS } from '../../constants/reduxKeys';
 import type IMessage from '../../interface/message';
-import { closeDrawer } from '../../store/drawerSlice';
 
 interface Props {
   additionalProps?: string;
@@ -48,7 +48,15 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
       key,
       icon: <Icon size={18} />,
       children,
-      label,
+      label:
+        key === NOTIF_NAV ? (
+          <>
+            {label}
+            <Badge offset={[1, -18]} count={24} />
+          </>
+        ) : (
+          label
+        ),
       type,
       danger: key === LOGOUT_NAV,
     } as MenuItem;
