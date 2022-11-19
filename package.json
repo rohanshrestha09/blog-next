@@ -37,6 +37,7 @@
     "react-redux": "^8.0.4",
     "react-toastify": "^9.0.8",
     "sharp": "^0.31.2",
+    "socket.io": "^4.5.3",
     "uuid-v4": "^0.1.0"
   },
   "devDependencies": {
@@ -47,9 +48,9 @@
     "@types/he": "^1.1.2",
     "@types/jsonwebtoken": "^8.5.9",
     "@types/lodash": "^4.14.184",
+    "@types/node": "18.7.13",
     "@types/react": "18.0.17",
     "@types/react-dom": "18.0.6",
-    "@types/node": "18.7.13",
     "autoprefixer": "^10.4.8",
     "eslint": "8.23.1",
     "eslint-config-next": "12.3.1",

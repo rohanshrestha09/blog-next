@@ -28,17 +28,11 @@ export type IUserData = Omit<
   never
 >;
 
-export interface IUserReq extends IMessage {
-  user: IUserData;
-}
 
 export interface IUser extends IMessage {
   data: IUserData;
 }
 
-export interface IAuthReq extends IMessage {
-  auth: IUserData;
-}
 
 export interface IAuth extends IMessage {
   data: IUserData;

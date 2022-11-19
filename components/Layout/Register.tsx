@@ -22,7 +22,7 @@ import UserAxios from '../../api/UserAxios';
 import { AUTH } from '../../constants/queryKeys';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
-import type { IRegister, IToken } from '../../interface/user';
+import type { IRegister } from '../../interface/user';
 
 const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
 
@@ -74,7 +74,7 @@ const Register: React.FC = () => {
       return new UserAxios().register(formData);
     },
     {
-      onSuccess: (res: IToken) => {
+      onSuccess: (res) => {
         successNotification(res.message);
         form.resetFields();
         queryClient.refetchQueries([AUTH]);

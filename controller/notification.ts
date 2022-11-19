@@ -4,7 +4,7 @@ import { NOTIFICATION_STATUS } from '../server.interface';
 
 const asyncHandler = require('express-async-handler');
 
-const { READ } = NOTIFICATION_STATUS;
+const { READ, UNREAD } = NOTIFICATION_STATUS;
 
 export const notifications = asyncHandler(
   async (req: Request, res: Response): Promise<Response> => {
@@ -19,8 +19,14 @@ export const notifications = asyncHandler(
           .limit(Number(pageSize || 20))
           .populate('user', 'fullname image')
           .populate('blog', 'title image')
-          .populate('comment', 'comment blog'),
+          .populate('comment', 'comment'),
         count: await Notification.countDocuments({ listener: { $in: authId } }),
+        read: await Notification.countDocuments({
+          $and: [{ listener: { $in: authId } }, { status: READ }],
+        }),
+        unread: await Notification.countDocuments({
+          $and: [{ listener: { $in: authId } }, { status: UNREAD }],
+        }),
         message: 'Notifications fetched successfully',
       });
     } catch (err: Error | any) {

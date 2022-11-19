@@ -16,7 +16,6 @@ import { closeModal, openModal } from '../../store/modalSlice';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
 import { AUTH, GET_AUTH_BLOGS } from '../../constants/queryKeys';
 import type { RootState } from '../../store';
-import type IMessage from '../../interface/message';
 
 const { EDIT_PROFILE_MODAL, PWD_AUTH_MODAL } = MODAL_KEYS;
 
@@ -66,7 +65,7 @@ const EditProfile = () => {
       return new AuthAxios().updateUser(formData);
     },
     {
-      onSuccess: (res: IMessage) => {
+      onSuccess: (res) => {
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
         queryClient.refetchQueries([GET_AUTH_BLOGS]);

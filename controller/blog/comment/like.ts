@@ -19,7 +19,7 @@ export const likeComment = asyncHandler(async (req: Request, res: Response): Pro
 
     if (likeExist) return res.status(403).json({ message: 'Already Liked' });
 
-    const comment = await Comment.findById(commentId).populate('user');
+    const comment = await Comment.findById(commentId);
 
     if (!comment) return res.status(404).json({ message: 'Comment does not exist' });
 
@@ -32,7 +32,8 @@ export const likeComment = asyncHandler(async (req: Request, res: Response): Pro
     await Notification.create({
       typr: LIKE_COMMENT,
       user: authId,
-      listener: comment.user._id,
+      listener: comment.user,
+      blog: comment.blog,
       comment: commentId,
       description: `${fullname} liked your comment.`,
     });

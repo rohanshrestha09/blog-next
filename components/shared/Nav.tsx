@@ -11,7 +11,6 @@ import AuthAxios from '../../api/AuthAxios';
 import { closeDrawer } from '../../store/drawerSlice';
 import { successNotification, errorNotification } from '../../utils/notification';
 import { NAV_KEYS } from '../../constants/reduxKeys';
-import type IMessage from '../../interface/message';
 
 interface Props {
   additionalProps?: string;
@@ -30,7 +29,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
   const authAxios = new AuthAxios();
 
   const handleLogout = useMutation(() => authAxios.logout(), {
-    onSuccess: (res: IMessage) => {
+    onSuccess: (res) => {
       successNotification(res.message);
       window.location.reload();
     },

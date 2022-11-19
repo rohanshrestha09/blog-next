@@ -74,7 +74,7 @@ const Blog: NextPage = () => {
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
       },
-      onError: (err: Error | any) => errorNotification(err),
+      onError: (err: Error) => errorNotification(err),
     }
   );
 

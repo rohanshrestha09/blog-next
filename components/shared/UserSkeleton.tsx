@@ -16,7 +16,6 @@ import {
   GET_USER_SUGGESTIONS,
 } from '../../constants/queryKeys';
 import type { IUserData } from '../../interface/user';
-import type IMessage from '../../interface/message';
 
 interface Props {
   user: IUserData;
@@ -39,7 +38,7 @@ const UserSkeleton: React.FC<Props> = ({
     ({ id, shouldFollow }: { id: string; shouldFollow: boolean }) =>
       new AuthAxios().followUser({ id, shouldFollow }),
     {
-      onSuccess: (res: IMessage) => {
+      onSuccess: (res) => {
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
         queryClient.refetchQueries([GET_USER]);
@@ -50,7 +49,7 @@ const UserSkeleton: React.FC<Props> = ({
         queryClient.refetchQueries([GET_USER_FOLLOWING]);
         queryClient.refetchQueries([GET_FOLLOWING_BLOGS]);
       },
-      onError: (err: Error | any) => errorNotification(err),
+      onError: (err: Error) => errorNotification(err),
     }
   );
 

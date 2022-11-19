@@ -27,7 +27,6 @@ import {
 } from '../../constants/queryKeys';
 import { NAV_KEYS, PROFILE_KEYS } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
-import type IMessage from '../../interface/message';
 
 const { USER_PROFILE } = PROFILE_KEYS;
 
@@ -63,13 +62,13 @@ const UserProfile: NextPage = () => {
     ({ id, shouldFollow }: { id: string; shouldFollow: boolean }) =>
       new AuthAxios().followUser({ id, shouldFollow }),
     {
-      onSuccess: (res: IMessage) => {
+      onSuccess: (res) => {
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
         queryClient.refetchQueries([GET_USER_FOLLOWERS]);
         queryClient.refetchQueries([GET_USER_FOLLOWING]);
       },
-      onError: (err: Error | any) => errorNotification(err),
+      onError: (err: Error) => errorNotification(err),
     }
   );
 

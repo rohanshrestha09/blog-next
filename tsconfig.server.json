@@ -8,5 +8,13 @@
     "isolatedModules": false,
     "noEmit": false
   },
-  "include": ["server.ts", "controller", "middleware", "routes", "model", "enum"]
+  "include": [
+    "server.ts",
+    "controller",
+    "middleware",
+    "routes",
+    "model",
+    "socket",
+    "server.interface"
+  ]
 }

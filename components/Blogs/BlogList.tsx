@@ -19,7 +19,6 @@ import { openModal, closeModal } from '../../store/modalSlice';
 import { errorNotification, successNotification } from '../../utils/notification';
 import { GET_AUTH_BLOGS } from '../../constants/queryKeys';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
-import type IMessage from '../../interface/message';
 import type { IBlogData } from '../../interface/blog';
 
 interface Props {
@@ -58,16 +57,16 @@ const BlogList: React.FC<Props> = ({
     ({ id, shouldPublish }: { id: string; shouldPublish: boolean }) =>
       blogAxios.publishBlog({ id, shouldPublish }),
     {
-      onSuccess: (res: IMessage) => {
+      onSuccess: (res) => {
         successNotification(res.message);
         queryClient.refetchQueries([GET_AUTH_BLOGS]);
       },
-      onError: (err: Error | any) => errorNotification(err),
+      onError: (err: Error) => errorNotification(err),
     }
   );
 
   const handleDeleteBlog = useMutation((id: string) => blogAxios.deleteBlog(id), {
-    onSuccess: (res: IMessage) => {
+    onSuccess: (res) => {
       successNotification(res.message);
       queryClient.refetchQueries([GET_AUTH_BLOGS]);
       dispatch(closeModal({ key: DELETE_MODAL }));

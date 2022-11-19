@@ -9,10 +9,6 @@ export type IBlogData = Omit<
   never
 >;
 
-export interface IBlogReq extends IMessage {
-  blog: IBlogData;
-}
-
 export interface IBlog extends IMessage {
   data: IBlogData;
 }

@@ -52,6 +52,7 @@ export const comment = asyncHandler(async (req: Request, res: Response): Promise
       type: POST_COMMENT,
       user: authId,
       listener: author._id,
+      blog: blogId,
       comment: commentId,
       description: `${fullname} commented on your blog.`,
     });

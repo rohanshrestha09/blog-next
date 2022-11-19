@@ -20,7 +20,6 @@ import {
 } from '../../utils/notification';
 import { AUTH, GET_AUTH_BLOGS, GET_GENRE } from '../../constants/queryKeys';
 import type { IPostBlog } from '../../interface/blog';
-import type IMessage from '../../interface/message';
 
 const CreateBlog: NextPage = () => {
   const queryClient = useQueryClient();
@@ -78,7 +77,7 @@ const CreateBlog: NextPage = () => {
       return blogAxios.postBlog(formData);
     },
     {
-      onSuccess: (res: IMessage) => {
+      onSuccess: (res) => {
         successNotification(res.message);
         form.resetFields();
         setSelectedImage(null);

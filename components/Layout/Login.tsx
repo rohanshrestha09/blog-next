@@ -12,7 +12,7 @@ import UserAxios from '../../api/UserAxios';
 import { AUTH } from '../../constants/queryKeys';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
 import type { RootState } from '../../store';
-import type { ILogin, IToken } from '../../interface/user';
+import type { ILogin } from '../../interface/user';
 
 const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
 
@@ -31,17 +31,15 @@ const Login: React.FC = () => {
 
   const [rememberMe, setRememberMe] = useState<boolean>(true);
 
-  const handleLogin = useMutation(async (data: ILogin) => new UserAxios().login(data), {
-    onSuccess(res: IToken) {
+  const handleLogin = useMutation((data: ILogin) => new UserAxios().login(data), {
+    onSuccess: (res) => {
       successNotification(res.message);
       form.resetFields();
       queryClient.refetchQueries([AUTH]);
       dispatch(closeModal({ key: LOGIN_MODAL }));
       router.push('/profile');
     },
-    onError(err: Error) {
-      errorNotification(err);
-    },
+    onError: (err: Error) => errorNotification(err),
   });
 
   return (
@@ -98,9 +96,7 @@ const Login: React.FC = () => {
           <Form.Item name='remember' noStyle>
             <Checkbox
               checked={rememberMe}
-              onChange={(e: CheckboxChangeEvent) => {
-                setRememberMe(e.target.checked);
-              }}
+              onChange={(e: CheckboxChangeEvent) => setRememberMe(e.target.checked)}
             >
               Remember me
             </Checkbox>

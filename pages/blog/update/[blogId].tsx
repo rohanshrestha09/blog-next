@@ -25,7 +25,6 @@ import {
 import { AUTH, GET_AUTH_BLOGS, GET_BLOG, GET_GENRE } from '../../../constants/queryKeys';
 import { MODAL_KEYS } from '../../../constants/reduxKeys';
 import type { IPostBlog } from '../../../interface/blog';
-import type IMessage from '../../../interface/message';
 
 const { DELETE_MODAL } = MODAL_KEYS;
 
@@ -95,7 +94,7 @@ const UpdateBlog: NextPage = () => {
       return blogAxios.updateBlog({ id: String(blogId), data: formData });
     },
     {
-      onSuccess: (res: IMessage) => {
+      onSuccess: (res) => {
         successNotification(res.message);
         queryClient.refetchQueries([GET_AUTH_BLOGS]);
       },
@@ -104,7 +103,7 @@ const UpdateBlog: NextPage = () => {
   );
 
   const handleDeleteBlog = useMutation((id: string) => blogAxios.deleteBlog(id), {
-    onSuccess: (res: IMessage) => {
+    onSuccess: (res) => {
       successNotification(res.message);
       queryClient.refetchQueries([AUTH]);
       queryClient.refetchQueries([GET_AUTH_BLOGS]);
