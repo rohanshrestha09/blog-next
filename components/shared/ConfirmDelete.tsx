@@ -1,4 +1,4 @@
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button, Modal, Space, Spin } from 'antd';
 import { closeModal } from '../../store/modalSlice';
 import DeleteIcon from './DeleteIcon';

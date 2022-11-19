@@ -1,16 +1,18 @@
 import { NextRouter, useRouter } from 'next/router';
 import { ReactNode, Key } from 'react';
 import { useDispatch } from 'react-redux';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Menu, MenuProps, Badge } from 'antd';
 import { IconType } from 'react-icons';
 import { AiOutlineLogout, AiOutlineUser } from 'react-icons/ai';
 import { BiBookmark, BiMessageSquareEdit } from 'react-icons/bi';
 import { BsAppIndicator, BsHouse } from 'react-icons/bs';
 import AuthAxios from '../../api/AuthAxios';
+import NotificationAxios from '../../api/NotificationAxios';
 import { closeDrawer } from '../../store/drawerSlice';
 import { successNotification, errorNotification } from '../../utils/notification';
 import { NAV_KEYS } from '../../constants/reduxKeys';
+import { GET_NOTIFICATIONS } from '../../constants/queryKeys';
 
 interface Props {
   additionalProps?: string;
@@ -27,6 +29,13 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
   const dispatch = useDispatch();
 
   const authAxios = new AuthAxios();
+
+  const notificationAxios = new NotificationAxios();
+
+  const { data: notifications } = useQuery({
+    queryFn: () => notificationAxios.getNotifications(),
+    queryKey: [GET_NOTIFICATIONS],
+  });
 
   const handleLogout = useMutation(() => authAxios.logout(), {
     onSuccess: (res) => {
@@ -51,7 +60,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
         key === NOTIF_NAV ? (
           <>
             {label}
-            <Badge offset={[1, -18]} count={24} />
+            <Badge offset={[1, -18]} count={notifications?.unread} />
           </>
         ) : (
           label

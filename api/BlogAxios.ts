@@ -14,7 +14,7 @@ class Blog {
   ): Promise<IGenre & IBlogData & IBlog & IBlogs & IUsers & IComments & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `http://localhost:5000/api/blog/${url}`,
+      url: `http://127.0.0.1:5000/api/blog/${url}`,
       data,
       headers: { Cookie: this.cookie || '' },
       withCredentials: true,

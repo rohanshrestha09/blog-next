@@ -19,7 +19,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
 
   const { pathname }: NextRouter = useRouter();
 
-  const sidebarAffix = useRef<any>();
+  const [sidebarAffixA, sidebarAffixB] = [useRef<any>(), useRef<any>()];
 
   const { isOpen: isDrawerOpen } = useSelector((state: RootState) => state.drawer);
 
@@ -46,7 +46,15 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
   }, [pathname]);
 
   useEffect(() => {
-    window && window.addEventListener('scroll', () => sidebarAffix?.current.updatePosition(), true);
+    window &&
+      window.addEventListener(
+        'scroll',
+        () => {
+          sidebarAffixA?.current.updatePosition();
+          sidebarAffixB?.current.updatePosition();
+        },
+        true
+      );
   }, []);
 
   return (
@@ -78,7 +86,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
         <Nav additionalProps='w-72' isDrawer />
       </Drawer>
 
-      <Affix ref={sidebarAffix} offsetTop={1}>
+      <Affix ref={sidebarAffixA} offsetTop={1}>
         <Sider
           breakpoint='xl'
           className={`${!getSider() && 'sm:hidden'} bg-inherit sm:block hidden z-10`}
@@ -88,11 +96,13 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
         </Sider>
       </Affix>
 
-      <Layout className={`${getSider() && 'border-x'} border-gray-700 py-[1.20rem] xl:px-12 px-4`}>
+      <Layout
+        className={`${getSider() && 'sm:border-x'} border-gray-700 py-[1.20rem] xl:px-12 px-4`}
+      >
         <Content>{children}</Content>
       </Layout>
 
-      <Affix ref={sidebarAffix} offsetTop={1}>
+      <Affix ref={sidebarAffixB} offsetTop={1}>
         <Sider
           className={`${
             !getSider() && 'lg:hidden'

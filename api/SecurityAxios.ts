@@ -7,7 +7,7 @@ class Security {
   axiosFn = async (method: string, url: string, data?: any): Promise<IMessage> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `http://localhost:5000/api/security/${url}`,
+      url: `http://127.0.0.1:5000/api/security/${url}`,
       data,
       headers: { Cookie: this.cookie || '' },
       withCredentials: true,

@@ -31,3 +31,5 @@ export const GET_BLOG_SUGGESTIONS = 'get@blog/suggestions';
 export const GET_LIKERS = 'get@blog/like';
 
 export const GET_COMMENTS = 'get@blog/comment';
+
+export const GET_NOTIFICATIONS = 'get@notification';

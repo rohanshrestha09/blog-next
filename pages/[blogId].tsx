@@ -87,7 +87,7 @@ const Blog: NextPage = () => {
         refetchBlog();
         queryClient.refetchQueries([GET_LIKERS]);
       },
-      onError: (err: Error | any) => errorNotification(err),
+      onError: (err: Error) => errorNotification(err),
     }
   );
 
