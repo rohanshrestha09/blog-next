@@ -31,7 +31,7 @@ export const register = asyncHandler(async (req: Request, res: Response): Promis
       fullname,
       email,
       password: encryptedPassword,
-      dateOfBirth: new Date(moment(dateOfBirth).format()),
+      dateOfBirth: dateOfBirth && new Date(moment(dateOfBirth).format()),
     });
 
     if (req.files) {

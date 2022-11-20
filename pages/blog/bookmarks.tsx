@@ -11,7 +11,7 @@ import BlogAxios from '../../api/BlogAxios';
 import UserAxios from '../../api/UserAxios';
 import BlogList from '../../components/Blogs/BlogList';
 import SearchFilter from '../../components/Blogs/SortFilter';
-import { NAV_KEYS, BOOKMARKS_KEY } from '../../constants/reduxKeys';
+import { NAV_KEYS, BOOKMARKS_KEYS } from '../../constants/reduxKeys';
 import {
   AUTH,
   GET_BLOG_SUGGESTIONS,
@@ -23,7 +23,7 @@ import type { RootState } from '../../store';
 
 const { HOME_NAV } = NAV_KEYS;
 
-const { BOOKMARKS } = BOOKMARKS_KEY;
+const { BOOKMARKS } = BOOKMARKS_KEYS;
 
 const Bookmarks: NextPage = () => {
   const router: NextRouter = useRouter();
@@ -52,7 +52,7 @@ const Bookmarks: NextPage = () => {
 
       {authUser && (
         <main className='w-full flex flex-col'>
-          <header className='w-full text-2xl uppercase self-start'>Bookmarks</header>
+          <header className='w-full text-2xl uppercase'>Bookmarks</header>
 
           <Divider />
 

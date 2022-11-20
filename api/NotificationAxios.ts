@@ -17,7 +17,8 @@ class Notification {
     return res.data;
   };
 
-  getNotifications = async (): Promise<INotifications> => await this.axiosFn('get', '');
+  getNotifications = async ({ pageSize }: { pageSize?: number }): Promise<INotifications> =>
+    await this.axiosFn('get', `?pageSize=${pageSize || 20}`);
 
   markAsRead = async (id: string): Promise<IMessage> => await this.axiosFn('put', id);
 

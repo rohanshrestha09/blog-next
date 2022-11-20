@@ -43,6 +43,19 @@ export enum SORT_ORDER {
   DESCENDING = 'desc',
 }
 
+export enum NOTIFICATIONS_TYPE {
+  FOLLOW_USER = 'followUser',
+  LIKE_BLOG = 'likeBlog',
+  LIKE_COMMENT = 'likeComment',
+  POST_COMMENT = 'postComment',
+  POST_BLOG = 'postBlog',
+}
+
+export enum NOTIFICATIONS_STATUS {
+  READ = 'read',
+  UNREAD = 'unread',
+}
+
 export enum PROFILE_KEYS {
   AUTH_PROFILE = 'auth-profile',
   USER_PROFILE = 'user-profile',
@@ -55,8 +68,12 @@ export enum HOME_KEYS {
   GENERIC_BLOGS = 'generic-blogs',
 }
 
-export enum BOOKMARKS_KEY {
+export enum BOOKMARKS_KEYS {
   BOOKMARKS = 'bookmarks',
+}
+
+export enum NOTIFICATIONS_KEYS {
+  NOTIFICATIONS = 'notifications',
 }
 
 export enum BLOG_KEYS {
@@ -68,18 +85,23 @@ const { HOME, USER_SUGGESTIONS } = HOME_KEYS;
 
 const { AUTH_PROFILE } = PROFILE_KEYS;
 
-const { BOOKMARKS } = BOOKMARKS_KEY;
-
 export const getSortFilterKeys = {
-  pageSize: { ...HOME_KEYS, ...PROFILE_KEYS, ...FOLLOWERS_KEYS, ...BLOG_KEYS, BOOKMARKS },
+  pageSize: {
+    ...HOME_KEYS,
+    ...PROFILE_KEYS,
+    ...FOLLOWERS_KEYS,
+    ...BLOG_KEYS,
+    ...BOOKMARKS_KEYS,
+    ...NOTIFICATIONS_KEYS,
+  },
   search: {
     HOME,
     USER_SUGGESTIONS,
     AUTH_PROFILE,
-    BOOKMARKS,
+    ...BOOKMARKS_KEYS,
     ...FOLLOWERS_KEYS,
   },
-  genre: { HOME, AUTH_PROFILE, BOOKMARKS },
+  genre: { HOME, AUTH_PROFILE, ...BOOKMARKS_KEYS },
   sort: { HOME, AUTH_PROFILE },
   sortOrder: { AUTH_PROFILE },
 };
@@ -89,4 +111,5 @@ export type SORT_FILTER_KEYS =
   | PROFILE_KEYS
   | FOLLOWERS_KEYS
   | BLOG_KEYS
-  | BOOKMARKS_KEY;
+  | BOOKMARKS_KEYS
+  | NOTIFICATIONS_KEYS;

@@ -33,8 +33,8 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
   const notificationAxios = new NotificationAxios();
 
   const { data: notifications } = useQuery({
-    queryFn: () => notificationAxios.getNotifications(),
-    queryKey: [GET_NOTIFICATIONS],
+    queryFn: () => notificationAxios.getNotifications({ pageSize: 1 }),
+    queryKey: [GET_NOTIFICATIONS, { pageSize: 1 }],
   });
 
   const handleLogout = useMutation(() => authAxios.logout(), {

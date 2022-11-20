@@ -6,7 +6,7 @@ import { BiSearch } from 'react-icons/bi';
 import { FaSort } from 'react-icons/fa';
 import BlogAxios from '../../api/BlogAxios';
 import { setSearch, setGenre, setSort, setSortOrder } from '../../store/sortFilterSlice';
-import { SORT_FILTER_KEYS, SORT_ORDER, SORT_TYPE } from '../../constants/reduxKeys';
+import { SORT_ORDER, SORT_TYPE } from '../../constants/reduxKeys';
 import { GET_GENRE } from '../../constants/queryKeys';
 import { RootState } from '../../store';
 import { useRef, useState } from 'react';
@@ -55,37 +55,42 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, h
     }
   };
 
-  const menuSort = (
-    <span className='flex flex-col items-center gap-2.5 bg-[#1F1F1F] rounded-lg p-3'>
-      <Radio.Group
-        onChange={({ target: { value: sort } }) => dispatch(setSort({ key, sort }))}
-        value={sort[key]}
-      >
-        <Space direction='vertical'>
-          <Radio value={LIKES}>{getSortVal(LIKES)}</Radio>
-          <Radio value={CREATED_AT}>{getSortVal(CREATED_AT)}</Radio>
-        </Space>
-      </Radio.Group>
-
-      {hasSortOrder && (
-        <>
-          <Divider className='my-0' />
-
+  const menuSort = [
+    {
+      key: 'sortMenu',
+      label: (
+        <span className='flex flex-col items-center gap-2.5'>
           <Radio.Group
-            onChange={({ target: { value: sortOrder } }) =>
-              dispatch(setSortOrder({ key, sortOrder }))
-            }
-            value={sortOrder[key]}
+            onChange={({ target: { value: sort } }) => dispatch(setSort({ key, sort }))}
+            value={sort[key]}
           >
             <Space direction='vertical'>
-              <Radio value={ASCENDING}>Ascending</Radio>
-              <Radio value={DESCENDING}>Descending</Radio>
+              <Radio value={LIKES}>{getSortVal(LIKES)}</Radio>
+              <Radio value={CREATED_AT}>{getSortVal(CREATED_AT)}</Radio>
             </Space>
           </Radio.Group>
-        </>
-      )}
-    </span>
-  );
+
+          {hasSortOrder && (
+            <>
+              <Divider className='my-0' />
+
+              <Radio.Group
+                onChange={({ target: { value: sortOrder } }) =>
+                  dispatch(setSortOrder({ key, sortOrder }))
+                }
+                value={sortOrder[key]}
+              >
+                <Space direction='vertical'>
+                  <Radio value={ASCENDING}>Ascending</Radio>
+                  <Radio value={DESCENDING}>Descending</Radio>
+                </Space>
+              </Radio.Group>
+            </>
+          )}
+        </span>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -102,7 +107,7 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, h
         />
 
         {hasSort && (
-          <Dropdown overlay={menuSort}>
+          <Dropdown menu={{ items: menuSort }}>
             <Button className='w-[8.5rem] btn-secondary rounded-lg text-sm flex items-center justify-between px-2'>
               <span>{getSortVal(sort[key])}</span>
               <FaSort />
