@@ -11,7 +11,7 @@ export const blogs = asyncHandler(async (req: Request, res: Response): Promise<R
 
   const query: PipelineStage[] = [
     { $match: { _id: { $in: blogIds } } },
-    { $sort: { [String(sort || 'likes')]: sortOrder === 'asc' ? 1 : -1 } },
+    { $sort: { [String(sort || 'likesCount')]: sortOrder === 'asc' ? 1 : -1 } },
   ];
 
   if (genre) query.push({ $match: { genre: { $in: String(genre).split(',') } } });
@@ -26,16 +26,16 @@ export const blogs = asyncHandler(async (req: Request, res: Response): Promise<R
       },
     });
 
-  const blogs = await Blog.aggregate([...query, { $limit: Number(pageSize || 20) }]);
-
-  await User.populate(blogs, { path: 'author', select: 'fullname image' });
-
-  const [{ totalCount } = { totalCount: 0 }] = await Blog.aggregate([
-    ...query,
-    { $count: 'totalCount' },
-  ]);
-
   try {
+    const blogs = await Blog.aggregate([...query, { $limit: Number(pageSize || 20) }]);
+
+    await User.populate(blogs, { path: 'author', select: 'fullname image' });
+
+    const [{ totalCount } = { totalCount: 0 }] = await Blog.aggregate([
+      ...query,
+      { $count: 'totalCount' },
+    ]);
+
     return res.status(200).json({
       data: blogs,
       count: totalCount,
@@ -63,16 +63,16 @@ export const bookmarks = asyncHandler(async (req: Request, res: Response): Promi
       },
     });
 
-  const blogs = await Blog.aggregate([...query, { $limit: Number(pageSize || 20) }]);
-
-  await User.populate(blogs, { path: 'author', select: 'fullname image' });
-
-  const [{ totalCount } = { totalCount: 0 }] = await Blog.aggregate([
-    ...query,
-    { $count: 'totalCount' },
-  ]);
-
   try {
+    const blogs = await Blog.aggregate([...query, { $limit: Number(pageSize || 20) }]);
+
+    await User.populate(blogs, { path: 'author', select: 'fullname image' });
+
+    const [{ totalCount } = { totalCount: 0 }] = await Blog.aggregate([
+      ...query,
+      { $count: 'totalCount' },
+    ]);
+
     return res.status(200).json({
       data: blogs,
       count: totalCount,

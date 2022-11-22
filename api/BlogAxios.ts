@@ -38,7 +38,7 @@ class Blog {
   }): Promise<IBlogs> =>
     await this.axiosFn(
       'get',
-      `?genre=${genre || []}&sort=${sort || 'likes'}&pageSize=${pageSize || 20}&search=${
+      `?genre=${genre || []}&sort=${sort || 'likesCount'}&pageSize=${pageSize || 20}&search=${
         search || ''
       }`
     );

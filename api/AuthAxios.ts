@@ -50,9 +50,11 @@ class Auth {
   }): Promise<IBlogs> =>
     await this.axiosFn(
       'get',
-      `blog?genre=${genre || []}&sort=${sort || 'likes'}&pageSize=${pageSize || 20}&sortOrder=${
-        sortOrder || 'asc'
-      }&isPublished=${typeof isPublished === 'boolean' ? isPublished : ''}&search=${search || ''}`
+      `blog?genre=${genre || []}&sort=${sort || 'likesCount'}&pageSize=${
+        pageSize || 20
+      }&sortOrder=${sortOrder || 'desc'}&isPublished=${
+        typeof isPublished === 'boolean' ? isPublished : ''
+      }&search=${search || ''}`
     );
 
   getBookmarks = async ({

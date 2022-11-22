@@ -75,5 +75,5 @@ server.prepare().then(() => {
 
   dispatchSocket(io);
 
-  server.listen(PORT);
+  server.listen(PORT, '127.0.0.1');
 });

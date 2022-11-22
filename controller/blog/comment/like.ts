@@ -30,7 +30,7 @@ export const likeComment = asyncHandler(async (req: Request, res: Response): Pro
     await comment.save();
 
     await Notification.create({
-      typr: LIKE_COMMENT,
+      type: LIKE_COMMENT,
       user: authId,
       listener: comment.user,
       blog: comment.blog,

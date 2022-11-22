@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { NOTIFICATIONS_STATUS, NOTIFICATIONS_TYPE } from '../constants/reduxKeys';
 
 export interface IUserSchema {
   fullname: string;
@@ -68,7 +69,7 @@ export interface INotificationSchema {
     type: StringConstructor;
     required: [true, string];
     enum: { values: String[]; message: string };
-  };
+  } & NOTIFICATIONS_TYPE;
   user: {
     type: Types.ObjectId;
     ref: 'User';
@@ -96,7 +97,7 @@ export interface INotificationSchema {
     type: StringConstructor;
     enum: { values: String[]; message: string };
     default: 'unread';
-  };
+  } & NOTIFICATIONS_STATUS;
   createdAt: Date;
   updatedAt: Date;
 }

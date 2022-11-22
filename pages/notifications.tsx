@@ -1,11 +1,22 @@
 import Head from 'next/head';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
-import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
-import { Divider, Empty } from 'antd';
+import { shallowEqual, useSelector } from 'react-redux';
+import {
+  dehydrate,
+  DehydratedState,
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import { Button, Divider, Empty } from 'antd';
+import { isEmpty } from 'lodash';
 import AuthAxios from '../api/AuthAxios';
 import UserAxios from '../api/UserAxios';
 import BlogAxios from '../api/BlogAxios';
+import NotificationList from '../components/Notifications';
 import NotificationAxios from '../api/NotificationAxios';
+import { errorNotification } from '../utils/notification';
 import {
   AUTH,
   GET_BLOG_SUGGESTIONS,
@@ -14,10 +25,7 @@ import {
   GET_USER_SUGGESTIONS,
 } from '../constants/queryKeys';
 import { NOTIFICATIONS_KEYS } from '../constants/reduxKeys';
-import { shallowEqual, useSelector } from 'react-redux';
-import { RootState } from '../store';
-import NotificationList from '../components/Notifications';
-import { isEmpty } from 'lodash';
+import type { RootState } from '../store';
 
 const { NOTIFICATIONS } = NOTIFICATIONS_KEYS;
 
@@ -26,11 +34,18 @@ const Notifications: NextPage = () => {
     pageSize: { [NOTIFICATIONS]: pageSize },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
+  const queryClient = useQueryClient();
+
   const notificationAxois = new NotificationAxios();
 
   const { data: notifications } = useQuery({
     queryFn: () => notificationAxois.getNotifications({ pageSize }),
     queryKey: [GET_NOTIFICATIONS, { pageSize }],
+  });
+
+  const handleMarkAllAsRead = useMutation(() => notificationAxois.markAllAsRead(), {
+    onSuccess: () => queryClient.refetchQueries([GET_NOTIFICATIONS]),
+    onError: (err: Error) => errorNotification(err),
   });
 
   return (
@@ -41,7 +56,15 @@ const Notifications: NextPage = () => {
       </Head>
 
       <main className='w-full flex flex-col'>
-        <header className='text-2xl uppercase'>Notifications</header>
+        <header className='flex items-center justify-between'>
+          <p className='text-2xl uppercase'>Notifications</p>
+          <p
+            className='text-sm text-[#1890ff] cursor-pointer hover:text-blue-600'
+            onClick={() => notifications?.unread && handleMarkAllAsRead.mutate()}
+          >
+            Mark all as read
+          </p>
+        </header>
 
         <Divider />
 

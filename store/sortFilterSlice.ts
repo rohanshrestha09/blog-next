@@ -3,7 +3,7 @@ import { getSortFilterKeys, SORT_FILTER_KEYS, SORT_ORDER, SORT_TYPE } from '../c
 
 const { LIKES } = SORT_TYPE;
 
-const { ASCENDING } = SORT_ORDER;
+const { DESCENDING } = SORT_ORDER;
 
 const { pageSize, genre, search, sort, sortOrder } = getSortFilterKeys;
 
@@ -23,7 +23,7 @@ const sortFilterSlice = createSlice({
       .map((key) => ({ [key]: LIKES }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
     sortOrder: Object.values(sortOrder)
-      .map((key) => ({ [key]: ASCENDING }))
+      .map((key) => ({ [key]: DESCENDING }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
   },
   reducers: {

@@ -190,7 +190,14 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
                     defaultActiveKey={userKey}
                     className='w-full'
                     items={items as []}
-                    onTabClick={(key: any) => dispatch(changeKey({ key, type: 'userKey' }))}
+                    onTabClick={(key) =>
+                      dispatch(
+                        changeKey({ key, type: 'userKey' } as {
+                          key: FOLLOWERS_KEYS;
+                          type: 'userKey';
+                        })
+                      )
+                    }
                   />
                 </Modal>
               </>
@@ -205,7 +212,11 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
                 defaultActiveKey={userKey}
                 className='w-full'
                 items={items as []}
-                onTabClick={(key: any) => dispatch(changeKey({ key, type: 'userKey' }))}
+                onTabClick={(key) =>
+                  dispatch(
+                    changeKey({ key, type: 'userKey' } as { key: FOLLOWERS_KEYS; type: 'userKey' })
+                  )
+                }
               />
             </>
           )}

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import he from 'he';
-import { Avatar, Button, Divider, Popover, Space, Tag, Tooltip } from 'antd';
+import { Avatar, Divider, Dropdown, Space, Tag, Tooltip } from 'antd';
 import { BsHeart, BsThreeDots } from 'react-icons/bs';
 import { VscComment } from 'react-icons/vsc';
 import { FiEdit3 } from 'react-icons/fi';
@@ -74,52 +74,58 @@ const BlogList: React.FC<Props> = ({
     onError: (err: Error | any) => errorNotification(err),
   });
 
-  const popoverContent = (
-    <>
-      <Space
-        className='cursor-pointer hover:bg-gray-200 hover:text-black rounded-lg px-2 py-1.5 transition-all'
-        onClick={() => router.push(`/blog/update/${id}`)}
-      >
-        <FiEdit3 />
-        Edit
-      </Space>
+  const dropDownMenu = [
+    {
+      key: 'edit',
+      label: (
+        <Space
+          className='cursor-pointer py-1 text-sm'
+          onClick={() => router.push(`/blog/update/${id}`)}
+        >
+          <FiEdit3 size={16} />
+          Edit
+        </Space>
+      ),
+    },
+    {
+      key: 'publish',
+      label: (
+        <Space
+          className='cursor-pointer py-1 text-sm'
+          onClick={() => handlePublishBlog.mutate({ id, shouldPublish: !isPublished })}
+        >
+          <MdOutlinePublishedWithChanges size={16} />
+          {isPublished ? 'Unpublish' : 'Publish'}
+        </Space>
+      ),
+    },
+    {
+      key: 'delete',
+      label: (
+        <>
+          <Space
+            className='cursor-pointer py-1 text-red-500 text-sm'
+            onClick={() => dispatch(openModal({ key: DELETE_MODAL }))}
+          >
+            <MdOutlineDelete size={16} />
+            Delete
+          </Space>
 
-      <Divider type='vertical' />
-
-      <Button
-        className={`${
-          isPublished ? 'hover:bg-red-500' : 'hover:bg-green-500'
-        } inline-flex items-center gap-2 border-0 focus:text-current hover:text-white rounded-lg px-2 py-1.5 transition-all`}
-        loading={handlePublishBlog.isLoading}
-        onClick={() => handlePublishBlog.mutate({ id, shouldPublish: !isPublished })}
-      >
-        <MdOutlinePublishedWithChanges />
-        {isPublished ? 'Unpublish' : 'Publish'}
-      </Button>
-
-      <Divider type='vertical' />
-
-      <Space
-        className='cursor-pointer hover:bg-red-500 hover:text-white rounded-lg px-2 py-1.5 transition-all'
-        onClick={() => dispatch(openModal({ key: DELETE_MODAL }))}
-      >
-        <MdOutlineDelete />
-        Delete
-      </Space>
-
-      <ConfirmDelete
-        isLoading={handleDeleteBlog.isLoading}
-        deleteMutation={() => handleDeleteBlog.mutate(id)}
-      />
-    </>
-  );
+          <ConfirmDelete
+            isLoading={handleDeleteBlog.isLoading}
+            deleteMutation={() => handleDeleteBlog.mutate(id)}
+          />
+        </>
+      ),
+    },
+  ];
 
   return (
     <>
       <div className='w-full flex flex-col gap-3'>
         <Space className='relative'>
           {author.image ? (
-            <Avatar src={<Image alt='' src={author.image} layout='fill' />} size='small' />
+            <Avatar src={<Image alt='' src={author.image} layout='fill' priority />} size='small' />
           ) : (
             <Avatar className='bg-[#1890ff]' size='small'>
               {author.fullname[0]}
@@ -137,14 +143,14 @@ const BlogList: React.FC<Props> = ({
           <p className='w-28 text-zinc-400 text-xs'>{moment(createdAt).format('ll')}</p>
 
           {editable && (
-            <Popover
-              content={popoverContent}
-              placement='left'
-              overlayInnerStyle={{ borderRadius: '10px' }}
-              trigger='click'
+            <Dropdown
+              overlayClassName='w-32 font-sans'
+              menu={{ items: dropDownMenu }}
+              placement='bottomRight'
+              trigger={['click']}
             >
-              <BsThreeDots className='absolute right-0 top-0 translate-y-1/2 hover:rounded-full cursor-pointer hover:bg-gray-600 transition-all sm:text-base' />
-            </Popover>
+              <BsThreeDots className='absolute right-0 top-0 translate-y-1/2 cursor-pointer sm:text-xl' />
+            </Dropdown>
           )}
         </Space>
 
@@ -164,7 +170,7 @@ const BlogList: React.FC<Props> = ({
 
           {!smallContainer && image && (
             <span className='relative min-w-[4rem] min-h-[4rem] sm:min-w-[7.5rem] sm:min-h-[7.5rem] sm:max-h-[7.5rem]'>
-              <Image alt='' className='object-cover' src={image} layout='fill' />
+              <Image alt='' className='object-cover' src={image} layout='fill' priority />
             </span>
           )}
         </div>

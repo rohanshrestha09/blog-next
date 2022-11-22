@@ -15,7 +15,7 @@ export const blogs = asyncHandler(async (req: Request, res: Response): Promise<R
 
   const query: PipelineStage[] = [
     { $match: { isPublished: true } },
-    { $sort: { [String(sort || 'likes')]: -1 } },
+    { $sort: { [String(sort || 'likesCount')]: -1 } },
   ];
 
   if (genre) query.push({ $match: { genre: { $in: String(genre).split(',') } } });
@@ -28,16 +28,16 @@ export const blogs = asyncHandler(async (req: Request, res: Response): Promise<R
       },
     });
 
-  const blogs = await Blog.aggregate([...query, { $limit: Number(pageSize || 20) }]);
-
-  await User.populate(blogs, { path: 'author', select: 'fullname image' });
-
-  const [{ totalCount } = { totalCount: 0 }] = await Blog.aggregate([
-    ...query,
-    { $count: 'totalCount' },
-  ]);
-
   try {
+    const blogs = await Blog.aggregate([...query, { $limit: Number(pageSize || 20) }]);
+
+    await User.populate(blogs, { path: 'author', select: 'fullname image' });
+
+    const [{ totalCount } = { totalCount: 0 }] = await Blog.aggregate([
+      ...query,
+      { $count: 'totalCount' },
+    ]);
+
     return res.status(200).json({
       data: blogs,
       count: totalCount,
@@ -159,14 +159,14 @@ export const deleteBlog = asyncHandler(async (req: Request, res: Response): Prom
 export const suggestions = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const { pageSize } = req.query;
 
-  const blogs = await Blog.aggregate([
-    { $sample: { size: Number(pageSize || 4) } },
-    { $match: { isPublished: true } },
-  ]);
-
-  await User.populate(blogs, { path: 'author', select: 'fullname image' });
-
   try {
+    const blogs = await Blog.aggregate([
+      { $sample: { size: Number(pageSize || 4) } },
+      { $match: { isPublished: true } },
+    ]);
+
+    await User.populate(blogs, { path: 'author', select: 'fullname image' });
+
     return res.status(200).json({
       data: blogs,
       count: await Blog.countDocuments({ isPublished: true }),

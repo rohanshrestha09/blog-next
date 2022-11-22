@@ -40,7 +40,7 @@ const { AUTH_PROFILE } = PROFILE_KEYS;
 
 const { LIKES } = SORT_TYPE;
 
-const { ASCENDING } = SORT_ORDER;
+const { DESCENDING } = SORT_ORDER;
 
 const { CREATE_NAV } = NAV_KEYS;
 
@@ -186,7 +186,7 @@ export const getServerSideProps: GetServerSideProps = async (
     queryFn: () => authAxios.getAllBlogs({}),
     queryKey: [
       GET_AUTH_BLOGS,
-      { genre: [], pageSize: 20, sort: LIKES, sortOrder: ASCENDING, search: '' },
+      { genre: [], pageSize: 20, sort: LIKES, sortOrder: DESCENDING, search: '' },
     ],
   });
 

@@ -197,7 +197,14 @@ const Profile: React.FC<Props> = ({ isSider }) => {
                     defaultActiveKey={authKey}
                     className='w-full'
                     items={items}
-                    onTabClick={(key: any) => dispatch(changeKey({ key, type: 'authKey' }))}
+                    onTabClick={(key) =>
+                      dispatch(
+                        changeKey({ key, type: 'authKey' } as {
+                          key: FOLLOWERS_KEYS;
+                          type: 'authKey';
+                        })
+                      )
+                    }
                   />
                 </Modal>
               </>
@@ -212,7 +219,11 @@ const Profile: React.FC<Props> = ({ isSider }) => {
                 defaultActiveKey={authKey}
                 className='w-full'
                 items={items}
-                onTabClick={(key: any) => dispatch(changeKey({ key, type: 'authKey' }))}
+                onTabClick={(key) =>
+                  dispatch(
+                    changeKey({ key, type: 'authKey' } as { key: FOLLOWERS_KEYS; type: 'authKey' })
+                  )
+                }
               />
             </>
           )}

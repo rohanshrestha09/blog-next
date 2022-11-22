@@ -12,7 +12,7 @@ export const blog = asyncHandler(async (req: Request, res: Response): Promise<Re
   try {
     return res.status(200).json({
       data: await Blog.find(query)
-        .sort({ likes: -1 })
+        .sort({ likesCount: -1 })
         .limit(Number(pageSize || 20))
         .populate('author', 'fullname image'),
       count: await Blog.countDocuments(query),

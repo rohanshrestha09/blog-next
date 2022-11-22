@@ -58,7 +58,7 @@ const UserSkeleton: React.FC<Props> = ({
       <span className='flex items-center gap-4'>
         {image ? (
           <Avatar
-            src={<Image alt='' className='object-cover' src={image} layout='fill' />}
+            src={<Image alt='' className='object-cover' src={image} layout='fill' priority />}
             size='large'
           />
         ) : (

@@ -110,7 +110,7 @@ const Discussions: React.FC = () => {
           className='mt-3'
           avatar={
             authUser.image ? (
-              <Avatar src={<Image alt='' src={authUser.image} layout='fill' />} />
+              <Avatar src={<Image alt='' src={authUser.image} layout='fill' priority />} />
             ) : (
               <Avatar className='bg-[#1890ff]'>{authUser.fullname[0]}</Avatar>
             )

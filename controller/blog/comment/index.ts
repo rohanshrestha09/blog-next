@@ -12,11 +12,11 @@ export const comments = asyncHandler(async (req: Request, res: Response): Promis
 
   const { pageSize } = req.query;
 
-  const dataComments = await Comment.find({ _id: comments })
-    .limit(Number(pageSize || 20))
-    .populate('user', 'fullname image');
-
   try {
+    const dataComments = await Comment.find({ _id: comments })
+      .limit(Number(pageSize || 20))
+      .populate('user', 'fullname image');
+
     return res.status(200).json({
       data: dataComments,
       count: await Comment.countDocuments({ _id: comments }),

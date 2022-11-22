@@ -21,14 +21,14 @@ export const followers = asyncHandler(async (req: Request, res: Response): Promi
       },
     });
 
-  const users = await User.aggregate([...query, { $limit: Number(pageSize || 20) }]);
-
-  const [{ totalCount } = { totalCount: 0 }] = await User.aggregate([
-    ...query,
-    { $count: 'totalCount' },
-  ]);
-
   try {
+    const users = await User.aggregate([...query, { $limit: Number(pageSize || 20) }]);
+
+    const [{ totalCount } = { totalCount: 0 }] = await User.aggregate([
+      ...query,
+      { $count: 'totalCount' },
+    ]);
+
     return res.status(200).json({
       data: users,
       count: totalCount,
@@ -57,14 +57,14 @@ export const following = asyncHandler(async (req: Request, res: Response): Promi
       },
     });
 
-  const users = await User.aggregate([...query, { $limit: Number(pageSize || 20) }]);
-
-  const [{ totalCount } = { totalCount: 0 }] = await User.aggregate([
-    ...query,
-    { $count: 'totalCount' },
-  ]);
-
   try {
+    const users = await User.aggregate([...query, { $limit: Number(pageSize || 20) }]);
+
+    const [{ totalCount } = { totalCount: 0 }] = await User.aggregate([
+      ...query,
+      { $count: 'totalCount' },
+    ]);
+
     return res.status(200).json({
       data: users,
       count: totalCount,
