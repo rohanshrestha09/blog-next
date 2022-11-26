@@ -82,6 +82,10 @@ body::-webkit-scrollbar-thumb:hover {
   display: none;
 }
 
+svg {
+  vertical-align: baseline !important;
+}
+
 .btn-secondary {
   @apply bg-gray-200 hover:bg-gray-400 border-gray-200 hover:border-gray-400 transition-all duration-300 text-black !important;
 }

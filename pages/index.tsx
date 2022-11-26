@@ -20,7 +20,6 @@ import {
 import { SORT_TYPE, HOME_KEYS } from '../constants/reduxKeys';
 import { useAuth } from '../utils/UserAuth';
 import type { IBlogs } from '../interface/blog';
-import type { RootState } from '../store';
 
 const { HOME, FOLLOWING } = HOME_KEYS;
 

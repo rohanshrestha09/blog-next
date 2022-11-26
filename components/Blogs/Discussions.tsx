@@ -3,17 +3,16 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import moment from 'moment';
 import { Modal, List, Comment, Tooltip, Avatar, Form, Input } from 'antd';
 import { LikeFilled, LikeOutlined } from '@ant-design/icons';
 import { useAuth } from '../../utils/UserAuth';
 import BlogAxios from '../../api/BlogAxios';
+import ConfirmDelete from '../shared/ConfirmDelete';
 import { openModal, closeModal } from '../../store/modalSlice';
 import { errorNotification, successNotification } from '../../utils/notification';
 import { BLOG_KEYS, MODAL_KEYS } from '../../constants/reduxKeys';
 import { GET_BLOG, GET_COMMENTS } from '../../constants/queryKeys';
-import type { RootState } from '../../store';
-import ConfirmDelete from '../shared/ConfirmDelete';
-import moment from 'moment';
 
 const { DISCUSSIONS_MODAL, DELETE_MODAL } = MODAL_KEYS;
 
@@ -60,7 +59,7 @@ const Discussions: React.FC = () => {
         refetch();
         queryClient.refetchQueries([GET_BLOG, String(blogId)]);
       },
-      onError: (err: Error) => errorNotification(err),
+      onError: (err: AxiosError) => errorNotification(err),
     }
   );
 
@@ -75,7 +74,7 @@ const Discussions: React.FC = () => {
         setCommentId('');
         dispatch(closeModal({ key: DELETE_MODAL }));
       },
-      onError: (err: Error) => errorNotification(err),
+      onError: (err: AxiosError) => errorNotification(err),
     }
   );
 
@@ -91,7 +90,7 @@ const Discussions: React.FC = () => {
     }) => blogAxios.likeComment({ blogId, commentId, shouldLike }),
     {
       onSuccess: () => refetch(),
-      onError: (err: Error) => errorNotification(err),
+      onError: (err: AxiosError) => errorNotification(err),
     }
   );
 

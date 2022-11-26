@@ -11,14 +11,12 @@ import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/r
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../api/AuthAxios';
 import UserSkeleton from '../shared/UserSkeleton';
-import UserSuggestions from '../shared/UserSuggestions';
 import { changeKey } from '../../store/followersSlice';
 import { setPageSize, setSearch } from '../../store/sortFilterSlice';
 import { openModal, closeModal } from '../../store/modalSlice';
 import { GET_AUTH_FOLLOWERS, GET_AUTH_FOLLOWING } from '../../constants/queryKeys';
 import { MODAL_KEYS, FOLLOWERS_KEYS } from '../../constants/reduxKeys';
 import type { IUsers } from '../../interface/user';
-import type { RootState } from '../../store';
 
 interface Props {
   isSider?: boolean;
@@ -82,12 +80,13 @@ const Profile: React.FC<Props> = ({ isSider }) => {
             <Input
               className='rounded-lg py-[5px] bg-black'
               defaultValue={search[key]}
-              placeholder='Search title...'
+              placeholder='Search users...'
               prefix={<BiSearch />}
               onChange={({ target: { value } }) => {
                 if (timeout) clearTimeout(timeout);
                 timeout = setTimeout(() => dispatch(setSearch({ key, search: value })), 700);
               }}
+              allowClear
             />
 
             {(key === AUTH_FOLLOWERS ? isFollowersLoading : isFollowingLoading) && (
@@ -227,8 +226,6 @@ const Profile: React.FC<Props> = ({ isSider }) => {
               />
             </>
           )}
-
-          <UserSuggestions />
         </main>
       )}
     </div>

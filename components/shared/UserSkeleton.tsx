@@ -49,13 +49,13 @@ const UserSkeleton: React.FC<Props> = ({
         queryClient.refetchQueries([GET_USER_FOLLOWING]);
         queryClient.refetchQueries([GET_FOLLOWING_BLOGS]);
       },
-      onError: (err: Error) => errorNotification(err),
+      onError: (err: AxiosError) => errorNotification(err),
     }
   );
 
   return (
     <div className='w-full flex items-center justify-between mb-5'>
-      <span className='flex items-center gap-4'>
+      <div className='flex items-center gap-4'>
         {image ? (
           <Avatar
             src={<Image alt='' className='object-cover' src={image} layout='fill' priority />}
@@ -81,7 +81,7 @@ const UserSkeleton: React.FC<Props> = ({
             <p className='text-sm text-zinc-500 break-words'>{followersCount} followers</p>
           )}
         </Space>
-      </span>
+      </div>
 
       <Button
         type='primary'

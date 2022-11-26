@@ -9,7 +9,6 @@ import BlogAxios from '../../api/BlogAxios';
 import { setSearch, setGenre, setSort, setSortOrder } from '../../store/sortFilterSlice';
 import { SORT_FILTER_KEYS, SORT_ORDER, SORT_TYPE } from '../../constants/reduxKeys';
 import { GET_GENRE } from '../../constants/queryKeys';
-import type { RootState } from '../../store';
 
 interface Props {
   sortFilterKey: any;
@@ -86,6 +85,7 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, h
             if (timeout) clearTimeout(timeout);
             timeout = setTimeout(() => dispatch(setSearch({ key, search: value })), 700);
           }}
+          allowClear
         />
 
         {hasSort && (

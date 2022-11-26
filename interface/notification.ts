@@ -1,6 +1,5 @@
 import { Document, Types } from 'mongoose';
 import { INotificationSchema } from './schema';
-import IMessage from './message';
 
 export type INotificationData = Omit<
   Document<unknown, any, INotificationSchema> &

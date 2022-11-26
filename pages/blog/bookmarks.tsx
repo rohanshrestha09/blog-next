@@ -19,7 +19,6 @@ import {
   GET_GENRE,
   GET_USER_SUGGESTIONS,
 } from '../../constants/queryKeys';
-import type { RootState } from '../../store';
 
 const { HOME_NAV } = NAV_KEYS;
 

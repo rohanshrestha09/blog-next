@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import { Button, DatePicker, Form, Input, Modal, Upload } from 'antd';
 import { UserOutlined, UploadOutlined, InfoCircleOutlined, LinkOutlined } from '@ant-design/icons';
+import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../api/AuthAxios';
 import {
@@ -15,7 +16,6 @@ import PwdAuth from '../shared/PwdAuth';
 import { closeModal, openModal } from '../../store/modalSlice';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
 import { AUTH, GET_AUTH_BLOGS } from '../../constants/queryKeys';
-import type { RootState } from '../../store';
 
 const { EDIT_PROFILE_MODAL, PWD_AUTH_MODAL } = MODAL_KEYS;
 
@@ -72,7 +72,7 @@ const EditProfile = () => {
         dispatch(closeModal({ key: EDIT_PROFILE_MODAL }));
         dispatch(closeModal({ key: PWD_AUTH_MODAL }));
       },
-      onError: (err: Error) => errorNotification(err),
+      onError: (err: AxiosError) => errorNotification(err),
     }
   );
 
@@ -102,9 +102,9 @@ const EditProfile = () => {
           rules={[{ required: true, message: 'Please input your fullname!' }]}
         >
           <Input
-            className='rounded-lg p-2'
+            className='rounded-lg p-3'
             placeholder='Full Name'
-            prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
+            prefix={<UserOutlined className='text-gray-600 mr-2' />}
           />
         </Form.Item>
 
@@ -115,9 +115,9 @@ const EditProfile = () => {
           rules={[{ required: true, message: 'Please input your email!' }]}
         >
           <Input
-            className='rounded-lg p-2'
+            className='rounded-lg p-3'
             placeholder='Email'
-            prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
+            prefix={<MdOutlineAlternateEmail className='text-gray-600 mr-2' />}
             type='email'
             disabled
           />
@@ -125,27 +125,24 @@ const EditProfile = () => {
 
         <Form.Item label='Bio' name='bio' initialValue={authUser.bio}>
           <Input
-            className='rounded-lg p-2'
+            className='rounded-lg p-3'
             placeholder='Bio'
-            prefix={<InfoCircleOutlined className='text-gray-600 text-lg mr-2' />}
+            prefix={<InfoCircleOutlined className='text-gray-600 mr-2' />}
           />
         </Form.Item>
 
         <Form.Item label='Website' name='website' initialValue={authUser.website}>
           <Input
-            className='rounded-lg p-2'
+            className='rounded-lg p-3'
             placeholder='Website'
-            prefix={<LinkOutlined className='text-gray-600 text-lg mr-2' />}
+            prefix={<LinkOutlined className='text-gray-600 mr-2' />}
           />
         </Form.Item>
 
         <div className='w-full grid grid-cols-5'>
           <Form.Item className='sm:col-span-2 col-span-full' label='Display Picture'>
             <Upload {...fileUploadOptions}>
-              <Button
-                className='rounded-lg flex items-center h-12'
-                icon={<UploadOutlined className='text-lg' />}
-              >
+              <Button className='rounded-lg flex items-center h-12' icon={<UploadOutlined />}>
                 Click to Upload
               </Button>
             </Upload>

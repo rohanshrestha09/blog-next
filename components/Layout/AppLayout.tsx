@@ -1,25 +1,28 @@
+import 'antd/dist/antd.dark.min.css';
 import { NextRouter, useRouter } from 'next/router';
+import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Layout, Drawer, Affix } from 'antd';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import LoadingBar from 'react-top-loading-bar';
 import { MdOutlineKeyboardArrowRight } from 'react-icons/md';
 import Login from './Login';
 import Register from './Register';
 import Nav from '../shared/Nav';
+import HomeSider from '../Home/HomeSider';
 import ProfileSider from '../Profile/ProfileSider';
-import { closeDrawer, openDrawer } from '../../store/drawerSlice';
-import type { RootState } from '../../store';
 import UserProfileSider from '../Profile/UserProfileSider';
-import { useCallback, useEffect, useRef } from 'react';
-import HomeSider from '../HomeSider';
+import { closeDrawer, openDrawer } from '../../store/drawerSlice';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.Element => {
   const { Content, Sider } = Layout;
 
-  const { pathname }: NextRouter = useRouter();
+  const { pathname, events }: NextRouter = useRouter();
 
   const [sidebarAffixA, sidebarAffixB] = [useRef<any>(), useRef<any>()];
+
+  const loaderRef = useRef<any>(null);
 
   const { isOpen: isDrawerOpen } = useSelector((state: RootState) => state.drawer);
 
@@ -56,10 +59,18 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
         },
         true
       );
-  }, []);
+  }, [sidebarAffixA, sidebarAffixB]);
+
+  useEffect(() => {
+    events.on('routeChangeStart', () => loaderRef.current?.continuousStart());
+
+    events.on('routeChangeComplete', () => loaderRef.current?.complete());
+  }, [events]);
 
   return (
     <Layout className='font-sans min-h-screen 2xl:px-36 pr-1' hasSider>
+      <LoadingBar color='#177ddc' ref={loaderRef} shadow={true} waitingTime={400} />
+
       <ToastContainer />
 
       <Login />
@@ -98,7 +109,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
       </Affix>
 
       <Layout
-        className={`${getSider() && 'sm:border-x'} border-gray-700 py-[1.20rem] xl:px-12 px-4`}
+        className={`${getSider() && 'sm:border-x'} border-[#303030] py-[1.20rem] xl:px-12 px-4`}
       >
         <Content>{children}</Content>
       </Layout>

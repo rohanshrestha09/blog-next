@@ -2,15 +2,14 @@ import { NextRouter, useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Divider } from 'antd';
-import UserAxios from '../api/UserAxios';
-import BlogAxios from '../api/BlogAxios';
-import { openModal } from '../store/modalSlice';
-import { GET_BLOG_SUGGESTIONS, GET_GENRE, GET_USER_SUGGESTIONS } from '../constants/queryKeys';
-import { useAuth } from '../utils/UserAuth';
-import UserSkeleton from './shared/UserSkeleton';
-import BlogList from './Blogs/BlogList';
-import UserSuggestions from './shared/UserSuggestions';
-import { MODAL_KEYS } from '../constants/reduxKeys';
+import UserAxios from '../../api/UserAxios';
+import BlogAxios from '../../api/BlogAxios';
+import { openModal } from '../../store/modalSlice';
+import { GET_BLOG_SUGGESTIONS, GET_GENRE, GET_USER_SUGGESTIONS } from '../../constants/queryKeys';
+import { useAuth } from '../../utils/UserAuth';
+import UserSkeleton from '../shared/UserSkeleton';
+import BlogList from '../Blogs/BlogList';
+import { MODAL_KEYS } from '../../constants/reduxKeys';
 
 const { USER_SUGGESTIONS_MODAL, LOGIN_MODAL } = MODAL_KEYS;
 
@@ -99,8 +98,6 @@ const HomeSider: React.FC = () => {
               </span>
             ))}
         </div>
-
-        <UserSuggestions />
       </main>
     </div>
   );

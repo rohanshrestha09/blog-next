@@ -3,10 +3,13 @@ import { NextRouter, useRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { shallowEqual, useSelector } from 'react-redux';
 import { dehydrate, QueryClient, DehydratedState, useQuery } from '@tanstack/react-query';
+import { Divider, Empty, PageHeader } from 'antd';
 import { capitalize, isEmpty } from 'lodash';
+import { useAuth } from '../../utils/UserAuth';
 import BlogAxios from '../../api/BlogAxios';
 import AuthAxios from '../../api/AuthAxios';
 import UserAxios from '../../api/UserAxios';
+import BlogList from '../../components/Blogs/BlogList';
 import {
   AUTH,
   GET_ALL_BLOGS,
@@ -14,11 +17,7 @@ import {
   GET_GENRE,
   GET_USER_SUGGESTIONS,
 } from '../../constants/queryKeys';
-import type { RootState } from '../../store';
 import { HOME_KEYS } from '../../constants/reduxKeys';
-import { Divider, Empty, PageHeader } from 'antd';
-import BlogList from '../../components/Blogs/BlogList';
-import { useAuth } from '../../utils/UserAuth';
 
 const { GENERIC_BLOGS } = HOME_KEYS;
 

@@ -9,7 +9,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { Button, Divider, Empty } from 'antd';
+import { Divider, Empty } from 'antd';
 import { isEmpty } from 'lodash';
 import AuthAxios from '../api/AuthAxios';
 import UserAxios from '../api/UserAxios';
@@ -25,7 +25,6 @@ import {
   GET_USER_SUGGESTIONS,
 } from '../constants/queryKeys';
 import { NOTIFICATIONS_KEYS } from '../constants/reduxKeys';
-import type { RootState } from '../store';
 
 const { NOTIFICATIONS } = NOTIFICATIONS_KEYS;
 
@@ -45,7 +44,7 @@ const Notifications: NextPage = () => {
 
   const handleMarkAllAsRead = useMutation(() => notificationAxois.markAllAsRead(), {
     onSuccess: () => queryClient.refetchQueries([GET_NOTIFICATIONS]),
-    onError: (err: Error) => errorNotification(err),
+    onError: (err: AxiosError) => errorNotification(err),
   });
 
   return (

@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
 import { INotifications } from '../interface/notification';
-import IMessage from '../interface/message';
 
 class Notification {
   constructor(private cookie?: any) {}

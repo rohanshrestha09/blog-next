@@ -1,5 +1,4 @@
 import axios, { AxiosResponse } from 'axios';
-import IMessage from '../interface/message';
 
 class Security {
   constructor(private cookie?: any) {}
@@ -16,8 +15,8 @@ class Security {
     return res.data;
   };
 
-  getResetPasswordLink = async (data: { email: string }): Promise<IMessage> =>
-    await this.axiosFn('get', 'reset-password', data);
+  sendResetPasswordLink = async (data: { email: string }): Promise<IMessage> =>
+    await this.axiosFn('post', 'reset-password', data);
 
   resetPassword = async ({
     id,

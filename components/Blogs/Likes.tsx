@@ -9,7 +9,6 @@ import UserSkeleton from '../shared/UserSkeleton';
 import { closeModal } from '../../store/modalSlice';
 import { BLOG_KEYS, MODAL_KEYS } from '../../constants/reduxKeys';
 import { GET_LIKERS } from '../../constants/queryKeys';
-import type { RootState } from '../../store';
 
 const { LIKERS_MODAL } = MODAL_KEYS;
 

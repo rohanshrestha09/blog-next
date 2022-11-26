@@ -26,7 +26,7 @@ const NotificationList: React.FC<Props> = ({
 
   const handleMarkAsRead = useMutation((id: string) => notificationAxios.markAsRead(id), {
     onSuccess: () => queryClient.refetchQueries([GET_NOTIFICATIONS]),
-    onError: (err: Error) => errorNotification(err),
+    onError: (err: AxiosError) => errorNotification(err),
   });
 
   const getNotificationBadge = (notificationType: NOTIFICATIONS_TYPE): string => {

@@ -1,6 +1,5 @@
 import { Document, Types } from 'mongoose';
 import { IBlogSchema, ICommentSchema } from './schema';
-import IMessage from './message';
 
 type BlogKeys = Record<string, string | string[]>;
 

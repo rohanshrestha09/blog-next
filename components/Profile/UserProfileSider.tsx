@@ -18,7 +18,6 @@ import { openModal, closeModal } from '../../store/modalSlice';
 import { GET_USER_FOLLOWERS, GET_USER_FOLLOWING, GET_USER } from '../../constants/queryKeys';
 import { MODAL_KEYS, FOLLOWERS_KEYS } from '../../constants/reduxKeys';
 import type { IUsers } from '../../interface/user';
-import type { RootState } from '../../store';
 
 interface Props {
   isSider?: boolean;
@@ -95,12 +94,13 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
             <Input
               className='rounded-lg py-[5px] bg-black'
               defaultValue={search[key]}
-              placeholder='Search title...'
+              placeholder='Search user...'
               prefix={<BiSearch />}
               onChange={({ target: { value } }) => {
                 if (timeout) clearTimeout(timeout);
                 timeout = setTimeout(() => dispatch(setSearch({ key, search: value })), 700);
               }}
+              allowClear
             />
 
             {(key === USER_FOLLOWERS ? isFollowersLoading : isFollowingLoading) && (

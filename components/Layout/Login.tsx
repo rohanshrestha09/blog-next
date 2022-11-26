@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Form, Input, Checkbox, Button, Modal } from 'antd';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
-import { UserOutlined, LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
+import { LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
+import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { openModal, closeModal } from '../../store/modalSlice';
 import { errorNotification, successNotification } from '../../utils/notification';
 import UserAxios from '../../api/UserAxios';
 import { AUTH } from '../../constants/queryKeys';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
-import type { RootState } from '../../store';
 import type { ILogin } from '../../interface/user';
 
 const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
@@ -39,7 +39,7 @@ const Login: React.FC = () => {
       dispatch(closeModal({ key: LOGIN_MODAL }));
       router.push('/profile');
     },
-    onError: (err: Error) => errorNotification(err),
+    onError: (err: AxiosError) => errorNotification(err),
   });
 
   return (
@@ -65,9 +65,9 @@ const Login: React.FC = () => {
           rules={[{ required: true, message: 'Please input your email!' }]}
         >
           <Input
-            className='rounded-lg p-2'
+            className='rounded-lg p-3'
             placeholder='Email'
-            prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
+            prefix={<MdOutlineAlternateEmail className='text-gray-600 mr-2' />}
             type='email'
           />
         </Form.Item>
@@ -78,16 +78,16 @@ const Login: React.FC = () => {
           rules={[{ required: true, message: 'Please input your password!' }]}
         >
           <Input.Password
-            className='rounded-lg p-2'
+            className='rounded-lg p-3'
             iconRender={(visible) =>
               visible ? (
-                <EyeTwoTone className='text-gray-600 text-lg' />
+                <EyeTwoTone className='text-gray-600' />
               ) : (
-                <EyeInvisibleOutlined className='text-gray-600 text-lg' />
+                <EyeInvisibleOutlined className='text-gray-600' />
               )
             }
             placeholder='Password'
-            prefix={<LockOutlined className='text-gray-600 text-lg mr-2' />}
+            prefix={<LockOutlined className='text-gray-600 mr-2' />}
             type='password'
           />
         </Form.Item>

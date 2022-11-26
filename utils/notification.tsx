@@ -15,8 +15,8 @@ export const defaultNotification = (message: string) => toast(message, config);
 
 export const successNotification = (message: string) => toast.success(message, config);
 
-export const errorNotification = (err: Error | any) =>
-  toast.error(err?.response?.data?.message, config);
+export const errorNotification = (err: AxiosError) =>
+  toast.error(err.response?.data?.message, config);
 
 export const infoNotification = (message: string) => toast.info(message, config);
 

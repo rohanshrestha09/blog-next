@@ -6,7 +6,7 @@ import { changePassword, resetLink, resetPassword } from '../controller/security
 
 const router: Router = Router();
 
-router.get('/security/reset-password', resetLink);
+router.post('/security/reset-password', resetLink);
 
 router.post('/security/reset-password/:user/:token', verifyUser, resetPassword);
 

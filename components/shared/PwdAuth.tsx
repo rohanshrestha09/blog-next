@@ -3,7 +3,6 @@ import { Button, Form, Input, Modal } from 'antd';
 import { EyeTwoTone, EyeInvisibleOutlined, LockOutlined } from '@ant-design/icons';
 import { closeModal } from '../../store/modalSlice';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
-import { RootState } from '../../store';
 
 interface Props {
   isLoading: boolean;
@@ -44,16 +43,16 @@ const PwdAuth: React.FC<Props> = ({ isLoading, mutation }) => {
           rules={[{ required: true, message: 'Please input your password!' }]}
         >
           <Input.Password
-            className='rounded-lg p-2'
+            className='rounded-lg p-3'
             iconRender={(visible) =>
               visible ? (
-                <EyeTwoTone className='text-gray-600 text-lg' />
+                <EyeTwoTone className='text-gray-600' />
               ) : (
-                <EyeInvisibleOutlined className='text-gray-600 text-lg' />
+                <EyeInvisibleOutlined className='text-gray-600' />
               )
             }
             placeholder='Password'
-            prefix={<LockOutlined className='text-gray-600 text-lg mr-2' />}
+            prefix={<LockOutlined className='text-gray-600 mr-2' />}
             type='password'
           />
         </Form.Item>

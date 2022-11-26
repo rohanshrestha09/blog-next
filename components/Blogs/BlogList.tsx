@@ -61,7 +61,7 @@ const BlogList: React.FC<Props> = ({
         successNotification(res.message);
         queryClient.refetchQueries([GET_AUTH_BLOGS]);
       },
-      onError: (err: Error) => errorNotification(err),
+      onError: (err: AxiosError) => errorNotification(err),
     }
   );
 
@@ -71,7 +71,7 @@ const BlogList: React.FC<Props> = ({
       queryClient.refetchQueries([GET_AUTH_BLOGS]);
       dispatch(closeModal({ key: DELETE_MODAL }));
     },
-    onError: (err: Error | any) => errorNotification(err),
+    onError: (err: AxiosError) => errorNotification(err),
   });
 
   const dropDownMenu = [
@@ -79,7 +79,7 @@ const BlogList: React.FC<Props> = ({
       key: 'edit',
       label: (
         <Space
-          className='cursor-pointer py-1 text-sm'
+          className='w-full cursor-pointer py-1 text-sm'
           onClick={() => router.push(`/blog/update/${id}`)}
         >
           <FiEdit3 size={16} />
@@ -91,7 +91,7 @@ const BlogList: React.FC<Props> = ({
       key: 'publish',
       label: (
         <Space
-          className='cursor-pointer py-1 text-sm'
+          className='w-full cursor-pointer py-1 text-sm'
           onClick={() => handlePublishBlog.mutate({ id, shouldPublish: !isPublished })}
         >
           <MdOutlinePublishedWithChanges size={16} />
@@ -104,7 +104,7 @@ const BlogList: React.FC<Props> = ({
       label: (
         <>
           <Space
-            className='cursor-pointer py-1 text-red-500 text-sm'
+            className='w-full cursor-pointer py-1 text-red-500 text-sm'
             onClick={() => dispatch(openModal({ key: DELETE_MODAL }))}
           >
             <MdOutlineDelete size={16} />

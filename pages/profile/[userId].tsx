@@ -26,7 +26,6 @@ import {
   GET_USER_FOLLOWING,
 } from '../../constants/queryKeys';
 import { NAV_KEYS, PROFILE_KEYS } from '../../constants/reduxKeys';
-import type { RootState } from '../../store';
 
 const { USER_PROFILE } = PROFILE_KEYS;
 
@@ -68,7 +67,7 @@ const UserProfile: NextPage = () => {
         queryClient.refetchQueries([GET_USER_FOLLOWERS]);
         queryClient.refetchQueries([GET_USER_FOLLOWING]);
       },
-      onError: (err: Error) => errorNotification(err),
+      onError: (err: AxiosError) => errorNotification(err),
     }
   );
 

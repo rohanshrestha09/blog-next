@@ -1,4 +1,5 @@
-import { createContext, useContext } from 'react';
+import { NextRouter, useRouter } from 'next/router';
+import { createContext, Fragment, useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import AuthAxios from '../api/AuthAxios';
@@ -11,18 +12,27 @@ export const UserContext = createContext<IContext | any>(null);
 const UserAuth: React.FC<{
   children: React.ReactNode;
 }> = ({ children }): JSX.Element => {
+  const { pathname }: NextRouter = useRouter();
+
   const { data: authUser } = useQuery({
     queryFn: () => new AuthAxios().auth(),
     queryKey: [AUTH],
   });
 
-  return (
-    <UserContext.Provider value={{ authUser }}>
-      <AppLayout>
-        {children} <ReactQueryDevtools />
-      </AppLayout>
-    </UserContext.Provider>
-  );
+  switch (pathname) {
+    case '/security/reset-password':
+    case '/security/reset-password/[user]/[token]':
+      return <Fragment>{children}</Fragment>;
+
+    default:
+      return (
+        <UserContext.Provider value={{ authUser }}>
+          <AppLayout>
+            {children} <ReactQueryDevtools />
+          </AppLayout>
+        </UserContext.Provider>
+      );
+  }
 };
 
 export default UserAuth;

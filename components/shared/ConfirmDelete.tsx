@@ -3,7 +3,6 @@ import { Button, Modal, Space, Spin } from 'antd';
 import { closeModal } from '../../store/modalSlice';
 import DeleteIcon from './DeleteIcon';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
-import type { RootState } from '../../store';
 
 const { DELETE_MODAL } = MODAL_KEYS;
 

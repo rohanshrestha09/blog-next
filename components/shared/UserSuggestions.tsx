@@ -11,7 +11,6 @@ import { setSearch } from '../../store/sortFilterSlice';
 import { closeModal } from '../../store/modalSlice';
 import { HOME_KEYS, MODAL_KEYS } from '../../constants/reduxKeys';
 import { GET_USER_SUGGESTIONS } from '../../constants/queryKeys';
-import type { RootState } from '../../store';
 
 const { USER_SUGGESTIONS_MODAL } = MODAL_KEYS;
 
@@ -51,7 +50,7 @@ const UserSuggestions: React.FC = () => {
         <Input
           className='rounded-lg py-[5px] bg-black'
           defaultValue={search}
-          placeholder='Search title...'
+          placeholder='Search users...'
           prefix={<BiSearch />}
           onChange={({ target: { value } }) => {
             if (timeout) clearTimeout(timeout);
@@ -60,6 +59,7 @@ const UserSuggestions: React.FC = () => {
               700
             );
           }}
+          allowClear
         />
 
         {isLoading && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}

@@ -74,7 +74,7 @@ const Blog: NextPage = () => {
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
       },
-      onError: (err: Error) => errorNotification(err),
+      onError: (err: AxiosError) => errorNotification(err),
     }
   );
 
@@ -87,7 +87,7 @@ const Blog: NextPage = () => {
         refetchBlog();
         queryClient.refetchQueries([GET_LIKERS]);
       },
-      onError: (err: Error) => errorNotification(err),
+      onError: (err: AxiosError) => errorNotification(err),
     }
   );
 

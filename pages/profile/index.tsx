@@ -32,7 +32,6 @@ import {
   SORT_TYPE,
   SORT_ORDER,
 } from '../../constants/reduxKeys';
-import type { RootState } from '../../store';
 
 const { ALL_BLOGS, PUBLISHED, UNPUBLISHED } = AUTH_PROFILE_KEYS;
 

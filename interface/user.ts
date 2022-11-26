@@ -1,6 +1,5 @@
 import { Document, Types } from 'mongoose';
 import { IUserSchema } from './schema';
-import IMessage from './message';
 
 type RegisterKeys = Record<string, string | boolean>;
 
@@ -28,11 +27,9 @@ export type IUserData = Omit<
   never
 >;
 
-
 export interface IUser extends IMessage {
   data: IUserData;
 }
-
 
 export interface IAuth extends IMessage {
   data: IUserData;

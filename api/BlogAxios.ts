@@ -2,7 +2,6 @@ import axios, { AxiosResponse } from 'axios';
 import { SORT_TYPE } from '../constants/reduxKeys';
 import { IBlog, IBlogData, IBlogs, IComments, IGenre } from '../interface/blog';
 import { IUsers } from '../interface/user';
-import IMessage from '../interface/message';
 
 class Blog {
   constructor(private cookie?: any) {}

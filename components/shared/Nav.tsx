@@ -3,18 +3,20 @@ import { NextRouter, useRouter } from 'next/router';
 import { ReactNode, Key } from 'react';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Menu, MenuProps, Badge, Avatar, Dropdown } from 'antd';
+import { Menu, MenuProps, Badge, Avatar, Dropdown, Button } from 'antd';
 import { IconType } from 'react-icons';
 import { AiOutlineLogout, AiOutlineUser } from 'react-icons/ai';
-import { BiBookmark, BiMessageSquareEdit } from 'react-icons/bi';
+import { BiBookmark, BiMessageSquareEdit, BiSearch } from 'react-icons/bi';
 import { BsThreeDots } from 'react-icons/bs';
 import { BsAppIndicator, BsHouse } from 'react-icons/bs';
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../api/AuthAxios';
 import NotificationAxios from '../../api/NotificationAxios';
+import UserSuggestions from './UserSuggestions';
 import { closeDrawer } from '../../store/drawerSlice';
+import { openModal } from '../../store/modalSlice';
 import { successNotification, errorNotification } from '../../utils/notification';
-import { NAV_KEYS } from '../../constants/reduxKeys';
+import { MODAL_KEYS, NAV_KEYS } from '../../constants/reduxKeys';
 import { GET_NOTIFICATIONS } from '../../constants/queryKeys';
 
 interface Props {
@@ -23,6 +25,8 @@ interface Props {
 }
 
 const { HOME_NAV, PROFILE_NAV, CREATE_NAV, BOOKMARKS_NAV, NOTIF_NAV, LOGOUT_NAV } = NAV_KEYS;
+
+const { USER_SUGGESTIONS_MODAL } = MODAL_KEYS;
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -47,7 +51,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
       successNotification(res.message);
       window.location.reload();
     },
-    onError: (err: Error) => errorNotification(err),
+    onError: (err: AxiosError) => errorNotification(err),
   });
 
   const settingItems = [
@@ -58,6 +62,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
           Logout
         </p>
       ),
+      onClick: () => routingFn(LOGOUT_NAV),
     },
     {
       key: 'changePassword',
@@ -66,6 +71,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
     {
       key: 'resetPassword',
       label: <p className='py-2'>Reset Password</p>,
+      onClick: () => push('/security/reset-password'),
     },
   ];
 
@@ -105,7 +111,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
 
   const routingFn = (key: NAV_KEYS | 'blogsansar') => {
     switch (key) {
-      case 'logout':
+      case LOGOUT_NAV:
         return handleLogout.mutate();
 
       case 'blogsansar':
@@ -117,9 +123,13 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
   };
 
   return (
-    <div className={`h-screen flex flex-col justify-between pb-${isDrawer ? '0' : '4'}`}>
+    <div
+      className={`h-screen font-sans flex flex-col justify-between pb-2 ${
+        isDrawer && 'bg-[#141414]'
+      }`}
+    >
       <Menu
-        className={`${additionalProps} font-sans h-full flex flex-col gap-3`}
+        className={`${additionalProps} h-full flex flex-col gap-3`}
         mode='inline'
         defaultSelectedKeys={[pathname]}
         items={[
@@ -141,35 +151,52 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
         }}
       />
 
-      {authUser && (
-        <Dropdown
-          overlayClassName='font-sans'
-          menu={{ items: settingItems }}
-          placement='top'
-          trigger={['click']}
-        >
-          <div className='font-sans w-full flex items-center justify-between gap-2 p-4 cursor-pointer transition-all hover:bg-zinc-900'>
-            <div className='w-full flex items-center gap-3'>
-              <span>
-                {authUser.image ? (
-                  <Avatar
-                    src={<Image alt='' src={authUser.image} layout='fill' priority />}
-                    size='large'
-                  />
-                ) : (
-                  <Avatar className='bg-[#1890ff]' size='large'>
-                    {authUser.fullname[0]}
-                  </Avatar>
-                )}
-              </span>
+      <div className={`w-full flex flex-col ${isDrawer && 'border-r border-r-[#303030]'}`}>
+        <span className='px-4 py-2'>
+          <Button
+            className='w-full flex items-center justify-center gap-1.5'
+            icon={<BiSearch />}
+            type='primary'
+            shape='round'
+            size='large'
+            onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
+          >
+            Search Users
+          </Button>
 
-              <p className='text-white text-base multiline-truncate-title'>{authUser.fullname}</p>
+          <UserSuggestions />
+        </span>
+
+        {authUser && (
+          <Dropdown
+            overlayClassName='font-sans'
+            menu={{ items: settingItems }}
+            placement='top'
+            trigger={['click']}
+          >
+            <div className='w-full flex items-center justify-between gap-2 p-4 cursor-pointer transition-all hover:bg-zinc-900'>
+              <div className='w-full flex items-center gap-3'>
+                <span>
+                  {authUser.image ? (
+                    <Avatar
+                      src={<Image alt='' src={authUser.image} layout='fill' priority />}
+                      size='large'
+                    />
+                  ) : (
+                    <Avatar className='bg-[#1890ff]' size='large'>
+                      {authUser.fullname[0]}
+                    </Avatar>
+                  )}
+                </span>
+
+                <p className='text-white text-base multiline-truncate-title'>{authUser.fullname}</p>
+              </div>
+
+              <BsThreeDots size={20} />
             </div>
-
-            <BsThreeDots size={20} />
-          </div>
-        </Dropdown>
-      )}
+          </Dropdown>
+        )}
+      </div>
     </div>
   );
 };

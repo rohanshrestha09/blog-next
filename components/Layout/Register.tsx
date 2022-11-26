@@ -12,6 +12,7 @@ import {
   UploadOutlined,
   UserOutlined,
 } from '@ant-design/icons';
+import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { openModal, closeModal } from '../../store/modalSlice';
 import {
   errorNotification,
@@ -21,7 +22,6 @@ import {
 import UserAxios from '../../api/UserAxios';
 import { AUTH } from '../../constants/queryKeys';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
-import type { RootState } from '../../store';
 import type { IRegister } from '../../interface/user';
 
 const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
@@ -81,7 +81,7 @@ const Register: React.FC = () => {
         dispatch(closeModal({ key: REGISTER_MODAL }));
         router.push('/profile');
       },
-      onError: (err: Error) => errorNotification(err),
+      onError: (err: AxiosError) => errorNotification(err),
     }
   );
 
@@ -115,9 +115,9 @@ const Register: React.FC = () => {
           rules={[{ required: true, message: 'Please input your fullname!' }]}
         >
           <Input
-            className='rounded-lg p-2'
+            className='rounded-lg p-3'
             placeholder='Full Name'
-            prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
+            prefix={<UserOutlined className='text-gray-600 mr-2' />}
           />
         </Form.Item>
 
@@ -127,9 +127,9 @@ const Register: React.FC = () => {
           rules={[{ required: true, message: 'Please input your email!' }]}
         >
           <Input
-            className='rounded-lg p-2'
+            className='rounded-lg p-3'
             placeholder='Email'
-            prefix={<UserOutlined className='text-gray-600 text-lg mr-2' />}
+            prefix={<MdOutlineAlternateEmail className='text-gray-600 mr-2' />}
             type='email'
           />
         </Form.Item>
@@ -148,16 +148,16 @@ const Register: React.FC = () => {
           ]}
         >
           <Input.Password
-            className='rounded-lg p-2'
+            className='rounded-lg p-3'
             iconRender={(visible) =>
               visible ? (
-                <EyeTwoTone className='text-gray-600 text-lg' />
+                <EyeTwoTone className='text-gray-600' />
               ) : (
-                <EyeInvisibleOutlined className='text-gray-600 text-lg' />
+                <EyeInvisibleOutlined className='text-gray-600' />
               )
             }
             placeholder='Password'
-            prefix={<LockOutlined className='text-gray-600 text-lg mr-2' />}
+            prefix={<LockOutlined className='text-gray-600 mr-2' />}
             type='password'
           />
         </Form.Item>
@@ -176,16 +176,16 @@ const Register: React.FC = () => {
           ]}
         >
           <Input.Password
-            className='rounded-lg p-2'
+            className='rounded-lg p-3'
             iconRender={(visible) =>
               visible ? (
-                <EyeTwoTone className='text-gray-600 text-lg' />
+                <EyeTwoTone className='text-gray-600' />
               ) : (
-                <EyeInvisibleOutlined className='text-gray-600 text-lg' />
+                <EyeInvisibleOutlined className='text-gray-600' />
               )
             }
             placeholder='Confirm Password'
-            prefix={<LockOutlined className='text-gray-600 text-lg mr-2' />}
+            prefix={<LockOutlined className='text-gray-600 mr-2' />}
             type='password'
           />
         </Form.Item>
@@ -193,10 +193,7 @@ const Register: React.FC = () => {
         <div className='w-full grid grid-cols-5'>
           <Form.Item className='sm:col-span-2 col-span-full' label='Display Picture'>
             <Upload {...fileUploadOptions}>
-              <Button
-                className='rounded-lg flex items-center h-12'
-                icon={<UploadOutlined className='text-lg' />}
-              >
+              <Button className='rounded-lg flex items-center h-12' icon={<UploadOutlined />}>
                 Click to Upload
               </Button>
             </Upload>
@@ -228,7 +225,9 @@ const Register: React.FC = () => {
           </Form.Item>
 
           <Link href='/' passHref={true}>
-            <a className='text-[#0579FD] absolute right-0'>Forgot password</a>
+            <a className='absolute right-0 no-underline text-[#1890ff] hover:text-blue-600'>
+              Forgot password
+            </a>
           </Link>
         </Form.Item>
 

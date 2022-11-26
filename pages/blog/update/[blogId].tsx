@@ -98,7 +98,7 @@ const UpdateBlog: NextPage = () => {
         successNotification(res.message);
         queryClient.refetchQueries([GET_AUTH_BLOGS]);
       },
-      onError: (err: Error) => errorNotification(err),
+      onError: (err: AxiosError) => errorNotification(err),
     }
   );
 
@@ -110,7 +110,7 @@ const UpdateBlog: NextPage = () => {
       dispatch(closeModal({ key: DELETE_MODAL }));
       push('/profile');
     },
-    onError: (err: Error) => errorNotification(err),
+    onError: (err: AxiosError) => errorNotification(err),
   });
 
   return (
@@ -183,11 +183,11 @@ const UpdateBlog: NextPage = () => {
             </Form.Item>
 
             <div className='w-full grid grid-cols-8'>
-              <Form.Item className='sm:col-span-2 col-span-full'>
+              <Form.Item className='sm:col-span-2 col-span-full w-48'>
                 <Upload {...fileUploadOptions}>
                   <Button
                     className='rounded-lg flex items-center py-[1.23rem] text-sm'
-                    icon={<UploadOutlined className='text-lg' />}
+                    icon={<UploadOutlined />}
                   >
                     Upload Blog Cover
                   </Button>
