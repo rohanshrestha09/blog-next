@@ -37,7 +37,10 @@ const sortFilterSlice = createSlice({
       state,
       { payload: { key, pageSize } }: { payload: { key: SORT_FILTER_KEYS; pageSize: number } }
     ) => {
-      return (state = { ...state, pageSize: { ...state.pageSize, [key]: pageSize } });
+      return (state = {
+        ...state,
+        pageSize: { ...state.pageSize, [key]: state.pageSize[key] + pageSize },
+      });
     },
     setSort: (
       state,

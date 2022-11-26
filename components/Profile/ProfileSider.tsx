@@ -2,7 +2,8 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
-import { Empty, Tabs, Divider, Input, Modal, Spin } from 'antd';
+import { Empty, Tabs, Divider, Input, Modal, Spin, Skeleton, List } from 'antd';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { LoadingOutlined } from '@ant-design/icons';
 import { IconType } from 'react-icons';
 import { BiLink, BiSearch } from 'react-icons/bi';
@@ -49,6 +50,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
       GET_AUTH_FOLLOWERS,
       { pageSize: pageSize[AUTH_FOLLOWERS], search: search[AUTH_FOLLOWERS] },
     ],
+    keepPreviousData: true,
   });
 
   const { data: following, isLoading: isFollowingLoading } = useQuery({
@@ -61,6 +63,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
       GET_AUTH_FOLLOWING,
       { pageSize: pageSize[AUTH_FOLLOWING], search: search[AUTH_FOLLOWING] },
     ],
+    keepPreviousData: true,
   });
 
   let timeout: any = 0;
@@ -106,22 +109,32 @@ const Profile: React.FC<Props> = ({ isSider }) => {
               </p>
             </Empty>
           ) : (
-            <>
-              {users?.data.map((user) => (
-                <UserSkeleton
-                  key={user._id}
-                  user={user}
-                  shouldFollow={!authUser.following.includes(user._id as never)}
-                />
-              ))}
-
-              <p
-                className='text-[#1890ff] cursor-pointer hover:text-blue-600'
-                onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
-              >
-                View More Suggestions
-              </p>
-            </>
+            <InfiniteScroll
+              dataLength={users?.data.length ?? 0}
+              next={() => dispatch(setPageSize({ key, pageSize: 10 }))}
+              hasMore={users?.data ? users?.data.length < users?.count : false}
+              loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
+              endMessage={
+                <p
+                  className='text-[#1890ff] cursor-pointer hover:text-blue-600'
+                  onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
+                >
+                  View More Suggestions
+                </p>
+              }
+            >
+              <List
+                itemLayout='vertical'
+                dataSource={users?.data}
+                renderItem={(user) => (
+                  <UserSkeleton
+                    key={user._id}
+                    user={user}
+                    shouldFollow={!authUser.following.includes(user._id as never)}
+                  />
+                )}
+              />
+            </InfiniteScroll>
           )}
         </div>
       ),

@@ -2,7 +2,7 @@ import 'antd/dist/antd.dark.min.css';
 import { NextRouter, useRouter } from 'next/router';
 import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Layout, Drawer, Affix } from 'antd';
+import { Layout, Drawer, Affix, } from 'antd';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingBar from 'react-top-loading-bar';
@@ -50,81 +50,77 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
   }, [pathname]);
 
   useEffect(() => {
-    window &&
-      window.addEventListener(
-        'scroll',
-        () => {
-          sidebarAffixA?.current.updatePosition();
-          sidebarAffixB?.current.updatePosition();
-        },
-        true
-      );
-  }, [sidebarAffixA, sidebarAffixB]);
-
-  useEffect(() => {
     events.on('routeChangeStart', () => loaderRef.current?.continuousStart());
 
     events.on('routeChangeComplete', () => loaderRef.current?.complete());
   }, [events]);
 
+  useEffect(() => {
+    events.on('routeChangeComplete', () => {
+      loaderRef.current?.complete();
+      sidebarAffixA?.current.updatePosition();
+      sidebarAffixB?.current.updatePosition();
+    });
+  }, [events, sidebarAffixA, sidebarAffixB]);
+
   return (
-    <Layout className='font-sans min-h-screen 2xl:px-36 pr-1' hasSider>
-      <LoadingBar color='#177ddc' ref={loaderRef} shadow={true} waitingTime={400} />
+      <Layout className='font-sans min-h-screen 2xl:px-36 pr-1' hasSider>
+        <LoadingBar color='#177ddc' ref={loaderRef} shadow={true} waitingTime={400} />
 
-      <ToastContainer />
+        <ToastContainer />
 
-      <Login />
+        <Login />
 
-      <Register />
+        <Register />
 
-      <MdOutlineKeyboardArrowRight
-        className={`${
-          getSider() && 'sm:hidden'
-        } block fixed left-4 top-[51%] cursor-pointer hover:bg-slate-700 rounded-full z-50`}
-        size={40}
-        onClick={() => dispatch(openDrawer())}
-      />
-
-      <Drawer
-        placement='left'
-        className={`${getSider() && 'sm:hidden'} block`}
-        closable={false}
-        onClose={() => dispatch(closeDrawer())}
-        open={isDrawerOpen}
-        headerStyle={{ fontFamily: 'Poppins' }}
-        bodyStyle={{ padding: 0, margin: 0 }}
-        contentWrapperStyle={{ width: 'auto', height: 'auto' }}
-      >
-        <Nav additionalProps='w-72' isDrawer />
-      </Drawer>
-
-      <Affix ref={sidebarAffixA} offsetTop={1}>
-        <Sider
-          breakpoint='xl'
-          className={`${!getSider() && 'sm:hidden'} bg-inherit sm:block hidden z-10`}
-          width={270}
-        >
-          <Nav additionalProps='bg-inherit border-none' />
-        </Sider>
-      </Affix>
-
-      <Layout
-        className={`${getSider() && 'sm:border-x'} border-[#303030] py-[1.20rem] xl:px-12 px-4`}
-      >
-        <Content>{children}</Content>
-      </Layout>
-
-      <Affix ref={sidebarAffixB} offsetTop={1}>
-        <Sider
+        <MdOutlineKeyboardArrowRight
           className={`${
-            !getSider() && 'lg:hidden'
-          } h-screen scrollbar bg-inherit lg:block hidden py-[1.20rem] xl:pl-12 xl:pr-10 px-4 z-10`}
-          width={450}
+            getSider() && 'sm:hidden'
+          } block fixed left-4 top-[51%] cursor-pointer hover:bg-slate-700 rounded-full z-50`}
+          size={40}
+          onClick={() => dispatch(openDrawer())}
+        />
+
+        <Drawer
+          placement='left'
+          className={`${getSider() && 'sm:hidden'} block`}
+          closable={false}
+          onClose={() => dispatch(closeDrawer())}
+          open={isDrawerOpen}
+          headerStyle={{ fontFamily: 'Poppins' }}
+          bodyStyle={{ padding: 0, margin: 0 }}
+          contentWrapperStyle={{ width: 'auto', height: 'auto' }}
         >
-          {getSider()}
-        </Sider>
-      </Affix>
-    </Layout>
+          <Nav additionalProps='w-72' isDrawer />
+        </Drawer>
+
+        <Affix ref={sidebarAffixA} offsetTop={1}>
+          <Sider
+            breakpoint='xl'
+            className={`${!getSider() && 'sm:hidden'} bg-inherit sm:block hidden z-10`}
+            width={270}
+          >
+            <Nav additionalProps='bg-inherit border-none' />
+          </Sider>
+        </Affix>
+
+        <Layout
+          className={`${getSider() && 'sm:border-x'} border-[#303030] py-[1.20rem] xl:px-12 px-4`}
+        >
+          <Content>{children}</Content>
+        </Layout>
+
+        <Affix ref={sidebarAffixB} offsetTop={1}>
+          <Sider
+            className={`${
+              !getSider() && 'lg:hidden'
+            } h-screen scrollbar bg-inherit lg:block hidden py-[1.20rem] xl:pl-12 xl:pr-10 px-4 z-10`}
+            width={450}
+          >
+            {getSider()}
+          </Sider>
+        </Affix>
+      </Layout>
   );
 };
 

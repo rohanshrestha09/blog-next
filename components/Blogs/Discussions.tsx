@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
-import { Modal, List, Comment, Tooltip, Avatar, Form, Input } from 'antd';
+import { Modal, List, Comment, Tooltip, Avatar, Form, Input, Skeleton } from 'antd';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { LikeFilled, LikeOutlined } from '@ant-design/icons';
 import { useAuth } from '../../utils/UserAuth';
 import BlogAxios from '../../api/BlogAxios';
 import ConfirmDelete from '../shared/ConfirmDelete';
 import { openModal, closeModal } from '../../store/modalSlice';
+import { setPageSize } from '../../store/sortFilterSlice';
 import { errorNotification, successNotification } from '../../utils/notification';
 import { BLOG_KEYS, MODAL_KEYS } from '../../constants/reduxKeys';
 import { GET_BLOG, GET_COMMENTS } from '../../constants/queryKeys';
@@ -47,6 +49,7 @@ const Discussions: React.FC = () => {
   const { data: comments, refetch } = useQuery({
     queryFn: () => blogAxios.getComments({ id: String(blogId), pageSize }),
     queryKey: [GET_COMMENTS, blogId, { pageSize }],
+    keepPreviousData: true,
   });
 
   const handlePostComment = useMutation(
@@ -141,57 +144,67 @@ const Discussions: React.FC = () => {
       )}
 
       {comments && (
-        <List
-          header={`${comments.commentsCount} discussions`}
-          itemLayout='horizontal'
-          dataSource={comments.data}
-          renderItem={({ _id: commentId, user, comment, likesCount, likers, createdAt }) => (
-            <li>
-              <Comment
-                author={
-                  <span className='cursor-pointer' onClick={() => push(`/profile/${user._id}`)}>
-                    {user.fullname}
-                  </span>
-                }
-                avatar={user.image}
-                actions={[
-                  <Tooltip key='comment-basic-like' title='Like'>
-                    <span
-                      className='text-xs flex items-center gap-2'
-                      onClick={() =>
-                        handleLikeComment.mutate({
-                          blogId: String(blogId),
-                          commentId,
-                          shouldLike: !likers.includes(authUser?._id as never),
-                        })
-                      }
-                    >
-                      {likers.includes(authUser?._id as never) ? <LikeFilled /> : <LikeOutlined />}
-                      <span>{likesCount}</span>
+        <InfiniteScroll
+          dataLength={comments?.data.length ?? 0}
+          next={() => dispatch(setPageSize({ key: COMMENTS, pageSize: 10 }))}
+          hasMore={comments?.data ? comments?.data.length < comments?.count : false}
+          loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
+        >
+          <List
+            header={`${comments.commentsCount} discussions`}
+            itemLayout='vertical'
+            dataSource={comments.data}
+            renderItem={({ _id: commentId, user, comment, likesCount, likers, createdAt }) => (
+              <li>
+                <Comment
+                  author={
+                    <span className='cursor-pointer' onClick={() => push(`/profile/${user._id}`)}>
+                      {user.fullname}
                     </span>
-                  </Tooltip>,
-                  authUser?._id === user._id && (
-                    <span
-                      key={commentId}
-                      onClick={() => {
-                        setCommentId(commentId);
-                        dispatch(openModal({ key: DELETE_MODAL }));
-                      }}
-                    >
-                      Delete
-                    </span>
-                  ),
-                ]}
-                content={comment}
-                datetime={
-                  <Tooltip title={moment(createdAt).format('lll')}>
-                    <span>{moment(createdAt).fromNow()}</span>
-                  </Tooltip>
-                }
-              />
-            </li>
-          )}
-        />
+                  }
+                  avatar={user.image}
+                  actions={[
+                    <Tooltip key='comment-basic-like' title='Like'>
+                      <span
+                        onClick={() =>
+                          handleLikeComment.mutate({
+                            blogId: String(blogId),
+                            commentId,
+                            shouldLike: !likers.includes(authUser?._id as never),
+                          })
+                        }
+                      >
+                        {likers.includes(authUser?._id as never) ? (
+                          <LikeFilled />
+                        ) : (
+                          <LikeOutlined />
+                        )}
+                        <span className='pl-2'>{likesCount}</span>
+                      </span>
+                    </Tooltip>,
+                    authUser?._id === user._id && (
+                      <span
+                        key={commentId}
+                        onClick={() => {
+                          setCommentId(commentId);
+                          dispatch(openModal({ key: DELETE_MODAL }));
+                        }}
+                      >
+                        Delete
+                      </span>
+                    ),
+                  ]}
+                  content={comment}
+                  datetime={
+                    <Tooltip title={moment(createdAt).format('lll')}>
+                      <span>{moment(createdAt).fromNow()}</span>
+                    </Tooltip>
+                  }
+                />
+              </li>
+            )}
+          />
+        </InfiniteScroll>
       )}
 
       <ConfirmDelete

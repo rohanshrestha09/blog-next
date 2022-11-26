@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { useRouter, NextRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
-import { shallowEqual, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import {
   DehydratedState,
   QueryClient,
@@ -11,12 +11,14 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { isEmpty } from 'lodash';
-import { Image, Button, Divider, Empty } from 'antd';
+import { Image, Button, Divider, Empty, Skeleton, List } from 'antd';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../api/AuthAxios';
 import UserAxios from '../../api/UserAxios';
 import BlogList from '../../components/Blogs/BlogList';
 import UserProfileSider from '../../components/Profile/UserProfileSider';
+import { setPageSize } from '../../store/sortFilterSlice';
 import { errorNotification, successNotification } from '../../utils/notification';
 import {
   AUTH,
@@ -41,6 +43,8 @@ const UserProfile: NextPage = () => {
     pageSize: { [USER_PROFILE]: pageSize },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
+  const dispatch = useDispatch();
+
   const queryClient = useQueryClient();
 
   const { authUser } = useAuth();
@@ -55,6 +59,7 @@ const UserProfile: NextPage = () => {
   const { data: blogs } = useQuery({
     queryFn: () => userAxios.getUserBlogs({ user: String(userId), pageSize }),
     queryKey: [GET_USER_BLOGS, userId, { pageSize }],
+    keepPreviousData: true,
   });
 
   const handleFollowUser = useMutation(
@@ -130,9 +135,24 @@ const UserProfile: NextPage = () => {
                 </Button>
               </Empty>
             ) : (
-              blogs?.data.map((blog) => (
-                <BlogList key={blog._id} blog={blog} editable={blog.author._id === authUser?._id} />
-              ))
+              <InfiniteScroll
+                dataLength={blogs?.data.length ?? 0}
+                next={() => dispatch(setPageSize({ key: USER_PROFILE, pageSize: 10 }))}
+                hasMore={blogs?.data ? blogs?.data.length < blogs?.count : false}
+                loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
+              >
+                <List
+                  itemLayout='vertical'
+                  dataSource={blogs?.data}
+                  renderItem={(blog) => (
+                    <BlogList
+                      key={blog._id}
+                      blog={blog}
+                      editable={blog.author._id === authUser?._id}
+                    />
+                  )}
+                />
+              </InfiniteScroll>
             )}
           </div>
         </main>

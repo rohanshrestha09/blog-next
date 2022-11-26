@@ -1,16 +1,18 @@
 import Head from 'next/head';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { NextRouter, useRouter } from 'next/router';
-import { shallowEqual, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
-import { Button, Divider, Empty } from 'antd';
+import { Button, Divider, Empty, List, Skeleton } from 'antd';
 import { isEmpty } from 'lodash';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../api/AuthAxios';
 import BlogAxios from '../../api/BlogAxios';
 import UserAxios from '../../api/UserAxios';
 import BlogList from '../../components/Blogs/BlogList';
 import SearchFilter from '../../components/Blogs/SortFilter';
+import { setPageSize } from '../../store/sortFilterSlice';
 import { NAV_KEYS, BOOKMARKS_KEYS } from '../../constants/reduxKeys';
 import {
   AUTH,
@@ -33,6 +35,8 @@ const Bookmarks: NextPage = () => {
     search: { [BOOKMARKS]: search },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
+  const dispatch = useDispatch();
+
   const { authUser } = useAuth();
 
   const authAxios = new AuthAxios();
@@ -40,6 +44,7 @@ const Bookmarks: NextPage = () => {
   const { data: blogs, isLoading } = useQuery({
     queryFn: () => authAxios.getBookmarks({ genre, pageSize, search }),
     queryKey: [GET_BOOKMARKS, { genre, pageSize, search }],
+    keepPreviousData: true,
   });
 
   return (
@@ -64,9 +69,24 @@ const Bookmarks: NextPage = () => {
               </Button>
             </Empty>
           ) : (
-            blogs?.data.map((blog) => (
-              <BlogList key={blog._id} blog={blog} editable={blog.author._id === authUser._id} />
-            ))
+            <InfiniteScroll
+              dataLength={blogs?.data.length ?? 0}
+              next={() => dispatch(setPageSize({ key: BOOKMARKS, pageSize: 10 }))}
+              hasMore={blogs?.data ? blogs?.data.length < blogs?.count : false}
+              loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
+            >
+              <List
+                itemLayout='vertical'
+                dataSource={blogs?.data}
+                renderItem={(blog) => (
+                  <BlogList
+                    key={blog._id}
+                    blog={blog}
+                    editable={blog.author._id === authUser._id}
+                  />
+                )}
+              />
+            </InfiniteScroll>
           )}
         </main>
       )}

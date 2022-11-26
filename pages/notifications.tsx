@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
-import { shallowEqual, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import {
   dehydrate,
   DehydratedState,
@@ -9,13 +9,15 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { Divider, Empty } from 'antd';
+import { Divider, Empty, List, Skeleton } from 'antd';
 import { isEmpty } from 'lodash';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import AuthAxios from '../api/AuthAxios';
 import UserAxios from '../api/UserAxios';
 import BlogAxios from '../api/BlogAxios';
 import NotificationList from '../components/Notifications';
 import NotificationAxios from '../api/NotificationAxios';
+import { setPageSize } from '../store/sortFilterSlice';
 import { errorNotification } from '../utils/notification';
 import {
   AUTH,
@@ -33,6 +35,8 @@ const Notifications: NextPage = () => {
     pageSize: { [NOTIFICATIONS]: pageSize },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
+  const dispatch = useDispatch();
+
   const queryClient = useQueryClient();
 
   const notificationAxois = new NotificationAxios();
@@ -40,6 +44,7 @@ const Notifications: NextPage = () => {
   const { data: notifications } = useQuery({
     queryFn: () => notificationAxois.getNotifications({ pageSize }),
     queryKey: [GET_NOTIFICATIONS, { pageSize }],
+    keepPreviousData: true,
   });
 
   const handleMarkAllAsRead = useMutation(() => notificationAxois.markAllAsRead(), {
@@ -70,9 +75,22 @@ const Notifications: NextPage = () => {
         {isEmpty(notifications?.data) ? (
           <Empty />
         ) : (
-          notifications?.data.map((notification) => (
-            <NotificationList key={notification._id} notification={notification} />
-          ))
+          <InfiniteScroll
+            dataLength={notifications?.data.length ?? 0}
+            next={() => dispatch(setPageSize({ key: NOTIFICATIONS, pageSize: 10 }))}
+            hasMore={
+              notifications?.data ? notifications?.data.length < notifications?.count : false
+            }
+            loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
+          >
+            <List
+              itemLayout='vertical'
+              dataSource={notifications?.data}
+              renderItem={(notification) => (
+                <NotificationList key={notification._id} notification={notification} />
+              )}
+            />
+          </InfiniteScroll>
         )}
       </main>
     </div>

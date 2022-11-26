@@ -4,7 +4,8 @@ import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
 import { isEmpty } from 'lodash';
-import { Button, Empty, Tabs, Image, Divider } from 'antd';
+import { Button, Empty, Tabs, Image, Divider, Skeleton, List } from 'antd';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { IconType } from 'react-icons';
 import { BsBook } from 'react-icons/bs';
 import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md';
@@ -17,6 +18,7 @@ import EditProfile from '../../components/Profile/EditProfile';
 import SortFilter from '../../components/Blogs/SortFilter';
 import { openModal } from '../../store/modalSlice';
 import { changeKey } from '../../store/authBlogSlice';
+import { setPageSize } from '../../store/sortFilterSlice';
 import {
   AUTH,
   GET_AUTH_BLOGS,
@@ -67,6 +69,7 @@ const Profile: NextPage = () => {
   const { data: blogs, isLoading } = useQuery({
     queryFn: () => authAxios.getAllBlogs({ sortOrder, isPublished, sort, genre, pageSize, search }),
     queryKey: [GET_AUTH_BLOGS, { sortOrder, isPublished, sort, genre, pageSize, search }],
+    keepPreviousData: true,
   });
 
   const getTabItems = (label: string, key: AUTH_PROFILE_KEYS, Icon: IconType) => {
@@ -88,9 +91,24 @@ const Profile: NextPage = () => {
               </Button>
             </Empty>
           ) : (
-            blogs?.data.map((blog) => (
-              <BlogList key={blog._id} blog={blog} editable={blog.author._id === authUser._id} />
-            ))
+            <InfiniteScroll
+              dataLength={blogs?.data.length ?? 0}
+              next={() => dispatch(setPageSize({ key: AUTH_PROFILE, pageSize: 10 }))}
+              hasMore={blogs?.data ? blogs?.data.length < blogs?.count : false}
+              loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
+            >
+              <List
+                itemLayout='vertical'
+                dataSource={blogs?.data}
+                renderItem={(blog) => (
+                  <BlogList
+                    key={blog._id}
+                    blog={blog}
+                    editable={blog.author._id === authUser._id}
+                  />
+                )}
+              />
+            </InfiniteScroll>
           )}
         </div>
       ),

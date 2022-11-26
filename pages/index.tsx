@@ -1,14 +1,17 @@
 import Head from 'next/head';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
-import { shallowEqual, useSelector } from 'react-redux';
+import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import { DehydratedState, QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import { isEmpty } from 'lodash';
-import { Empty, Tabs } from 'antd';
+import { Empty as RenderEmpty, Tabs, List, Skeleton, Button } from 'antd';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { GithubOutlined } from '@ant-design/icons';
 import AuthAxios from '../api/AuthAxios';
 import BlogAxios from '../api/BlogAxios';
 import UserAxios from '../api/UserAxios';
 import BlogList from '../components/Blogs/BlogList';
 import SortFilter from '../components/Blogs/SortFilter';
+import { setPageSize } from '../store/sortFilterSlice';
 import {
   AUTH,
   GET_ALL_BLOGS,
@@ -25,6 +28,20 @@ const { HOME, FOLLOWING } = HOME_KEYS;
 
 const { LIKES } = SORT_TYPE;
 
+const Empty: React.FC = () => (
+  <RenderEmpty className='bg-zinc-900 py-8 mx-0 rounded-lg'>
+    <Button
+      className='rounded-lg'
+      icon={<GithubOutlined />}
+      type='primary'
+      target='_blank'
+      href='https://github.com/rohanshrestha09'
+    >
+      Visit Github
+    </Button>
+  </RenderEmpty>
+);
+
 const Home: NextPage = () => {
   const { authUser } = useAuth();
 
@@ -35,6 +52,8 @@ const Home: NextPage = () => {
     pageSize,
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
+  const dispatch = useDispatch();
+
   const authAxios = new AuthAxios();
 
   const blogAxios = new BlogAxios();
@@ -42,11 +61,13 @@ const Home: NextPage = () => {
   const { data: allBlogs, isLoading } = useQuery({
     queryFn: () => blogAxios.getAllBlog({ sort, genre, pageSize: pageSize[HOME], search }),
     queryKey: [GET_ALL_BLOGS, { genre, sort, pageSize: pageSize[HOME], search }],
+    keepPreviousData: true,
   });
 
   const { data: followingBlogs } = useQuery({
     queryFn: () => authAxios.getFollowingBlogs({ pageSize: pageSize[FOLLOWING] }),
     queryKey: [GET_FOLLOWING_BLOGS, { pageSize: pageSize[FOLLOWING] }],
+    keepPreviousData: true,
   });
 
   const getTabItems = (label: string, key: HOME_KEYS, blogs?: IBlogs) => {
@@ -60,9 +81,25 @@ const Home: NextPage = () => {
           {isEmpty(blogs?.data) ? (
             <Empty />
           ) : (
-            blogs?.data.map((blog) => (
-              <BlogList key={blog._id} blog={blog} editable={blog.author._id === authUser?._id} />
-            ))
+            <InfiniteScroll
+              dataLength={blogs?.data.length ?? 0}
+              next={() => dispatch(setPageSize({ key, pageSize: 10 }))}
+              hasMore={blogs?.data ? blogs?.data.length < blogs?.count : false}
+              loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
+              endMessage={<Empty />}
+            >
+              <List
+                itemLayout='vertical'
+                dataSource={blogs?.data}
+                renderItem={(blog) => (
+                  <BlogList
+                    key={blog._id}
+                    blog={blog}
+                    editable={blog.author._id === authUser?._id}
+                  />
+                )}
+              />
+            </InfiniteScroll>
           )}
         </div>
       ),

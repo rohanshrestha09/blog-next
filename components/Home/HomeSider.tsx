@@ -27,11 +27,13 @@ const HomeSider: React.FC = () => {
   const { data: userSuggestions } = useQuery({
     queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
     queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
+    staleTime: Infinity,
   });
 
   const { data: blogSuggestions } = useQuery({
     queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
     queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
+    staleTime: Infinity,
   });
 
   const { data: genre } = useQuery({
