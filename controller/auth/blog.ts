@@ -14,6 +14,8 @@ export const blogs = asyncHandler(async (req: Request, res: Response): Promise<R
     { $sort: { [String(sort || 'likesCount')]: sortOrder === 'asc' ? 1 : -1 } },
   ];
 
+  if (sort === 'likesCount') query.push({ $sort: { createdAt: 1 } });
+
   if (genre) query.push({ $match: { genre: { $in: String(genre).split(',') } } });
 
   if (isPublished) query.push({ $match: { isPublished: isPublished === 'true' } });

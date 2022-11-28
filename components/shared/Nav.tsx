@@ -57,11 +57,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
   const settingItems = [
     {
       key: 'logout',
-      label: (
-        <p className='py-2 text-red-500' onClick={() => routingFn(LOGOUT_NAV)}>
-          Logout
-        </p>
-      ),
+      label: <p className='py-2 text-red-500'>Logout</p>,
       onClick: () => routingFn(LOGOUT_NAV),
     },
     {

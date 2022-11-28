@@ -141,7 +141,7 @@ const Register: React.FC = () => {
             { required: true, message: 'Please input your password!' },
             {
               validator: (_, value) =>
-                value.length < 8
+                value?.length < 8
                   ? Promise.reject('Password must contain atleast 8 characters.')
                   : Promise.resolve(),
             },

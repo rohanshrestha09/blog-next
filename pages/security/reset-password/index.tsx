@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
+import { NextRouter, useRouter } from 'next/router';
 import { Fragment } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import 'antd/dist/antd.min.css';
@@ -11,6 +12,8 @@ import SecurityAxios from '../../../api/SecurityAxios';
 import ForgotPassword from '../../../public/forgot-password.png';
 
 const ResetPassword: NextPage = () => {
+  const router: NextRouter = useRouter();
+
   const [form] = Form.useForm();
 
   const securityAxios = new SecurityAxios();
@@ -79,7 +82,10 @@ const ResetPassword: NextPage = () => {
                 </Form.Item>
 
                 <Form.Item className='flex justify-center mb-0'>
-                  <span className='text-[#0579FD] flex items-center gap-1 cursor-pointer'>
+                  <span
+                    className='text-[#0579FD] flex items-center gap-1 cursor-pointer'
+                    onClick={() => router.push('/')}
+                  >
                     Continue to BlogSansar <IoNavigateCircle size={18} />
                   </span>
                 </Form.Item>
@@ -101,10 +107,15 @@ const ResetPassword: NextPage = () => {
               </span>
             }
             extra={[
-              <Button key='console' className='rounded-lg' type='primary'>
+              <Button
+                key='home'
+                className='rounded-lg'
+                type='primary'
+                onClick={() => router.push('/')}
+              >
                 Go Home
               </Button>,
-              <Button key='buy' className='rounded-lg' onClick={() => handleSendEmail.reset()}>
+              <Button key='tryAgain' className='rounded-lg' onClick={() => handleSendEmail.reset()}>
                 Try Again
               </Button>,
             ]}
@@ -117,10 +128,15 @@ const ResetPassword: NextPage = () => {
             title={`${handleSendEmail.error.response?.data?.message ?? '500'}`}
             subTitle='Sorry, something went wrong.'
             extra={[
-              <Button key='console' className='rounded-lg' type='primary'>
+              <Button
+                key='home'
+                className='rounded-lg'
+                type='primary'
+                onClick={() => router.push('/')}
+              >
                 Go Home
               </Button>,
-              <Button key='buy' className='rounded-lg' onClick={() => handleSendEmail.reset()}>
+              <Button key='tryAgain' className='rounded-lg' onClick={() => handleSendEmail.reset()}>
                 Try Again
               </Button>,
             ]}
