@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import Comment from '../../../model/Comment';
 import Notification from '../../../model/Notification';
+import { dispatchNotification } from '../../../socket';
 import { NOTIFICATION } from '../../../server.interface';
 const asyncHandler = require('express-async-handler');
 
@@ -29,7 +30,7 @@ export const likeComment = asyncHandler(async (req: Request, res: Response): Pro
 
     await comment.save();
 
-    await Notification.create({
+    const { _id: notificationId } = await Notification.create({
       type: LIKE_COMMENT,
       user: authId,
       listener: comment.user,
@@ -37,6 +38,8 @@ export const likeComment = asyncHandler(async (req: Request, res: Response): Pro
       comment: commentId,
       description: `${fullname} liked your comment.`,
     });
+
+    dispatchNotification({ listeners: [comment.user.toString()], notificationId });
 
     return res.status(200).json({ message: 'Liked' });
   } catch (err: Error | any) {

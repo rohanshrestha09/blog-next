@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Blog from '../../../model/Blog';
 import Comment from '../../../model/Comment';
 import Notification from '../../../model/Notification';
+import { dispatchNotification } from '../../../socket';
 import { NOTIFICATION } from '../../../server.interface';
 const asyncHandler = require('express-async-handler');
 
@@ -48,7 +49,7 @@ export const comment = asyncHandler(async (req: Request, res: Response): Promise
       commentsCount: commentsCount + 1,
     });
 
-    await Notification.create({
+    const { _id: notificationId } = await Notification.create({
       type: POST_COMMENT,
       user: authId,
       listener: author._id,
@@ -56,6 +57,8 @@ export const comment = asyncHandler(async (req: Request, res: Response): Promise
       comment: commentId,
       description: `${fullname} commented on your blog.`,
     });
+
+    dispatchNotification({ listeners: [author._id], notificationId });
 
     return res.status(200).json({ message: 'Comment Successfull' });
   } catch (err: Error | any) {

@@ -73,7 +73,7 @@ server.prepare().then(() => {
 
   app.all('*', (req: Request, res: Response) => handler(req, res));
 
-  dispatchSocket(io);
-
   server.listen(PORT, '127.0.0.1');
+
+  dispatchSocket(io);
 });

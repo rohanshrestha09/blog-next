@@ -1,11 +1,12 @@
-import 'antd/dist/antd.dark.min.css';
 import { NextRouter, useRouter } from 'next/router';
 import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useQueryClient } from '@tanstack/react-query';
+import 'antd/dist/antd.dark.min.css';
 import { Layout, Drawer, Affix } from 'antd';
+import LoadingBar from 'react-top-loading-bar';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import LoadingBar from 'react-top-loading-bar';
 import { MdOutlineKeyboardArrowRight } from 'react-icons/md';
 import Login from './Login';
 import Register from './Register';
@@ -13,14 +14,23 @@ import Nav from '../shared/Nav';
 import HomeSider from '../Home/HomeSider';
 import ProfileSider from '../Profile/ProfileSider';
 import UserProfileSider from '../Profile/UserProfileSider';
+import NotificationList from '../Notifications';
 import { closeDrawer, openDrawer } from '../../store/drawerSlice';
+import { useAuth } from '../../utils/UserAuth';
+import { jsxNotification } from '../../utils/notification';
+import { GET_NOTIFICATIONS } from '../../constants/queryKeys';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.Element => {
   const { Content, Sider } = Layout;
 
   const { pathname, events }: NextRouter = useRouter();
 
-  const [sidebarAffixA, sidebarAffixB] = [useRef<any>(), useRef<any>()];
+  const queryClient = useQueryClient();
+
+  const { authUser, socket } = useAuth();
+
+  const sidebarAffixA = useRef<any>(),
+    sidebarAffixB = useRef<any>();
 
   const loaderRef = useRef<any>(null);
 
@@ -62,6 +72,16 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
       sidebarAffixB?.current?.updatePosition();
     });
   }, [events, sidebarAffixA, sidebarAffixB]);
+
+  useEffect(() => {
+    if (authUser) {
+      socket.current.off('incoming notification').on('incoming notification', (notification) => {
+        jsxNotification(<NotificationList notification={notification} smallContainer />);
+        queryClient.refetchQueries([GET_NOTIFICATIONS]);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Layout className='font-sans min-h-screen 2xl:px-36 pr-1' hasSider>

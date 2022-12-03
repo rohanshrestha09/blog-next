@@ -5,6 +5,7 @@ import deleteFile from '../../middleware/deleteFile';
 import Blog from '../../model/Blog';
 import User from '../../model/User';
 import Notification from '../../model/Notification';
+import { dispatchNotification } from '../../socket';
 import { NOTIFICATION } from '../../server.interface';
 const asyncHandler = require('express-async-handler');
 
@@ -90,13 +91,17 @@ export const postBlog = asyncHandler(async (req: Request, res: Response): Promis
 
     await User.findByIdAndUpdate(authId, { $push: { blogs: blogId } });
 
-    await Notification.create({
-      type: POST_BLOG,
-      user: authId,
-      listener: followers,
-      blog: blogId,
-      description: `${fullname} posted a new blog.`,
-    });
+    if (isPublished) {
+      const { id: notificationId } = await Notification.create({
+        type: POST_BLOG,
+        user: authId,
+        listener: followers,
+        blog: blogId,
+        description: `${fullname} posted a new blog.`,
+      });
+
+      dispatchNotification({ listeners: [followers], notificationId });
+    }
 
     return res.status(200).json({ message: 'Blog Posted Successfully' });
   } catch (err: Error | any) {

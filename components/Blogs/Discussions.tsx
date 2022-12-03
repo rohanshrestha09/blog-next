@@ -162,7 +162,13 @@ const Discussions: React.FC = () => {
                       {user.fullname}
                     </span>
                   }
-                  avatar={user.image}
+                  avatar={
+                    user.image ? (
+                      <Avatar src={<Image alt='' src={user.image} layout='fill' priority />} />
+                    ) : (
+                      <Avatar className='bg-[#1890ff]'>{user.fullname[0]}</Avatar>
+                    )
+                  }
                   actions={[
                     <Tooltip key='comment-basic-like' title='Like'>
                       <span

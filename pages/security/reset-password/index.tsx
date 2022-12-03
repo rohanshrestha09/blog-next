@@ -6,7 +6,6 @@ import { Fragment } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import 'antd/dist/antd.min.css';
 import { Form, Input, Button, Result, Spin } from 'antd';
-import { IoNavigateCircle } from 'react-icons/io5';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import SecurityAxios from '../../../api/SecurityAxios';
 import ForgotPassword from '../../../public/forgot-password.png';
@@ -35,14 +34,14 @@ const ResetPassword: NextPage = () => {
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      <main className='h-[80vh] w-[55rem] flex items-center justify-center p-6 bg-white shadow-lg rounded-lg'>
+      <main className='sm:h-[80vh] h-screen w-[55rem] flex items-center justify-center p-6 bg-white shadow-lg rounded-lg'>
         {handleSendEmail.isIdle && (
           <Fragment>
-            <span className='relative w-1/2 h-[28rem] object-cover'>
+            <span className='sm:block hidden relative w-1/2 h-[28rem] object-cover'>
               <Image src={ForgotPassword} alt='' layout='fill' quality={100} priority />
             </span>
 
-            <div className='w-1/2 flex flex-col items-center gap-3'>
+            <div className='sm:w-1/2 w-full flex flex-col items-center sm:gap-3 gap-5'>
               <h1 className='font-shalimar text-7xl font-semibold leading-[0.5]'>BlogSansar</h1>
 
               <p className='text-xl font-semibold'>Forgot Password?</p>
@@ -74,7 +73,7 @@ const ResetPassword: NextPage = () => {
 
                 <Form.Item className='mb-2'>
                   <Button
-                    className='h-12 w-full bg-[#93E3AB] !border-none !text-black rounded-lg'
+                    className='h-12 w-full sm:bg-[#93E3AB] bg-[#191C25] !border-none sm:!text-black !text-white rounded-lg'
                     htmlType='submit'
                   >
                     Send Verification
@@ -82,11 +81,14 @@ const ResetPassword: NextPage = () => {
                 </Form.Item>
 
                 <Form.Item className='flex justify-center mb-0'>
-                  <span
-                    className='text-[#0579FD] flex items-center gap-1 cursor-pointer'
-                    onClick={() => router.push('/')}
-                  >
-                    Continue to BlogSansar <IoNavigateCircle size={18} />
+                  <span>
+                    You remember your password?{' '}
+                    <label
+                      className='text-[#0579FD] cursor-pointer'
+                      onClick={() => router.push('/')}
+                    >
+                      Login
+                    </label>
                   </span>
                 </Form.Item>
               </Form>

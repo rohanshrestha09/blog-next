@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../../model/User';
 import Notification from '../../model/Notification';
+import { dispatchNotification } from '../../socket';
 import { NOTIFICATION } from '../../server.interface';
 const asyncHandler = require('express-async-handler');
 
@@ -32,12 +33,14 @@ export const follow = asyncHandler(async (req: Request, res: Response): Promise<
       followersCount: followersCount + 1,
     });
 
-    await Notification.create({
+    const { _id: notificationId } = await Notification.create({
       type: FOLLOW_USER,
       user: authId,
       listener: userId,
       description: `${fullname} followed you.`,
     });
+
+    dispatchNotification({ listeners: [userId], notificationId });
 
     return res.status(200).json({ message: 'Follow Successful' });
   } catch (err: Error | any) {

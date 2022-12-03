@@ -14,6 +14,7 @@ import { GET_NOTIFICATIONS } from '../../constants/queryKeys';
 
 interface Props {
   notification: INotificationData;
+  smallContainer?: boolean;
 }
 
 const { FOLLOW_USER, LIKE_BLOG, LIKE_COMMENT, POST_BLOG, POST_COMMENT } = NOTIFICATIONS_TYPE;
@@ -24,6 +25,7 @@ const { DISCUSSIONS_MODAL } = MODAL_KEYS;
 
 const NotificationList: React.FC<Props> = ({
   notification: { _id, type, user, description, blog, comment, status, createdAt },
+  smallContainer,
 }) => {
   const router: NextRouter = useRouter();
 
@@ -80,7 +82,7 @@ const NotificationList: React.FC<Props> = ({
 
   return (
     <div
-      className={`w-full flex items-center justify-between sm:gap-6 gap-2 px-2 py-3 cursor-pointer transition-all rounded-lg hover:bg-zinc-900 ${
+      className={`w-full font-sans flex items-center justify-between sm:gap-6 gap-2 px-2 py-3 cursor-pointer transition-all rounded-lg hover:bg-zinc-900 ${
         status === UNREAD && 'text-white'
       }`}
       onClick={() => {
@@ -134,10 +136,18 @@ const NotificationList: React.FC<Props> = ({
         </Badge>
 
         <div className='flex flex-col gap-0.5'>
-          <span className='sm:text-base text-sm sm:inline-flex items-center sm:multiline-truncate-title'>
+          <span
+            className={`sm:text-base text-sm items-center ${
+              !smallContainer && 'sm:inline-flex sm:multiline-truncate-title'
+            }`}
+          >
             {comment ? description.slice(0, -1) : description}
             {comment && (
-              <p className='sm:before:content-[":"] sm:before:px-1 multiline-truncate-title'>{`"${comment.comment}"`}</p>
+              <p
+                className={`${
+                  !smallContainer && 'sm:before:content-[":"] sm:before:px-1'
+                } multiline-truncate-title`}
+              >{`"${comment.comment}"`}</p>
             )}
           </span>
 
@@ -151,7 +161,9 @@ const NotificationList: React.FC<Props> = ({
         </div>
       </div>
 
-      {status === UNREAD && <GoPrimitiveDot className='text-blue-500' size={24} />}
+      {!smallContainer && status === UNREAD && (
+        <GoPrimitiveDot className='text-blue-500' size={24} />
+      )}
     </div>
   );
 };

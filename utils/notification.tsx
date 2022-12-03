@@ -1,3 +1,4 @@
+import React from 'react';
 import { toast, ToastOptions } from 'react-toastify';
 
 const config: ToastOptions<{}> = {
@@ -21,3 +22,14 @@ export const errorNotification = (err: AxiosError) =>
 export const infoNotification = (message: string) => toast.info(message, config);
 
 export const warningNotification = (message: string) => toast.warn(message, config);
+
+export const jsxNotification = (data: React.ReactNode) =>
+  toast(data, {
+    ...config,
+    position: 'bottom-left',
+    autoClose: 5000,
+    style: {
+      width: window.innerWidth < 639 ? 'auto' : '28rem',
+    },
+    hideProgressBar: true,
+  });

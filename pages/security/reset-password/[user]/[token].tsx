@@ -43,14 +43,14 @@ const ResetPassword: NextPage = () => {
         <link href='/favicon.ico' rel='icon' />
       </Head>
 
-      <main className='h-[80vh] w-[55rem] flex items-center justify-center p-6 bg-white shadow-lg rounded-lg'>
+      <main className='sm:h-[80vh] h-screen w-[55rem] flex items-center justify-center p-6 bg-white shadow-lg rounded-lg'>
         {handleChangePassword.isIdle && (
           <Fragment>
-            <span className='relative w-1/2 h-[28rem] object-cover'>
+            <span className='sm:block hidden relative w-1/2 h-[28rem] object-cover'>
               <Image src={ForgotPassword} alt='' layout='fill' quality={100} priority />
             </span>
 
-            <div className='w-1/2 flex flex-col items-center gap-3'>
+            <div className='sm:w-1/2 w-full flex flex-col items-center sm:gap-3 gap-5'>
               <h1 className='font-shalimar text-7xl font-semibold leading-[0.5]'>BlogSansar</h1>
 
               <p className='text-base'>Please enter a new password</p>
@@ -125,7 +125,7 @@ const ResetPassword: NextPage = () => {
 
                 <Form.Item className='mb-2'>
                   <Button
-                    className='h-12 w-full bg-[#93E3AB] !border-none !text-black rounded-lg'
+                    className='h-12 w-full sm:bg-[#93E3AB] bg-[#191C25] !border-none sm:!text-black !text-white rounded-lg'
                     htmlType='submit'
                   >
                     Confirm

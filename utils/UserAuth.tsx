@@ -1,7 +1,8 @@
 import { NextRouter, useRouter } from 'next/router';
-import { createContext, Fragment, useContext } from 'react';
+import { createContext, Fragment, useContext, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { io } from 'socket.io-client';
 import AuthAxios from '../api/AuthAxios';
 import AppLayout from '../components/Layout/AppLayout';
 import { AUTH } from '../constants/queryKeys';
@@ -14,9 +15,12 @@ const UserAuth: React.FC<{
 }> = ({ children }): JSX.Element => {
   const { pathname }: NextRouter = useRouter();
 
+  const socket = useRef(io('http://127.0.0.1:5000'));
+
   const { data: authUser } = useQuery({
     queryFn: () => new AuthAxios().auth(),
     queryKey: [AUTH],
+    onSuccess: (authUser) => socket.current.emit('add user', authUser._id),
   });
 
   switch (pathname) {
@@ -26,7 +30,7 @@ const UserAuth: React.FC<{
 
     default:
       return (
-        <UserContext.Provider value={{ authUser }}>
+        <UserContext.Provider value={{ authUser, socket }}>
           <AppLayout>
             {children} <ReactQueryDevtools />
           </AppLayout>

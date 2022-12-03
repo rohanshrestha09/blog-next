@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Blog from '../../model/Blog';
 import Notification from '../../model/Notification';
 import User from '../../model/User';
+import { dispatchNotification } from '../../socket';
 import { NOTIFICATION } from '../../server.interface';
 const asyncHandler = require('express-async-handler');
 
@@ -47,13 +48,15 @@ export const like = asyncHandler(async (req: Request, res: Response): Promise<Re
       $push: { liked: blogId },
     });
 
-    await Notification.create({
+    const { _id: notificationId } = await Notification.create({
       type: LIKE_BLOG,
       user: authId,
       listener: author._id,
       blog: blogId,
       description: `${fullname} liked your blog.`,
     });
+
+    dispatchNotification({ listeners: [author._id], notificationId });
 
     return res.status(200).json({ message: 'Liked' });
   } catch (err: Error | any) {
