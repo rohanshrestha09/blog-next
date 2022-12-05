@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import { GetServerSidePropsContext, NextPage } from 'next';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import {
   dehydrate,
@@ -12,6 +12,7 @@ import {
 import { Divider, Empty, List, Skeleton } from 'antd';
 import { isEmpty } from 'lodash';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import withAuth from '../utils/auth';
 import AuthAxios from '../api/AuthAxios';
 import UserAxios from '../api/UserAxios';
 import BlogAxios from '../api/BlogAxios';
@@ -99,51 +100,53 @@ const Notifications: NextPage = () => {
 
 export default Notifications;
 
-export const getServerSideProps: GetServerSideProps = async (
-  ctx: GetServerSidePropsContext
-): Promise<{
-  props: { dehydratedState: DehydratedState };
-}> => {
-  const queryClient = new QueryClient();
+export const getServerSideProps = withAuth(
+  async (
+    ctx: GetServerSidePropsContext
+  ): Promise<{
+    props: { dehydratedState: DehydratedState };
+  }> => {
+    const queryClient = new QueryClient();
 
-  ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
+    ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
-  const authAxios = new AuthAxios(ctx.req.headers.cookie);
+    const authAxios = new AuthAxios(ctx.req.headers.cookie);
 
-  const notificaitonAxios = new NotificationAxios(ctx.req.headers.cookie);
+    const notificaitonAxios = new NotificationAxios(ctx.req.headers.cookie);
 
-  const blogAxios = new BlogAxios(ctx.req.headers.cookie);
+    const blogAxios = new BlogAxios(ctx.req.headers.cookie);
 
-  const userAxios = new UserAxios(ctx.req.headers.cookie);
+    const userAxios = new UserAxios(ctx.req.headers.cookie);
 
-  await queryClient.prefetchQuery({
-    queryFn: () => authAxios.auth(),
-    queryKey: [AUTH],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => authAxios.auth(),
+      queryKey: [AUTH],
+    });
 
-  await queryClient.prefetchQuery({
-    queryFn: () => notificaitonAxios.getNotifications({}),
-    queryKey: [GET_NOTIFICATIONS, { pageSize: 20 }],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => notificaitonAxios.getNotifications({}),
+      queryKey: [GET_NOTIFICATIONS, { pageSize: 20 }],
+    });
 
-  await queryClient.prefetchQuery({
-    queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
-    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
+      queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
+    });
 
-  await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
-    queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
+      queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
+    });
 
-  await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getGenre(),
-    queryKey: [GET_GENRE],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => blogAxios.getGenre(),
+      queryKey: [GET_GENRE],
+    });
 
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
-};
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+      },
+    };
+  }
+);

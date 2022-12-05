@@ -12,7 +12,7 @@ class User {
   ): Promise<IUser & IToken & ILogin & IBlogs & IUsers> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `http://127.0.0.1:5000/api/user/${url}`,
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/${url}`,
       data,
       headers: { Cookie: this.cookie || '' },
       withCredentials: true,

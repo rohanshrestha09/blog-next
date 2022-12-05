@@ -45,6 +45,7 @@ const Login: React.FC = () => {
   return (
     <Modal
       centered
+      destroyOnClose
       className='font-sans'
       open={isOpen}
       onCancel={() => dispatch(closeModal({ key: LOGIN_MODAL }))}

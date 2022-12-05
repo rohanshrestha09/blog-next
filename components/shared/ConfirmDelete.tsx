@@ -18,6 +18,7 @@ const ConfirmDelete: React.FC<Props> = ({ isLoading, deleteMutation }) => {
 
   return (
     <Modal
+      destroyOnClose
       className='font-sans'
       open={isOpen[DELETE_MODAL]}
       footer={null}

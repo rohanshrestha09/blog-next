@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import { GetServerSidePropsContext, NextPage } from 'next';
 import { NextRouter, useRouter } from 'next/router';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
@@ -7,6 +7,7 @@ import { Button, Divider, Empty, List, Skeleton } from 'antd';
 import { isEmpty } from 'lodash';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAuth } from '../../utils/UserAuth';
+import withAuth from '../../utils/auth';
 import AuthAxios from '../../api/AuthAxios';
 import BlogAxios from '../../api/BlogAxios';
 import UserAxios from '../../api/UserAxios';
@@ -96,49 +97,51 @@ const Bookmarks: NextPage = () => {
 
 export default Bookmarks;
 
-export const getServerSideProps: GetServerSideProps = async (
-  ctx: GetServerSidePropsContext
-): Promise<{
-  props: { dehydratedState: DehydratedState };
-}> => {
-  const queryClient = new QueryClient();
+export const getServerSideProps = withAuth(
+  async (
+    ctx: GetServerSidePropsContext
+  ): Promise<{
+    props: { dehydratedState: DehydratedState };
+  }> => {
+    const queryClient = new QueryClient();
 
-  const authAxios = new AuthAxios(ctx.req.headers.cookie);
+    const authAxios = new AuthAxios(ctx.req.headers.cookie);
 
-  const userAxios = new UserAxios(ctx.req.headers.cookie);
+    const userAxios = new UserAxios(ctx.req.headers.cookie);
 
-  const blogAxios = new BlogAxios(ctx.req.headers.cookie);
+    const blogAxios = new BlogAxios(ctx.req.headers.cookie);
 
-  ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
+    ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
-  await queryClient.prefetchQuery({
-    queryFn: () => authAxios.auth(),
-    queryKey: [AUTH],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => authAxios.auth(),
+      queryKey: [AUTH],
+    });
 
-  await queryClient.prefetchQuery({
-    queryFn: () => authAxios.getBookmarks({}),
-    queryKey: [GET_BOOKMARKS, { genre: [], pageSize: 20, search: '' }],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => authAxios.getBookmarks({}),
+      queryKey: [GET_BOOKMARKS, { genre: [], pageSize: 20, search: '' }],
+    });
 
-  await queryClient.prefetchQuery({
-    queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
-    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
+      queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
+    });
 
-  await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
-    queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
+      queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
+    });
 
-  await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getGenre(),
-    queryKey: [GET_GENRE],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => blogAxios.getGenre(),
+      queryKey: [GET_GENRE],
+    });
 
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
-};
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+      },
+    };
+  }
+);

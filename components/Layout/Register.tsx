@@ -88,6 +88,7 @@ const Register: React.FC = () => {
   return (
     <Modal
       centered
+      destroyOnClose
       className='font-sans'
       open={isOpen}
       onCancel={() => dispatch(closeModal({ key: REGISTER_MODAL }))}

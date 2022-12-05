@@ -13,7 +13,7 @@ class Auth {
   ): Promise<IAuth & IUserData & IBlogs & IUsers & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
-      url: `http://127.0.0.1:5000/api/auth/${url}`,
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/${url}`,
       data,
       headers: { Cookie: this.cookie || '' },
       withCredentials: true,

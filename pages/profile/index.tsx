@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import { GetServerSidePropsContext, NextPage } from 'next';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
 import { isEmpty } from 'lodash';
@@ -10,6 +10,7 @@ import { IconType } from 'react-icons';
 import { BsBook } from 'react-icons/bs';
 import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md';
 import { useAuth } from '../../utils/UserAuth';
+import withAuth from '../../utils/auth';
 import AuthAxios from '../../api/AuthAxios';
 import BlogAxios from '../../api/BlogAxios';
 import ProfileSider from '../../components/Profile/ProfileSider';
@@ -181,50 +182,52 @@ const Profile: NextPage = () => {
 
 export default Profile;
 
-export const getServerSideProps: GetServerSideProps = async (
-  ctx: GetServerSidePropsContext
-): Promise<{
-  props: { dehydratedState: DehydratedState };
-}> => {
-  const queryClient = new QueryClient();
+export const getServerSideProps = withAuth(
+  async (
+    ctx: GetServerSidePropsContext
+  ): Promise<{
+    props: { dehydratedState: DehydratedState };
+  }> => {
+    const queryClient = new QueryClient();
 
-  const authAxios = new AuthAxios(ctx.req.headers.cookie);
+    const authAxios = new AuthAxios(ctx.req.headers.cookie);
 
-  const blogAxios = new BlogAxios(ctx.req.headers.cookie);
+    const blogAxios = new BlogAxios(ctx.req.headers.cookie);
 
-  ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
+    ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
-  await queryClient.prefetchQuery({
-    queryFn: () => authAxios.auth(),
-    queryKey: [AUTH],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => authAxios.auth(),
+      queryKey: [AUTH],
+    });
 
-  await queryClient.prefetchQuery({
-    queryFn: () => authAxios.getAllBlogs({}),
-    queryKey: [
-      GET_AUTH_BLOGS,
-      { genre: [], pageSize: 20, sort: LIKES, sortOrder: DESCENDING, search: '' },
-    ],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => authAxios.getAllBlogs({}),
+      queryKey: [
+        GET_AUTH_BLOGS,
+        { genre: [], pageSize: 20, sort: LIKES, sortOrder: DESCENDING, search: '' },
+      ],
+    });
 
-  await queryClient.prefetchQuery({
-    queryFn: () => authAxios.getFollowers({}),
-    queryKey: [GET_AUTH_FOLLOWERS, { pageSize: 20, search: '' }],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => authAxios.getFollowers({}),
+      queryKey: [GET_AUTH_FOLLOWERS, { pageSize: 20, search: '' }],
+    });
 
-  await queryClient.prefetchQuery({
-    queryFn: () => authAxios.getFollowing({}),
-    queryKey: [GET_AUTH_FOLLOWING, { pageSize: 20, search: '' }],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => authAxios.getFollowing({}),
+      queryKey: [GET_AUTH_FOLLOWING, { pageSize: 20, search: '' }],
+    });
 
-  await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getGenre(),
-    queryKey: [GET_GENRE],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => blogAxios.getGenre(),
+      queryKey: [GET_GENRE],
+    });
 
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
-};
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+      },
+    };
+  }
+);

@@ -15,7 +15,7 @@ const UserAuth: React.FC<{
 }> = ({ children }): JSX.Element => {
   const { pathname }: NextRouter = useRouter();
 
-  const socket = useRef(io('http://127.0.0.1:5000'));
+  const socket = useRef(io(process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:5000'));
 
   const { data: authUser } = useQuery({
     queryFn: () => new AuthAxios().auth(),

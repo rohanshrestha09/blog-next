@@ -43,6 +43,7 @@ const UserSuggestions: React.FC = () => {
 
   return (
     <Modal
+      destroyOnClose
       className='font-sans'
       open={isOpen}
       onCancel={() => dispatch(closeModal({ key: USER_SUGGESTIONS_MODAL }))}

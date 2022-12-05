@@ -20,7 +20,7 @@ export const dispatchNotification = ({
   listeners: string[];
   notificationId: Types.ObjectId;
 }) => {
-  const socket = io('http://127.0.0.1:5000');
+  const socket = io(process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:5000');
 
   socket.emit('dispatch notification', { listeners, notificationId });
 };

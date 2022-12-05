@@ -79,6 +79,7 @@ const EditProfile = () => {
   return (
     <Modal
       centered
+      destroyOnClose
       className='font-sans'
       open={isOpen}
       onCancel={() => dispatch(closeModal({ key: EDIT_PROFILE_MODAL }))}

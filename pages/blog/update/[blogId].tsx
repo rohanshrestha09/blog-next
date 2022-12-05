@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
-import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import type { GetServerSidePropsContext, NextPage } from 'next';
 import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
@@ -14,6 +14,7 @@ import {
 import { Editor } from '@tinymce/tinymce-react';
 import { Form, Input, Button, Upload, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import withAuth from '../../../utils/auth';
 import BlogAxios from '../../../api/BlogAxios';
 import { openModal, closeModal } from '../../../store/modalSlice';
 import ConfirmDelete from '../../../components/shared/ConfirmDelete';
@@ -266,30 +267,32 @@ const UpdateBlog: NextPage = () => {
 
 export default UpdateBlog;
 
-export const getServerSideProps: GetServerSideProps = async (
-  ctx: GetServerSidePropsContext
-): Promise<{
-  props: { dehydratedState: DehydratedState };
-}> => {
-  const queryClient = new QueryClient();
+export const getServerSideProps = withAuth(
+  async (
+    ctx: GetServerSidePropsContext
+  ): Promise<{
+    props: { dehydratedState: DehydratedState };
+  }> => {
+    const queryClient = new QueryClient();
 
-  const blogAxios = new BlogAxios(ctx.req.headers.cookie);
+    const blogAxios = new BlogAxios(ctx.req.headers.cookie);
 
-  ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
+    ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
-  await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getBlog(String(ctx.params?.blogId)),
-    queryKey: [GET_BLOG, ctx.params?.blogId],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => blogAxios.getBlog(String(ctx.params?.blogId)),
+      queryKey: [GET_BLOG, ctx.params?.blogId],
+    });
 
-  await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getGenre(),
-    queryKey: [GET_GENRE],
-  });
+    await queryClient.prefetchQuery({
+      queryFn: () => blogAxios.getGenre(),
+      queryKey: [GET_GENRE],
+    });
 
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
-};
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+      },
+    };
+  }
+);
