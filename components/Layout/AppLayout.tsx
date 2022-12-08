@@ -84,7 +84,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
   }, []);
 
   return (
-    <Layout className='font-sans min-h-screen 2xl:px-36 pr-1' hasSider>
+    <Layout className='font-sans min-h-screen 2xl:px-36 sm:pr-1' hasSider>
       <LoadingBar color='#177ddc' ref={loaderRef} shadow={true} waitingTime={400} />
 
       <ToastContainer />

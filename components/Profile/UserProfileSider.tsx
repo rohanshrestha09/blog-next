@@ -50,7 +50,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
     queryKey: [GET_USER, userId],
   });
 
-  const { data: followers, isLoading: isFollowersLoading } = useQuery({
+  const { data: followers, isPreviousData: isFollowersLoading } = useQuery({
     queryFn: () =>
       userAxios.getUserFollowers({
         user: String(userId),
@@ -65,7 +65,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
     keepPreviousData: true,
   });
 
-  const { data: following, isLoading: isFollowingLoading } = useQuery({
+  const { data: following, isPreviousData: isFollowingLoading } = useQuery({
     queryFn: () =>
       userAxios.getUserFollowing({
         user: String(userId),

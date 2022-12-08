@@ -33,7 +33,7 @@ const UserSuggestions: React.FC = () => {
 
   const userAxios = new UserAxios();
 
-  const { data: users, isLoading } = useQuery({
+  const { data: users, isPreviousData: isLoading } = useQuery({
     queryFn: () => userAxios.getUserSuggestions({ pageSize, search }),
     queryKey: [GET_USER_SUGGESTIONS, { pageSize, search }],
     keepPreviousData: true,

@@ -58,7 +58,7 @@ const Home: NextPage = () => {
 
   const blogAxios = new BlogAxios();
 
-  const { data: allBlogs, isLoading } = useQuery({
+  const { data: allBlogs, isPreviousData: isLoading } = useQuery({
     queryFn: () => blogAxios.getAllBlog({ sort, genre, pageSize: pageSize[HOME], search }),
     queryKey: [GET_ALL_BLOGS, { genre, sort, pageSize: pageSize[HOME], search }],
     keepPreviousData: true,

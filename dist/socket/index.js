@@ -8,7 +8,8 @@ const socket_io_client_1 = require("socket.io-client");
 const lodash_1 = require("lodash");
 const Notification_1 = __importDefault(require("../model/Notification"));
 const dispatchNotification = ({ listeners, notificationId, }) => {
-    const socket = (0, socket_io_client_1.io)('http://127.0.0.1:5000');
+    var _a;
+    const socket = (0, socket_io_client_1.io)((_a = process.env.NEXT_PUBLIC_BASE_URL) !== null && _a !== void 0 ? _a : 'http://localhost:5000');
     socket.emit('dispatch notification', { listeners, notificationId });
 };
 exports.dispatchNotification = dispatchNotification;

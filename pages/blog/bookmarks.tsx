@@ -42,7 +42,7 @@ const Bookmarks: NextPage = () => {
 
   const authAxios = new AuthAxios();
 
-  const { data: blogs, isLoading } = useQuery({
+  const { data: blogs, isPreviousData: isLoading } = useQuery({
     queryFn: () => authAxios.getBookmarks({ genre, pageSize, search }),
     queryKey: [GET_BOOKMARKS, { genre, pageSize, search }],
     keepPreviousData: true,

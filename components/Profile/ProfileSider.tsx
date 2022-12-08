@@ -40,7 +40,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
 
   const authAxios = new AuthAxios();
 
-  const { data: followers, isLoading: isFollowersLoading } = useQuery({
+  const { data: followers, isPreviousData: isFollowersLoading } = useQuery({
     queryFn: () =>
       authAxios.getFollowers({
         pageSize: pageSize[AUTH_FOLLOWERS],
@@ -53,7 +53,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
     keepPreviousData: true,
   });
 
-  const { data: following, isLoading: isFollowingLoading } = useQuery({
+  const { data: following, isPreviousData: isFollowingLoading } = useQuery({
     queryFn: () =>
       authAxios.getFollowing({
         pageSize: pageSize[AUTH_FOLLOWING],

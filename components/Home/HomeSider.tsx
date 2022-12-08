@@ -87,16 +87,15 @@ const HomeSider: React.FC = () => {
 
         <header className='text-xl pb-4'>Pick a genre</header>
 
-        <div className='flex flex-col'>
+        <div className='flex flex-wrap'>
           {genre &&
             genre.map((genre) => (
               <span
                 key={genre}
-                className='flex flex-col py-2 cursor-pointer hover:bg-zinc-900 transition-all'
+                className='flex flex-col p-2 cursor-pointer hover:bg-zinc-900 transition-all'
+                onClick={() => router.push(`/blog/${genre.toLowerCase()}`)}
               >
-                <p>{genre}</p>
-
-                <p className='text-zinc-500'>2 blogs</p>
+                <p>&#35;{genre}</p>
               </span>
             ))}
         </div>

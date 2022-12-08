@@ -67,7 +67,7 @@ const Profile: NextPage = () => {
 
   const authAxios = new AuthAxios();
 
-  const { data: blogs, isLoading } = useQuery({
+  const { data: blogs, isPreviousData: isLoading } = useQuery({
     queryFn: () => authAxios.getAllBlogs({ sortOrder, isPublished, sort, genre, pageSize, search }),
     queryKey: [GET_AUTH_BLOGS, { sortOrder, isPublished, sort, genre, pageSize, search }],
     keepPreviousData: true,

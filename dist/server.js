@@ -55,6 +55,6 @@ server.prepare().then(() => {
     app.use('/api', require('./routes/security'));
     app.use('/api', require('./routes/notification'));
     app.all('*', (req, res) => handler(req, res));
-    server.listen(PORT, '127.0.0.1');
+    server.listen(PORT);
     (0, socket_1.default)(io);
 });
