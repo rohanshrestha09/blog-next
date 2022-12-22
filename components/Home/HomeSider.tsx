@@ -70,7 +70,7 @@ const HomeSider: React.FC = () => {
           ))}
 
         <p
-          className='text-[#1890ff] cursor-pointer hover:text-blue-600'
+          className='text-[#1890ff] cursor-pointer hover:text-blue-600 transition-all duration-300'
           onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
         >
           View More Suggestions
@@ -87,17 +87,43 @@ const HomeSider: React.FC = () => {
 
         <header className='text-xl pb-4'>Pick a genre</header>
 
-        <div className='flex flex-wrap'>
+        <div className='flex flex-wrap gap-2'>
           {genre &&
             genre.map((genre) => (
               <span
                 key={genre}
-                className='flex flex-col p-2 cursor-pointer hover:bg-zinc-900 transition-all'
+                className='flex flex-col py-1 px-0.5 cursor-pointer hover:bg-zinc-900 transition-all'
                 onClick={() => router.push(`/blog/${genre.toLowerCase()}`)}
               >
                 <p>&#35;{genre}</p>
               </span>
             ))}
+        </div>
+
+        <div className='flex gap-2 my-4'>
+          <a href='https://rohanshrestha09.com.np' target='_blank' rel='noreferrer'>
+            About Developer
+          </a>
+
+          <span>&#8226;</span>
+
+          <a
+            href='https://github.com/rohanshrestha09/Blog-Express'
+            target='_blank'
+            rel='noreferrer'
+          >
+            Github
+          </a>
+
+          <span>&#8226;</span>
+
+          <a
+            href='https://www.linkedin.com/in/rohan-shrestha-9b5580232/'
+            target='_blank'
+            rel='noreferrer'
+          >
+            Linkedin
+          </a>
         </div>
       </main>
     </div>

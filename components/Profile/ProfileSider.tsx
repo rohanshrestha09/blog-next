@@ -102,7 +102,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
           {isEmpty(users?.data) ? (
             <Empty>
               <p
-                className='text-[#1890ff] cursor-pointer hover:text-blue-600'
+                className='text-[#1890ff] cursor-pointer hover:text-blue-600 transition-all duration-300'
                 onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
               >
                 View Suggestions
@@ -116,7 +116,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
               loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
               endMessage={
                 <p
-                  className='text-[#1890ff] cursor-pointer hover:text-blue-600'
+                  className='text-[#1890ff] cursor-pointer hover:text-blue-600 transition-all duration-300'
                   onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
                 >
                   View More Suggestions

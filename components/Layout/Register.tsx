@@ -225,7 +225,7 @@ const Register: React.FC = () => {
             </Checkbox>
           </Form.Item>
 
-          <Link href='/' passHref={true}>
+          <Link href='/security/reset-password' passHref={true}>
             <a className='absolute right-0 no-underline text-[#1890ff] hover:text-blue-600'>
               Forgot password
             </a>

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -83,12 +84,9 @@ const ResetPassword: NextPage = () => {
                 <Form.Item className='flex justify-center mb-0'>
                   <span>
                     You remember your password?{' '}
-                    <label
-                      className='text-[#0579FD] cursor-pointer'
-                      onClick={() => router.push('/')}
-                    >
-                      Login
-                    </label>
+                    <Link href='/' passHref={true}>
+                      <a className='text-[#0579FD]'>Login</a>
+                    </Link>
                   </span>
                 </Form.Item>
               </Form>

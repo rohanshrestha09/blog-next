@@ -105,7 +105,12 @@ const NotificationList: React.FC<Props> = ({
           offset={[-5, 50]}
         >
           {user.image ? (
-            <Avatar src={<Image alt='' src={user.image} layout='fill' priority />} size={60} />
+            <Avatar
+              src={
+                <Image alt='' className='object-cover' src={user.image} layout='fill' priority />
+              }
+              size={60}
+            />
           ) : (
             <Avatar className='bg-[#1890ff] flex items-center' size={60}>
               <p className='text-2xl'>{user.fullname[0]}</p>
@@ -127,7 +132,12 @@ const NotificationList: React.FC<Props> = ({
           offset={[-5, 40]}
         >
           {user.image ? (
-            <Avatar src={<Image alt='' src={user.image} layout='fill' priority />} size={50} />
+            <Avatar
+              src={
+                <Image alt='' className='object-cover' src={user.image} layout='fill' priority />
+              }
+              size={50}
+            />
           ) : (
             <Avatar className='bg-[#1890ff] flex items-center' size={50}>
               <p className='text-2xl'>{user.fullname[0]}</p>

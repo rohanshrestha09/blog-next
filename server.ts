@@ -5,8 +5,7 @@ import mongoose from 'mongoose';
 import fileUpload from 'express-fileupload';
 import dispatchSocket from './socket';
 
-const http = require('http');
-const { Server } = require('socket.io');
+const socket = require('socket.io');
 const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -21,10 +20,6 @@ const handler = server.getRequestHandler();
 
 server.prepare().then(() => {
   const app: Application = express();
-
-  const server = http.createServer(app);
-
-  const io = new Server(server);
 
   app.use(express.urlencoded({ extended: false }));
 
@@ -48,7 +43,7 @@ server.prepare().then(() => {
       type: 'service_account',
       project_id: 'blog-sansar',
       private_key_id: process.env.PRIVATE_KEY_ID,
-      private_key: process.env.PRIVATE_KEY,
+      private_key: process.env.PRIVATE_KEY?.split(String.raw`\n`).join('\n'),
       client_email: process.env.CLIENT_EMAIL,
       client_id: process.env.CLIENT_ID,
       auth_uri: 'https://accounts.google.com/o/oauth2/auth',
@@ -73,7 +68,9 @@ server.prepare().then(() => {
 
   app.all('*', (req: Request, res: Response) => handler(req, res));
 
-  server.listen(PORT);
+  const server = app.listen(PORT);
+
+  const io = socket(server);
 
   dispatchSocket(io);
 });

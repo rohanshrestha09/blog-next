@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { NextRouter, useRouter } from 'next/router';
-import { ReactNode, Key } from 'react';
+import { ReactNode, Key, Fragment } from 'react';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Menu, MenuProps, Badge, Avatar, Dropdown, Button } from 'antd';
@@ -13,6 +13,7 @@ import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../api/AuthAxios';
 import NotificationAxios from '../../api/NotificationAxios';
 import UserSuggestions from './UserSuggestions';
+import ChangePassword from './ChangePassword';
 import { closeDrawer } from '../../store/drawerSlice';
 import { openModal } from '../../store/modalSlice';
 import { successNotification, errorNotification } from '../../utils/notification';
@@ -26,7 +27,7 @@ interface Props {
 
 const { HOME_NAV, PROFILE_NAV, CREATE_NAV, BOOKMARKS_NAV, NOTIF_NAV, LOGOUT_NAV } = NAV_KEYS;
 
-const { USER_SUGGESTIONS_MODAL } = MODAL_KEYS;
+const { USER_SUGGESTIONS_MODAL, CHANGE_PASSWORD_MODAL } = MODAL_KEYS;
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -63,6 +64,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
     {
       key: 'changePassword',
       label: <p className='py-2'>Change Password</p>,
+      onClick: () => dispatch(openModal({ key: CHANGE_PASSWORD_MODAL })),
     },
     {
       key: 'resetPassword',
@@ -164,33 +166,39 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
         </span>
 
         {authUser && (
-          <Dropdown
-            overlayClassName='font-sans'
-            menu={{ items: settingItems }}
-            placement='top'
-            trigger={['click']}
-          >
-            <div className='w-full flex items-center justify-between gap-2 p-4 cursor-pointer transition-all hover:bg-zinc-900'>
-              <div className='w-full flex items-center gap-3'>
-                <span>
-                  {authUser.image ? (
-                    <Avatar
-                      src={<Image alt='' src={authUser.image} layout='fill' priority />}
-                      size='large'
-                    />
-                  ) : (
-                    <Avatar className='bg-[#1890ff]' size='large'>
-                      {authUser.fullname[0]}
-                    </Avatar>
-                  )}
-                </span>
+          <Fragment>
+            <Dropdown
+              overlayClassName='font-sans'
+              menu={{ items: settingItems }}
+              placement='top'
+              trigger={['click']}
+            >
+              <div className='w-full flex items-center justify-between gap-2 p-4 cursor-pointer transition-all hover:bg-zinc-900'>
+                <div className='w-full flex items-center gap-3'>
+                  <span>
+                    {authUser.image ? (
+                      <Avatar
+                        src={<Image alt='' src={authUser.image} layout='fill' priority />}
+                        size='large'
+                      />
+                    ) : (
+                      <Avatar className='bg-[#1890ff]' size='large'>
+                        {authUser.fullname[0]}
+                      </Avatar>
+                    )}
+                  </span>
 
-                <p className='text-white text-base multiline-truncate-title'>{authUser.fullname}</p>
+                  <p className='text-white text-base multiline-truncate-title'>
+                    {authUser.fullname}
+                  </p>
+                </div>
+
+                <BsThreeDots size={20} />
               </div>
+            </Dropdown>
 
-              <BsThreeDots size={20} />
-            </div>
-          </Dropdown>
+            <ChangePassword />
+          </Fragment>
         )}
       </div>
     </div>

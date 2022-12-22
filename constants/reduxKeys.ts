@@ -18,6 +18,7 @@ export enum MODAL_KEYS {
   DISCUSSIONS_MODAL = 'discussions-modal',
   LIKERS_MODAL = 'likers-modal',
   USER_SUGGESTIONS_MODAL = 'user-suggestions-modal',
+  CHANGE_PASSWORD_MODAL = 'change-password-modal',
 }
 
 export enum AUTH_PROFILE_KEYS {

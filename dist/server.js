@@ -9,8 +9,7 @@ const app_1 = require("firebase-admin/app");
 const mongoose_1 = __importDefault(require("mongoose"));
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
 const socket_1 = __importDefault(require("./socket"));
-const http = require('http');
-const { Server } = require('socket.io');
+const socket = require('socket.io');
 const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -19,9 +18,8 @@ const PORT = process.env.PORT || 5000;
 const server = (0, next_1.default)({ dir: '.', dev });
 const handler = server.getRequestHandler();
 server.prepare().then(() => {
+    var _a;
     const app = (0, express_1.default)();
-    const server = http.createServer(app);
-    const io = new Server(server);
     app.use(express_1.default.urlencoded({ extended: false }));
     app.use(cookieParser());
     app.use(bodyParser.json());
@@ -38,7 +36,7 @@ server.prepare().then(() => {
             type: 'service_account',
             project_id: 'blog-sansar',
             private_key_id: process.env.PRIVATE_KEY_ID,
-            private_key: process.env.PRIVATE_KEY,
+            private_key: (_a = process.env.PRIVATE_KEY) === null || _a === void 0 ? void 0 : _a.split(String.raw `\n`).join('\n'),
             client_email: process.env.CLIENT_EMAIL,
             client_id: process.env.CLIENT_ID,
             auth_uri: 'https://accounts.google.com/o/oauth2/auth',
@@ -55,6 +53,7 @@ server.prepare().then(() => {
     app.use('/api', require('./routes/security'));
     app.use('/api', require('./routes/notification'));
     app.all('*', (req, res) => handler(req, res));
-    server.listen(PORT);
+    const server = app.listen(PORT);
+    const io = socket(server);
     (0, socket_1.default)(io);
 });

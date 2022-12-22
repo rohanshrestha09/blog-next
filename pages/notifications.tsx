@@ -64,7 +64,7 @@ const Notifications: NextPage = () => {
         <header className='flex items-center justify-between'>
           <p className='text-2xl uppercase'>Notifications</p>
           <p
-            className='text-sm text-[#1890ff] cursor-pointer hover:text-blue-600'
+            className='text-sm text-[#1890ff] cursor-pointer hover:text-blue-600 transition-all duration-300'
             onClick={() => notifications?.unread && handleMarkAllAsRead.mutate()}
           >
             Mark all as read
