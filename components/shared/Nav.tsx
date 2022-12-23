@@ -38,9 +38,9 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
 
   const { authUser } = useAuth();
 
-  const authAxios = new AuthAxios();
+  const authAxios = AuthAxios();
 
-  const notificationAxios = new NotificationAxios();
+  const notificationAxios = NotificationAxios();
 
   const { data: notifications } = useQuery({
     queryFn: () => notificationAxios.getNotifications({ pageSize: 1 }),
@@ -152,7 +152,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
       <div className={`w-full flex flex-col ${isDrawer && 'border-r border-r-[#303030]'}`}>
         <span className='px-4 py-2'>
           <Button
-            className='w-full flex items-center justify-center gap-1.5'
+            className='w-full xl:flex hidden items-center justify-center gap-1.5'
             icon={<BiSearch />}
             type='primary'
             shape='round'
@@ -162,6 +162,11 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
             Search Users
           </Button>
 
+          <BiSearch
+            className='w-full xl:hidden block cursor-pointer'
+            size={22}
+            onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
+          />
           <UserSuggestions />
         </span>
 

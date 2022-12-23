@@ -44,7 +44,7 @@ const Discussions: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  const blogAxios = new BlogAxios();
+  const blogAxios = BlogAxios();
 
   const { data: comments, refetch } = useQuery({
     queryFn: () => blogAxios.getComments({ id: String(blogId), pageSize }),

@@ -31,7 +31,7 @@ const Likes: React.FC = () => {
 
   const { authUser } = useAuth();
 
-  const blogAxios = new BlogAxios();
+  const blogAxios = BlogAxios();
 
   const { data: likers } = useQuery({
     queryFn: () => blogAxios.getLikers({ id: String(blogId), pageSize }),

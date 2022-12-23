@@ -3,10 +3,8 @@ import { SORT_TYPE, SORT_ORDER } from '../constants/reduxKeys';
 import { IBlogs } from '../interface/blog';
 import { IUsers, IUserData, IAuth } from '../interface/user';
 
-class Auth {
-  constructor(private cookie?: any) {}
-
-  axiosFn = async (
+const AuthAxios = (cookie?: any) => {
+  const axiosFn = async (
     method: string,
     url: string,
     data?: any
@@ -15,90 +13,91 @@ class Auth {
       method,
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/${url}`,
       data,
-      headers: { Cookie: this.cookie || '' },
+      headers: { Cookie: cookie || '' },
       withCredentials: true,
     });
 
     return res.data;
   };
 
-  auth = async (): Promise<IUserData> => await (await this.axiosFn('get', '')).data;
+  return {
+    auth: async (): Promise<IUserData> => await (await axiosFn('get', '')).data,
 
-  logout = async (): Promise<IMessage> => await this.axiosFn('delete', 'logout');
+    logout: async (): Promise<IMessage> => await axiosFn('delete', 'logout'),
 
-  updateUser = async (data: FormData): Promise<IMessage> => await this.axiosFn('put', '', data);
+    updateUser: async (data: FormData): Promise<IMessage> => await axiosFn('put', '', data),
 
-  deleteUser = async (data: FormData): Promise<IMessage> => await this.axiosFn('delete', '', data);
+    deleteUser: async (data: FormData): Promise<IMessage> => await axiosFn('delete', '', data),
 
-  deleteUserImage = async (): Promise<IMessage> => await this.axiosFn('delete', 'image');
+    deleteUserImage: async (): Promise<IMessage> => await axiosFn('delete', 'image'),
 
-  getAllBlogs = async ({
-    sort,
-    pageSize,
-    genre,
-    sortOrder,
-    isPublished,
-    search,
-  }: {
-    sort?: SORT_TYPE;
-    pageSize?: number;
-    genre?: string[] | [];
-    sortOrder?: SORT_ORDER;
-    isPublished?: boolean;
-    search?: string;
-  }): Promise<IBlogs> =>
-    await this.axiosFn(
-      'get',
-      `blog?genre=${genre || []}&sort=${sort || 'likesCount'}&pageSize=${
-        pageSize || 20
-      }&sortOrder=${sortOrder || 'desc'}&isPublished=${
-        typeof isPublished === 'boolean' ? isPublished : ''
-      }&search=${search || ''}`
-    );
+    getAllBlogs: async ({
+      sort,
+      pageSize,
+      genre,
+      sortOrder,
+      isPublished,
+      search,
+    }: {
+      sort?: SORT_TYPE;
+      pageSize?: number;
+      genre?: string[] | [];
+      sortOrder?: SORT_ORDER;
+      isPublished?: boolean;
+      search?: string;
+    }): Promise<IBlogs> =>
+      await axiosFn(
+        'get',
+        `blog?genre=${genre || []}&sort=${sort || 'likesCount'}&pageSize=${
+          pageSize || 20
+        }&sortOrder=${sortOrder || 'desc'}&isPublished=${
+          typeof isPublished === 'boolean' ? isPublished : ''
+        }&search=${search || ''}`
+      ),
 
-  getBookmarks = async ({
-    pageSize,
-    genre,
-    search,
-  }: {
-    pageSize?: number;
-    genre?: string[] | [];
-    search?: string;
-  }): Promise<IBlogs> =>
-    await this.axiosFn(
-      'get',
-      `blog/bookmarks?genre=${genre || []}&pageSize=${pageSize || 20}&search=${search || ''}`
-    );
+    getBookmarks: async ({
+      pageSize,
+      genre,
+      search,
+    }: {
+      pageSize?: number;
+      genre?: string[] | [];
+      search?: string;
+    }): Promise<IBlogs> =>
+      await axiosFn(
+        'get',
+        `blog/bookmarks?genre=${genre || []}&pageSize=${pageSize || 20}&search=${search || ''}`
+      ),
 
-  getFollowingBlogs = async ({ pageSize }: { pageSize?: number }): Promise<IBlogs> =>
-    await this.axiosFn('get', `blog/following?pageSize=${pageSize || 20}`);
+    getFollowingBlogs: async ({ pageSize }: { pageSize?: number }): Promise<IBlogs> =>
+      await axiosFn('get', `blog/following?pageSize=${pageSize || 20}`),
 
-  getFollowers = async ({
-    pageSize,
-    search,
-  }: {
-    pageSize?: number;
-    search?: string;
-  }): Promise<IUsers> =>
-    await this.axiosFn('get', `followers?pageSize=${pageSize || 20}&search=${search || ''}`);
+    getFollowers: async ({
+      pageSize,
+      search,
+    }: {
+      pageSize?: number;
+      search?: string;
+    }): Promise<IUsers> =>
+      await axiosFn('get', `followers?pageSize=${pageSize || 20}&search=${search || ''}`),
 
-  getFollowing = async ({
-    pageSize,
-    search,
-  }: {
-    pageSize?: number;
-    search?: string;
-  }): Promise<IUsers> =>
-    await this.axiosFn('get', `following?pageSize=${pageSize || 20}&search=${search || ''}`);
+    getFollowing: async ({
+      pageSize,
+      search,
+    }: {
+      pageSize?: number;
+      search?: string;
+    }): Promise<IUsers> =>
+      await axiosFn('get', `following?pageSize=${pageSize || 20}&search=${search || ''}`),
 
-  followUser = async ({
-    id,
-    shouldFollow,
-  }: {
-    id: string;
-    shouldFollow: boolean;
-  }): Promise<IMessage> =>
-    await this.axiosFn(`${shouldFollow ? 'post' : 'delete'}`, `${id}/follow`);
-}
+    followUser: async ({
+      id,
+      shouldFollow,
+    }: {
+      id: string;
+      shouldFollow: boolean;
+    }): Promise<IMessage> => await axiosFn(`${shouldFollow ? 'post' : 'delete'}`, `${id}/follow`),
+  };
+};
 
-export default Auth;
+export default AuthAxios;

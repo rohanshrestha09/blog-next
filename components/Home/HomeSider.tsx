@@ -20,9 +20,9 @@ const HomeSider: React.FC = () => {
 
   const { authUser } = useAuth();
 
-  const userAxios = new UserAxios();
+  const userAxios = UserAxios();
 
-  const blogAxios = new BlogAxios();
+  const blogAxios = BlogAxios();
 
   const { data: userSuggestions } = useQuery({
     queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),

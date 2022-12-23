@@ -27,7 +27,7 @@ const CreateBlog: NextPage = () => {
 
   const editorRef = useRef<any>();
 
-  const blogAxios = new BlogAxios();
+  const blogAxios = BlogAxios();
 
   const [form] = Form.useForm();
 
@@ -248,7 +248,7 @@ export const getServerSideProps = withAuth(
   }> => {
     const queryClient = new QueryClient();
 
-    const blogAxios = new BlogAxios(ctx.req.headers.cookie);
+    const blogAxios = BlogAxios(ctx.req.headers.cookie);
 
     ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 

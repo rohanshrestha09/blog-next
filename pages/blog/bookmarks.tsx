@@ -40,7 +40,7 @@ const Bookmarks: NextPage = () => {
 
   const { authUser } = useAuth();
 
-  const authAxios = new AuthAxios();
+  const authAxios = AuthAxios();
 
   const { data: blogs, isPreviousData: isLoading } = useQuery({
     queryFn: () => authAxios.getBookmarks({ genre, pageSize, search }),
@@ -105,11 +105,11 @@ export const getServerSideProps = withAuth(
   }> => {
     const queryClient = new QueryClient();
 
-    const authAxios = new AuthAxios(ctx.req.headers.cookie);
+    const authAxios = AuthAxios(ctx.req.headers.cookie);
 
-    const userAxios = new UserAxios(ctx.req.headers.cookie);
+    const userAxios = UserAxios(ctx.req.headers.cookie);
 
-    const blogAxios = new BlogAxios(ctx.req.headers.cookie);
+    const blogAxios = BlogAxios(ctx.req.headers.cookie);
 
     ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 

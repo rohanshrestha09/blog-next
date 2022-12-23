@@ -43,7 +43,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
 
   const { authUser } = useAuth();
 
-  const userAxios = new UserAxios();
+  const userAxios = UserAxios();
 
   const { data: user } = useQuery({
     queryFn: () => userAxios.getUser(String(userId)),

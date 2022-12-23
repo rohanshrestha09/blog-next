@@ -62,7 +62,7 @@ const EditProfile = () => {
 
       if (selectedImage) formData.append('image', selectedImage);
 
-      return new AuthAxios().updateUser(formData);
+      return AuthAxios().updateUser(formData);
     },
     {
       onSuccess: (res) => {

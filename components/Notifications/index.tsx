@@ -33,7 +33,7 @@ const NotificationList: React.FC<Props> = ({
 
   const dispatch = useDispatch();
 
-  const notificationAxios = new NotificationAxios();
+  const notificationAxios = NotificationAxios();
 
   const handleMarkAsRead = useMutation((id: string) => notificationAxios.markAsRead(id), {
     onSuccess: () => queryClient.refetchQueries([GET_NOTIFICATIONS]),

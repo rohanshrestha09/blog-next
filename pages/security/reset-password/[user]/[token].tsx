@@ -16,7 +16,7 @@ const ResetPassword: NextPage = () => {
 
   const [form] = Form.useForm();
 
-  const securityAxios = new SecurityAxios();
+  const securityAxios = SecurityAxios();
 
   const handleChangePassword = useMutation(
     ({

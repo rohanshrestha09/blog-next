@@ -31,7 +31,7 @@ const UserSuggestions: React.FC = () => {
 
   const { authUser } = useAuth();
 
-  const userAxios = new UserAxios();
+  const userAxios = UserAxios();
 
   const { data: users, isPreviousData: isLoading } = useQuery({
     queryFn: () => userAxios.getUserSuggestions({ pageSize, search }),

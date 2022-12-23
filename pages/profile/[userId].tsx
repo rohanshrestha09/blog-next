@@ -49,7 +49,7 @@ const UserProfile: NextPage = () => {
 
   const { authUser } = useAuth();
 
-  const userAxios = new UserAxios();
+  const userAxios = UserAxios();
 
   const { data: user } = useQuery({
     queryFn: () => userAxios.getUser(String(userId)),
@@ -64,7 +64,7 @@ const UserProfile: NextPage = () => {
 
   const handleFollowUser = useMutation(
     ({ id, shouldFollow }: { id: string; shouldFollow: boolean }) =>
-      new AuthAxios().followUser({ id, shouldFollow }),
+      AuthAxios().followUser({ id, shouldFollow }),
     {
       onSuccess: (res) => {
         successNotification(res.message);
@@ -170,9 +170,9 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
-  const userAxios = new UserAxios(ctx.req.headers.cookie);
+  const userAxios = UserAxios(ctx.req.headers.cookie);
 
-  const authAxios = new AuthAxios(ctx.req.headers.cookie);
+  const authAxios = AuthAxios(ctx.req.headers.cookie);
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 

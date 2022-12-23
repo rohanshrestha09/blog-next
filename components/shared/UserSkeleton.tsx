@@ -45,7 +45,7 @@ const UserSkeleton: React.FC<Props> = ({
 
   const handleFollowUser = useMutation(
     ({ id, shouldFollow }: { id: string; shouldFollow: boolean }) =>
-      new AuthAxios().followUser({ id, shouldFollow }),
+      AuthAxios().followUser({ id, shouldFollow }),
     {
       onSuccess: (res) => {
         successNotification(res.message);

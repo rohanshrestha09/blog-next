@@ -38,7 +38,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
 
   const { authUser } = useAuth();
 
-  const authAxios = new AuthAxios();
+  const authAxios = AuthAxios();
 
   const { data: followers, isPreviousData: isFollowersLoading } = useQuery({
     queryFn: () =>

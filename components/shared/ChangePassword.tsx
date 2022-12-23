@@ -21,7 +21,7 @@ const ChangePassword: React.FC = () => {
 
   const queryClient = useQueryClient();
 
-  const securityAxios = new SecurityAxios();
+  const securityAxios = SecurityAxios();
 
   const handleChangePassword = useMutation(
     (data: { password: string; newPassword: string; confirmNewPassword: string }) =>

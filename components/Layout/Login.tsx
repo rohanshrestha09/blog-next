@@ -31,7 +31,7 @@ const Login: React.FC = () => {
 
   const [rememberMe, setRememberMe] = useState<boolean>(true);
 
-  const handleLogin = useMutation((data: ILogin) => new UserAxios().login(data), {
+  const handleLogin = useMutation((data: ILogin) => UserAxios().login(data), {
     onSuccess: (res) => {
       successNotification(res.message);
       form.resetFields();

@@ -29,7 +29,7 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, h
 
   const dispatch = useDispatch();
 
-  const blogAxios = new BlogAxios();
+  const blogAxios = BlogAxios();
 
   const { data: genreSelector } = useQuery({
     queryFn: () => blogAxios.getGenre(),

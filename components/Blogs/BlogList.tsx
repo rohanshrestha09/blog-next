@@ -51,7 +51,7 @@ const BlogList: React.FC<Props> = ({
 
   const queryClient = useQueryClient();
 
-  const blogAxios = new BlogAxios();
+  const blogAxios = BlogAxios();
 
   const handlePublishBlog = useMutation(
     ({ id, shouldPublish }: { id: string; shouldPublish: boolean }) =>

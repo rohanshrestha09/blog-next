@@ -71,7 +71,7 @@ const Register: React.FC = () => {
 
       if (selectedImage) formData.append('image', selectedImage);
 
-      return new UserAxios().register(formData);
+      return UserAxios().register(formData);
     },
     {
       onSuccess: (res) => {

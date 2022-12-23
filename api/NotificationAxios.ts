@@ -1,27 +1,31 @@
 import axios, { AxiosResponse } from 'axios';
 import { INotifications } from '../interface/notification';
 
-class Notification {
-  constructor(private cookie?: any) {}
-
-  axiosFn = async (method: string, url: string, data?: any): Promise<INotifications & IMessage> => {
+const NotificationAxios = (cookie?: any) => {
+  const axiosFn = async (
+    method: string,
+    url: string,
+    data?: any
+  ): Promise<INotifications & IMessage> => {
     const res: AxiosResponse = await axios({
       method,
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/notification/${url}`,
       data,
-      headers: { Cookie: this.cookie || '' },
+      headers: { Cookie: cookie || '' },
       withCredentials: true,
     });
 
     return res.data;
   };
 
-  getNotifications = async ({ pageSize }: { pageSize?: number }): Promise<INotifications> =>
-    await this.axiosFn('get', `?pageSize=${pageSize || 20}`);
+  return {
+    getNotifications: async ({ pageSize }: { pageSize?: number }): Promise<INotifications> =>
+      await axiosFn('get', `?pageSize=${pageSize || 20}`),
 
-  markAsRead = async (id: string): Promise<IMessage> => await this.axiosFn('put', id);
+    markAsRead: async (id: string): Promise<IMessage> => await axiosFn('put', id),
 
-  markAllAsRead = async (): Promise<IMessage> => await this.axiosFn('put', '');
-}
+    markAllAsRead: async (): Promise<IMessage> => await axiosFn('put', ''),
+  };
+};
 
-export default Notification;
+export default NotificationAxios;

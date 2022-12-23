@@ -40,7 +40,7 @@ const Notifications: NextPage = () => {
 
   const queryClient = useQueryClient();
 
-  const notificationAxois = new NotificationAxios();
+  const notificationAxois = NotificationAxios();
 
   const { data: notifications } = useQuery({
     queryFn: () => notificationAxois.getNotifications({ pageSize }),
@@ -110,13 +110,13 @@ export const getServerSideProps = withAuth(
 
     ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
-    const authAxios = new AuthAxios(ctx.req.headers.cookie);
+    const authAxios = AuthAxios(ctx.req.headers.cookie);
 
-    const notificaitonAxios = new NotificationAxios(ctx.req.headers.cookie);
+    const notificaitonAxios = NotificationAxios(ctx.req.headers.cookie);
 
-    const blogAxios = new BlogAxios(ctx.req.headers.cookie);
+    const blogAxios = BlogAxios(ctx.req.headers.cookie);
 
-    const userAxios = new UserAxios(ctx.req.headers.cookie);
+    const userAxios = UserAxios(ctx.req.headers.cookie);
 
     await queryClient.prefetchQuery({
       queryFn: () => authAxios.auth(),

@@ -54,9 +54,9 @@ const Home: NextPage = () => {
 
   const dispatch = useDispatch();
 
-  const authAxios = new AuthAxios();
+  const authAxios = AuthAxios();
 
-  const blogAxios = new BlogAxios();
+  const blogAxios = BlogAxios();
 
   const { data: allBlogs, isPreviousData: isLoading } = useQuery({
     queryFn: () => blogAxios.getAllBlog({ sort, genre, pageSize: pageSize[HOME], search }),
@@ -136,11 +136,11 @@ export const getServerSideProps: GetServerSideProps = async (
 }> => {
   const queryClient = new QueryClient();
 
-  const authAxios = new AuthAxios(ctx.req.headers.cookie);
+  const authAxios = AuthAxios(ctx.req.headers.cookie);
 
-  const blogAxios = new BlogAxios(ctx.req.headers.cookie);
+  const blogAxios = BlogAxios(ctx.req.headers.cookie);
 
-  const userAxios = new UserAxios(ctx.req.headers.cookie);
+  const userAxios = UserAxios(ctx.req.headers.cookie);
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
