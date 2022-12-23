@@ -18,7 +18,7 @@ const UserAuth: React.FC<{
   const socket = useRef(io(process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:5000'));
 
   const { data: authUser } = useQuery({
-    queryFn: () => new AuthAxios().auth(),
+    queryFn: () => AuthAxios().auth(),
     queryKey: [AUTH],
     onSuccess: (authUser) => socket.current.emit('add user', authUser._id),
   });
