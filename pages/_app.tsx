@@ -2,11 +2,11 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { useState } from 'react';
 import { Provider } from 'react-redux';
-import { QueryClientProvider, QueryClient, Hydrate } from '@tanstack/react-query';
+import { QueryClientProvider, QueryClient, Hydrate, DehydratedState } from '@tanstack/react-query';
 import store from '../store';
 import UserAuth from '../utils/UserAuth';
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps<{ dehydratedState: DehydratedState }>) {
   const [queryClient] = useState(
     () =>
       new QueryClient({

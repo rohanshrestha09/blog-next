@@ -12,7 +12,7 @@ import ForgotPassword from '../../../../public/forgot-password.png';
 import { EyeInvisibleOutlined, EyeTwoTone, LockOutlined } from '@ant-design/icons';
 
 const ResetPassword: NextPage = () => {
-  const { query, push }: NextRouter = useRouter();
+  const { query }: NextRouter = useRouter();
 
   const [form] = Form.useForm();
 
@@ -135,7 +135,7 @@ const ResetPassword: NextPage = () => {
                 <Form.Item className='flex justify-center mb-0'>
                   <span
                     className='text-[#0579FD] flex items-center gap-1 cursor-pointer'
-                    onClick={() => push('/')}
+                    onClick={() => (window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}`)}
                   >
                     Continue to BlogSansar <IoNavigateCircle size={18} />
                   </span>
@@ -151,7 +151,12 @@ const ResetPassword: NextPage = () => {
             status='success'
             title='Password Reset Successful'
             extra={[
-              <Button key='home' className='rounded-lg' type='primary' onClick={() => push('/')}>
+              <Button
+                key='home'
+                className='rounded-lg'
+                type='primary'
+                onClick={() => (window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}`)}
+              >
                 Go Home
               </Button>,
             ]}
@@ -164,7 +169,12 @@ const ResetPassword: NextPage = () => {
             title={`${handleChangePassword.error.response?.data?.message ?? '500'}`}
             subTitle='Sorry, something went wrong.'
             extra={[
-              <Button key='home' className='rounded-lg' type='primary' onClick={() => push('/')}>
+              <Button
+                key='home'
+                className='rounded-lg'
+                type='primary'
+                onClick={() => (window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}`)}
+              >
                 Go Home
               </Button>,
               <Button

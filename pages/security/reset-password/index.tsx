@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import { NextRouter, useRouter } from 'next/router';
 import { Fragment } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import 'antd/dist/antd.min.css';
@@ -12,8 +11,6 @@ import SecurityAxios from '../../../api/SecurityAxios';
 import ForgotPassword from '../../../public/forgot-password.png';
 
 const ResetPassword: NextPage = () => {
-  const router: NextRouter = useRouter();
-
   const [form] = Form.useForm();
 
   const securityAxios = SecurityAxios();
@@ -84,9 +81,12 @@ const ResetPassword: NextPage = () => {
                 <Form.Item className='flex justify-center mb-0'>
                   <span>
                     You remember your password?{' '}
-                    <Link href='/' passHref={true}>
-                      <a className='text-[#0579FD]'>Login</a>
-                    </Link>
+                    <span
+                      className='text-[#0579FD] cursor-pointer'
+                      onClick={() => (window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}`)}
+                    >
+                      Login
+                    </span>
                   </span>
                 </Form.Item>
               </Form>
@@ -111,7 +111,7 @@ const ResetPassword: NextPage = () => {
                 key='home'
                 className='rounded-lg'
                 type='primary'
-                onClick={() => router.push('/')}
+                onClick={() => (window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}`)}
               >
                 Go Home
               </Button>,
@@ -132,7 +132,7 @@ const ResetPassword: NextPage = () => {
                 key='home'
                 className='rounded-lg'
                 type='primary'
-                onClick={() => router.push('/')}
+                onClick={() => (window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}`)}
               >
                 Go Home
               </Button>,
