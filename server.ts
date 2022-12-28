@@ -3,6 +3,7 @@ import express, { Request, Response, Application } from 'express';
 import { initializeApp, cert, ServiceAccount } from 'firebase-admin/app';
 import mongoose from 'mongoose';
 import fileUpload from 'express-fileupload';
+import cors from 'cors';
 import dispatchSocket from './socket';
 
 const socket = require('socket.io');
@@ -21,7 +22,16 @@ const handler = server.getRequestHandler();
 server.prepare().then(() => {
   const app: Application = express();
 
+  const origin = 'http://blogsansar';
+
   app.use(express.urlencoded({ extended: false }));
+
+  app.use(
+    cors({
+      origin: [`${origin}.social`, `${origin}.live`, `${origin}.tech`, `${origin}.tk`],
+      credentials: true,
+    })
+  );
 
   app.use(cookieParser());
 
