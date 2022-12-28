@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -83,7 +82,7 @@ const ResetPassword: NextPage = () => {
                     You remember your password?{' '}
                     <span
                       className='text-[#0579FD] cursor-pointer'
-                      onClick={() => (window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}`)}
+                      onClick={() => (window.location.href = window.location.origin)}
                     >
                       Login
                     </span>
@@ -111,7 +110,7 @@ const ResetPassword: NextPage = () => {
                 key='home'
                 className='rounded-lg'
                 type='primary'
-                onClick={() => (window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}`)}
+                onClick={() => (window.location.href = window.location.origin)}
               >
                 Go Home
               </Button>,

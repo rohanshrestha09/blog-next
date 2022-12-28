@@ -135,7 +135,7 @@ const ResetPassword: NextPage = () => {
                 <Form.Item className='flex justify-center mb-0'>
                   <span
                     className='text-[#0579FD] flex items-center gap-1 cursor-pointer'
-                    onClick={() => (window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}`)}
+                    onClick={() => (window.location.href = window.location.origin)}
                   >
                     Continue to BlogSansar <IoNavigateCircle size={18} />
                   </span>
@@ -155,7 +155,7 @@ const ResetPassword: NextPage = () => {
                 key='home'
                 className='rounded-lg'
                 type='primary'
-                onClick={() => (window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}`)}
+                onClick={() => (window.location.href = window.location.origin)}
               >
                 Go Home
               </Button>,
@@ -173,7 +173,7 @@ const ResetPassword: NextPage = () => {
                 key='home'
                 className='rounded-lg'
                 type='primary'
-                onClick={() => (window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}`)}
+                onClick={() => (window.location.href = window.location.origin)}
               >
                 Go Home
               </Button>,
