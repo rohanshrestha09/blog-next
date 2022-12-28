@@ -57,7 +57,7 @@ export const register = asyncHandler(async (req: Request, res: Response): Promis
     const serialized = serialize('token', token, {
       httpOnly: true,
       secure: false,
-      sameSite: false,
+      sameSite: 'none',
       maxAge: 60 * 60 * 24 * 30,
       path: '/',
     });
@@ -89,7 +89,7 @@ export const login = asyncHandler(async (req: Request, res: Response): Promise<R
     const serialized = serialize('token', token, {
       httpOnly: true,
       secure: false,
-      sameSite: false,
+      sameSite: 'none',
       maxAge: 60 * 60 * 24 * 30,
       path: '/',
     });

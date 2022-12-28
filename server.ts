@@ -22,13 +22,13 @@ const handler = server.getRequestHandler();
 server.prepare().then(() => {
   const app: Application = express();
 
-  const origin = 'http://blogsansar';
+  const origin = ['social', 'live', 'tech', 'tk'].map((site) => `http://blogsansar.${site}`);
 
   app.use(express.urlencoded({ extended: false }));
 
   app.use(
     cors({
-      origin: [`${origin}.social`, `${origin}.live`, `${origin}.tech`, `${origin}.tk`],
+      origin,
       credentials: true,
     })
   );
@@ -80,7 +80,7 @@ server.prepare().then(() => {
 
   const server = app.listen(PORT);
 
-  const io = socket(server);
+  const io = socket(server, { cors: { origin } });
 
   dispatchSocket(io);
 });
