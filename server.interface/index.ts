@@ -51,7 +51,7 @@ export interface INotificationSchema {
     enum: { values: String[]; message: string };
   };
   user: Types.ObjectId;
-  listener: Types.ObjectId | Types.ObjectId[];
+  listener: Types.ObjectId[];
   blog: Types.ObjectId;
   comment: Types.ObjectId;
   description: string;

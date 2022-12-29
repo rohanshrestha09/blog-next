@@ -19,7 +19,7 @@ const NotificationSchema = new Schema<INotificationSchema>(
       required: [true, 'User Missing'],
     },
     listener: {
-      type: Schema.Types.ObjectId,
+      type: [Schema.Types.ObjectId],
       ref: 'User',
       required: [true, 'Listener Missing'],
     },

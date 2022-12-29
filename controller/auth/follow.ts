@@ -36,7 +36,7 @@ export const follow = asyncHandler(async (req: Request, res: Response): Promise<
     const { _id: notificationId } = await Notification.create({
       type: FOLLOW_USER,
       user: authId,
-      listener: userId,
+      listener: [userId],
       description: `${fullname} followed you.`,
     });
 

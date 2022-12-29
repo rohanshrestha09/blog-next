@@ -203,7 +203,7 @@ const CreateBlog: NextPage = () => {
             <Button
               type='primary'
               className='h-10 uppercase rounded-lg'
-              loading={handlePostBlog.isLoading}
+              loading={handlePostBlog.isLoading && handlePostBlog.variables.isPublished}
               onClick={() =>
                 form.validateFields().then((values) =>
                   handlePostBlog.mutate({
@@ -219,7 +219,7 @@ const CreateBlog: NextPage = () => {
 
             <Button
               className='h-10 mx-2 bg-gray-200 text-black rounded-lg uppercase'
-              loading={handlePostBlog.isLoading}
+              loading={handlePostBlog.isLoading && !handlePostBlog.variables.isPublished}
               onClick={() =>
                 form.validateFields().then((values) =>
                   handlePostBlog.mutate({

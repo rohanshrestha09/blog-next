@@ -52,7 +52,7 @@ export const comment = asyncHandler(async (req: Request, res: Response): Promise
     const { _id: notificationId } = await Notification.create({
       type: POST_COMMENT,
       user: authId,
-      listener: author._id,
+      listener: [author._id],
       blog: blogId,
       comment: commentId,
       description: `${fullname} commented on your blog.`,

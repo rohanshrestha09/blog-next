@@ -22,7 +22,7 @@ const handler = server.getRequestHandler();
 server.prepare().then(() => {
   const app: Application = express();
 
-  const origin = ['social', 'live', 'tech', 'tk'].map((site) => `http://blogsansar.${site}`);
+  const origin = ['social', 'live', 'tech', 'tk'].map((site) => `https://blogsansar.${site}`);
 
   app.use(express.urlencoded({ extended: false }));
 

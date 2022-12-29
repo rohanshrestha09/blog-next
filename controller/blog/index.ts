@@ -100,7 +100,7 @@ export const postBlog = asyncHandler(async (req: Request, res: Response): Promis
         description: `${fullname} posted a new blog.`,
       });
 
-      dispatchNotification({ listeners: [followers], notificationId });
+      dispatchNotification({ listeners: followers, notificationId });
     }
 
     return res.status(200).json({ message: 'Blog Posted Successfully' });
