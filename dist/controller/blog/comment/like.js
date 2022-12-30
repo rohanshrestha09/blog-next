@@ -28,7 +28,7 @@ exports.likeComment = asyncHandler(async (req, res) => {
         const { _id: notificationId } = await Notification_1.default.create({
             type: LIKE_COMMENT,
             user: authId,
-            listener: comment.user,
+            listener: [comment.user],
             blog: comment.blog,
             comment: commentId,
             description: `${fullname} liked your comment.`,

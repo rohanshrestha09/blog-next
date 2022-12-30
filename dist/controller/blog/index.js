@@ -86,7 +86,7 @@ exports.postBlog = asyncHandler(async (req, res) => {
                 blog: blogId,
                 description: `${fullname} posted a new blog.`,
             });
-            (0, socket_1.dispatchNotification)({ listeners: [followers], notificationId });
+            (0, socket_1.dispatchNotification)({ listeners: followers, notificationId });
         }
         return res.status(200).json({ message: 'Blog Posted Successfully' });
     }

@@ -26,12 +26,7 @@ server.prepare().then(() => {
 
   app.use(express.urlencoded({ extended: false }));
 
-  app.use(
-    cors({
-      origin,
-      credentials: true,
-    })
-  );
+  app.use(cors({ origin, credentials: true }));
 
   app.use(cookieParser());
 

@@ -19,7 +19,7 @@ exports.resetLink = asyncHandler(async (req, res) => {
         const token = (0, jsonwebtoken_1.sign)({ _id: user._id }, `${process.env.JWT_PASSWORD}${user.password}`, {
             expiresIn: '15min',
         });
-        const resetUrl = `https://blogsansar.vercel.app/security/reset-password/${user._id}/${token}`;
+        const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/security/reset-password/${user._id}/${token}`;
         const transporter = nodemailer.createTransport({
             //@ts-ignore
             service: 'gmail',

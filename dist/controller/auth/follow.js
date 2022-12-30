@@ -31,7 +31,7 @@ exports.follow = asyncHandler(async (req, res) => {
         const { _id: notificationId } = await Notification_1.default.create({
             type: FOLLOW_USER,
             user: authId,
-            listener: userId,
+            listener: [userId],
             description: `${fullname} followed you.`,
         });
         (0, socket_1.dispatchNotification)({ listeners: [userId], notificationId });

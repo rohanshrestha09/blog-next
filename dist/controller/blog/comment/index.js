@@ -45,7 +45,7 @@ exports.comment = asyncHandler(async (req, res) => {
         const { _id: notificationId } = await Notification_1.default.create({
             type: POST_COMMENT,
             user: authId,
-            listener: author._id,
+            listener: [author._id],
             blog: blogId,
             comment: commentId,
             description: `${fullname} commented on your blog.`,

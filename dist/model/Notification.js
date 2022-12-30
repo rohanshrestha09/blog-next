@@ -18,7 +18,7 @@ const NotificationSchema = new mongoose_1.Schema({
         required: [true, 'User Missing'],
     },
     listener: {
-        type: mongoose_1.Schema.Types.ObjectId,
+        type: [mongoose_1.Schema.Types.ObjectId],
         ref: 'User',
         required: [true, 'Listener Missing'],
     },

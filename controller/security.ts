@@ -18,7 +18,7 @@ export const resetLink = asyncHandler(async (req: Request, res: Response): Promi
       expiresIn: '15min',
     });
 
-    const resetUrl = `https://blogsansar.vercel.app/security/reset-password/${user._id}/${token}`;
+    const resetUrl = `${req.headers.origin}/security/reset-password/${user._id}/${token}`;
 
     const transporter = nodemailer.createTransport({
       //@ts-ignore
