@@ -183,7 +183,15 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
                   <span>
                     {authUser.image ? (
                       <Avatar
-                        src={<Image alt='' src={authUser.image} layout='fill' priority />}
+                        src={
+                          <Image
+                            className='object-cover'
+                            alt=''
+                            src={authUser.image}
+                            layout='fill'
+                            priority
+                          />
+                        }
                         size='large'
                       />
                     ) : (

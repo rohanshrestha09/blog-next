@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { NextRouter, useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Avatar, Badge } from 'antd';
@@ -34,6 +35,12 @@ const NotificationList: React.FC<Props> = ({
   const dispatch = useDispatch();
 
   const notificationAxios = NotificationAxios();
+
+  const [isSSR, setIsSSR] = useState(true);
+
+  useEffect(() => {
+    setIsSSR(false);
+  }, []);
 
   const handleMarkAsRead = useMutation((id: string) => notificationAxios.markAsRead(id), {
     onSuccess: () => queryClient.refetchQueries([GET_NOTIFICATIONS]),
@@ -94,6 +101,7 @@ const NotificationList: React.FC<Props> = ({
         <Badge
           className='sm:block hidden'
           count={
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               className='rounded-full'
               alt=''
@@ -121,6 +129,7 @@ const NotificationList: React.FC<Props> = ({
         <Badge
           className='sm:hidden'
           count={
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               className='rounded-full'
               alt=''
@@ -167,7 +176,11 @@ const NotificationList: React.FC<Props> = ({
             </p>
           )}
 
-          <p className='text-xs'>{moment(createdAt).fromNow()}</p>
+          {!isSSR ? (
+            <p className='text-xs'>{moment(createdAt).fromNow()}</p>
+          ) : (
+            <p className='text-xs'>{moment(createdAt).fromNow()}</p>
+          )}
         </div>
       </div>
 
