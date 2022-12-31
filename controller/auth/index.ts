@@ -1,9 +1,13 @@
 import { Request, Response } from 'express';
 import moment from 'moment';
 import { serialize } from 'cookie';
+import { isEmpty } from 'lodash';
 import uploadFile from '../../middleware/uploadFile';
 import deleteFile from '../../middleware/deleteFile';
 import User from '../../model/User';
+import Blog from '../../model/Blog';
+import Notification from '../../model/Notification';
+import Comment from '../../model/Comment';
 const asyncHandler = require('express-async-handler');
 
 moment.suppressDeprecationWarnings = true;
@@ -70,12 +74,33 @@ export const deleteImage = asyncHandler(async (req: Request, res: Response): Pro
 
 export const deleteProfile = asyncHandler(
   async (req: Request, res: Response): Promise<Response> => {
-    const { _id: authId, image, imageName } = res.locals.auth;
+    const { _id: authId, image, imageName, blogs } = res.locals.auth;
 
     try {
+      if (!isEmpty(blogs)) {
+        blogs?.forEach(async (blogId: string) => {
+          const blog = await Blog.findById(blogId);
+
+          if (blog?.image && blog.imageName) deleteFile(`blogs/${blog.imageName}`);
+        });
+
+        await Blog.deleteMany({ _id: blogs });
+      }
+
+      await Notification.deleteMany({ user: authId });
+
+      await Comment.deleteMany({ user: authId });
+
       if (image && imageName) deleteFile(`users/${imageName}`);
 
       await User.findByIdAndDelete(authId);
+
+      const serialized = serialize('token', '', {
+        maxAge: 0,
+        path: '/',
+      });
+
+      res.setHeader('Set-Cookie', serialized);
 
       return res.status(200).json({ message: 'Profile Deleted Successfully' });
     } catch (err: Error | any) {

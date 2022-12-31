@@ -51,6 +51,14 @@ const EditProfile = () => {
     onRemove: () => setSelectedImage(null),
   };
 
+  const handleDeletePicture = useMutation(() => AuthAxios().deleteUserImage(), {
+    onSuccess: (res) => {
+      successNotification(res.message);
+      queryClient.refetchQueries([AUTH]);
+    },
+    onError: (err: AxiosError) => errorNotification(err),
+  });
+
   const handleEditProfile = useMutation(
     (formValues: any) => {
       // * avoid append if formvalue is empty
@@ -141,7 +149,20 @@ const EditProfile = () => {
         </Form.Item>
 
         <div className='w-full grid grid-cols-5'>
-          <Form.Item className='sm:col-span-2 col-span-full' label='Display Picture'>
+          <Form.Item
+            className='sm:col-span-2 col-span-full'
+            label={
+              <div className='flex items-center gap-2'>
+                <span>Display Picture</span>
+                <span
+                  className='text-blue-500 cursor-pointer text-[0.65rem] leading-3'
+                  onClick={() => handleDeletePicture.mutate()}
+                >
+                  Remove
+                </span>
+              </div>
+            }
+          >
             <Upload {...fileUploadOptions}>
               <Button className='rounded-lg flex items-center h-12' icon={<UploadOutlined />}>
                 Click to Upload

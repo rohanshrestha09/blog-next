@@ -19,6 +19,7 @@ export enum MODAL_KEYS {
   LIKERS_MODAL = 'likers-modal',
   USER_SUGGESTIONS_MODAL = 'user-suggestions-modal',
   CHANGE_PASSWORD_MODAL = 'change-password-modal',
+  DELETE_ACCOUNT_MODAL = 'delete-account-modal',
 }
 
 export enum AUTH_PROFILE_KEYS {

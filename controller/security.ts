@@ -18,7 +18,7 @@ export const resetLink = asyncHandler(async (req: Request, res: Response): Promi
       expiresIn: '15min',
     });
 
-    const resetUrl = `${req.headers.origin}/security/reset-password/${user._id}/${token}`;
+    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/security/reset-password/${user._id}/${token}`;
 
     const transporter = nodemailer.createTransport({
       //@ts-ignore

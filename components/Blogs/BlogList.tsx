@@ -125,7 +125,12 @@ const BlogList: React.FC<Props> = ({
       <div className='w-full flex flex-col gap-3'>
         <Space className='relative'>
           {author.image ? (
-            <Avatar src={<Image alt='' src={author.image} layout='fill' priority />} size='small' />
+            <Avatar
+              src={
+                <Image alt='' className='object-cover' src={author.image} layout='fill' priority />
+              }
+              size='small'
+            />
           ) : (
             <Avatar className='bg-[#1890ff]' size='small'>
               {author.fullname[0]}

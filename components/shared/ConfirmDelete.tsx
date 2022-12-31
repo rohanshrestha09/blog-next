@@ -12,7 +12,9 @@ interface Props {
 }
 
 const ConfirmDelete: React.FC<Props> = ({ isLoading, deleteMutation }) => {
-  const { isOpen } = useSelector((state: RootState) => state.modal);
+  const {
+    isOpen: { [DELETE_MODAL]: isOpen },
+  } = useSelector((state: RootState) => state.modal);
 
   const dispatch = useDispatch();
 
@@ -20,7 +22,7 @@ const ConfirmDelete: React.FC<Props> = ({ isLoading, deleteMutation }) => {
     <Modal
       destroyOnClose
       className='font-sans'
-      open={isOpen[DELETE_MODAL]}
+      open={isOpen}
       footer={null}
       onCancel={() => dispatch(closeModal({ key: DELETE_MODAL }))}
       zIndex={2000}

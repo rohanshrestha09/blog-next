@@ -14,6 +14,7 @@ import AuthAxios from '../../api/AuthAxios';
 import NotificationAxios from '../../api/NotificationAxios';
 import UserSuggestions from './UserSuggestions';
 import ChangePassword from './ChangePassword';
+import DeleteAccount from './DeleteAccount';
 import { closeDrawer } from '../../store/drawerSlice';
 import { openModal } from '../../store/modalSlice';
 import { successNotification, errorNotification } from '../../utils/notification';
@@ -27,7 +28,7 @@ interface Props {
 
 const { HOME_NAV, PROFILE_NAV, CREATE_NAV, BOOKMARKS_NAV, NOTIF_NAV, LOGOUT_NAV } = NAV_KEYS;
 
-const { USER_SUGGESTIONS_MODAL, CHANGE_PASSWORD_MODAL } = MODAL_KEYS;
+const { USER_SUGGESTIONS_MODAL, CHANGE_PASSWORD_MODAL, DELETE_ACCOUNT_MODAL } = MODAL_KEYS;
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -58,8 +59,8 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
   const settingItems = [
     {
       key: 'logout',
-      label: <p className='py-2 text-red-500'>Logout</p>,
-      onClick: () => routingFn(LOGOUT_NAV),
+      label: <p className='py-2 text-red-500'>Delete Account</p>,
+      onClick: () => dispatch(openModal({ key: DELETE_ACCOUNT_MODAL })),
     },
     {
       key: 'changePassword',
@@ -211,6 +212,8 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
             </Dropdown>
 
             <ChangePassword />
+
+            <DeleteAccount />
           </Fragment>
         )}
       </div>

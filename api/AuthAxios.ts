@@ -27,7 +27,8 @@ const AuthAxios = (cookie?: any) => {
 
     updateUser: async (data: FormData): Promise<IMessage> => await axiosFn('put', '', data),
 
-    deleteUser: async (data: FormData): Promise<IMessage> => await axiosFn('delete', '', data),
+    deleteUser: async (data: { password: string }): Promise<IMessage> =>
+      await axiosFn('delete', '', data),
 
     deleteUserImage: async (): Promise<IMessage> => await axiosFn('delete', 'image'),
 

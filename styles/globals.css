@@ -59,6 +59,10 @@ body::-webkit-scrollbar-thumb:hover {
   background: rgba(110 110 110 / 0.5);
 }
 
+svg {
+  vertical-align: baseline !important;
+}
+
 .scrollbar {
   overflow-y: scroll;
   mask-image: linear-gradient(to top, transparent, black),

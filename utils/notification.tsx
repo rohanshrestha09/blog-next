@@ -2,6 +2,7 @@ import React from 'react';
 import { toast, ToastOptions } from 'react-toastify';
 
 const config: ToastOptions<{}> = {
+  className: 'font-sans',
   position: 'top-right',
   theme: 'dark',
   autoClose: 2500,
