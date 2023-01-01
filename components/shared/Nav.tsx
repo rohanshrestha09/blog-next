@@ -153,7 +153,9 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
       <div className={`w-full flex flex-col ${isDrawer && 'border-r border-r-[#303030]'}`}>
         <span className='px-4 py-2'>
           <Button
-            className='w-full xl:flex hidden items-center justify-center gap-1.5'
+            className={`w-full xl:flex items-center justify-center gap-1.5 ${
+              isDrawer ? 'flex' : 'hidden'
+            }`}
             icon={<BiSearch />}
             type='primary'
             shape='round'
@@ -164,7 +166,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
           </Button>
 
           <BiSearch
-            className='w-full xl:hidden block cursor-pointer'
+            className={`w-full xl:hidden cursor-pointer ${isDrawer ? 'hidden' : 'block'}`}
             size={22}
             onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
           />

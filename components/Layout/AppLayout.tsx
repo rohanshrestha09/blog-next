@@ -19,9 +19,10 @@ import { closeDrawer, openDrawer } from '../../store/drawerSlice';
 import { useAuth } from '../../utils/UserAuth';
 import { jsxNotification } from '../../utils/notification';
 import { GET_NOTIFICATIONS } from '../../constants/queryKeys';
+import MobileNav from '../shared/MobileNav';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.Element => {
-  const { Content, Sider } = Layout;
+  const { Content, Sider, Footer } = Layout;
 
   const { pathname, events }: NextRouter = useRouter();
 
@@ -95,9 +96,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
 
       <MdOutlineKeyboardArrowRight
         className={`${
-          getSider() && 'sm:hidden'
-        } block fixed left-4 top-[51%] cursor-pointer hover:bg-slate-700 rounded-full z-50`}
-        size={40}
+          !getSider() ? 'block' : 'hidden'
+        } fixed left-4 top-[51%] cursor-pointer hover:bg-zinc-800 rounded-full z-50`}
+        size={42}
         onClick={() => dispatch(openDrawer())}
       />
 
@@ -124,10 +125,16 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
         </Sider>
       </Affix>
 
-      <Layout
-        className={`${getSider() && 'sm:border-x'} border-[#303030] py-[1.20rem] xl:px-12 px-4`}
-      >
-        <Content>{children}</Content>
+      <Layout>
+        <Content
+          className={`${getSider() && 'sm:border-x'} border-[#303030] py-[1.20rem] xl:px-12 px-4`}
+        >
+          {children}
+        </Content>
+
+        <Footer className='sm:hidden p-0'>
+          <MobileNav />
+        </Footer>
       </Layout>
 
       <Affix ref={sidebarAffixB} offsetTop={1}>
