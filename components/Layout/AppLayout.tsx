@@ -14,12 +14,12 @@ import Nav from '../shared/Nav';
 import HomeSider from '../Home/HomeSider';
 import ProfileSider from '../Profile/ProfileSider';
 import UserProfileSider from '../Profile/UserProfileSider';
+import MobileNav from '../shared/MobileNav';
 import NotificationList from '../Notifications';
 import { closeDrawer, openDrawer } from '../../store/drawerSlice';
 import { useAuth } from '../../utils/UserAuth';
 import { jsxNotification } from '../../utils/notification';
 import { GET_NOTIFICATIONS } from '../../constants/queryKeys';
-import MobileNav from '../shared/MobileNav';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.Element => {
   const { Content, Sider, Footer } = Layout;
@@ -132,7 +132,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
           {children}
         </Content>
 
-        <Footer className='sm:hidden p-0'>
+        <Footer className='sm:hidden w-full p-0 fixed bottom-0'>
           <MobileNav />
         </Footer>
       </Layout>
