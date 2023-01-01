@@ -21,6 +21,16 @@
   p {
     @apply my-0 !important;
   }
+
+  .reset *,
+  .reset ::before,
+  .reset ::after {
+    all: revert;
+  }
+
+  .reset a {
+    @apply text-[rgb(22,125,220)] no-underline hover:text-[rgba(22,125,220,0.8)] transition-all duration-300;
+  }
 }
 
 @tailwind components;
