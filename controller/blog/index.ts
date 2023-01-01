@@ -103,7 +103,7 @@ export const postBlog = asyncHandler(async (req: Request, res: Response): Promis
       dispatchNotification({ listeners: followers, notificationId });
     }
 
-    return res.status(200).json({ message: 'Blog Posted Successfully' });
+    return res.status(200).json({ blog: blogId, message: 'Blog Posted Successfully' });
   } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
   }
@@ -139,7 +139,7 @@ export const updateBlog = asyncHandler(async (req: Request, res: Response): Prom
       genre,
     });
 
-    return res.status(200).json({ message: 'Blog Updated Successfully' });
+    return res.status(200).json({ blog: blogId, message: 'Blog Updated Successfully' });
   } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
   }

@@ -30,6 +30,10 @@ export interface IComments extends IMessage {
   count: number;
 }
 
+export interface IBlogReturn extends IMessage {
+  blog: string;
+}
+
 export interface IPostBlog extends BlogKeys {
   title: string;
   content: string;

@@ -17,7 +17,7 @@ import BlogAxios from '../../api/BlogAxios';
 import ConfirmDelete from '../shared/ConfirmDelete';
 import { openModal, closeModal } from '../../store/modalSlice';
 import { errorNotification, successNotification } from '../../utils/notification';
-import { GET_AUTH_BLOGS } from '../../constants/queryKeys';
+import { GET_ALL_BLOGS, GET_AUTH_BLOGS } from '../../constants/queryKeys';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
 import type { IBlogData } from '../../interface/blog';
 
@@ -60,6 +60,7 @@ const BlogList: React.FC<Props> = ({
       onSuccess: (res) => {
         successNotification(res.message);
         queryClient.refetchQueries([GET_AUTH_BLOGS]);
+        queryClient.refetchQueries([GET_ALL_BLOGS]);
       },
       onError: (err: AxiosError) => errorNotification(err),
     }
@@ -69,6 +70,7 @@ const BlogList: React.FC<Props> = ({
     onSuccess: (res) => {
       successNotification(res.message);
       queryClient.refetchQueries([GET_AUTH_BLOGS]);
+      queryClient.refetchQueries([GET_ALL_BLOGS]);
       dispatch(closeModal({ key: DELETE_MODAL }));
     },
     onError: (err: AxiosError) => errorNotification(err),

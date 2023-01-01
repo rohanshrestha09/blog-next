@@ -1,5 +1,6 @@
 import type { GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
 import {
   dehydrate,
@@ -23,6 +24,8 @@ import { AUTH, GET_AUTH_BLOGS, GET_GENRE } from '../../constants/queryKeys';
 import type { IPostBlog } from '../../interface/blog';
 
 const CreateBlog: NextPage = () => {
+  const router = useRouter();
+
   const queryClient = useQueryClient();
 
   const editorRef = useRef<any>();
@@ -30,8 +33,6 @@ const CreateBlog: NextPage = () => {
   const blogAxios = BlogAxios();
 
   const [form] = Form.useForm();
-
-  const { Option } = Select;
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
@@ -85,6 +86,7 @@ const CreateBlog: NextPage = () => {
         setRenderEditor(Math.random() * 100);
         queryClient.refetchQueries([AUTH]);
         queryClient.refetchQueries([GET_AUTH_BLOGS]);
+        router.push(`/${res.blog}`);
       },
       onError: (err: AxiosError) => errorNotification(err),
     }
@@ -184,18 +186,12 @@ const CreateBlog: NextPage = () => {
             >
               <Select
                 mode='multiple'
-                popupClassName='rounded-lg'
+                popupClassName='rounded-lg font-sans'
                 placeholder='Select genre (max 4)'
                 size='large'
                 allowClear
-              >
-                {genre &&
-                  genre.map((el) => (
-                    <Option key={el} value={el}>
-                      {el}
-                    </Option>
-                  ))}
-              </Select>
+                options={genre && genre.map((val) => ({ label: val, value: val }))}
+              />
             </Form.Item>
           </div>
 

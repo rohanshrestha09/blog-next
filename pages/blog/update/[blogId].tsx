@@ -45,8 +45,6 @@ const UpdateBlog: NextPage = () => {
 
   const [form] = Form.useForm();
 
-  const { Option } = Select;
-
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   const { data: genre } = useQuery({
@@ -98,6 +96,7 @@ const UpdateBlog: NextPage = () => {
       onSuccess: (res) => {
         successNotification(res.message);
         queryClient.refetchQueries([GET_AUTH_BLOGS]);
+        push(`/${res.blog}`);
       },
       onError: (err: AxiosError) => errorNotification(err),
     }
@@ -212,18 +211,12 @@ const UpdateBlog: NextPage = () => {
               >
                 <Select
                   mode='multiple'
-                  popupClassName='rounded-lg'
+                  popupClassName='rounded-lg font-sans'
                   placeholder='Select genre (max 4)'
                   size='large'
                   allowClear
-                >
-                  {genre &&
-                    genre.map((el) => (
-                      <Option key={el} value={el}>
-                        {el}
-                      </Option>
-                    ))}
-                </Select>
+                  options={genre && genre.map((val) => ({ label: val, value: val }))}
+                />
               </Form.Item>
             </div>
 

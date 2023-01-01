@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { SORT_TYPE } from '../constants/reduxKeys';
-import { IBlog, IBlogData, IBlogs, IComments, IGenre } from '../interface/blog';
+import { IBlog, IBlogData, IBlogReturn, IBlogs, IComments, IGenre } from '../interface/blog';
 import { IUsers } from '../interface/user';
 
 const BlogAxios = (cookie?: any) => {
@@ -8,7 +8,7 @@ const BlogAxios = (cookie?: any) => {
     method: string,
     url: string,
     data?: any
-  ): Promise<IGenre & IBlogData & IBlog & IBlogs & IUsers & IComments & IMessage> => {
+  ): Promise<IGenre & IBlogData & IBlog & IBlogs & IUsers & IComments & IMessage & IBlogReturn> => {
     const res: AxiosResponse = await axios({
       method,
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/blog/${url}`,
@@ -44,9 +44,9 @@ const BlogAxios = (cookie?: any) => {
     getBlogSuggestions: async ({ pageSize }: { pageSize: number }): Promise<IBlogs> =>
       await axiosFn('get', `suggestions?pageSize=${pageSize || 4}`),
 
-    postBlog: async (data: FormData): Promise<IMessage> => await axiosFn('post', '', data),
+    postBlog: async (data: FormData): Promise<IBlogReturn> => await axiosFn('post', '', data),
 
-    updateBlog: async ({ id, data }: { id: string; data: FormData }): Promise<IMessage> =>
+    updateBlog: async ({ id, data }: { id: string; data: FormData }): Promise<IBlogReturn> =>
       await axiosFn('put', id, data),
 
     deleteBlog: async (id: string): Promise<IMessage> => axiosFn('delete', id),
