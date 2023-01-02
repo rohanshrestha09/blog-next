@@ -78,9 +78,9 @@ export const deleteProfile = asyncHandler(
 
     try {
       if (!isEmpty(blogs)) {
-        blogs?.forEach(async (blogId: string) => {
-          const blog = await Blog.findById(blogId);
+        const allBlogs = await Blog.find({ _id: blogs });
 
+        allBlogs?.forEach((blog) => {
           if (blog?.image && blog.imageName) deleteFile(`blogs/${blog.imageName}`);
         });
 

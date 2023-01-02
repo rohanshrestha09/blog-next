@@ -14,8 +14,6 @@ export const blogs = asyncHandler(async (req: Request, res: Response): Promise<R
     { $sort: { [String(sort || 'likesCount')]: sortOrder === 'asc' ? 1 : -1 } },
   ];
 
-  if (sort === 'likesCount') query.push({ $sort: { createdAt: 1 } });
-
   if (genre) query.push({ $match: { genre: { $in: String(genre).split(',') } } });
 
   if (isPublished) query.push({ $match: { isPublished: isPublished === 'true' } });
@@ -97,7 +95,8 @@ export const followingBlogs = asyncHandler(
       return res.status(200).json({
         data: await Blog.find(query)
           .limit(Number(pageSize || 20))
-          .populate('author', 'fullname image'),
+          .populate('author', 'fullname image')
+          .sort({ createdAt: -1 }),
         count: await Blog.countDocuments(query),
         message: 'Following Blogs Fetched Successfully',
       });

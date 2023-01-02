@@ -132,7 +132,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
           {children}
         </Content>
 
-        <Footer className='sm:hidden w-full p-0 fixed bottom-0'>
+        <Footer className='sm:hidden w-full p-0 sticky bottom-0'>
           <MobileNav />
         </Footer>
       </Layout>
