@@ -4,6 +4,7 @@ import uploadFile from '../../middleware/uploadFile';
 import deleteFile from '../../middleware/deleteFile';
 import Blog from '../../model/Blog';
 import User from '../../model/User';
+import Comment from '../../model/Comment';
 import Notification from '../../model/Notification';
 import { dispatchNotification } from '../../socket';
 import { NOTIFICATION } from '../../server.interface';
@@ -152,6 +153,8 @@ export const deleteBlog = asyncHandler(async (req: Request, res: Response): Prom
     if (image && imageName) deleteFile(`blogs/${imageName}`);
 
     await Blog.findByIdAndDelete(blogId);
+
+    await Comment.deleteMany({ blog: blogId });
 
     await User.findByIdAndUpdate(authId, { $pull: { blogs: blogId } });
 

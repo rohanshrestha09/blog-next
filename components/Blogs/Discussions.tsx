@@ -1,6 +1,6 @@
 import { NextRouter, useRouter } from 'next/router';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
@@ -33,6 +33,12 @@ const Discussions: React.FC = () => {
   const [form] = Form.useForm();
 
   const { authUser } = useAuth();
+
+  const [isSSR, setIsSSR] = useState(true);
+
+  useEffect(() => {
+    setIsSSR(false);
+  }, []);
 
   const {
     isOpen: { [DISCUSSIONS_MODAL]: isOpen },
@@ -203,7 +209,11 @@ const Discussions: React.FC = () => {
                   content={comment}
                   datetime={
                     <Tooltip title={moment(createdAt).format('lll')}>
-                      <span>{moment(createdAt).fromNow()}</span>
+                      {!isSSR ? (
+                        <span>{moment(createdAt).fromNow()}</span>
+                      ) : (
+                        <span>{moment(createdAt).fromNow()}</span>
+                      )}
                     </Tooltip>
                   }
                 />

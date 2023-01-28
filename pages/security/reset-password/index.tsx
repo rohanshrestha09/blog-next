@@ -99,11 +99,13 @@ const ResetPassword: NextPage = () => {
             status='success'
             title='Password Reset Link Sent Successfully'
             subTitle={
-              <span className='inline-flex sm:flex-row flex-col'>
-                Check for the reset link at&nbsp;
-                <p className='text-stone-600 font-semibold'>{handleSendEmail.variables?.email}</p>.
+              <div className='flex flex-col items-center'>
+                <span className='flex sm:flex-row flex-col'>
+                  Check for the reset link at&nbsp;
+                  <p className='text-stone-600 font-semibold'>{handleSendEmail.variables?.email}</p>
+                </span>
                 Also don&apos;t forget to check spams. Might as well wait a few minute.
-              </span>
+              </div>
             }
             extra={[
               <Button
