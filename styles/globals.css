@@ -36,6 +36,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  overflow-y: scroll;
+}
+
 body::-webkit-scrollbar {
   width: 14px;
   background-color: #3a3b3c;
