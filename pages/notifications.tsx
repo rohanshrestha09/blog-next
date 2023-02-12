@@ -34,7 +34,7 @@ const Notifications: NextPage = () => {
 
   const notificationAxois = NotificationAxios();
 
-  const { data: notifications } = useQuery({
+  const { data: notifications, isLoading } = useQuery({
     queryFn: () => notificationAxois.getNotifications({ pageSize }),
     queryKey: [GET_NOTIFICATIONS, { pageSize }],
     keepPreviousData: true,
@@ -65,20 +65,28 @@ const Notifications: NextPage = () => {
 
         <Divider />
 
-        <InfiniteScroll
-          dataLength={notifications?.data.length ?? 0}
-          next={() => dispatch(setPageSize({ key: NOTIFICATIONS, pageSize: 10 }))}
-          hasMore={notifications?.data ? notifications?.data.length < notifications?.count : false}
-          loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
-        >
-          <List
-            itemLayout='vertical'
-            dataSource={notifications?.data}
-            renderItem={(notification) => (
-              <NotificationList key={notification._id} notification={notification} />
-            )}
-          />
-        </InfiniteScroll>
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className='py-1' avatar round paragraph={{ rows: 1 }} active />
+          ))
+        ) : (
+          <InfiniteScroll
+            dataLength={notifications?.data.length ?? 0}
+            next={() => dispatch(setPageSize({ key: NOTIFICATIONS, pageSize: 10 }))}
+            hasMore={
+              notifications?.data ? notifications?.data.length < notifications?.count : false
+            }
+            loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
+          >
+            <List
+              itemLayout='vertical'
+              dataSource={notifications?.data}
+              renderItem={(notification) => (
+                <NotificationList key={notification._id} notification={notification} />
+              )}
+            />
+          </InfiniteScroll>
+        )}
       </main>
     </div>
   );
@@ -98,18 +106,11 @@ export const getServerSideProps = withAuth(
 
     const authAxios = AuthAxios(ctx.req.headers.cookie);
 
-    const notificaitonAxios = NotificationAxios(ctx.req.headers.cookie);
-
     const blogAxios = BlogAxios(ctx.req.headers.cookie);
 
     await queryClient.prefetchQuery({
       queryFn: () => authAxios.auth(),
       queryKey: [AUTH],
-    });
-
-    await queryClient.prefetchQuery({
-      queryFn: () => notificaitonAxios.getNotifications({}),
-      queryKey: [GET_NOTIFICATIONS, { pageSize: 20 }],
     });
 
     await queryClient.prefetchQuery({

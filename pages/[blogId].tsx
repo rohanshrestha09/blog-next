@@ -11,7 +11,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import moment from 'moment';
-import { Divider, Image, Tooltip } from 'antd';
+import { Divider, Image, Skeleton, Tooltip } from 'antd';
 import parse from 'html-react-parser';
 import { BsBookmark, BsBookmarkFill, BsHeart, BsHeartFill } from 'react-icons/bs';
 import { VscComment } from 'react-icons/vsc';
@@ -33,7 +33,6 @@ import {
   GET_USER_BLOGS,
 } from '../constants/queryKeys';
 import { MODAL_KEYS } from '../constants/reduxKeys';
-import type { IBlogData } from '../interface/blog';
 
 const { DISCUSSIONS_MODAL, LIKERS_MODAL } = MODAL_KEYS;
 
@@ -58,7 +57,7 @@ const Blog: NextPage = () => {
     queryKey: [GET_BLOG, blogId],
   });
 
-  const { data: userBlogs } = useQuery({
+  const { data: userBlogs, isLoading: isUserBlogLoading } = useQuery({
     queryFn: () => userAxios.getUserBlogs({ user: String(blog?.author._id), pageSize: 4 }),
     queryKey: [GET_USER_BLOGS, blog?.author._id, { pageSize: 4 }],
     enabled: !!blog,
@@ -205,10 +204,18 @@ const Blog: NextPage = () => {
 
             <header className='text-2xl pb-4 uppercase'>More from {blog.author.fullname}</header>
 
-            {userBlogs &&
-              userBlogs.data.map((blog) => (
-                <BlogList key={blog._id} blog={blog} editable={blog.author._id === authUser?._id} />
-              ))}
+            {isUserBlogLoading
+              ? Array.from({ length: 1 }).map((_, i) => (
+                  <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
+                ))
+              : userBlogs &&
+                userBlogs.data.map((blog) => (
+                  <BlogList
+                    key={blog._id}
+                    blog={blog}
+                    editable={blog.author._id === authUser?._id}
+                  />
+                ))}
           </div>
 
           <Likes />
@@ -245,13 +252,6 @@ export const getServerSideProps: GetServerSideProps = async (
   await queryClient.prefetchQuery({
     queryFn: () => blogAxios.getBlog(String(ctx.params?.blogId)),
     queryKey: [GET_BLOG, ctx.params?.blogId],
-  });
-
-  const blog = queryClient.getQueryData([GET_BLOG, ctx.params?.blogId]) as IBlogData;
-
-  await queryClient.prefetchQuery({
-    queryFn: () => userAxios.getUserBlogs({ user: String(blog?.author._id), pageSize: 4 }),
-    queryKey: [GET_USER_BLOGS, blog?.author._id, { pageSize: 4 }],
   });
 
   await queryClient.prefetchQuery({
