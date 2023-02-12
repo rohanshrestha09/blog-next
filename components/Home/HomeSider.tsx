@@ -59,7 +59,7 @@ const HomeSider: React.FC = () => {
 
         {isUserSuggestionsLoading
           ? Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className='py-1' avatar round paragraph={{ rows: 0 }} active />
+              <Skeleton key={i} className='py-0.5' avatar round paragraph={{ rows: 0 }} active />
             ))
           : userSuggestions &&
             userSuggestions.data.map((user) => (

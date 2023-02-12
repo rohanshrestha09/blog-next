@@ -129,7 +129,7 @@ const UserProfile: NextPage = () => {
 
           <div className='w-full pt-3'>
             {isLoading ? (
-              Array.from({ length: 2 }).map((_, i) => (
+              Array.from({ length: 3 }).map((_, i) => (
                 <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
               ))
             ) : (
