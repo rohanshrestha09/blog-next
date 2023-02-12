@@ -10,7 +10,7 @@ export const GET_AUTH_BLOGS = 'get@auth/blog';
 
 export const GET_BOOKMARKS = 'get@auth/blog/bookmarks';
 
-export const GET_ALL_BLOGS = 'get@blog';
+export const GET_ALL_BLOGS = 'get@blogs';
 
 export const GET_USER_BLOGS = 'get@user/blog';
 

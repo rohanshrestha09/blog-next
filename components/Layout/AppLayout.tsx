@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQueryClient } from '@tanstack/react-query';
 import 'antd/dist/antd.dark.min.css';
-import { Layout, Drawer, Affix } from 'antd';
+import { Layout, Drawer, Affix, ConfigProvider, Empty } from 'antd';
 import LoadingBar from 'react-top-loading-bar';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -85,69 +85,71 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
   }, []);
 
   return (
-    <Layout className='font-sans min-h-screen 2xl:px-36 sm:pr-1' hasSider>
-      <LoadingBar color='#177ddc' ref={loaderRef} shadow={true} waitingTime={400} />
+    <ConfigProvider renderEmpty={() => <Empty />}>
+      <Layout className='font-sans min-h-screen 2xl:px-36 sm:pr-1' hasSider>
+        <LoadingBar color='#177ddc' ref={loaderRef} shadow={true} waitingTime={400} />
 
-      <ToastContainer />
+        <ToastContainer />
 
-      <Login />
+        <Login />
 
-      <Register />
+        <Register />
 
-      <MdOutlineKeyboardArrowRight
-        className={`${
-          !getSider() ? 'block' : 'hidden'
-        } fixed left-4 top-[51%] cursor-pointer hover:bg-zinc-800 rounded-full z-50`}
-        size={42}
-        onClick={() => dispatch(openDrawer())}
-      />
-
-      <Drawer
-        placement='left'
-        className={`${getSider() && 'sm:hidden'} block`}
-        closable={false}
-        onClose={() => dispatch(closeDrawer())}
-        open={isDrawerOpen}
-        headerStyle={{ fontFamily: 'Poppins' }}
-        bodyStyle={{ padding: 0, margin: 0 }}
-        contentWrapperStyle={{ width: 'auto', height: 'auto' }}
-      >
-        <Nav additionalProps='w-72' isDrawer />
-      </Drawer>
-
-      <Affix ref={sidebarAffixA} offsetTop={1}>
-        <Sider
-          breakpoint='xl'
-          className={`${!getSider() && 'sm:hidden'} bg-inherit sm:block hidden z-10`}
-          width={270}
-        >
-          <Nav additionalProps='bg-inherit border-none' />
-        </Sider>
-      </Affix>
-
-      <Layout>
-        <Content
-          className={`${getSider() && 'sm:border-x'} border-[#303030] py-[1.20rem] xl:px-12 px-4`}
-        >
-          {children}
-        </Content>
-
-        <Footer className='sm:hidden w-full p-0 sticky bottom-0'>
-          <MobileNav />
-        </Footer>
-      </Layout>
-
-      <Affix ref={sidebarAffixB} offsetTop={1}>
-        <Sider
+        <MdOutlineKeyboardArrowRight
           className={`${
-            !getSider() && 'lg:hidden'
-          } h-screen scrollbar bg-inherit lg:block hidden py-[1.20rem] xl:pl-12 xl:pr-10 px-4 z-10`}
-          width={450}
+            !getSider() ? 'block' : 'hidden'
+          } fixed left-4 top-[51%] cursor-pointer hover:bg-zinc-800 rounded-full z-50`}
+          size={42}
+          onClick={() => dispatch(openDrawer())}
+        />
+
+        <Drawer
+          placement='left'
+          className={`${getSider() && 'sm:hidden'} block`}
+          closable={false}
+          onClose={() => dispatch(closeDrawer())}
+          open={isDrawerOpen}
+          headerStyle={{ fontFamily: 'Poppins' }}
+          bodyStyle={{ padding: 0, margin: 0 }}
+          contentWrapperStyle={{ width: 'auto', height: 'auto' }}
         >
-          {getSider()}
-        </Sider>
-      </Affix>
-    </Layout>
+          <Nav additionalProps='w-72' isDrawer />
+        </Drawer>
+
+        <Affix ref={sidebarAffixA} offsetTop={1}>
+          <Sider
+            breakpoint='xl'
+            className={`${!getSider() && 'sm:hidden'} bg-inherit sm:block hidden z-10`}
+            width={270}
+          >
+            <Nav additionalProps='bg-inherit border-none' />
+          </Sider>
+        </Affix>
+
+        <Layout>
+          <Content
+            className={`${getSider() && 'sm:border-x'} border-[#303030] py-[1.20rem] xl:px-12 px-4`}
+          >
+            {children}
+          </Content>
+
+          <Footer className='sm:hidden w-full p-0 sticky bottom-0'>
+            <MobileNav />
+          </Footer>
+        </Layout>
+
+        <Affix ref={sidebarAffixB} offsetTop={1}>
+          <Sider
+            className={`${
+              !getSider() && 'lg:hidden'
+            } h-screen scrollbar bg-inherit lg:block hidden py-[1.20rem] xl:pl-12 xl:pr-10 px-4 z-10`}
+            width={450}
+          >
+            {getSider()}
+          </Sider>
+        </Affix>
+      </Layout>
+    </ConfigProvider>
   );
 };
 

@@ -3,25 +3,17 @@ import { GetServerSidePropsContext, NextPage } from 'next';
 import { NextRouter, useRouter } from 'next/router';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
-import { Button, Divider, Empty, List, Skeleton } from 'antd';
-import { isEmpty } from 'lodash';
+import { Button, ConfigProvider, Divider, Empty, List, Skeleton } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAuth } from '../../utils/UserAuth';
 import withAuth from '../../utils/auth';
 import AuthAxios from '../../api/AuthAxios';
 import BlogAxios from '../../api/BlogAxios';
-import UserAxios from '../../api/UserAxios';
 import BlogList from '../../components/Blogs/BlogList';
 import SearchFilter from '../../components/Blogs/SortFilter';
 import { setPageSize } from '../../store/sortFilterSlice';
 import { NAV_KEYS, BOOKMARKS_KEYS } from '../../constants/reduxKeys';
-import {
-  AUTH,
-  GET_BLOG_SUGGESTIONS,
-  GET_BOOKMARKS,
-  GET_GENRE,
-  GET_USER_SUGGESTIONS,
-} from '../../constants/queryKeys';
+import { AUTH, GET_BOOKMARKS, GET_GENRE } from '../../constants/queryKeys';
 
 const { HOME_NAV } = NAV_KEYS;
 
@@ -42,7 +34,11 @@ const Bookmarks: NextPage = () => {
 
   const authAxios = AuthAxios();
 
-  const { data: blogs, isPreviousData: isLoading } = useQuery({
+  const {
+    data: blogs,
+    isPreviousData,
+    isLoading,
+  } = useQuery({
     queryFn: () => authAxios.getBookmarks({ genre, pageSize, search }),
     queryKey: [GET_BOOKMARKS, { genre, pageSize, search }],
     keepPreviousData: true,
@@ -61,14 +57,12 @@ const Bookmarks: NextPage = () => {
 
           <Divider />
 
-          <SearchFilter sortFilterKey={BOOKMARKS} isLoading={isLoading} />
+          <SearchFilter sortFilterKey={BOOKMARKS} isLoading={isPreviousData} />
 
-          {isEmpty(blogs?.data) ? (
-            <Empty>
-              <Button className='h-10 uppercase rounded-lg' onClick={() => router.push(HOME_NAV)}>
-                Browse Blogs
-              </Button>
-            </Empty>
+          {isLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
+            ))
           ) : (
             <InfiniteScroll
               dataLength={blogs?.data.length ?? 0}
@@ -76,17 +70,30 @@ const Bookmarks: NextPage = () => {
               hasMore={blogs?.data ? blogs?.data.length < blogs?.count : false}
               loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
             >
-              <List
-                itemLayout='vertical'
-                dataSource={blogs?.data}
-                renderItem={(blog) => (
-                  <BlogList
-                    key={blog._id}
-                    blog={blog}
-                    editable={blog.author._id === authUser._id}
-                  />
+              <ConfigProvider
+                renderEmpty={() => (
+                  <Empty>
+                    <Button
+                      className='h-10 uppercase rounded-lg'
+                      onClick={() => router.push(HOME_NAV)}
+                    >
+                      Browse Blogs
+                    </Button>
+                  </Empty>
                 )}
-              />
+              >
+                <List
+                  itemLayout='vertical'
+                  dataSource={blogs?.data}
+                  renderItem={(blog) => (
+                    <BlogList
+                      key={blog._id}
+                      blog={blog}
+                      editable={blog.author._id === authUser._id}
+                    />
+                  )}
+                />
+              </ConfigProvider>
             </InfiniteScroll>
           )}
         </main>
@@ -107,8 +114,6 @@ export const getServerSideProps = withAuth(
 
     const authAxios = AuthAxios(ctx.req.headers.cookie);
 
-    const userAxios = UserAxios(ctx.req.headers.cookie);
-
     const blogAxios = BlogAxios(ctx.req.headers.cookie);
 
     ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
@@ -116,21 +121,6 @@ export const getServerSideProps = withAuth(
     await queryClient.prefetchQuery({
       queryFn: () => authAxios.auth(),
       queryKey: [AUTH],
-    });
-
-    await queryClient.prefetchQuery({
-      queryFn: () => authAxios.getBookmarks({}),
-      queryKey: [GET_BOOKMARKS, { genre: [], pageSize: 20, search: '' }],
-    });
-
-    await queryClient.prefetchQuery({
-      queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
-      queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
-    });
-
-    await queryClient.prefetchQuery({
-      queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
-      queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
     });
 
     await queryClient.prefetchQuery({

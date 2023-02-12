@@ -2,24 +2,15 @@ import Head from 'next/head';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import { DehydratedState, QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
-import { isEmpty } from 'lodash';
 import { Empty as RenderEmpty, Tabs, List, Skeleton, Button } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { GithubOutlined } from '@ant-design/icons';
 import AuthAxios from '../api/AuthAxios';
 import BlogAxios from '../api/BlogAxios';
-import UserAxios from '../api/UserAxios';
 import BlogList from '../components/Blogs/BlogList';
 import SortFilter from '../components/Blogs/SortFilter';
 import { setPageSize } from '../store/sortFilterSlice';
-import {
-  AUTH,
-  GET_ALL_BLOGS,
-  GET_BLOG_SUGGESTIONS,
-  GET_FOLLOWING_BLOGS,
-  GET_GENRE,
-  GET_USER_SUGGESTIONS,
-} from '../constants/queryKeys';
+import { AUTH, GET_ALL_BLOGS, GET_FOLLOWING_BLOGS, GET_GENRE } from '../constants/queryKeys';
 import { SORT_TYPE, HOME_KEYS } from '../constants/reduxKeys';
 import { useAuth } from '../utils/UserAuth';
 import type { IBlogs } from '../interface/blog';
@@ -58,7 +49,11 @@ const Home: NextPage = () => {
 
   const blogAxios = BlogAxios();
 
-  const { data: allBlogs, isPreviousData: isLoading } = useQuery({
+  const {
+    data: allBlogs,
+    isPreviousData,
+    isLoading,
+  } = useQuery({
     queryFn: () => blogAxios.getAllBlog({ sort, genre, pageSize: pageSize[HOME], search }),
     queryKey: [GET_ALL_BLOGS, { genre, sort, pageSize: pageSize[HOME], search }],
     keepPreviousData: true,
@@ -76,10 +71,12 @@ const Home: NextPage = () => {
       label: <span className='sm:mx-2 mx-auto flex items-center gap-1.5'>{label}</span>,
       children: (
         <div className='w-full pt-3'>
-          {key === HOME && <SortFilter sortFilterKey={HOME} isLoading={isLoading} hasSort />}
+          {key === HOME && <SortFilter sortFilterKey={HOME} isLoading={isPreviousData} hasSort />}
 
-          {isEmpty(blogs?.data) ? (
-            <Empty />
+          {isLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
+            ))
           ) : (
             <InfiniteScroll
               dataLength={blogs?.data.length ?? 0}
@@ -140,33 +137,11 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const blogAxios = BlogAxios(ctx.req.headers.cookie);
 
-  const userAxios = UserAxios(ctx.req.headers.cookie);
-
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.auth(),
     queryKey: [AUTH],
-  });
-
-  await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getAllBlog({}),
-    queryKey: [GET_ALL_BLOGS, { genre: [], sort: LIKES, pageSize: 20, search: '' }],
-  });
-
-  await queryClient.prefetchQuery({
-    queryFn: () => authAxios.getFollowingBlogs({}),
-    queryKey: [GET_FOLLOWING_BLOGS, { pageSize: 20 }],
-  });
-
-  await queryClient.prefetchQuery({
-    queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
-    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
-  });
-
-  await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
-    queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
   });
 
   await queryClient.prefetchQuery({

@@ -1,8 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
-import { Empty, Modal, Input, Spin, Divider, Skeleton, List } from 'antd';
+import { Modal, Input, Spin, Divider, Skeleton, List } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import { isEmpty } from 'lodash';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { BiSearch } from 'react-icons/bi';
 import { useAuth } from '../../utils/UserAuth';
@@ -70,30 +69,26 @@ const UserSuggestions: React.FC = () => {
 
       <Divider />
 
-      {isEmpty(users?.data) ? (
-        <Empty />
-      ) : (
-        <InfiniteScroll
-          dataLength={users?.data.length ?? 0}
-          next={() => dispatch(setPageSize({ key: USER_SUGGESTIONS, pageSize: 10 }))}
-          hasMore={users?.data ? users?.data.length < users?.count : false}
-          loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
-        >
-          <List
-            itemLayout='vertical'
-            dataSource={users?.data}
-            renderItem={(user) => (
-              <UserSkeleton
-                key={user._id}
-                user={user}
-                shouldFollow={!authUser?.following.includes(user._id as never)}
-                bioAsDesc
-                isModal
-              />
-            )}
-          />
-        </InfiniteScroll>
-      )}
+      <InfiniteScroll
+        dataLength={users?.data.length ?? 0}
+        next={() => dispatch(setPageSize({ key: USER_SUGGESTIONS, pageSize: 10 }))}
+        hasMore={users?.data ? users?.data.length < users?.count : false}
+        loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
+      >
+        <List
+          itemLayout='vertical'
+          dataSource={users?.data}
+          renderItem={(user) => (
+            <UserSkeleton
+              key={user._id}
+              user={user}
+              shouldFollow={!authUser?.following.includes(user._id as never)}
+              bioAsDesc
+              isModal
+            />
+          )}
+        />
+      </InfiniteScroll>
     </Modal>
   );
 };

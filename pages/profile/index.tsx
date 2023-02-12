@@ -3,8 +3,7 @@ import { NextRouter, useRouter } from 'next/router';
 import { GetServerSidePropsContext, NextPage } from 'next';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
-import { isEmpty } from 'lodash';
-import { Button, Empty, Tabs, Image, Divider, Skeleton, List } from 'antd';
+import { Button, Empty, Tabs, Image, Divider, Skeleton, List, ConfigProvider } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { IconType } from 'react-icons';
 import { BsBook } from 'react-icons/bs';
@@ -20,29 +19,12 @@ import SortFilter from '../../components/Blogs/SortFilter';
 import { openModal } from '../../store/modalSlice';
 import { changeKey } from '../../store/authBlogSlice';
 import { setPageSize } from '../../store/sortFilterSlice';
-import {
-  AUTH,
-  GET_AUTH_BLOGS,
-  GET_AUTH_FOLLOWERS,
-  GET_AUTH_FOLLOWING,
-  GET_GENRE,
-} from '../../constants/queryKeys';
-import {
-  PROFILE_KEYS,
-  AUTH_PROFILE_KEYS,
-  MODAL_KEYS,
-  NAV_KEYS,
-  SORT_TYPE,
-  SORT_ORDER,
-} from '../../constants/reduxKeys';
+import { AUTH, GET_AUTH_BLOGS, GET_GENRE } from '../../constants/queryKeys';
+import { PROFILE_KEYS, AUTH_PROFILE_KEYS, MODAL_KEYS, NAV_KEYS } from '../../constants/reduxKeys';
 
 const { ALL_BLOGS, PUBLISHED, UNPUBLISHED } = AUTH_PROFILE_KEYS;
 
 const { AUTH_PROFILE } = PROFILE_KEYS;
-
-const { LIKES } = SORT_TYPE;
-
-const { DESCENDING } = SORT_ORDER;
 
 const { CREATE_NAV } = NAV_KEYS;
 
@@ -67,7 +49,11 @@ const Profile: NextPage = () => {
 
   const authAxios = AuthAxios();
 
-  const { data: blogs, isPreviousData: isLoading } = useQuery({
+  const {
+    data: blogs,
+    isPreviousData,
+    isLoading,
+  } = useQuery({
     queryFn: () => authAxios.getAllBlogs({ sortOrder, isPublished, sort, genre, pageSize, search }),
     queryKey: [GET_AUTH_BLOGS, { sortOrder, isPublished, sort, genre, pageSize, search }],
     keepPreviousData: true,
@@ -83,14 +69,17 @@ const Profile: NextPage = () => {
       ),
       children: (
         <div className='w-full pt-3'>
-          <SortFilter sortFilterKey={AUTH_PROFILE} isLoading={isLoading} hasSort hasSortOrder />
+          <SortFilter
+            sortFilterKey={AUTH_PROFILE}
+            isLoading={isPreviousData}
+            hasSort
+            hasSortOrder
+          />
 
-          {isEmpty(blogs?.data) ? (
-            <Empty>
-              <Button className='h-10 uppercase rounded-lg' onClick={() => router.push(CREATE_NAV)}>
-                Create One
-              </Button>
-            </Empty>
+          {isLoading ? (
+            Array.from({ length: 2 }).map((_, i) => (
+              <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
+            ))
           ) : (
             <InfiniteScroll
               dataLength={blogs?.data.length ?? 0}
@@ -98,17 +87,30 @@ const Profile: NextPage = () => {
               hasMore={blogs?.data ? blogs?.data.length < blogs?.count : false}
               loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
             >
-              <List
-                itemLayout='vertical'
-                dataSource={blogs?.data}
-                renderItem={(blog) => (
-                  <BlogList
-                    key={blog._id}
-                    blog={blog}
-                    editable={blog.author._id === authUser._id}
-                  />
+              <ConfigProvider
+                renderEmpty={() => (
+                  <Empty>
+                    <Button
+                      className='h-10 uppercase rounded-lg'
+                      onClick={() => router.push(CREATE_NAV)}
+                    >
+                      Create One
+                    </Button>
+                  </Empty>
                 )}
-              />
+              >
+                <List
+                  itemLayout='vertical'
+                  dataSource={blogs?.data}
+                  renderItem={(blog) => (
+                    <BlogList
+                      key={blog._id}
+                      blog={blog}
+                      editable={blog.author._id === authUser._id}
+                    />
+                  )}
+                />
+              </ConfigProvider>
             </InfiniteScroll>
           )}
         </div>
@@ -199,24 +201,6 @@ export const getServerSideProps = withAuth(
     await queryClient.prefetchQuery({
       queryFn: () => authAxios.auth(),
       queryKey: [AUTH],
-    });
-
-    await queryClient.prefetchQuery({
-      queryFn: () => authAxios.getAllBlogs({}),
-      queryKey: [
-        GET_AUTH_BLOGS,
-        { genre: [], pageSize: 20, sort: LIKES, sortOrder: DESCENDING, search: '' },
-      ],
-    });
-
-    await queryClient.prefetchQuery({
-      queryFn: () => authAxios.getFollowers({}),
-      queryKey: [GET_AUTH_FOLLOWERS, { pageSize: 20, search: '' }],
-    });
-
-    await queryClient.prefetchQuery({
-      queryFn: () => authAxios.getFollowing({}),
-      queryKey: [GET_AUTH_FOLLOWING, { pageSize: 20, search: '' }],
     });
 
     await queryClient.prefetchQuery({

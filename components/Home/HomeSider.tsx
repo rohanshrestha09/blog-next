@@ -1,7 +1,7 @@
 import { NextRouter, useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
-import { Button, Divider } from 'antd';
+import { Button, Divider, Skeleton } from 'antd';
 import UserAxios from '../../api/UserAxios';
 import BlogAxios from '../../api/BlogAxios';
 import { openModal } from '../../store/modalSlice';
@@ -24,16 +24,14 @@ const HomeSider: React.FC = () => {
 
   const blogAxios = BlogAxios();
 
-  const { data: userSuggestions } = useQuery({
+  const { data: userSuggestions, isLoading: isUserSuggestionsLoading } = useQuery({
     queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
     queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
-    staleTime: Infinity,
   });
 
-  const { data: blogSuggestions } = useQuery({
+  const { data: blogSuggestions, isLoading: isBlogSuggestionsLoading } = useQuery({
     queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
     queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
-    staleTime: Infinity,
   });
 
   const { data: genre } = useQuery({
@@ -59,15 +57,19 @@ const HomeSider: React.FC = () => {
 
         <header className='text-xl pb-4'>Suggestions</header>
 
-        {userSuggestions &&
-          userSuggestions.data.map((user) => (
-            <UserSkeleton
-              key={user._id}
-              user={user}
-              shouldFollow={!authUser?.following.includes(user._id as never)}
-              bioAsDesc
-            />
-          ))}
+        {isUserSuggestionsLoading
+          ? Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className='py-1' avatar round paragraph={{ rows: 0 }} active />
+            ))
+          : userSuggestions &&
+            userSuggestions.data.map((user) => (
+              <UserSkeleton
+                key={user._id}
+                user={user}
+                shouldFollow={!authUser?.following.includes(user._id as never)}
+                bioAsDesc
+              />
+            ))}
 
         <p
           className='text-[#1890ff] cursor-pointer hover:text-blue-600 transition-all duration-300'
@@ -80,10 +82,14 @@ const HomeSider: React.FC = () => {
 
         <header className='text-xl pb-4'>More Blogs</header>
 
-        {blogSuggestions &&
-          blogSuggestions.data.map((blog) => (
-            <BlogList key={blog._id} blog={blog} smallContainer />
-          ))}
+        {isBlogSuggestionsLoading
+          ? Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className='py-5' avatar round paragraph={{ rows: 2 }} active />
+            ))
+          : blogSuggestions &&
+            blogSuggestions.data.map((blog) => (
+              <BlogList key={blog._id} blog={blog} smallContainer />
+            ))}
 
         <header className='text-xl pb-4'>Pick a genre</header>
 

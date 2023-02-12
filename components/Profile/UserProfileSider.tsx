@@ -2,8 +2,7 @@ import { NextRouter, useRouter } from 'next/router';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
-import { isEmpty } from 'lodash';
-import { Empty, Tabs, Divider, Input, Modal, Spin, Skeleton, List } from 'antd';
+import { Tabs, Divider, Input, Modal, Spin, Skeleton, List } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { LoadingOutlined } from '@ant-design/icons';
 import { IconType } from 'react-icons';
@@ -50,7 +49,11 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
     queryKey: [GET_USER, userId],
   });
 
-  const { data: followers, isPreviousData: isFollowersLoading } = useQuery({
+  const {
+    data: followers,
+    isPreviousData: isFollowersPreviousData,
+    isLoading: isFollowersLoading,
+  } = useQuery({
     queryFn: () =>
       userAxios.getUserFollowers({
         user: String(userId),
@@ -65,7 +68,11 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
     keepPreviousData: true,
   });
 
-  const { data: following, isPreviousData: isFollowingLoading } = useQuery({
+  const {
+    data: following,
+    isPreviousData: isFollowingPreviousData,
+    isLoading: isFollowingLoading,
+  } = useQuery({
     queryFn: () =>
       userAxios.getUserFollowing({
         user: String(userId),
@@ -106,15 +113,17 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
               allowClear
             />
 
-            {(key === USER_FOLLOWERS ? isFollowersLoading : isFollowingLoading) && (
+            {(isFollowersPreviousData || isFollowingPreviousData) && (
               <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
             )}
           </span>
 
           <Divider />
 
-          {isEmpty(users?.data) ? (
-            <Empty />
+          {isFollowersLoading || isFollowingLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className='py-1' avatar round paragraph={{ rows: 0 }} active />
+            ))
           ) : (
             <InfiniteScroll
               dataLength={users?.data.length ?? 0}

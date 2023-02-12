@@ -1,22 +1,17 @@
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
-import { shallowEqual, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, QueryClient, DehydratedState, useQuery } from '@tanstack/react-query';
-import { Divider, Empty, PageHeader } from 'antd';
+import { Divider, Empty, List, PageHeader, Skeleton } from 'antd';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { capitalize, isEmpty } from 'lodash';
 import { useAuth } from '../../utils/UserAuth';
 import BlogAxios from '../../api/BlogAxios';
 import AuthAxios from '../../api/AuthAxios';
-import UserAxios from '../../api/UserAxios';
 import BlogList from '../../components/Blogs/BlogList';
-import {
-  AUTH,
-  GET_ALL_BLOGS,
-  GET_BLOG_SUGGESTIONS,
-  GET_GENRE,
-  GET_USER_SUGGESTIONS,
-} from '../../constants/queryKeys';
+import { setPageSize } from '../../store/sortFilterSlice';
+import { AUTH, GET_ALL_BLOGS, GET_GENRE } from '../../constants/queryKeys';
 import { HOME_KEYS } from '../../constants/reduxKeys';
 
 const { GENERIC_BLOGS } = HOME_KEYS;
@@ -27,6 +22,8 @@ const GenericBlogs: NextPage = () => {
     back,
   }: NextRouter = useRouter();
 
+  const dispatch = useDispatch();
+
   const {
     pageSize: { [GENERIC_BLOGS]: pageSize },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
@@ -35,7 +32,7 @@ const GenericBlogs: NextPage = () => {
 
   const blogAxios = BlogAxios();
 
-  const { data: blogs } = useQuery({
+  const { data: blogs, isLoading } = useQuery({
     queryFn: () => blogAxios.getAllBlog({ genre: [capitalize(String(genre))], pageSize }),
     queryKey: [GET_ALL_BLOGS, { genre: [capitalize(String(genre))], pageSize }],
   });
@@ -56,12 +53,29 @@ const GenericBlogs: NextPage = () => {
         />
 
         <div className='w-full pt-3'>
-          {isEmpty(blogs?.data) ? (
-            <Empty />
-          ) : (
-            blogs?.data.map((blog) => (
-              <BlogList key={blog._id} blog={blog} editable={blog.author._id === authUser?._id} />
+          {isLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
             ))
+          ) : (
+            <InfiniteScroll
+              dataLength={blogs?.data.length ?? 0}
+              next={() => dispatch(setPageSize({ key: GENERIC_BLOGS, pageSize: 10 }))}
+              hasMore={blogs?.data ? blogs?.data.length < blogs?.count : false}
+              loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
+            >
+              <List
+                itemLayout='vertical'
+                dataSource={blogs?.data}
+                renderItem={(blog) => (
+                  <BlogList
+                    key={blog._id}
+                    blog={blog}
+                    editable={blog.author._id === authUser?._id}
+                  />
+                )}
+              />
+            </InfiniteScroll>
           )}
         </div>
       </main>
@@ -82,28 +96,11 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const authAxios = AuthAxios(ctx.req.headers.cookie);
 
-  const userAxios = UserAxios(ctx.req.headers.cookie);
-
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.auth(),
     queryKey: [AUTH],
-  });
-
-  await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getAllBlog({ genre: [capitalize(String(ctx.params?.genre))] }),
-    queryKey: [GET_ALL_BLOGS, { genre: [capitalize(String(ctx.params?.genre))], pageSize: 20 }],
-  });
-
-  await queryClient.prefetchQuery({
-    queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
-    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
-  });
-
-  await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
-    queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
   });
 
   await queryClient.prefetchQuery({

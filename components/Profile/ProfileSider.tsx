@@ -1,9 +1,9 @@
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
-import { isEmpty } from 'lodash';
-import { Empty, Tabs, Divider, Input, Modal, Spin, Skeleton, List } from 'antd';
+import { Empty, Tabs, Divider, Input, Modal, Spin, Skeleton, List, ConfigProvider } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { isEmpty } from 'lodash';
 import { LoadingOutlined } from '@ant-design/icons';
 import { IconType } from 'react-icons';
 import { BiLink, BiSearch } from 'react-icons/bi';
@@ -40,7 +40,11 @@ const Profile: React.FC<Props> = ({ isSider }) => {
 
   const authAxios = AuthAxios();
 
-  const { data: followers, isPreviousData: isFollowersLoading } = useQuery({
+  const {
+    data: followers,
+    isPreviousData: isFollowersPreviousData,
+    isLoading: isFollowersLoading,
+  } = useQuery({
     queryFn: () =>
       authAxios.getFollowers({
         pageSize: pageSize[AUTH_FOLLOWERS],
@@ -53,7 +57,11 @@ const Profile: React.FC<Props> = ({ isSider }) => {
     keepPreviousData: true,
   });
 
-  const { data: following, isPreviousData: isFollowingLoading } = useQuery({
+  const {
+    data: following,
+    isPreviousData: isFollowingPreviousData,
+    isLoading: isFollowingLoading,
+  } = useQuery({
     queryFn: () =>
       authAxios.getFollowing({
         pageSize: pageSize[AUTH_FOLLOWING],
@@ -92,22 +100,17 @@ const Profile: React.FC<Props> = ({ isSider }) => {
               allowClear
             />
 
-            {(key === AUTH_FOLLOWERS ? isFollowersLoading : isFollowingLoading) && (
+            {(isFollowersPreviousData || isFollowingPreviousData) && (
               <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
             )}
           </span>
 
           <Divider />
 
-          {isEmpty(users?.data) ? (
-            <Empty>
-              <p
-                className='text-[#1890ff] cursor-pointer hover:text-blue-600 transition-all duration-300'
-                onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
-              >
-                View Suggestions
-              </p>
-            </Empty>
+          {isFollowersLoading || isFollowingLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className='py-1' avatar round paragraph={{ rows: 0 }} active />
+            ))
           ) : (
             <InfiniteScroll
               dataLength={users?.data.length ?? 0}
@@ -115,25 +118,40 @@ const Profile: React.FC<Props> = ({ isSider }) => {
               hasMore={users?.data ? users?.data.length < users?.count : false}
               loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
               endMessage={
-                <p
-                  className='text-[#1890ff] cursor-pointer hover:text-blue-600 transition-all duration-300'
-                  onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
-                >
-                  View More Suggestions
-                </p>
+                !isEmpty(users?.data) && (
+                  <p
+                    className='text-[#1890ff] cursor-pointer hover:text-blue-600 transition-all duration-300'
+                    onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
+                  >
+                    View More Suggestions
+                  </p>
+                )
               }
             >
-              <List
-                itemLayout='vertical'
-                dataSource={users?.data}
-                renderItem={(user) => (
-                  <UserSkeleton
-                    key={user._id}
-                    user={user}
-                    shouldFollow={!authUser.following.includes(user._id as never)}
-                  />
+              <ConfigProvider
+                renderEmpty={() => (
+                  <Empty>
+                    <p
+                      className='text-[#1890ff] cursor-pointer hover:text-blue-600 transition-all duration-300'
+                      onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
+                    >
+                      View Suggestions
+                    </p>
+                  </Empty>
                 )}
-              />
+              >
+                <List
+                  itemLayout='vertical'
+                  dataSource={users?.data}
+                  renderItem={(user) => (
+                    <UserSkeleton
+                      key={user._id}
+                      user={user}
+                      shouldFollow={!authUser.following.includes(user._id as never)}
+                    />
+                  )}
+                />
+              </ConfigProvider>
             </InfiniteScroll>
           )}
         </div>

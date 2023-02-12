@@ -27,12 +27,10 @@ import { errorNotification, successNotification } from '../utils/notification';
 import {
   AUTH,
   GET_BLOG,
-  GET_BLOG_SUGGESTIONS,
   GET_COMMENTS,
   GET_GENRE,
   GET_LIKERS,
   GET_USER_BLOGS,
-  GET_USER_SUGGESTIONS,
 } from '../constants/queryKeys';
 import { MODAL_KEYS } from '../constants/reduxKeys';
 import type { IBlogData } from '../interface/blog';
@@ -264,16 +262,6 @@ export const getServerSideProps: GetServerSideProps = async (
   await queryClient.prefetchQuery({
     queryFn: () => blogAxios.getComments({ id: String(ctx.params?.blogId), pageSize: 20 }),
     queryKey: [GET_COMMENTS, ctx.params?.blogId, { pageSize: 20 }],
-  });
-
-  await queryClient.prefetchQuery({
-    queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
-    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
-  });
-
-  await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
-    queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
   });
 
   await queryClient.prefetchQuery({

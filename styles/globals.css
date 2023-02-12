@@ -73,6 +73,10 @@ svg {
   vertical-align: baseline !important;
 }
 
+.ant-empty-description {
+  color: #d2d9d9;
+}
+
 .scrollbar {
   overflow-y: scroll;
   mask-image: linear-gradient(to top, transparent, black),

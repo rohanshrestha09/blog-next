@@ -10,23 +10,15 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { Divider, Empty, List, Skeleton } from 'antd';
-import { isEmpty } from 'lodash';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import withAuth from '../utils/auth';
 import AuthAxios from '../api/AuthAxios';
-import UserAxios from '../api/UserAxios';
 import BlogAxios from '../api/BlogAxios';
 import NotificationList from '../components/Notifications';
 import NotificationAxios from '../api/NotificationAxios';
 import { setPageSize } from '../store/sortFilterSlice';
 import { errorNotification } from '../utils/notification';
-import {
-  AUTH,
-  GET_BLOG_SUGGESTIONS,
-  GET_GENRE,
-  GET_NOTIFICATIONS,
-  GET_USER_SUGGESTIONS,
-} from '../constants/queryKeys';
+import { AUTH, GET_GENRE, GET_NOTIFICATIONS } from '../constants/queryKeys';
 import { NOTIFICATIONS_KEYS } from '../constants/reduxKeys';
 
 const { NOTIFICATIONS } = NOTIFICATIONS_KEYS;
@@ -73,26 +65,20 @@ const Notifications: NextPage = () => {
 
         <Divider />
 
-        {isEmpty(notifications?.data) ? (
-          <Empty />
-        ) : (
-          <InfiniteScroll
-            dataLength={notifications?.data.length ?? 0}
-            next={() => dispatch(setPageSize({ key: NOTIFICATIONS, pageSize: 10 }))}
-            hasMore={
-              notifications?.data ? notifications?.data.length < notifications?.count : false
-            }
-            loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
-          >
-            <List
-              itemLayout='vertical'
-              dataSource={notifications?.data}
-              renderItem={(notification) => (
-                <NotificationList key={notification._id} notification={notification} />
-              )}
-            />
-          </InfiniteScroll>
-        )}
+        <InfiniteScroll
+          dataLength={notifications?.data.length ?? 0}
+          next={() => dispatch(setPageSize({ key: NOTIFICATIONS, pageSize: 10 }))}
+          hasMore={notifications?.data ? notifications?.data.length < notifications?.count : false}
+          loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
+        >
+          <List
+            itemLayout='vertical'
+            dataSource={notifications?.data}
+            renderItem={(notification) => (
+              <NotificationList key={notification._id} notification={notification} />
+            )}
+          />
+        </InfiniteScroll>
       </main>
     </div>
   );
@@ -116,8 +102,6 @@ export const getServerSideProps = withAuth(
 
     const blogAxios = BlogAxios(ctx.req.headers.cookie);
 
-    const userAxios = UserAxios(ctx.req.headers.cookie);
-
     await queryClient.prefetchQuery({
       queryFn: () => authAxios.auth(),
       queryKey: [AUTH],
@@ -126,16 +110,6 @@ export const getServerSideProps = withAuth(
     await queryClient.prefetchQuery({
       queryFn: () => notificaitonAxios.getNotifications({}),
       queryKey: [GET_NOTIFICATIONS, { pageSize: 20 }],
-    });
-
-    await queryClient.prefetchQuery({
-      queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
-      queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
-    });
-
-    await queryClient.prefetchQuery({
-      queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
-      queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
     });
 
     await queryClient.prefetchQuery({
