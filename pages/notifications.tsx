@@ -66,7 +66,7 @@ const Notifications: NextPage = () => {
         <Divider />
 
         {isLoading ? (
-          Array.from({ length: 3 }).map((_, i) => (
+          Array.from({ length: 7 }).map((_, i) => (
             <Skeleton key={i} className='py-1' avatar round paragraph={{ rows: 1 }} active />
           ))
         ) : (
