@@ -32,7 +32,7 @@ const GenericBlogs: NextPage = () => {
 
   const blogAxios = BlogAxios();
 
-  const { data: blogs, isLoading } = useQuery({
+  const { data: blogs, isFetchedAfterMount } = useQuery({
     queryFn: () => blogAxios.getAllBlog({ genre: [capitalize(String(genre))], pageSize }),
     queryKey: [GET_ALL_BLOGS, { genre: [capitalize(String(genre))], pageSize }],
   });
@@ -53,7 +53,7 @@ const GenericBlogs: NextPage = () => {
         />
 
         <div className='w-full pt-3'>
-          {isLoading ? (
+          {!isFetchedAfterMount ? (
             Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
             ))
@@ -101,6 +101,11 @@ export const getServerSideProps: GetServerSideProps = async (
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.auth(),
     queryKey: [AUTH],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => blogAxios.getAllBlog({ genre: [capitalize(String(ctx.params?.genre))] }),
+    queryKey: [GET_ALL_BLOGS, { genre: [capitalize(String(ctx.params?.genre))], pageSize: 20 }],
   });
 
   await queryClient.prefetchQuery({

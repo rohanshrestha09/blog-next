@@ -33,6 +33,7 @@ import {
   GET_USER_BLOGS,
 } from '../constants/queryKeys';
 import { MODAL_KEYS } from '../constants/reduxKeys';
+import { IBlogData } from '../interface/blog';
 
 const { DISCUSSIONS_MODAL, LIKERS_MODAL } = MODAL_KEYS;
 
@@ -57,7 +58,7 @@ const Blog: NextPage = () => {
     queryKey: [GET_BLOG, blogId],
   });
 
-  const { data: userBlogs, isLoading: isUserBlogLoading } = useQuery({
+  const { data: userBlogs, isFetchedAfterMount: isUserBlogFetchedAfterMount } = useQuery({
     queryFn: () => userAxios.getUserBlogs({ user: String(blog?.author._id), pageSize: 4 }),
     queryKey: [GET_USER_BLOGS, blog?.author._id, { pageSize: 4 }],
     enabled: !!blog,
@@ -204,7 +205,7 @@ const Blog: NextPage = () => {
 
             <header className='text-2xl pb-4 uppercase'>More from {blog.author.fullname}</header>
 
-            {isUserBlogLoading
+            {!isUserBlogFetchedAfterMount
               ? Array.from({ length: 1 }).map((_, i) => (
                   <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
                 ))
@@ -252,6 +253,13 @@ export const getServerSideProps: GetServerSideProps = async (
   await queryClient.prefetchQuery({
     queryFn: () => blogAxios.getBlog(String(ctx.params?.blogId)),
     queryKey: [GET_BLOG, ctx.params?.blogId],
+  });
+
+  const blog = queryClient.getQueryData([GET_BLOG, ctx.params?.blogId]) as IBlogData;
+
+  await queryClient.prefetchQuery({
+    queryFn: () => userAxios.getUserBlogs({ user: String(blog?.author._id), pageSize: 4 }),
+    queryKey: [GET_USER_BLOGS, blog?.author._id, { pageSize: 4 }],
   });
 
   await queryClient.prefetchQuery({

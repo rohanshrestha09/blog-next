@@ -9,7 +9,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { Divider, Empty, List, Skeleton } from 'antd';
+import { Divider, List, Skeleton } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import withAuth from '../utils/auth';
 import AuthAxios from '../api/AuthAxios';
@@ -34,7 +34,7 @@ const Notifications: NextPage = () => {
 
   const notificationAxois = NotificationAxios();
 
-  const { data: notifications, isLoading } = useQuery({
+  const { data: notifications, isFetchedAfterMount } = useQuery({
     queryFn: () => notificationAxois.getNotifications({ pageSize }),
     queryKey: [GET_NOTIFICATIONS, { pageSize }],
     keepPreviousData: true,
@@ -65,7 +65,7 @@ const Notifications: NextPage = () => {
 
         <Divider />
 
-        {isLoading ? (
+        {!isFetchedAfterMount ? (
           Array.from({ length: 7 }).map((_, i) => (
             <Skeleton key={i} className='py-1' avatar round paragraph={{ rows: 1 }} active />
           ))
@@ -108,9 +108,16 @@ export const getServerSideProps = withAuth(
 
     const blogAxios = BlogAxios(ctx.req.headers.cookie);
 
+    const notificaitonAxios = NotificationAxios(ctx.req.headers.cookie);
+
     await queryClient.prefetchQuery({
       queryFn: () => authAxios.auth(),
       queryKey: [AUTH],
+    });
+
+    await queryClient.prefetchQuery({
+      queryFn: () => notificaitonAxios.getNotifications({}),
+      queryKey: [GET_NOTIFICATIONS, { pageSize: 20 }],
     });
 
     await queryClient.prefetchQuery({

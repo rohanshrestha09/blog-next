@@ -37,7 +37,7 @@ const Bookmarks: NextPage = () => {
   const {
     data: blogs,
     isPreviousData,
-    isLoading,
+    isFetchedAfterMount,
   } = useQuery({
     queryFn: () => authAxios.getBookmarks({ genre, pageSize, search }),
     queryKey: [GET_BOOKMARKS, { genre, pageSize, search }],
@@ -59,7 +59,7 @@ const Bookmarks: NextPage = () => {
 
           <SearchFilter sortFilterKey={BOOKMARKS} isLoading={isPreviousData} />
 
-          {isLoading ? (
+          {!isFetchedAfterMount ? (
             Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
             ))
@@ -121,6 +121,11 @@ export const getServerSideProps = withAuth(
     await queryClient.prefetchQuery({
       queryFn: () => authAxios.auth(),
       queryKey: [AUTH],
+    });
+
+    await queryClient.prefetchQuery({
+      queryFn: () => authAxios.getBookmarks({}),
+      queryKey: [GET_BOOKMARKS, { genre: [], pageSize: 20, search: '' }],
     });
 
     await queryClient.prefetchQuery({

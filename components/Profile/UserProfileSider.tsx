@@ -52,7 +52,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
   const {
     data: followers,
     isPreviousData: isFollowersPreviousData,
-    isLoading: isFollowersLoading,
+    isFetchedAfterMount: isFollowersFetchedAfterMount,
   } = useQuery({
     queryFn: () =>
       userAxios.getUserFollowers({
@@ -71,7 +71,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
   const {
     data: following,
     isPreviousData: isFollowingPreviousData,
-    isLoading: isFollowingLoading,
+    isFetchedAfterMount: isFollowingFetchedAfterMount,
   } = useQuery({
     queryFn: () =>
       userAxios.getUserFollowing({
@@ -120,7 +120,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
 
           <Divider />
 
-          {isFollowersLoading || isFollowingLoading ? (
+          {!isFollowersFetchedAfterMount || !isFollowingFetchedAfterMount ? (
             Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className='py-0.5' avatar round paragraph={{ rows: 0 }} active />
             ))

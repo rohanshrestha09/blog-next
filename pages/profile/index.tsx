@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { NextRouter, useRouter } from 'next/router';
+import { NextRouter, Router, useRouter } from 'next/router';
 import { GetServerSidePropsContext, NextPage } from 'next';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
@@ -19,8 +19,21 @@ import SortFilter from '../../components/Blogs/SortFilter';
 import { openModal } from '../../store/modalSlice';
 import { changeKey } from '../../store/authBlogSlice';
 import { setPageSize } from '../../store/sortFilterSlice';
-import { AUTH, GET_AUTH_BLOGS, GET_GENRE } from '../../constants/queryKeys';
-import { PROFILE_KEYS, AUTH_PROFILE_KEYS, MODAL_KEYS, NAV_KEYS } from '../../constants/reduxKeys';
+import {
+  AUTH,
+  GET_AUTH_BLOGS,
+  GET_AUTH_FOLLOWERS,
+  GET_AUTH_FOLLOWING,
+  GET_GENRE,
+} from '../../constants/queryKeys';
+import {
+  PROFILE_KEYS,
+  AUTH_PROFILE_KEYS,
+  MODAL_KEYS,
+  NAV_KEYS,
+  SORT_ORDER,
+  SORT_TYPE,
+} from '../../constants/reduxKeys';
 
 const { ALL_BLOGS, PUBLISHED, UNPUBLISHED } = AUTH_PROFILE_KEYS;
 
@@ -29,6 +42,10 @@ const { AUTH_PROFILE } = PROFILE_KEYS;
 const { CREATE_NAV } = NAV_KEYS;
 
 const { EDIT_PROFILE_MODAL } = MODAL_KEYS;
+
+const { LIKES } = SORT_TYPE;
+
+const { DESCENDING } = SORT_ORDER;
 
 const Profile: NextPage = () => {
   const router: NextRouter = useRouter();
@@ -52,7 +69,7 @@ const Profile: NextPage = () => {
   const {
     data: blogs,
     isPreviousData,
-    isLoading,
+    isFetchedAfterMount,
   } = useQuery({
     queryFn: () => authAxios.getAllBlogs({ sortOrder, isPublished, sort, genre, pageSize, search }),
     queryKey: [GET_AUTH_BLOGS, { sortOrder, isPublished, sort, genre, pageSize, search }],
@@ -76,7 +93,7 @@ const Profile: NextPage = () => {
             hasSortOrder
           />
 
-          {isLoading ? (
+          {!isFetchedAfterMount ? (
             Array.from({ length: 2 }).map((_, i) => (
               <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
             ))
@@ -201,6 +218,24 @@ export const getServerSideProps = withAuth(
     await queryClient.prefetchQuery({
       queryFn: () => authAxios.auth(),
       queryKey: [AUTH],
+    });
+
+    await queryClient.prefetchQuery({
+      queryFn: () => authAxios.getAllBlogs({}),
+      queryKey: [
+        GET_AUTH_BLOGS,
+        { genre: [], pageSize: 20, sort: LIKES, sortOrder: DESCENDING, search: '' },
+      ],
+    });
+
+    await queryClient.prefetchQuery({
+      queryFn: () => authAxios.getFollowers({}),
+      queryKey: [GET_AUTH_FOLLOWERS, { pageSize: 20, search: '' }],
+    });
+
+    await queryClient.prefetchQuery({
+      queryFn: () => authAxios.getFollowing({}),
+      queryKey: [GET_AUTH_FOLLOWING, { pageSize: 20, search: '' }],
     });
 
     await queryClient.prefetchQuery({

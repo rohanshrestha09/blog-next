@@ -10,7 +10,6 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import { isEmpty } from 'lodash';
 import { Image, Button, Divider, Empty, Skeleton, List, ConfigProvider } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAuth } from '../../utils/UserAuth';
@@ -56,7 +55,7 @@ const UserProfile: NextPage = () => {
     queryKey: [GET_USER, userId],
   });
 
-  const { data: blogs, isLoading } = useQuery({
+  const { data: blogs, isFetchedAfterMount } = useQuery({
     queryFn: () => userAxios.getUserBlogs({ user: String(userId), pageSize }),
     queryKey: [GET_USER_BLOGS, userId, { pageSize }],
     keepPreviousData: true,
@@ -128,7 +127,7 @@ const UserProfile: NextPage = () => {
           <header className='text-2xl uppercase pb-2'>{`${user.fullname}'s Blogs`}</header>
 
           <div className='w-full pt-3'>
-            {isLoading ? (
+            {!isFetchedAfterMount ? (
               Array.from({ length: 3 }).map((_, i) => (
                 <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
               ))
@@ -192,6 +191,21 @@ export const getServerSideProps: GetServerSideProps = async (
   await queryClient.prefetchQuery({
     queryFn: () => userAxios.getUser(String(ctx.params?.userId)),
     queryKey: [GET_USER, ctx.params?.userId],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => userAxios.getUserBlogs({ user: String(ctx.params?.userId) }),
+    queryKey: [GET_USER_BLOGS, ctx.params?.userId, { pageSize: 20 }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => userAxios.getUserFollowers({ user: String(ctx.params?.userId) }),
+    queryKey: [GET_USER_FOLLOWERS, ctx.params?.userId, { pageSize: 20, search: '' }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => userAxios.getUserFollowing({ user: String(ctx.params?.userId) }),
+    queryKey: [GET_USER_FOLLOWING, ctx.params?.userId, { pageSize: 20, search: '' }],
   });
 
   return {

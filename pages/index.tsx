@@ -2,7 +2,7 @@ import Head from 'next/head';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import { DehydratedState, QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
-import { Empty as RenderEmpty, Tabs, List, Skeleton, Button } from 'antd';
+import { Empty as RenderEmpty, Tabs, List, Skeleton, Button, ConfigProvider } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { GithubOutlined } from '@ant-design/icons';
 import AuthAxios from '../api/AuthAxios';
@@ -52,7 +52,7 @@ const Home: NextPage = () => {
   const {
     data: allBlogs,
     isPreviousData,
-    isLoading,
+    isFetchedAfterMount,
   } = useQuery({
     queryFn: () => blogAxios.getAllBlog({ sort, genre, pageSize: pageSize[HOME], search }),
     queryKey: [GET_ALL_BLOGS, { genre, sort, pageSize: pageSize[HOME], search }],
@@ -73,7 +73,7 @@ const Home: NextPage = () => {
         <div className='w-full pt-3'>
           {key === HOME && <SortFilter sortFilterKey={HOME} isLoading={isPreviousData} hasSort />}
 
-          {isLoading ? (
+          {!isFetchedAfterMount ? (
             Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
             ))
@@ -85,17 +85,19 @@ const Home: NextPage = () => {
               loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
               endMessage={<Empty />}
             >
-              <List
-                itemLayout='vertical'
-                dataSource={blogs?.data}
-                renderItem={(blog) => (
-                  <BlogList
-                    key={blog._id}
-                    blog={blog}
-                    editable={blog.author._id === authUser?._id}
-                  />
-                )}
-              />
+              <ConfigProvider renderEmpty={() => <></>}>
+                <List
+                  itemLayout='vertical'
+                  dataSource={blogs?.data}
+                  renderItem={(blog) => (
+                    <BlogList
+                      key={blog._id}
+                      blog={blog}
+                      editable={blog.author._id === authUser?._id}
+                    />
+                  )}
+                />
+              </ConfigProvider>
             </InfiniteScroll>
           )}
         </div>
@@ -142,6 +144,16 @@ export const getServerSideProps: GetServerSideProps = async (
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.auth(),
     queryKey: [AUTH],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => blogAxios.getAllBlog({}),
+    queryKey: [GET_ALL_BLOGS, { genre: [], sort: LIKES, pageSize: 20, search: '' }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => authAxios.getFollowingBlogs({}),
+    queryKey: [GET_FOLLOWING_BLOGS, { pageSize: 20 }],
   });
 
   await queryClient.prefetchQuery({
