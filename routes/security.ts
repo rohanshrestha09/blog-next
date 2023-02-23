@@ -6,10 +6,10 @@ import { changePassword, resetLink, resetPassword } from '../controller/security
 
 const router: Router = Router();
 
-router.post('/security/reset-password', resetLink);
+router.post('/reset-password', resetLink);
 
-router.post('/security/reset-password/:user/:token', verifyUser, resetPassword);
+router.post('/reset-password/:user/:token', verifyUser, resetPassword);
 
-router.post('/security/change-password', auth, verifyPassword, changePassword);
+router.post('/change-password', auth, verifyPassword, changePassword);
 
-module.exports = router;
+export default router;

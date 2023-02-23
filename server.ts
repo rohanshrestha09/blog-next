@@ -3,6 +3,7 @@ import express, { Request, Response, Application } from 'express';
 import { initializeApp, cert, ServiceAccount } from 'firebase-admin/app';
 import mongoose from 'mongoose';
 import fileUpload from 'express-fileupload';
+import router from './routes';
 import dispatchSocket from './socket';
 
 const socket = require('socket.io');
@@ -56,15 +57,7 @@ server.prepare().then(() => {
 
   app.use(limiter);
 
-  app.use('/api', require('./routes/auth'));
-
-  app.use('/api', require('./routes/user'));
-
-  app.use('/api', require('./routes/blog'));
-
-  app.use('/api', require('./routes/security'));
-
-  app.use('/api', require('./routes/notification'));
+  app.use('/api', router);
 
   app.all('*', (req: Request, res: Response) => handler(req, res));
 

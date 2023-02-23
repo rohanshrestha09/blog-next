@@ -4,10 +4,10 @@ import auth from '../middleware/auth';
 
 const router: Router = Router();
 
-router.get('/notification', auth, notifications);
+router.get('/', auth, notifications);
 
-router.put('/notification/:notification', markAsRead);
+router.put('/:notification', markAsRead);
 
-router.put('/notification', markAllAsRead);
+router.put('/', markAllAsRead);
 
-module.exports = router;
+export default router;
