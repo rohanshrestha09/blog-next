@@ -23,6 +23,9 @@ const AuthAxios = (cookie?: any) => {
   return {
     auth: async (): Promise<IUserData> => await (await axiosFn('get', '')).data,
 
+    completeAuth: async (data: { password: string; confirmPassword: string }) =>
+      await axiosFn('put', 'complete-auth', data),
+
     logout: async (): Promise<IMessage> => await axiosFn('delete', 'logout'),
 
     updateUser: async (data: FormData): Promise<IMessage> => await axiosFn('put', '', data),

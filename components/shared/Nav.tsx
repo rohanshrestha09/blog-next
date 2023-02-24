@@ -15,6 +15,7 @@ import NotificationAxios from '../../api/NotificationAxios';
 import UserSuggestions from './UserSuggestions';
 import ChangePassword from './ChangePassword';
 import DeleteAccount from './DeleteAccount';
+import CompleteAuth from './CompleteAuth';
 import { closeDrawer } from '../../store/drawerSlice';
 import { openModal } from '../../store/modalSlice';
 import { successNotification, errorNotification } from '../../utils/notification';
@@ -28,7 +29,8 @@ interface Props {
 
 const { HOME_NAV, PROFILE_NAV, CREATE_NAV, BOOKMARKS_NAV, NOTIF_NAV, LOGOUT_NAV } = NAV_KEYS;
 
-const { USER_SUGGESTIONS_MODAL, CHANGE_PASSWORD_MODAL, DELETE_ACCOUNT_MODAL } = MODAL_KEYS;
+const { USER_SUGGESTIONS_MODAL, CHANGE_PASSWORD_MODAL, DELETE_ACCOUNT_MODAL, COMPLETE_AUTH_MODAL } =
+  MODAL_KEYS;
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -59,18 +61,31 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
   const settingItems = [
     {
       key: 'logout',
-      label: <p className='py-2 text-red-500'>Delete Account</p>,
+      label: (
+        <p className={`py-2 ${!authUser.verified ? 'line-through' : 'text-red-500'}`}>
+          Delete Account
+        </p>
+      ),
       onClick: () => dispatch(openModal({ key: DELETE_ACCOUNT_MODAL })),
+      disabled: !authUser.verified,
     },
     {
       key: 'changePassword',
-      label: <p className='py-2'>Change Password</p>,
+      label: <p className={`py-2 ${!authUser.verified && 'line-through'}`}>Change Password</p>,
       onClick: () => dispatch(openModal({ key: CHANGE_PASSWORD_MODAL })),
+      disabled: !authUser.verified,
     },
     {
       key: 'resetPassword',
-      label: <p className='py-2'>Reset Password</p>,
+      label: <p className={`py-2 ${!authUser.verified && 'line-through'}`}>Reset Password</p>,
       onClick: () => push('/security/reset-password'),
+      disabled: !authUser.verified,
+    },
+    {
+      className: `${authUser.verified && 'hidden'}`,
+      key: 'completeAuth',
+      label: <p className='py-2'>Complete Profile</p>,
+      onClick: () => dispatch(openModal({ key: COMPLETE_AUTH_MODAL })),
     },
   ];
 
@@ -214,6 +229,8 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
             </Dropdown>
 
             <ChangePassword />
+
+            <CompleteAuth />
 
             <DeleteAccount />
           </Fragment>

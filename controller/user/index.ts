@@ -32,6 +32,7 @@ export const register = asyncHandler(async (req: Request, res: Response): Promis
       email,
       password: encryptedPassword,
       dateOfBirth: dateOfBirth && new Date(moment(dateOfBirth).format()),
+      verified: true,
     });
 
     if (req.files) {
@@ -81,6 +82,45 @@ export const login = asyncHandler(async (req: Request, res: Response): Promise<R
     const isMatched: boolean = await bcrypt.compare(password, user.password as string);
 
     if (!isMatched) return res.status(403).json({ message: 'Incorrect Password' });
+
+    const token: string = sign({ _id: user._id }, process.env.JWT_TOKEN as Secret, {
+      expiresIn: '30d',
+    });
+
+    const serialized = serialize('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== 'development',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24 * 30,
+      path: '/',
+    });
+
+    res.setHeader('Set-Cookie', serialized);
+
+    return res.status(200).json({ token, message: 'Login Successful' });
+  } catch (err: Error | any) {
+    return res.status(404).json({ message: err.message });
+  }
+});
+
+export const googleLogin = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
+  const { uid, email, displayName, photoURL } = req.body;
+
+  try {
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({
+        fullname: displayName,
+        email,
+        password: uid,
+        image: photoURL,
+        dateOfBirth: new Date(2000, 1, 1),
+        isSSO: true,
+        provider: 'google',
+        verified: false,
+      });
+    }
 
     const token: string = sign({ _id: user._id }, process.env.JWT_TOKEN as Secret, {
       expiresIn: '30d',

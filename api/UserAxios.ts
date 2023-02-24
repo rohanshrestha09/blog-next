@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
+import { User } from 'firebase/auth';
 import { IBlogs } from '../interface/blog';
 import { ILogin, IToken, IUserData, IUser, IUsers } from '../interface/user';
 
@@ -23,6 +24,9 @@ const UserAxios = (cookie?: any) => {
     register: async (data: FormData): Promise<IToken> => await axiosFn('post', 'register', data),
 
     login: async (data: ILogin): Promise<IToken> => await axiosFn('post', 'login', data),
+
+    googleSignIn: async (data: User): Promise<IToken> =>
+      await axiosFn('post', 'login/google', data),
 
     getUser: async (id: string): Promise<IUserData> => await (await axiosFn('get', id)).data,
 

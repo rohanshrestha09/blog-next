@@ -20,6 +20,7 @@ export enum MODAL_KEYS {
   USER_SUGGESTIONS_MODAL = 'user-suggestions-modal',
   CHANGE_PASSWORD_MODAL = 'change-password-modal',
   DELETE_ACCOUNT_MODAL = 'delete-account-modal',
+  COMPLETE_AUTH_MODAL = 'complete-auth-modal',
 }
 
 export enum AUTH_PROFILE_KEYS {

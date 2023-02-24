@@ -127,7 +127,7 @@ const UserProfile: NextPage = () => {
           <header className='text-2xl uppercase pb-2'>{`${user.fullname}'s Blogs`}</header>
 
           <div className='w-full pt-3'>
-            {!isFetchedAfterMount ? (
+            {blogs?.count && !isFetchedAfterMount ? (
               Array.from({ length: 3 }).map((_, i) => (
                 <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
               ))

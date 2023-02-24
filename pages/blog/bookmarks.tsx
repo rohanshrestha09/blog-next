@@ -59,7 +59,7 @@ const Bookmarks: NextPage = () => {
 
           <SearchFilter sortFilterKey={BOOKMARKS} isLoading={isPreviousData} />
 
-          {!isFetchedAfterMount ? (
+          {blogs?.count && !isFetchedAfterMount ? (
             Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
             ))

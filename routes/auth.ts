@@ -2,7 +2,14 @@ import { Router } from 'express';
 import auth from '../middleware/auth';
 import verifyUser from '../middleware/verifyUser';
 import verifyPassword from '../middleware/verifyPassword';
-import { authHandler, deleteImage, deleteProfile, logout, updateProfile } from '../controller/auth';
+import {
+  authHandler,
+  completeAuth,
+  deleteImage,
+  deleteProfile,
+  logout,
+  updateProfile,
+} from '../controller/auth';
 import { blogs, bookmarks, followingBlogs } from '../controller/auth/blog';
 import { follow, unfollow } from '../controller/auth/follow';
 import { followers, following } from '../controller/auth/followers';
@@ -14,6 +21,8 @@ router.use(['/', '/*'], auth);
 router.param('user', verifyUser);
 
 router.get('/', authHandler);
+
+router.put('/complete-auth', completeAuth);
 
 router.put('/', verifyPassword, updateProfile);
 

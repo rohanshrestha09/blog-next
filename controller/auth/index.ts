@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import moment from 'moment';
 import { serialize } from 'cookie';
 import { isEmpty } from 'lodash';
+import bcrypt from 'bcryptjs';
 import uploadFile from '../../middleware/uploadFile';
 import deleteFile from '../../middleware/deleteFile';
 import User from '../../model/User';
@@ -14,6 +15,30 @@ moment.suppressDeprecationWarnings = true;
 
 export const authHandler = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   return res.status(200).json({ data: res.locals.auth, message: 'Authentication Success' });
+});
+
+export const completeAuth = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
+  const { password, confirmPassword } = req.body;
+
+  const { _id: authId } = res.locals.auth;
+
+  try {
+    if (!password || password < 8)
+      return res.status(403).json({ message: 'Password must contain atleast 8 characters.' });
+
+    if (password !== confirmPassword)
+      return res.status(403).json({ message: 'Password does not match.' });
+
+    const salt = await bcrypt.genSalt(10);
+
+    const encryptedPassword: string = await bcrypt.hash(password, salt);
+
+    await User.findByIdAndUpdate(authId, { password: encryptedPassword, verified: true });
+
+    return res.status(201).json({ message: 'Profile Completed' });
+  } catch (err: Error | any) {
+    return res.status(404).json({ message: err.message });
+  }
 });
 
 export const updateProfile = asyncHandler(

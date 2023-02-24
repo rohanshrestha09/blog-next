@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import verifyUser from '../middleware/verifyUser';
 import verifyEmail from '../middleware/verifyEmail';
-import { login, register, suggestions, user } from '../controller/user';
+import { googleLogin, login, register, suggestions, user } from '../controller/user';
 import { blog } from '../controller/user/blog';
 import { followers, following } from '../controller/user/followers';
 
@@ -10,6 +10,8 @@ const router: Router = Router();
 router.post('/register', verifyEmail, register);
 
 router.post('/login', login);
+
+router.put('/login/google', googleLogin);
 
 router.get('/suggestions', suggestions);
 

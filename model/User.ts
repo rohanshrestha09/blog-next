@@ -25,6 +25,16 @@ const UserSchema = new Schema<IUserSchema>(
     },
     image: { type: String, default: null },
     imageName: { type: String, default: null },
+    provider: {
+      type: String,
+      default: 'email',
+      enum: {
+        values: ['email', 'google'] as Array<String>,
+        message: '{VALUE} not supported',
+      },
+    },
+    isSSO: { type: Boolean, default: false },
+    verified: { type: Boolean },
     bookmarks: { type: [Schema.Types.ObjectId], default: [] },
     blogs: { type: [Schema.Types.ObjectId], default: [] },
     bio: { type: String, default: null },

@@ -1,9 +1,12 @@
 import { NextRouter, useRouter } from 'next/router';
-import { createContext, Fragment, useContext, useRef } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { createContext, Fragment, useContext, useEffect, useRef } from 'react';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { io } from 'socket.io-client';
+import { auth } from './firebase';
 import AuthAxios from '../api/AuthAxios';
+import UserAxios from '../api/UserAxios';
 import AppLayout from '../components/Layout/AppLayout';
 import { AUTH } from '../constants/queryKeys';
 import type IContext from '../interface/context';
@@ -22,6 +25,17 @@ const UserAuth: React.FC<{
     queryKey: [AUTH],
     onSuccess: (authUser) => socket.current.emit('add user', authUser._id),
   });
+
+  const handleGoogleSignIn = useMutation((user: User) => UserAxios().googleSignIn(user));
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (authUser) return;
+
+      if (user) handleGoogleSignIn.mutate(user);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authUser]);
 
   switch (pathname) {
     case '/security/reset-password':

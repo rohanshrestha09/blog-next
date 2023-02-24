@@ -6,6 +6,15 @@ export interface IUserSchema {
   email: string;
   password: string;
   dateOfBirth: Date;
+  provider: {
+    type: string;
+    enum: {
+      values: String[];
+      message: string;
+    };
+  };
+  isSSO: boolean;
+  verified: boolean;
   image: string;
   imageName: string;
   bookmarks: Types.ObjectId[];

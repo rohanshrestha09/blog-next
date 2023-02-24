@@ -205,7 +205,7 @@ const Blog: NextPage = () => {
 
             <header className='text-2xl pb-4 uppercase'>More from {blog.author.fullname}</header>
 
-            {!isUserBlogFetchedAfterMount
+            {userBlogs?.count && !isUserBlogFetchedAfterMount
               ? Array.from({ length: 1 }).map((_, i) => (
                   <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
                 ))

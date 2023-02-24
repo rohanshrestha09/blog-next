@@ -17,7 +17,7 @@ import { closeModal, openModal } from '../../store/modalSlice';
 import { MODAL_KEYS } from '../../constants/reduxKeys';
 import { AUTH, GET_AUTH_BLOGS } from '../../constants/queryKeys';
 
-const { EDIT_PROFILE_MODAL, PWD_AUTH_MODAL } = MODAL_KEYS;
+const { EDIT_PROFILE_MODAL, PWD_AUTH_MODAL, COMPLETE_AUTH_MODAL } = MODAL_KEYS;
 
 const EditProfile = () => {
   const {
@@ -187,9 +187,26 @@ const EditProfile = () => {
         </div>
 
         <Form.Item className='mb-0'>
-          <Button type='primary' className='h-10 rounded-lg' htmlType='submit'>
-            Update
-          </Button>
+          <div className='flex gap-4 items-center'>
+            <Button
+              type='primary'
+              className='h-10 rounded-lg'
+              htmlType='submit'
+              disabled={!authUser.verified}
+            >
+              Update
+            </Button>
+
+            {!authUser.verified && (
+              <Button
+                type='primary'
+                className='h-10 rounded-lg'
+                onClick={() => dispatch(openModal({ key: COMPLETE_AUTH_MODAL }))}
+              >
+                Complete Profile
+              </Button>
+            )}
+          </div>
         </Form.Item>
 
         <PwdAuth

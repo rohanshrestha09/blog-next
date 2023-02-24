@@ -1,13 +1,15 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { NextRouter, useRouter } from 'next/router';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Form, Input, Checkbox, Button, Modal } from 'antd';
+import { Form, Input, Checkbox, Button, Modal, Divider } from 'antd';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { openModal, closeModal } from '../../store/modalSlice';
+import { googleSignIn } from '../../utils/firebase';
 import { errorNotification, successNotification } from '../../utils/notification';
 import UserAxios from '../../api/UserAxios';
 import { AUTH } from '../../constants/queryKeys';
@@ -27,11 +29,13 @@ const Login: React.FC = () => {
 
   const queryClient = useQueryClient();
 
+  const userAxios = UserAxios();
+
   const [form] = Form.useForm();
 
   const [rememberMe, setRememberMe] = useState<boolean>(true);
 
-  const handleLogin = useMutation((data: ILogin) => UserAxios().login(data), {
+  const handleLogin = useMutation((data: ILogin) => userAxios.login(data), {
     onSuccess: (res) => {
       successNotification(res.message);
       form.resetFields();
@@ -118,6 +122,19 @@ const Login: React.FC = () => {
             loading={handleLogin.isLoading}
           >
             Login
+          </Button>
+        </Form.Item>
+
+        <Divider>OR</Divider>
+
+        <Form.Item>
+          <Button
+            type='primary'
+            className='w-full flex items-center justify-center gap-4 h-[3.2rem] rounded-lg text-base btn-secondary'
+            icon={<Image alt='' src='/google.svg' height={30} width={30} />}
+            onClick={() => googleSignIn()}
+          >
+            Login with Google
           </Button>
         </Form.Item>
 
