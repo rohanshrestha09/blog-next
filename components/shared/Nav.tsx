@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { NextRouter, useRouter } from 'next/router';
 import { ReactNode, Key, Fragment } from 'react';
+import { signOut } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Menu, MenuProps, Badge, Avatar, Dropdown, Button } from 'antd';
@@ -10,6 +11,7 @@ import { BiBookmark, BiMessageSquareEdit, BiSearch } from 'react-icons/bi';
 import { BsThreeDots } from 'react-icons/bs';
 import { BsAppIndicator, BsHouse } from 'react-icons/bs';
 import { useAuth } from '../../utils/UserAuth';
+import { auth } from '../../utils/firebase';
 import AuthAxios from '../../api/AuthAxios';
 import NotificationAxios from '../../api/NotificationAxios';
 import UserSuggestions from './UserSuggestions';
@@ -126,6 +128,7 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
   const routingFn = (key: NAV_KEYS | 'blogsansar') => {
     switch (key) {
       case LOGOUT_NAV:
+        signOut(auth);
         return handleLogout.mutate();
 
       case 'blogsansar':

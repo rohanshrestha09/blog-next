@@ -136,21 +136,9 @@ export const deleteProfile = asyncHandler(
 
 export const logout = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   try {
-    res.setHeader(
-      'Set-Cookie',
-      serialize('token', '', {
-        maxAge: 0,
-        path: '/',
-      })
-    );
+    res.clearCookie('token');
 
-    res.setHeader(
-      'Set-Cookie',
-      serialize('auth-session', '', {
-        maxAge: 0,
-        path: '/',
-      })
-    );
+    res.clearCookie('auth-session');
 
     return res.status(200).json({ message: 'Logout Successful' });
   } catch (err: Error | any) {
