@@ -11,7 +11,7 @@ router.post('/register', verifyEmail, register);
 
 router.post('/login', login);
 
-router.put('/login/google', googleLogin);
+router.post('/login/google', googleLogin);
 
 router.get('/suggestions', suggestions);
 

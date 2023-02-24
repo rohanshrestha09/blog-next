@@ -35,7 +35,7 @@ const UserAuth: React.FC<{
       if (user) handleGoogleSignIn.mutate(user);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authUser]);
+  }, []);
 
   switch (pathname) {
     case '/security/reset-password':

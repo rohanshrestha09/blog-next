@@ -60,29 +60,29 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
 
   const settingItems = [
     {
-      key: 'logout',
+      key: 'deleteAccount',
       label: (
-        <p className={`py-2 ${!authUser.verified ? 'line-through' : 'text-red-500'}`}>
+        <p className={`py-2 ${!authUser?.verified ? 'line-through' : 'text-red-500'}`}>
           Delete Account
         </p>
       ),
       onClick: () => dispatch(openModal({ key: DELETE_ACCOUNT_MODAL })),
-      disabled: !authUser.verified,
+      disabled: !authUser?.verified,
     },
     {
       key: 'changePassword',
-      label: <p className={`py-2 ${!authUser.verified && 'line-through'}`}>Change Password</p>,
+      label: <p className={`py-2 ${!authUser?.verified && 'line-through'}`}>Change Password</p>,
       onClick: () => dispatch(openModal({ key: CHANGE_PASSWORD_MODAL })),
-      disabled: !authUser.verified,
+      disabled: !authUser?.verified,
     },
     {
       key: 'resetPassword',
-      label: <p className={`py-2 ${!authUser.verified && 'line-through'}`}>Reset Password</p>,
+      label: <p className={`py-2 ${!authUser?.verified && 'line-through'}`}>Reset Password</p>,
       onClick: () => push('/security/reset-password'),
-      disabled: !authUser.verified,
+      disabled: !authUser?.verified,
     },
     {
-      className: `${authUser.verified && 'hidden'}`,
+      className: `${authUser?.verified && 'hidden'}`,
       key: 'completeAuth',
       label: <p className='py-2'>Complete Profile</p>,
       onClick: () => dispatch(openModal({ key: COMPLETE_AUTH_MODAL })),

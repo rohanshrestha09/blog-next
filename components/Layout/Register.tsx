@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { NextRouter, useRouter } from 'next/router';
+import Image from 'next/image';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Form, Input, Button, Checkbox, DatePicker, Upload, Modal } from 'antd';
+import { Form, Input, Button, Checkbox, DatePicker, Upload, Modal, Divider } from 'antd';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import {
   EyeInvisibleOutlined,
@@ -14,6 +15,7 @@ import {
 } from '@ant-design/icons';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { openModal, closeModal } from '../../store/modalSlice';
+import { googleSignIn } from '../../utils/firebase';
 import {
   errorNotification,
   successNotification,
@@ -240,6 +242,19 @@ const Register: React.FC = () => {
             loading={handleRegister.isLoading}
           >
             Signup Now
+          </Button>
+        </Form.Item>
+
+        <Divider>OR</Divider>
+
+        <Form.Item>
+          <Button
+            type='primary'
+            className='w-full flex items-center justify-center gap-4 h-[3.2rem] rounded-lg text-base btn-secondary'
+            icon={<Image alt='' src='/google.svg' height={30} width={30} />}
+            onClick={() => googleSignIn()}
+          >
+            Login with Google
           </Button>
         </Form.Item>
 
