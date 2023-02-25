@@ -7,7 +7,7 @@ import { followers, following } from '../controller/user/followers';
 
 const router: Router = Router();
 
-router.post('/register', verifyEmail, register);
+router.post('/register', register);
 
 router.post('/login', login);
 

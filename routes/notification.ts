@@ -4,7 +4,9 @@ import auth from '../middleware/auth';
 
 const router: Router = Router();
 
-router.get('/', auth, notifications);
+router.use(['/', '/*'], auth);
+
+router.get('/', notifications);
 
 router.put('/:notification', markAsRead);
 

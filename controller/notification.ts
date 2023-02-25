@@ -49,8 +49,10 @@ export const markAsRead = asyncHandler(async (req: Request, res: Response): Prom
 
 export const markAllAsRead = asyncHandler(
   async (req: Request, res: Response): Promise<Response> => {
+    const { _id: authId } = res.locals.auth;
+
     try {
-      await Notification.updateMany({}, { status: READ });
+      await Notification.updateMany({ listener: { $in: authId } }, { status: READ });
 
       return res.status(200).json({ message: 'Notifications updated successfully' });
     } catch (err: Error | any) {
