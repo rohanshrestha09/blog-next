@@ -1,5 +1,5 @@
 import { NextRouter, useRouter } from 'next/router';
-import { createContext, Fragment, useContext, useEffect, useRef } from 'react';
+import { createContext, Fragment, useContext, useEffect, useRef, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -8,6 +8,7 @@ import { auth } from './firebase';
 import AuthAxios from '../api/AuthAxios';
 import UserAxios from '../api/UserAxios';
 import AppLayout from '../components/Layout/AppLayout';
+import { errorNotification } from './notification';
 import { AUTH } from '../constants/queryKeys';
 import type IContext from '../interface/context';
 
@@ -16,7 +17,7 @@ export const UserContext = createContext<IContext | any>(null);
 const UserAuth: React.FC<{
   children: React.ReactNode;
 }> = ({ children }): JSX.Element => {
-  const { pathname }: NextRouter = useRouter();
+  const { pathname, push }: NextRouter = useRouter();
 
   const socket = useRef(io(process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:5000'));
 
@@ -26,7 +27,10 @@ const UserAuth: React.FC<{
     onSuccess: (authUser) => socket.current.emit('add user', authUser._id),
   });
 
-  const handleGoogleSignIn = useMutation((user: User) => UserAxios().googleSignIn(user));
+  const handleGoogleSignIn = useMutation((user: User) => UserAxios().googleSignIn(user), {
+    onSuccess: () => push('/profile'),
+    onError: (err: AxiosError) => errorNotification(err),
+  });
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {

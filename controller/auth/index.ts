@@ -138,8 +138,6 @@ export const logout = asyncHandler(async (req: Request, res: Response): Promise<
   try {
     res.clearCookie('token');
 
-    res.clearCookie('auth-session');
-
     return res.status(200).json({ message: 'Logout Successful' });
   } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
