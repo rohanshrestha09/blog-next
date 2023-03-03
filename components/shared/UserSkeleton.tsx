@@ -90,7 +90,7 @@ const UserSkeleton: React.FC<Props> = ({
           {bioAsDesc && bio ? (
             <p className='multiline-truncate-title text-xs text-zinc-500 break-words'>{bio}</p>
           ) : (
-            <p className='text-sm text-zinc-500 break-words'>{follower} followers</p>
+            <p className='text-sm text-zinc-500 break-words'>{follower ?? 0} followers</p>
           )}
         </Space>
       </div>

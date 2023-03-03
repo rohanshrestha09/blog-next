@@ -165,14 +165,14 @@ const Blog: NextPage = () => {
                 className='text-[#1890ff] text-base cursor-pointer hover:text-blue-600'
                 onClick={() => dispatch(openModal({ key: LIKERS_MODAL }))}
               >
-                View {blog.like} Likes
+                View {blog.like ?? 0} Likes
               </p>
 
               <p
                 className='text-[#1890ff] text-base cursor-pointer hover:text-blue-600'
                 onClick={() => dispatch(openModal({ key: DISCUSSIONS_MODAL }))}
               >
-                {blog.comment} Discussions
+                {blog.comment ?? 0} Discussions
               </p>
             </span>
 

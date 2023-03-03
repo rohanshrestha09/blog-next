@@ -94,14 +94,14 @@ const userLookup = [
       newRoot: { $mergeObjects: [{ $arrayElemAt: ['$following_count', 0] }, '$$ROOT'] },
     },
   },
-  {
-    $fill: {
-      output: {
-        follower: { value: 0 },
-        following: { value: 0 },
-      },
-    },
-  },
+  // {
+  //   $fill: {
+  //     output: {
+  //       follower: { value: 0 },
+  //       following: { value: 0 },
+  //     },
+  //   },
+  // },
 ];
 
 UserSchema.statics.findUnique = async function ({

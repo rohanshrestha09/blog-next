@@ -57,9 +57,9 @@ CommentSchema.statics.findMany = async function (
         newRoot: { $mergeObjects: [{ $arrayElemAt: ['$like_count', 0] }, '$$ROOT'] },
       },
     },
-    {
-      $fill: { output: { like: { value: 0 } } },
-    },
+    // {
+    //   $fill: { output: { like: { value: 0 } } },
+    // },
     {
       $project: {
         ...exclude

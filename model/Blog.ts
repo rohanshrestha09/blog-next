@@ -91,14 +91,14 @@ const blogLookup = [
       newRoot: { $mergeObjects: [{ $arrayElemAt: ['$comment_count', 0] }, '$$ROOT'] },
     },
   },
-  {
-    $fill: {
-      output: {
-        like: { value: 0 },
-        comment: { value: 0 },
-      },
-    },
-  },
+  // {
+  //   $fill: {
+  //     output: {
+  //       like: { value: 0 },
+  //       comment: { value: 0 },
+  //     },
+  //   },
+  // },
 ];
 
 BlogSchema.statics.findUnique = async function ({

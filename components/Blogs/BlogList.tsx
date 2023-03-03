@@ -188,7 +188,7 @@ const BlogList: React.FC<Props> = ({
             <Tooltip title='Likes' placement='bottom'>
               <Space className='flex items-center'>
                 <BsHeart />
-                {like}
+                {like ?? 0}
               </Space>
             </Tooltip>
 
@@ -197,7 +197,7 @@ const BlogList: React.FC<Props> = ({
             <Tooltip title='Comment' placement='bottom'>
               <Space className='flex items-center'>
                 <VscComment />
-                {comment}
+                {comment ?? 0}
               </Space>
             </Tooltip>
 
