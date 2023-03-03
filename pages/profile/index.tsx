@@ -18,7 +18,7 @@ import EditProfile from '../../components/Profile/EditProfile';
 import SortFilter from '../../components/Blogs/SortFilter';
 import { openModal } from '../../store/modalSlice';
 import { changeKey } from '../../store/authBlogSlice';
-import { setPageSize } from '../../store/sortFilterSlice';
+import { setSize } from '../../store/sortFilterSlice';
 import {
   AUTH,
   GET_AUTH_BLOGS,
@@ -43,7 +43,7 @@ const { CREATE_NAV } = NAV_KEYS;
 
 const { EDIT_PROFILE_MODAL } = MODAL_KEYS;
 
-const { LIKES } = SORT_TYPE;
+const { LIKE } = SORT_TYPE;
 
 const { DESCENDING } = SORT_ORDER;
 
@@ -54,9 +54,9 @@ const Profile: NextPage = () => {
 
   const {
     search: { [AUTH_PROFILE]: search },
-    pageSize: { [AUTH_PROFILE]: pageSize },
+    size: { [AUTH_PROFILE]: size },
     sort: { [AUTH_PROFILE]: sort },
-    sortOrder: { [AUTH_PROFILE]: sortOrder },
+    order: { [AUTH_PROFILE]: order },
     genre: { [AUTH_PROFILE]: genre },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
@@ -71,8 +71,8 @@ const Profile: NextPage = () => {
     isPreviousData,
     isFetchedAfterMount,
   } = useQuery({
-    queryFn: () => authAxios.getAllBlogs({ sortOrder, isPublished, sort, genre, pageSize, search }),
-    queryKey: [GET_AUTH_BLOGS, { sortOrder, isPublished, sort, genre, pageSize, search }],
+    queryFn: () => authAxios.getAllBlogs({ order, isPublished, sort, genre, size, search }),
+    queryKey: [GET_AUTH_BLOGS, { order, isPublished, sort, genre, size, search }],
     keepPreviousData: true,
   });
 
@@ -100,7 +100,7 @@ const Profile: NextPage = () => {
           ) : (
             <InfiniteScroll
               dataLength={blogs?.data.length ?? 0}
-              next={() => dispatch(setPageSize({ key: AUTH_PROFILE, pageSize: 10 }))}
+              next={() => dispatch(setSize({ key: AUTH_PROFILE, size: 10 }))}
               hasMore={blogs?.data ? blogs?.data.length < blogs?.count : false}
               loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
             >
@@ -224,18 +224,18 @@ export const getServerSideProps = withAuth(
       queryFn: () => authAxios.getAllBlogs({}),
       queryKey: [
         GET_AUTH_BLOGS,
-        { genre: [], pageSize: 20, sort: LIKES, sortOrder: DESCENDING, search: '' },
+        { genre: [], size: 20, sort: LIKE, sortOrder: DESCENDING, search: '' },
       ],
     });
 
     await queryClient.prefetchQuery({
       queryFn: () => authAxios.getFollowers({}),
-      queryKey: [GET_AUTH_FOLLOWERS, { pageSize: 20, search: '' }],
+      queryKey: [GET_AUTH_FOLLOWERS, { size: 20, search: '' }],
     });
 
     await queryClient.prefetchQuery({
       queryFn: () => authAxios.getFollowing({}),
-      queryKey: [GET_AUTH_FOLLOWING, { pageSize: 20, search: '' }],
+      queryKey: [GET_AUTH_FOLLOWING, { size: 20, search: '' }],
     });
 
     await queryClient.prefetchQuery({

@@ -16,7 +16,7 @@ import AuthAxios from '../api/AuthAxios';
 import BlogAxios from '../api/BlogAxios';
 import NotificationList from '../components/Notifications';
 import NotificationAxios from '../api/NotificationAxios';
-import { setPageSize } from '../store/sortFilterSlice';
+import { setSize } from '../store/sortFilterSlice';
 import { errorNotification } from '../utils/notification';
 import { AUTH, GET_GENRE, GET_NOTIFICATIONS } from '../constants/queryKeys';
 import { NOTIFICATIONS_KEYS } from '../constants/reduxKeys';
@@ -25,7 +25,7 @@ const { NOTIFICATIONS } = NOTIFICATIONS_KEYS;
 
 const Notifications: NextPage = () => {
   const {
-    pageSize: { [NOTIFICATIONS]: pageSize },
+    size: { [NOTIFICATIONS]: size },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const dispatch = useDispatch();
@@ -35,8 +35,8 @@ const Notifications: NextPage = () => {
   const notificationAxois = NotificationAxios();
 
   const { data: notifications, isFetchedAfterMount } = useQuery({
-    queryFn: () => notificationAxois.getNotifications({ pageSize }),
-    queryKey: [GET_NOTIFICATIONS, { pageSize }],
+    queryFn: () => notificationAxois.getNotifications({ size }),
+    queryKey: [GET_NOTIFICATIONS, { size }],
     keepPreviousData: true,
   });
 
@@ -72,7 +72,7 @@ const Notifications: NextPage = () => {
         ) : (
           <InfiniteScroll
             dataLength={notifications?.data.length ?? 0}
-            next={() => dispatch(setPageSize({ key: NOTIFICATIONS, pageSize: 10 }))}
+            next={() => dispatch(setSize({ key: NOTIFICATIONS, size: 10 }))}
             hasMore={
               notifications?.data ? notifications?.data.length < notifications?.count : false
             }
@@ -117,7 +117,7 @@ export const getServerSideProps = withAuth(
 
     await queryClient.prefetchQuery({
       queryFn: () => notificaitonAxios.getNotifications({}),
-      queryKey: [GET_NOTIFICATIONS, { pageSize: 20 }],
+      queryKey: [GET_NOTIFICATIONS, { size: 20 }],
     });
 
     await queryClient.prefetchQuery({

@@ -11,17 +11,13 @@ const { POST_COMMENT } = NOTIFICATION;
 export const comments = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const { comments } = res.locals.blog;
 
-  const { pageSize } = req.query;
+  const { size } = req.query;
 
   try {
-    const dataComments = await Comment.find({ _id: comments })
-      .limit(Number(pageSize || 20))
-      .populate('user', 'fullname image');
+    const data = await Comment.findMany({ match: { _id: { $in: comments } }, limit: Number(size) });
 
     return res.status(200).json({
-      data: dataComments,
-      count: await Comment.countDocuments({ _id: comments }),
-      commentsCount: dataComments.length,
+      ...data,
       message: 'Comments Fetched Successfully',
     });
   } catch (err: Error | any) {
@@ -32,7 +28,7 @@ export const comments = asyncHandler(async (req: Request, res: Response): Promis
 export const comment = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const {
     auth: { _id: authId, fullname },
-    blog: { _id: blogId, author, commentsCount },
+    blog: { _id: blogId, author },
   } = res.locals;
 
   const { comment } = req.body;
@@ -44,10 +40,7 @@ export const comment = asyncHandler(async (req: Request, res: Response): Promise
       comment,
     });
 
-    await Blog.findByIdAndUpdate(blogId, {
-      $push: { comments: commentId },
-      commentsCount: commentsCount + 1,
-    });
+    await Blog.findByIdAndUpdate(blogId, { $push: { comments: commentId } });
 
     const { _id: notificationId } = await Notification.create({
       type: POST_COMMENT,
@@ -60,24 +53,21 @@ export const comment = asyncHandler(async (req: Request, res: Response): Promise
 
     dispatchNotification({ listeners: [author._id], notificationId });
 
-    return res.status(200).json({ message: 'Comment Successfull' });
+    return res.status(200).json({ message: 'Comment Successful' });
   } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
   }
 });
 
 export const uncomment = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { _id: blogId, commentsCount } = res.locals.blog;
+  const { _id: blogId } = res.locals.blog;
 
   const { commentId } = req.query;
 
   try {
     await Comment.findByIdAndDelete(commentId);
 
-    await Blog.findByIdAndUpdate(blogId, {
-      $pull: { comments: commentId },
-      commentsCount: commentsCount - 1,
-    });
+    await Blog.findByIdAndUpdate(blogId, { $pull: { comments: commentId } });
 
     return res.status(200).json({ message: 'Comment Deleted Successfully' });
   } catch (err: Error | any) {

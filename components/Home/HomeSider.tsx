@@ -25,13 +25,13 @@ const HomeSider: React.FC = () => {
   const blogAxios = BlogAxios();
 
   const { data: userSuggestions, isLoading: isUserSuggestionsLoading } = useQuery({
-    queryFn: () => userAxios.getUserSuggestions({ pageSize: 3 }),
-    queryKey: [GET_USER_SUGGESTIONS, { pageSize: 3 }],
+    queryFn: () => userAxios.getUserSuggestions({ size: 3 }),
+    queryKey: [GET_USER_SUGGESTIONS, { size: 3 }],
   });
 
   const { data: blogSuggestions, isLoading: isBlogSuggestionsLoading } = useQuery({
-    queryFn: () => blogAxios.getBlogSuggestions({ pageSize: 4 }),
-    queryKey: [GET_BLOG_SUGGESTIONS, { pageSize: 4 }],
+    queryFn: () => blogAxios.getBlogSuggestions({ size: 4 }),
+    queryKey: [GET_BLOG_SUGGESTIONS, { size: 4 }],
   });
 
   const { data: genre } = useQuery({
@@ -66,7 +66,7 @@ const HomeSider: React.FC = () => {
               <UserSkeleton
                 key={user._id}
                 user={user}
-                shouldFollow={!authUser?.following.includes(user._id as never)}
+                shouldFollow={!authUser?.followings.includes(user._id as never)}
                 bioAsDesc
               />
             ))}

@@ -12,7 +12,7 @@ export default asyncHandler(
     try {
       const { _id } = verify(token, process.env.JWT_TOKEN as Secret) as JwtPayload;
 
-      const auth = await User.findById(_id).select('-password');
+      const auth = await User.findUnique({ _id, exclude: ['password'] });
 
       if (!auth) return res.status(404).json({ message: 'User does not exist' });
 

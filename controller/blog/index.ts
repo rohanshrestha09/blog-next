@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { PipelineStage } from 'mongoose';
 import uploadFile from '../../middleware/uploadFile';
 import deleteFile from '../../middleware/deleteFile';
 import Blog from '../../model/Blog';
@@ -13,36 +12,22 @@ const asyncHandler = require('express-async-handler');
 const { POST_BLOG } = NOTIFICATION;
 
 export const blogs = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { sort, pageSize, genre, search } = req.query;
+  const { sort, size, genre, search } = req.query;
 
-  const query: PipelineStage[] = [
-    { $match: { isPublished: true } },
-    { $sort: { [String(sort || 'likesCount')]: -1 } },
-  ];
+  let query = { isPublished: true };
 
-  if (genre) query.push({ $match: { genre: { $in: String(genre).split(',') } } });
-
-  if (search)
-    query.unshift({
-      $search: {
-        index: 'blog-search',
-        autocomplete: { query: String(search), path: 'title' },
-      },
-    });
+  if (genre) query = Object.assign({ genre: { $in: String(genre).split(',') } }, query);
 
   try {
-    const blogs = await Blog.aggregate([...query, { $limit: Number(pageSize || 20) }]);
-
-    await User.populate(blogs, { path: 'author', select: 'fullname image' });
-
-    const [{ totalCount } = { totalCount: 0 }] = await Blog.aggregate([
-      ...query,
-      { $count: 'totalCount' },
-    ]);
+    const data = await Blog.findMany({
+      match: query,
+      search,
+      limit: Number(size),
+      sort: { field: String(sort || 'like'), order: -1 },
+    });
 
     return res.status(200).json({
-      data: blogs,
-      count: totalCount,
+      ...data,
       message: 'Blogs Fetched Successfully',
     });
   } catch (err: Error | any) {
@@ -52,7 +37,10 @@ export const blogs = asyncHandler(async (req: Request, res: Response): Promise<R
 
 export const blog = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   try {
-    return res.status(200).json({ data: res.locals.blog, message: 'Blog Fetched Successfully' });
+    return res.status(200).json({
+      data: res.locals.blog,
+      message: 'Blog Fetched Successfully',
+    });
   } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
   }
@@ -165,19 +153,17 @@ export const deleteBlog = asyncHandler(async (req: Request, res: Response): Prom
 });
 
 export const suggestions = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { pageSize } = req.query;
+  const { size } = req.query;
 
   try {
-    const blogs = await Blog.aggregate([
-      { $sample: { size: Number(pageSize || 4) } },
-      { $match: { isPublished: true } },
-    ]);
-
-    await User.populate(blogs, { path: 'author', select: 'fullname image' });
+    const data = await Blog.findMany({
+      match: { isPublished: true },
+      sample: true,
+      limit: Number(size || 4),
+    });
 
     return res.status(200).json({
-      data: blogs,
-      count: await Blog.countDocuments({ isPublished: true }),
+      ...data,
       message: 'Blogs Fetched Successfully',
     });
   } catch (err: Error | any) {

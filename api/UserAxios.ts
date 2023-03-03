@@ -30,44 +30,39 @@ const UserAxios = (cookie?: any) => {
 
     getUser: async (id: string): Promise<IUserData> => await (await axiosFn('get', id)).data,
 
-    getUserBlogs: async ({
-      user,
-      pageSize,
-    }: {
-      user: string;
-      pageSize?: number;
-    }): Promise<IBlogs> => await axiosFn('get', `${user}/blog?pageSize=${pageSize || 20}`),
+    getUserBlogs: async ({ user, size }: { user: string; size?: number }): Promise<IBlogs> =>
+      await axiosFn('get', `${user}/blog?size=${size || 20}`),
 
     getUserFollowers: async ({
       user,
-      pageSize,
+      size,
       search,
     }: {
       user: string;
-      pageSize?: number;
+      size?: number;
       search?: string;
     }): Promise<IUsers> =>
-      await axiosFn('get', `${user}/followers?pageSize=${pageSize || 20}&search=${search || ''}`),
+      await axiosFn('get', `${user}/followers?size=${size || 20}&search=${search || ''}`),
 
     getUserFollowing: async ({
       user,
-      pageSize,
+      size,
       search,
     }: {
       user: string;
-      pageSize?: number;
+      size?: number;
       search?: string;
     }): Promise<IUsers> =>
-      await axiosFn('get', `${user}/following?pageSize=${pageSize || 20}&search=${search || ''}`),
+      await axiosFn('get', `${user}/following?size=${size || 20}&search=${search || ''}`),
 
     getUserSuggestions: async ({
-      pageSize,
+      size,
       search,
     }: {
-      pageSize?: number;
+      size?: number;
       search?: string;
     }): Promise<IUsers> =>
-      await axiosFn('get', `suggestions?pageSize=${pageSize || 20}&search=${search || ''}`),
+      await axiosFn('get', `suggestions?size=${size || 20}&search=${search || ''}`),
   };
 };
 

@@ -26,7 +26,6 @@ export interface IComments extends IMessage {
     Document<unknown, any, ICommentSchema> & ICommentSchema & { _id: Types.ObjectId & string },
     never
   >[];
-  commentsCount: number;
   count: number;
 }
 

@@ -13,7 +13,7 @@ import { useAuth } from '../../utils/UserAuth';
 import AuthAxios from '../../api/AuthAxios';
 import UserSkeleton from '../shared/UserSkeleton';
 import { changeKey } from '../../store/followersSlice';
-import { setPageSize, setSearch } from '../../store/sortFilterSlice';
+import { setSize, setSearch } from '../../store/sortFilterSlice';
 import { openModal, closeModal } from '../../store/modalSlice';
 import { GET_AUTH_FOLLOWERS, GET_AUTH_FOLLOWING } from '../../constants/queryKeys';
 import { MODAL_KEYS, FOLLOWERS_KEYS } from '../../constants/reduxKeys';
@@ -30,7 +30,7 @@ const { AUTH_FOLLOWERS_MODAL, USER_SUGGESTIONS_MODAL } = MODAL_KEYS;
 const Profile: React.FC<Props> = ({ isSider }) => {
   const { authKey } = useSelector((state: RootState) => state.followers, shallowEqual);
 
-  const { pageSize, search } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
+  const { size, search } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const { isOpen } = useSelector((state: RootState) => state.modal);
 
@@ -47,13 +47,10 @@ const Profile: React.FC<Props> = ({ isSider }) => {
   } = useQuery({
     queryFn: () =>
       authAxios.getFollowers({
-        pageSize: pageSize[AUTH_FOLLOWERS],
+        size: size[AUTH_FOLLOWERS],
         search: search[AUTH_FOLLOWERS],
       }),
-    queryKey: [
-      GET_AUTH_FOLLOWERS,
-      { pageSize: pageSize[AUTH_FOLLOWERS], search: search[AUTH_FOLLOWERS] },
-    ],
+    queryKey: [GET_AUTH_FOLLOWERS, { size: size[AUTH_FOLLOWERS], search: search[AUTH_FOLLOWERS] }],
     keepPreviousData: true,
   });
 
@@ -64,13 +61,10 @@ const Profile: React.FC<Props> = ({ isSider }) => {
   } = useQuery({
     queryFn: () =>
       authAxios.getFollowing({
-        pageSize: pageSize[AUTH_FOLLOWING],
+        size: size[AUTH_FOLLOWING],
         search: search[AUTH_FOLLOWING],
       }),
-    queryKey: [
-      GET_AUTH_FOLLOWING,
-      { pageSize: pageSize[AUTH_FOLLOWING], search: search[AUTH_FOLLOWING] },
-    ],
+    queryKey: [GET_AUTH_FOLLOWING, { size: size[AUTH_FOLLOWING], search: search[AUTH_FOLLOWING] }],
     keepPreviousData: true,
   });
 
@@ -81,8 +75,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
       key,
       label: (
         <span className='sm:mx-2 mx-auto flex items-center gap-1.5'>
-          <Icon className='inline' />{' '}
-          {`${authUser[key === AUTH_FOLLOWERS ? 'followersCount' : 'followingCount']} ${label}`}
+          <Icon className='inline' /> {`${users?.count} ${label}`}
         </span>
       ),
       children: (
@@ -114,7 +107,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
           ) : (
             <InfiniteScroll
               dataLength={users?.data.length ?? 0}
-              next={() => dispatch(setPageSize({ key, pageSize: 10 }))}
+              next={() => dispatch(setSize({ key, size: 10 }))}
               hasMore={users?.data ? users?.data.length < users?.count : false}
               loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
               endMessage={
@@ -147,7 +140,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
                     <UserSkeleton
                       key={user._id}
                       user={user}
-                      shouldFollow={!authUser.following.includes(user._id as never)}
+                      shouldFollow={!authUser.followings.includes(user._id as never)}
                     />
                   )}
                 />

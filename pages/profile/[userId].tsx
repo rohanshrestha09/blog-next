@@ -17,7 +17,7 @@ import AuthAxios from '../../api/AuthAxios';
 import UserAxios from '../../api/UserAxios';
 import BlogList from '../../components/Blogs/BlogList';
 import UserProfileSider from '../../components/Profile/UserProfileSider';
-import { setPageSize } from '../../store/sortFilterSlice';
+import { setSize } from '../../store/sortFilterSlice';
 import { errorNotification, successNotification } from '../../utils/notification';
 import {
   AUTH,
@@ -39,7 +39,7 @@ const UserProfile: NextPage = () => {
   }: NextRouter = useRouter();
 
   const {
-    pageSize: { [USER_PROFILE]: pageSize },
+    size: { [USER_PROFILE]: size },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const dispatch = useDispatch();
@@ -56,8 +56,8 @@ const UserProfile: NextPage = () => {
   });
 
   const { data: blogs, isFetchedAfterMount } = useQuery({
-    queryFn: () => userAxios.getUserBlogs({ user: String(userId), pageSize }),
-    queryKey: [GET_USER_BLOGS, userId, { pageSize }],
+    queryFn: () => userAxios.getUserBlogs({ user: String(userId), size }),
+    queryKey: [GET_USER_BLOGS, userId, { size }],
     keepPreviousData: true,
   });
 
@@ -109,16 +109,16 @@ const UserProfile: NextPage = () => {
             <Button
               type='primary'
               className='sm:order-2 rounded-lg'
-              danger={authUser?.following.includes(user._id as never)}
+              danger={authUser?.followings.includes(user._id as never)}
               disabled={authUser?._id === user._id}
               onClick={() =>
                 handleFollowUser.mutate({
                   id: user._id,
-                  shouldFollow: !authUser?.following.includes(user._id as never),
+                  shouldFollow: !authUser?.followings.includes(user._id as never),
                 })
               }
             >
-              {authUser?.following.includes(user._id as never) ? 'Unfollow' : 'Follow'}
+              {authUser?.followings.includes(user._id as never) ? 'Unfollow' : 'Follow'}
             </Button>
           </div>
 
@@ -134,7 +134,7 @@ const UserProfile: NextPage = () => {
             ) : (
               <InfiniteScroll
                 dataLength={blogs?.data.length ?? 0}
-                next={() => dispatch(setPageSize({ key: USER_PROFILE, pageSize: 10 }))}
+                next={() => dispatch(setSize({ key: USER_PROFILE, size: 10 }))}
                 hasMore={blogs?.data ? blogs?.data.length < blogs?.count : false}
                 loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
               >
@@ -195,17 +195,17 @@ export const getServerSideProps: GetServerSideProps = async (
 
   await queryClient.prefetchQuery({
     queryFn: () => userAxios.getUserBlogs({ user: String(ctx.params?.userId) }),
-    queryKey: [GET_USER_BLOGS, ctx.params?.userId, { pageSize: 20 }],
+    queryKey: [GET_USER_BLOGS, ctx.params?.userId, { size: 20 }],
   });
 
   await queryClient.prefetchQuery({
     queryFn: () => userAxios.getUserFollowers({ user: String(ctx.params?.userId) }),
-    queryKey: [GET_USER_FOLLOWERS, ctx.params?.userId, { pageSize: 20, search: '' }],
+    queryKey: [GET_USER_FOLLOWERS, ctx.params?.userId, { size: 20, search: '' }],
   });
 
   await queryClient.prefetchQuery({
     queryFn: () => userAxios.getUserFollowing({ user: String(ctx.params?.userId) }),
-    queryKey: [GET_USER_FOLLOWING, ctx.params?.userId, { pageSize: 20, search: '' }],
+    queryKey: [GET_USER_FOLLOWING, ctx.params?.userId, { size: 20, search: '' }],
   });
 
   return {

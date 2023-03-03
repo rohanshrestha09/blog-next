@@ -1,44 +1,28 @@
 import { Request, Response } from 'express';
-import { PipelineStage } from 'mongoose';
 import Blog from '../../model/Blog';
-import User from '../../model/User';
 const asyncHandler = require('express-async-handler');
 
 export const blogs = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { blogs: blogIds } = res.locals.auth;
+  const { blogs } = res.locals.auth;
 
-  const { sort, sortOrder, pageSize, genre, isPublished, search } = req.query;
+  const { sort, order, size, genre, isPublished, search } = req.query;
 
-  const query: PipelineStage[] = [
-    { $match: { _id: { $in: blogIds } } },
-    { $sort: { [String(sort || 'likesCount')]: sortOrder === 'asc' ? 1 : -1 } },
-  ];
+  let query = { _id: { $in: blogs } };
 
-  if (genre) query.push({ $match: { genre: { $in: String(genre).split(',') } } });
+  if (genre) query = Object.assign({ genre: { $in: String(genre).split(',') } }, query);
 
-  if (isPublished) query.push({ $match: { isPublished: isPublished === 'true' } });
-
-  if (search)
-    query.unshift({
-      $search: {
-        index: 'blog-search',
-        autocomplete: { query: String(search), path: 'title' },
-      },
-    });
+  if (isPublished) query = Object.assign({ isPublished: isPublished === 'true' }, query);
 
   try {
-    const blogs = await Blog.aggregate([...query, { $limit: Number(pageSize || 20) }]);
-
-    await User.populate(blogs, { path: 'author', select: 'fullname image' });
-
-    const [{ totalCount } = { totalCount: 0 }] = await Blog.aggregate([
-      ...query,
-      { $count: 'totalCount' },
-    ]);
+    const data = await Blog.findMany({
+      match: query,
+      search,
+      limit: Number(size),
+      sort: { field: String(sort || 'like'), order: order === 'asc' ? 1 : -1 },
+    });
 
     return res.status(200).json({
-      data: blogs,
-      count: totalCount,
+      ...data,
       message: 'Blogs Fetched Successfully',
     });
   } catch (err: Error | any) {
@@ -49,33 +33,17 @@ export const blogs = asyncHandler(async (req: Request, res: Response): Promise<R
 export const bookmarks = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const { bookmarks } = res.locals.auth;
 
-  const { pageSize, genre, search } = req.query;
+  const { size, genre, search } = req.query;
 
-  const query: PipelineStage[] = [{ $match: { _id: { $in: bookmarks }, isPublished: true } }];
+  let query = { _id: { $in: bookmarks }, isPublished: true };
 
-  if (genre) query.push({ $match: { genre: { $in: String(genre).split(',') } } });
-
-  if (search)
-    query.unshift({
-      $search: {
-        index: 'blog-search',
-        autocomplete: { query: String(search), path: 'title' },
-      },
-    });
+  if (genre) query = Object.assign({ genre: { $in: String(genre).split(',') } }, query);
 
   try {
-    const blogs = await Blog.aggregate([...query, { $limit: Number(pageSize || 20) }]);
-
-    await User.populate(blogs, { path: 'author', select: 'fullname image' });
-
-    const [{ totalCount } = { totalCount: 0 }] = await Blog.aggregate([
-      ...query,
-      { $count: 'totalCount' },
-    ]);
+    const data = await Blog.findMany({ match: query, search, limit: Number(size) });
 
     return res.status(200).json({
-      data: blogs,
-      count: totalCount,
+      ...data,
       message: 'Blogs Fetched Successfully',
     });
   } catch (err: Error | any) {
@@ -85,19 +53,19 @@ export const bookmarks = asyncHandler(async (req: Request, res: Response): Promi
 
 export const followingBlogs = asyncHandler(
   async (req: Request, res: Response): Promise<Response> => {
-    const { following } = res.locals.auth;
+    const { followings } = res.locals.auth;
 
-    const { pageSize } = req.query;
-
-    let query = { author: following, isPublished: true };
+    const { size } = req.query;
 
     try {
+      const data = await Blog.findMany({
+        match: { author: { $in: followings }, isPublished: true },
+        limit: Number(size),
+        sort: { field: 'createdAt', order: -1 },
+      });
+
       return res.status(200).json({
-        data: await Blog.find(query)
-          .limit(Number(pageSize || 20))
-          .populate('author', 'fullname image')
-          .sort({ createdAt: -1 }),
-        count: await Blog.countDocuments(query),
+        ...data,
         message: 'Following Blogs Fetched Successfully',
       });
     } catch (err: Error | any) {

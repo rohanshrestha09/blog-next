@@ -10,7 +10,7 @@ import { useAuth } from '../../utils/UserAuth';
 import BlogAxios from '../../api/BlogAxios';
 import AuthAxios from '../../api/AuthAxios';
 import BlogList from '../../components/Blogs/BlogList';
-import { setPageSize } from '../../store/sortFilterSlice';
+import { setSize } from '../../store/sortFilterSlice';
 import { AUTH, GET_ALL_BLOGS, GET_GENRE } from '../../constants/queryKeys';
 import { HOME_KEYS } from '../../constants/reduxKeys';
 
@@ -25,7 +25,7 @@ const GenericBlogs: NextPage = () => {
   const dispatch = useDispatch();
 
   const {
-    pageSize: { [GENERIC_BLOGS]: pageSize },
+    size: { [GENERIC_BLOGS]: size },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const { authUser } = useAuth();
@@ -33,8 +33,8 @@ const GenericBlogs: NextPage = () => {
   const blogAxios = BlogAxios();
 
   const { data: blogs, isFetchedAfterMount } = useQuery({
-    queryFn: () => blogAxios.getAllBlog({ genre: [capitalize(String(genre))], pageSize }),
-    queryKey: [GET_ALL_BLOGS, { genre: [capitalize(String(genre))], pageSize }],
+    queryFn: () => blogAxios.getAllBlog({ genre: [capitalize(String(genre))], size }),
+    queryKey: [GET_ALL_BLOGS, { genre: [capitalize(String(genre))], size }],
   });
 
   return (
@@ -60,7 +60,7 @@ const GenericBlogs: NextPage = () => {
           ) : (
             <InfiniteScroll
               dataLength={blogs?.data.length ?? 0}
-              next={() => dispatch(setPageSize({ key: GENERIC_BLOGS, pageSize: 10 }))}
+              next={() => dispatch(setSize({ key: GENERIC_BLOGS, size: 10 }))}
               hasMore={blogs?.data ? blogs?.data.length < blogs?.count : false}
               loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
             >
@@ -105,7 +105,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   await queryClient.prefetchQuery({
     queryFn: () => blogAxios.getAllBlog({ genre: [capitalize(String(ctx.params?.genre))] }),
-    queryKey: [GET_ALL_BLOGS, { genre: [capitalize(String(ctx.params?.genre))], pageSize: 20 }],
+    queryKey: [GET_ALL_BLOGS, { genre: [capitalize(String(ctx.params?.genre))], size: 20 }],
   });
 
   await queryClient.prefetchQuery({

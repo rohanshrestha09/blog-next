@@ -59,8 +59,8 @@ const Blog: NextPage = () => {
   });
 
   const { data: userBlogs, isFetchedAfterMount: isUserBlogFetchedAfterMount } = useQuery({
-    queryFn: () => userAxios.getUserBlogs({ user: String(blog?.author._id), pageSize: 4 }),
-    queryKey: [GET_USER_BLOGS, blog?.author._id, { pageSize: 4 }],
+    queryFn: () => userAxios.getUserBlogs({ user: String(blog?.author._id), size: 4 }),
+    queryKey: [GET_USER_BLOGS, blog?.author._id, { size: 4 }],
     enabled: !!blog,
   });
 
@@ -165,14 +165,14 @@ const Blog: NextPage = () => {
                 className='text-[#1890ff] text-base cursor-pointer hover:text-blue-600'
                 onClick={() => dispatch(openModal({ key: LIKERS_MODAL }))}
               >
-                View {blog.likesCount} Likes
+                View {blog.like} Likes
               </p>
 
               <p
                 className='text-[#1890ff] text-base cursor-pointer hover:text-blue-600'
                 onClick={() => dispatch(openModal({ key: DISCUSSIONS_MODAL }))}
               >
-                {blog.commentsCount} Discussions
+                {blog.comment} Discussions
               </p>
             </span>
 
@@ -181,16 +181,16 @@ const Blog: NextPage = () => {
             <span className='flex items-center [&>*]:py-2 [&>*]:basis-1/2 [&>*]:rounded-lg [&>*]:text-base [&>*]:cursor-pointer [&>*]:transition-all hover:[&>*]:bg-zinc-800'>
               <span
                 className={`flex items-center justify-center gap-2 ${
-                  blog.likers.includes(authUser?._id as never) && 'text-blue-500'
+                  blog.likes.includes(authUser?._id as never) && 'text-blue-500'
                 }`}
                 onClick={() =>
                   handleLike.mutate({
                     id: String(blogId),
-                    shouldLike: !blog.likers.includes(authUser?._id as never),
+                    shouldLike: !blog.likes.includes(authUser?._id as never),
                   })
                 }
               >
-                {blog.likers.includes(authUser?._id as never) ? <BsHeartFill /> : <BsHeart />} Like
+                {blog.likes.includes(authUser?._id as never) ? <BsHeartFill /> : <BsHeart />} Like
               </span>
 
               <span
@@ -258,18 +258,18 @@ export const getServerSideProps: GetServerSideProps = async (
   const blog = queryClient.getQueryData([GET_BLOG, ctx.params?.blogId]) as IBlogData;
 
   await queryClient.prefetchQuery({
-    queryFn: () => userAxios.getUserBlogs({ user: String(blog?.author._id), pageSize: 4 }),
-    queryKey: [GET_USER_BLOGS, blog?.author._id, { pageSize: 4 }],
+    queryFn: () => userAxios.getUserBlogs({ user: String(blog?.author._id), size: 4 }),
+    queryKey: [GET_USER_BLOGS, blog?.author._id, { size: 4 }],
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getLikers({ id: String(ctx.params?.blogId), pageSize: 20 }),
-    queryKey: [GET_LIKERS, ctx.params?.blogId, { pageSize: 20 }],
+    queryFn: () => blogAxios.getLikers({ id: String(ctx.params?.blogId), size: 20 }),
+    queryKey: [GET_LIKERS, ctx.params?.blogId, { size: 20 }],
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => blogAxios.getComments({ id: String(ctx.params?.blogId), pageSize: 20 }),
-    queryKey: [GET_COMMENTS, ctx.params?.blogId, { pageSize: 20 }],
+    queryFn: () => blogAxios.getComments({ id: String(ctx.params?.blogId), size: 20 }),
+    queryKey: [GET_COMMENTS, ctx.params?.blogId, { size: 20 }],
   });
 
   await queryClient.prefetchQuery({

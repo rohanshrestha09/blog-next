@@ -5,17 +5,17 @@ const asyncHandler = require('express-async-handler');
 export const blog = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const { blogs } = res.locals.user;
 
-  const { pageSize } = req.query;
-
-  let query = { _id: blogs, isPublished: true };
+  const { size } = req.query;
 
   try {
+    const data = await Blog.findMany({
+      match: { _id: { $in: blogs }, isPublished: true },
+      limit: Number(size),
+      sort: { field: 'like', order: -1 },
+    });
+
     return res.status(200).json({
-      data: await Blog.find(query)
-        .sort({ likesCount: -1 })
-        .limit(Number(pageSize || 20))
-        .populate('author', 'fullname image'),
-      count: await Blog.countDocuments(query),
+      ...data,
       message: 'Blogs Fetched Successfully',
     });
   } catch (err: Error | any) {

@@ -7,7 +7,7 @@ export default asyncHandler(
     const { user: userId } = req.params || req.query;
 
     try {
-      const user = await User.findById(userId).select('-password -email');
+      const user = await User.findUnique({ _id: userId, exclude: ['email', 'password'] });
 
       if (!user) return res.status(404).json({ message: 'User does not exist' });
 

@@ -19,8 +19,8 @@ const NotificationAxios = (cookie?: any) => {
   };
 
   return {
-    getNotifications: async ({ pageSize }: { pageSize?: number }): Promise<INotifications> =>
-      await axiosFn('get', `?pageSize=${pageSize || 20}`),
+    getNotifications: async ({ size }: { size?: number }): Promise<INotifications> =>
+      await axiosFn('get', `?size=${size || 20}`),
 
     markAsRead: async (id: string): Promise<IMessage> => await axiosFn('put', id),
 

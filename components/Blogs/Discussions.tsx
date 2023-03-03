@@ -11,7 +11,7 @@ import { useAuth } from '../../utils/UserAuth';
 import BlogAxios from '../../api/BlogAxios';
 import ConfirmDelete from '../shared/ConfirmDelete';
 import { openModal, closeModal } from '../../store/modalSlice';
-import { setPageSize } from '../../store/sortFilterSlice';
+import { setSize } from '../../store/sortFilterSlice';
 import { errorNotification, successNotification } from '../../utils/notification';
 import { BLOG_KEYS, MODAL_KEYS } from '../../constants/reduxKeys';
 import { GET_BLOG, GET_COMMENTS } from '../../constants/queryKeys';
@@ -45,7 +45,7 @@ const Discussions: React.FC = () => {
   } = useSelector((state: RootState) => state.modal);
 
   const {
-    pageSize: { [COMMENTS]: pageSize },
+    size: { [COMMENTS]: size },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const dispatch = useDispatch();
@@ -53,8 +53,8 @@ const Discussions: React.FC = () => {
   const blogAxios = BlogAxios();
 
   const { data: comments, refetch } = useQuery({
-    queryFn: () => blogAxios.getComments({ id: String(blogId), pageSize }),
-    queryKey: [GET_COMMENTS, blogId, { pageSize }],
+    queryFn: () => blogAxios.getComments({ id: String(blogId), size }),
+    queryKey: [GET_COMMENTS, blogId, { size }],
     keepPreviousData: true,
   });
 
@@ -162,15 +162,15 @@ const Discussions: React.FC = () => {
       {comments && (
         <InfiniteScroll
           dataLength={comments?.data.length ?? 0}
-          next={() => dispatch(setPageSize({ key: COMMENTS, pageSize: 10 }))}
+          next={() => dispatch(setSize({ key: COMMENTS, size: 10 }))}
           hasMore={comments?.data ? comments?.data.length < comments?.count : false}
           loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
         >
           <List
-            header={`${comments.commentsCount} discussions`}
+            header={`${comments.count} discussions`}
             itemLayout='vertical'
             dataSource={comments.data}
-            renderItem={({ _id: commentId, user, comment, likesCount, likers, createdAt }) => (
+            renderItem={({ _id: commentId, user, comment, like, likes, createdAt }) => (
               <li>
                 <Comment
                   author={
@@ -202,16 +202,12 @@ const Discussions: React.FC = () => {
                           handleLikeComment.mutate({
                             blogId: String(blogId),
                             commentId,
-                            shouldLike: !likers.includes(authUser?._id as never),
+                            shouldLike: !likes.includes(authUser?._id as never),
                           })
                         }
                       >
-                        {likers.includes(authUser?._id as never) ? (
-                          <LikeFilled />
-                        ) : (
-                          <LikeOutlined />
-                        )}
-                        <span className='pl-2'>{likesCount}</span>
+                        {likes.includes(authUser?._id as never) ? <LikeFilled /> : <LikeOutlined />}
+                        <span className='pl-2'>{like}</span>
                       </span>
                     </Tooltip>,
                     authUser?._id === user._id && (

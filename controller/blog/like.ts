@@ -9,17 +9,20 @@ const asyncHandler = require('express-async-handler');
 const { LIKE_BLOG } = NOTIFICATION;
 
 export const likes = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { likers } = res.locals.blog;
+  const { likes } = res.locals.blog;
 
-  const { pageSize } = req.query;
+  const { size } = req.query;
 
   try {
+    const data = await User.findMany({
+      match: { _id: { $in: likes } },
+      limit: Number(size),
+      exclude: ['password', 'email'],
+    });
+
     return res.status(200).json({
-      data: await User.find({ _id: likers })
-        .select('-password -email')
-        .limit(Number(pageSize || 20)),
-      count: await User.countDocuments({ _id: likers }),
-      message: 'Likers fetched successfully',
+      ...data,
+      message: 'Likes fetched successfully',
     });
   } catch (err: Error | any) {
     return res.status(404).json({ message: err.message });
@@ -29,24 +32,17 @@ export const likes = asyncHandler(async (req: Request, res: Response): Promise<R
 export const like = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const {
     auth: { _id: authId, fullname },
-    blog: { _id: blogId, author, likesCount },
+    blog: { _id: blogId, author },
   } = res.locals;
 
   try {
     const likeExist = await Blog.findOne({
-      $and: [{ _id: blogId }, { likers: authId }],
+      $and: [{ _id: blogId }, { likes: authId }],
     });
 
     if (likeExist) return res.status(403).json({ message: 'Already Liked' });
 
-    await Blog.findByIdAndUpdate(blogId, {
-      $push: { likers: authId },
-      likesCount: likesCount + 1,
-    });
-
-    await User.findByIdAndUpdate(authId, {
-      $push: { liked: blogId },
-    });
+    await Blog.findByIdAndUpdate(blogId, { $push: { likes: authId } });
 
     const { _id: notificationId } = await Notification.create({
       type: LIKE_BLOG,
@@ -67,24 +63,17 @@ export const like = asyncHandler(async (req: Request, res: Response): Promise<Re
 export const unlike = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const {
     auth: { _id: authId },
-    blog: { _id: blogId, likesCount },
+    blog: { _id: blogId },
   } = res.locals;
 
   try {
     const likeExist = await Blog.findOne({
-      $and: [{ _id: blogId }, { likers: authId }],
+      $and: [{ _id: blogId }, { likes: authId }],
     });
 
-    if (!likeExist) return res.status(403).json({ message: 'ALready Unliked' });
+    if (!likeExist) return res.status(403).json({ message: 'Already Unliked' });
 
-    await Blog.findByIdAndUpdate(blogId, {
-      $pull: { likers: authId },
-      likesCount: likesCount - 1,
-    });
-
-    await User.findByIdAndUpdate(authId, {
-      $pull: { liked: blogId },
-    });
+    await Blog.findByIdAndUpdate(blogId, { $pull: { likes: authId } });
 
     return res.status(200).json({ message: 'Unliked' });
   } catch (err: Error | any) {

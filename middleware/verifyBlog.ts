@@ -7,7 +7,7 @@ export default asyncHandler(
     const { blog: blogId } = req.params || req.query;
 
     try {
-      const blog = await Blog.findById(blogId).populate('author', 'fullname image');
+      const blog = await Blog.findUnique({ _id: blogId });
 
       if (!blog) return res.status(404).json({ message: 'Blog does not exist' });
 

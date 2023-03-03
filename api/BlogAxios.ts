@@ -25,24 +25,22 @@ const BlogAxios = (cookie?: any) => {
 
     getAllBlog: async ({
       sort,
-      pageSize,
+      size,
       genre,
       search,
     }: {
       sort?: SORT_TYPE;
-      pageSize?: number;
+      size?: number;
       genre?: string[] | [];
       search?: string;
     }): Promise<IBlogs> =>
       await axiosFn(
         'get',
-        `?genre=${genre || []}&sort=${sort || 'likesCount'}&pageSize=${pageSize || 20}&search=${
-          search || ''
-        }`
+        `?genre=${genre || []}&sort=${sort || 'like'}&size=${size || 20}&search=${search || ''}`
       ),
 
-    getBlogSuggestions: async ({ pageSize }: { pageSize: number }): Promise<IBlogs> =>
-      await axiosFn('get', `suggestions?pageSize=${pageSize || 4}`),
+    getBlogSuggestions: async ({ size }: { size: number }): Promise<IBlogs> =>
+      await axiosFn('get', `suggestions?size=${size || 4}`),
 
     postBlog: async (data: FormData): Promise<IBlogReturn> => await axiosFn('post', '', data),
 
@@ -59,8 +57,8 @@ const BlogAxios = (cookie?: any) => {
       shouldPublish: boolean;
     }): Promise<IMessage> => await axiosFn(`${shouldPublish ? 'post' : 'delete'}`, `${id}/publish`),
 
-    getLikers: async ({ id, pageSize }: { id: string; pageSize: number }): Promise<IUsers> =>
-      await axiosFn('get', `${id}/like?pageSize=${pageSize || 20}`),
+    getLikers: async ({ id, size }: { id: string; size: number }): Promise<IUsers> =>
+      await axiosFn('get', `${id}/like?size=${size || 20}`),
 
     likeBlog: async ({ id, shouldLike }: { id: string; shouldLike: boolean }): Promise<IMessage> =>
       await axiosFn(`${shouldLike ? 'post' : 'delete'}`, `${id}/like`),
@@ -74,8 +72,8 @@ const BlogAxios = (cookie?: any) => {
     }): Promise<IMessage> =>
       await axiosFn(`${shouldBookmark ? 'post' : 'delete'}`, `${id}/bookmark`),
 
-    getComments: async ({ id, pageSize }: { id: string; pageSize: number }): Promise<IComments> =>
-      await axiosFn('get', `${id}/comment?pageSize=${pageSize || 20}`),
+    getComments: async ({ id, size }: { id: string; size: number }): Promise<IComments> =>
+      await axiosFn('get', `${id}/comment?size=${size || 20}`),
 
     postComment: async ({
       id,

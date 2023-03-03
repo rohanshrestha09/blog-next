@@ -9,8 +9,8 @@ const { FOLLOW_USER } = NOTIFICATION;
 
 export const follow = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const {
-    auth: { _id: authId, fullname, followingCount },
-    user: { _id: userId, followersCount },
+    auth: { _id: authId, fullname },
+    user: { _id: userId },
   } = res.locals;
 
   if (authId.toString() === userId.toString())
@@ -18,20 +18,14 @@ export const follow = asyncHandler(async (req: Request, res: Response): Promise<
 
   try {
     const followingExists = await User.findOne({
-      $and: [{ _id: authId }, { following: userId }],
+      $and: [{ _id: authId }, { followings: userId }],
     });
 
     if (followingExists) return res.status(403).json({ message: 'Already Following' });
 
-    await User.findByIdAndUpdate(authId, {
-      $push: { following: userId },
-      followingCount: followingCount + 1,
-    });
+    await User.findByIdAndUpdate(authId, { $push: { followings: userId } });
 
-    await User.findByIdAndUpdate(userId, {
-      $push: { followers: authId },
-      followersCount: followersCount + 1,
-    });
+    await User.findByIdAndUpdate(userId, { $push: { followers: authId } });
 
     const { _id: notificationId } = await Notification.create({
       type: FOLLOW_USER,
@@ -50,8 +44,8 @@ export const follow = asyncHandler(async (req: Request, res: Response): Promise<
 
 export const unfollow = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const {
-    auth: { _id: authId, followingCount },
-    user: { _id: userId, followersCount },
+    auth: { _id: authId },
+    user: { _id: userId },
   } = res.locals;
 
   if (authId.toString() === userId.toString())
@@ -59,20 +53,14 @@ export const unfollow = asyncHandler(async (req: Request, res: Response): Promis
 
   try {
     const followingExists = await User.findOne({
-      $and: [{ _id: authId }, { following: userId }],
+      $and: [{ _id: authId }, { followings: userId }],
     });
 
     if (!followingExists) return res.status(403).json({ message: 'Not following' });
 
-    await User.findByIdAndUpdate(authId, {
-      $pull: { following: userId },
-      followingCount: followingCount - 1,
-    });
+    await User.findByIdAndUpdate(authId, { $pull: { followings: userId } });
 
-    await User.findByIdAndUpdate(userId, {
-      $pull: { followers: authId },
-      followersCount: followersCount - 1,
-    });
+    await User.findByIdAndUpdate(userId, { $pull: { followers: authId } });
 
     return res.status(200).json({ message: 'Unfollow Successful' });
   } catch (err: Error | any) {

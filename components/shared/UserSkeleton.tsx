@@ -30,7 +30,7 @@ interface Props {
 const { USER_SUGGESTIONS_MODAL } = MODAL_KEYS;
 
 const UserSkeleton: React.FC<Props> = ({
-  user: { _id: id, bio, image, fullname, followersCount },
+  user: { _id: id, bio, image, fullname, follower },
   shouldFollow,
   bioAsDesc,
   isModal,
@@ -90,7 +90,7 @@ const UserSkeleton: React.FC<Props> = ({
           {bioAsDesc && bio ? (
             <p className='multiline-truncate-title text-xs text-zinc-500 break-words'>{bio}</p>
           ) : (
-            <p className='text-sm text-zinc-500 break-words'>{followersCount} followers</p>
+            <p className='text-sm text-zinc-500 break-words'>{follower} followers</p>
           )}
         </Space>
       </div>

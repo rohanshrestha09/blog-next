@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { Types } from 'mongoose';
 import Comment from '../../../model/Comment';
 import Notification from '../../../model/Notification';
 import { dispatchNotification } from '../../../socket';
@@ -15,20 +14,14 @@ export const likeComment = asyncHandler(async (req: Request, res: Response): Pro
 
   try {
     const likeExist = await Comment.findOne({
-      $and: [{ _id: commentId }, { likers: authId }],
+      $and: [{ _id: commentId }, { likes: authId }],
     });
 
     if (likeExist) return res.status(403).json({ message: 'Already Liked' });
 
-    const comment = await Comment.findById(commentId);
+    const comment = await Comment.findByIdAndUpdate(commentId, { $push: { likes: authId } });
 
     if (!comment) return res.status(404).json({ message: 'Comment does not exist' });
-
-    comment.likesCount += 1;
-
-    comment.likers.push(authId);
-
-    await comment.save();
 
     const { _id: notificationId } = await Notification.create({
       type: LIKE_COMMENT,
@@ -55,22 +48,14 @@ export const unlikeComment = asyncHandler(
 
     try {
       const likeExist = await Comment.findOne({
-        $and: [{ _id: commentId }, { likers: authId }],
+        $and: [{ _id: commentId }, { likes: authId }],
       });
 
-      if (!likeExist) return res.status(403).json({ message: 'ALready Unliked' });
+      if (!likeExist) return res.status(403).json({ message: 'Already Unliked' });
 
-      const comment = await Comment.findById(commentId);
+      const comment = await Comment.findByIdAndUpdate(commentId, { $pull: { likes: authId } });
 
       if (!comment) return res.status(404).json({ message: 'Comment does not exist' });
-
-      comment.likesCount -= 1;
-
-      comment.likers = comment.likers.filter(
-        (likers: Types.ObjectId) => likers.toString() !== authId.toString()
-      );
-
-      await comment.save();
 
       return res.status(200).json({ message: 'Unliked' });
     } catch (err: Error | any) {

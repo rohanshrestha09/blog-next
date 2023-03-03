@@ -11,7 +11,7 @@ import AuthAxios from '../../api/AuthAxios';
 import BlogAxios from '../../api/BlogAxios';
 import BlogList from '../../components/Blogs/BlogList';
 import SearchFilter from '../../components/Blogs/SortFilter';
-import { setPageSize } from '../../store/sortFilterSlice';
+import { setSize } from '../../store/sortFilterSlice';
 import { NAV_KEYS, BOOKMARKS_KEYS } from '../../constants/reduxKeys';
 import { AUTH, GET_BOOKMARKS, GET_GENRE } from '../../constants/queryKeys';
 
@@ -24,7 +24,7 @@ const Bookmarks: NextPage = () => {
 
   const {
     genre: { [BOOKMARKS]: genre },
-    pageSize: { [BOOKMARKS]: pageSize },
+    size: { [BOOKMARKS]: size },
     search: { [BOOKMARKS]: search },
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
@@ -39,8 +39,8 @@ const Bookmarks: NextPage = () => {
     isPreviousData,
     isFetchedAfterMount,
   } = useQuery({
-    queryFn: () => authAxios.getBookmarks({ genre, pageSize, search }),
-    queryKey: [GET_BOOKMARKS, { genre, pageSize, search }],
+    queryFn: () => authAxios.getBookmarks({ genre, size, search }),
+    queryKey: [GET_BOOKMARKS, { genre, size, search }],
     keepPreviousData: true,
   });
 
@@ -66,7 +66,7 @@ const Bookmarks: NextPage = () => {
           ) : (
             <InfiniteScroll
               dataLength={blogs?.data.length ?? 0}
-              next={() => dispatch(setPageSize({ key: BOOKMARKS, pageSize: 10 }))}
+              next={() => dispatch(setSize({ key: BOOKMARKS, size: 10 }))}
               hasMore={blogs?.data ? blogs?.data.length < blogs?.count : false}
               loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
             >
@@ -125,7 +125,7 @@ export const getServerSideProps = withAuth(
 
     await queryClient.prefetchQuery({
       queryFn: () => authAxios.getBookmarks({}),
-      queryKey: [GET_BOOKMARKS, { genre: [], pageSize: 20, search: '' }],
+      queryKey: [GET_BOOKMARKS, { genre: [], size: 20, search: '' }],
     });
 
     await queryClient.prefetchQuery({

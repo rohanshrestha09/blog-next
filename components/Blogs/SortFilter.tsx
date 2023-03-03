@@ -6,7 +6,7 @@ import { LoadingOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { BiSearch } from 'react-icons/bi';
 import { FaSort } from 'react-icons/fa';
 import BlogAxios from '../../api/BlogAxios';
-import { setSearch, setGenre, setSort, setSortOrder } from '../../store/sortFilterSlice';
+import { setSearch, setGenre, setSort, setOrder } from '../../store/sortFilterSlice';
 import { SORT_FILTER_KEYS, SORT_ORDER, SORT_TYPE } from '../../constants/reduxKeys';
 import { GET_GENRE } from '../../constants/queryKeys';
 
@@ -17,12 +17,12 @@ interface Props {
   hasSortOrder?: boolean;
 }
 
-const { LIKES, CREATED_AT } = SORT_TYPE;
+const { LIKE, CREATED_AT } = SORT_TYPE;
 
 const { ASCENDING, DESCENDING } = SORT_ORDER;
 
 const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, hasSortOrder }) => {
-  const { search, genre, sort, sortOrder } = useSelector(
+  const { search, genre, sort, order } = useSelector(
     (state: RootState) => state.sortFilter,
     shallowEqual
   );
@@ -46,7 +46,7 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, h
 
   const getSortVal = (sort: SORT_TYPE) => {
     switch (sort) {
-      case LIKES:
+      case LIKE:
         return 'Most Liked';
 
       case CREATED_AT:
@@ -56,8 +56,8 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, h
 
   const menuSort = [
     {
-      key: LIKES,
-      label: <p className='py-1'>{getSortVal(LIKES)}</p>,
+      key: LIKE,
+      label: <p className='py-1'>{getSortVal(LIKE)}</p>,
     },
     {
       key: CREATED_AT,
@@ -98,16 +98,16 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, h
                     ({ key }) => !Object.values(SORT_ORDER).includes(key as SORT_ORDER & SORT_TYPE)
                   ),
               selectable: true,
-              selectedKeys: [sort[key], sortOrder[key]],
+              selectedKeys: [sort[key], order[key]],
               onSelect: ({ key: sort }) => {
                 if (Object.values(SORT_TYPE).includes(sort as SORT_TYPE))
                   dispatch(setSort({ key, sort } as { key: SORT_FILTER_KEYS; sort: SORT_TYPE }));
 
                 if (hasSortOrder && Object.values(SORT_ORDER).includes(sort as SORT_ORDER))
                   dispatch(
-                    setSortOrder({ key, sortOrder: sort } as {
+                    setOrder({ key, order: sort } as {
                       key: SORT_FILTER_KEYS;
-                      sortOrder: SORT_ORDER;
+                      order: SORT_ORDER;
                     })
                   );
               },

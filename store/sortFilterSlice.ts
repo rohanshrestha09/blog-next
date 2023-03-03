@@ -1,16 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getSortFilterKeys, SORT_FILTER_KEYS, SORT_ORDER, SORT_TYPE } from '../constants/reduxKeys';
 
-const { LIKES } = SORT_TYPE;
+const { LIKE } = SORT_TYPE;
 
 const { DESCENDING } = SORT_ORDER;
 
-const { pageSize, genre, search, sort, sortOrder } = getSortFilterKeys;
+const { size, genre, search, sort, order } = getSortFilterKeys;
 
 const sortFilterSlice = createSlice({
   name: 'sortFilter',
   initialState: {
-    pageSize: Object.values(pageSize)
+    size: Object.values(size)
       .map((key) => ({ [key]: 20 }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
     genre: Object.values(genre)
@@ -20,9 +20,9 @@ const sortFilterSlice = createSlice({
       .map((key) => ({ [key]: '' }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
     sort: Object.values(sort)
-      .map((key) => ({ [key]: LIKES }))
+      .map((key) => ({ [key]: LIKE }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
-    sortOrder: Object.values(sortOrder)
+    order: Object.values(order)
       .map((key) => ({ [key]: DESCENDING }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
   },
@@ -33,13 +33,13 @@ const sortFilterSlice = createSlice({
     ) => {
       return (state = { ...state, search: { ...state.search, [key]: search } });
     },
-    setPageSize: (
+    setSize: (
       state,
-      { payload: { key, pageSize } }: { payload: { key: SORT_FILTER_KEYS; pageSize: number } }
+      { payload: { key, size } }: { payload: { key: SORT_FILTER_KEYS; size: number } }
     ) => {
       return (state = {
         ...state,
-        pageSize: { ...state.pageSize, [key]: state.pageSize[key] + pageSize },
+        size: { ...state.size, [key]: state.size[key] + size },
       });
     },
     setSort: (
@@ -48,11 +48,11 @@ const sortFilterSlice = createSlice({
     ) => {
       return (state = { ...state, sort: { ...state.sort, [key]: sort } });
     },
-    setSortOrder: (
+    setOrder: (
       state,
-      { payload: { key, sortOrder } }: { payload: { key: SORT_FILTER_KEYS; sortOrder: SORT_ORDER } }
+      { payload: { key, order } }: { payload: { key: SORT_FILTER_KEYS; order: SORT_ORDER } }
     ) => {
-      return (state = { ...state, sortOrder: { ...state.sortOrder, [key]: sortOrder } });
+      return (state = { ...state, order: { ...state.order, [key]: order } });
     },
     setGenre: (
       state,
@@ -71,6 +71,6 @@ const sortFilterSlice = createSlice({
   },
 });
 
-export const { setPageSize, setSearch, setSort, setSortOrder, setGenre } = sortFilterSlice.actions;
+export const { setSize, setSearch, setSort, setOrder, setGenre } = sortFilterSlice.actions;
 
 export default sortFilterSlice.reducer;

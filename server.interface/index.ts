@@ -1,4 +1,4 @@
-import { Types } from 'mongoose';
+import { Schema, Types } from 'mongoose';
 
 export interface IUserSchema {
   fullname: string;
@@ -20,10 +20,10 @@ export interface IUserSchema {
   blogs: Types.ObjectId[];
   bio: string;
   website: string;
-  following: Types.ObjectId[];
-  followingCount: number;
+  followings: Types.ObjectId[];
   followers: Types.ObjectId[];
-  followersCount: number;
+  following: number;
+  follower: number;
 }
 
 export interface IBlogSchema {
@@ -38,19 +38,19 @@ export interface IBlogSchema {
     validate: [(val: any) => boolean, string];
     enum: { values: String[]; message: string };
   };
-  likers: Types.ObjectId[];
-  likesCount: number;
+  likes: Types.ObjectId[];
   comments: Types.ObjectId[];
-  commentsCount: number;
   isPublished: boolean;
+  like: number;
+  comment: number;
 }
 
 export interface ICommentSchema {
   blog: Types.ObjectId;
   user: Types.ObjectId;
   comment: string;
-  likers: Types.ObjectId[];
-  likesCount: number;
+  likes: Types.ObjectId[];
+  like: number;
 }
 
 export interface INotificationSchema {

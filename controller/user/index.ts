@@ -154,29 +154,18 @@ export const user = asyncHandler(async (req: Request, res: Response): Promise<Re
 });
 
 export const suggestions = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { pageSize, search } = req.query;
-
-  const query: PipelineStage[] = [{ $project: { password: 0, email: 0 } }];
-
-  if (search)
-    query.unshift({
-      $search: {
-        index: 'blog-user-search',
-        autocomplete: { query: String(search), path: 'fullname' },
-      },
-    });
+  const { size, search } = req.query;
 
   try {
-    const users = await User.aggregate([...query, { $sample: { size: Number(pageSize || 20) } }]);
-
-    const [{ totalCount } = { totalCount: 0 }] = await User.aggregate([
-      ...query,
-      { $count: 'totalCount' },
-    ]);
+    const data = await User.findMany({
+      search,
+      sample: true,
+      limit: Number(size),
+      exclude: ['password', 'email'],
+    });
 
     return res.status(200).json({
-      data: users,
-      count: totalCount,
+      ...data,
       message: 'Users Fetched Successfully',
     });
   } catch (err: Error | any) {

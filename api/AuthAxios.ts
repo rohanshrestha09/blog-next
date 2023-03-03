@@ -37,62 +37,48 @@ const AuthAxios = (cookie?: any) => {
 
     getAllBlogs: async ({
       sort,
-      pageSize,
+      size,
       genre,
-      sortOrder,
+      order,
       isPublished,
       search,
     }: {
       sort?: SORT_TYPE;
-      pageSize?: number;
+      size?: number;
       genre?: string[] | [];
-      sortOrder?: SORT_ORDER;
+      order?: SORT_ORDER;
       isPublished?: boolean;
       search?: string;
     }): Promise<IBlogs> =>
       await axiosFn(
         'get',
-        `blog?genre=${genre || []}&sort=${sort || 'likesCount'}&pageSize=${
-          pageSize || 20
-        }&sortOrder=${sortOrder || 'desc'}&isPublished=${
-          typeof isPublished === 'boolean' ? isPublished : ''
-        }&search=${search || ''}`
+        `blog?genre=${genre || []}&sort=${sort || 'like'}&size=${size || 20}&order=${
+          order || 'desc'
+        }&isPublished=${typeof isPublished === 'boolean' ? isPublished : ''}&search=${search || ''}`
       ),
 
     getBookmarks: async ({
-      pageSize,
+      size,
       genre,
       search,
     }: {
-      pageSize?: number;
+      size?: number;
       genre?: string[] | [];
       search?: string;
     }): Promise<IBlogs> =>
       await axiosFn(
         'get',
-        `blog/bookmarks?genre=${genre || []}&pageSize=${pageSize || 20}&search=${search || ''}`
+        `blog/bookmarks?genre=${genre || []}&size=${size || 20}&search=${search || ''}`
       ),
 
-    getFollowingBlogs: async ({ pageSize }: { pageSize?: number }): Promise<IBlogs> =>
-      await axiosFn('get', `blog/following?pageSize=${pageSize || 20}`),
+    getFollowingBlogs: async ({ size }: { size?: number }): Promise<IBlogs> =>
+      await axiosFn('get', `blog/following?size=${size || 20}`),
 
-    getFollowers: async ({
-      pageSize,
-      search,
-    }: {
-      pageSize?: number;
-      search?: string;
-    }): Promise<IUsers> =>
-      await axiosFn('get', `followers?pageSize=${pageSize || 20}&search=${search || ''}`),
+    getFollowers: async ({ size, search }: { size?: number; search?: string }): Promise<IUsers> =>
+      await axiosFn('get', `followers?size=${size || 20}&search=${search || ''}`),
 
-    getFollowing: async ({
-      pageSize,
-      search,
-    }: {
-      pageSize?: number;
-      search?: string;
-    }): Promise<IUsers> =>
-      await axiosFn('get', `following?pageSize=${pageSize || 20}&search=${search || ''}`),
+    getFollowing: async ({ size, search }: { size?: number; search?: string }): Promise<IUsers> =>
+      await axiosFn('get', `following?size=${size || 20}&search=${search || ''}`),
 
     followUser: async ({
       id,

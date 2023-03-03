@@ -1,37 +1,22 @@
 import { Request, Response } from 'express';
-import { PipelineStage } from 'mongoose';
 import User from '../../model/User';
 const asyncHandler = require('express-async-handler');
 
 export const followers = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const { followers } = res.locals.user;
 
-  const { search, pageSize } = req.query;
-
-  const query: PipelineStage[] = [
-    { $match: { _id: { $in: followers } } },
-    { $project: { password: 0, email: 0 } },
-  ];
-
-  if (search)
-    query.unshift({
-      $search: {
-        index: 'blog-user-search',
-        autocomplete: { query: String(search), path: 'fullname' },
-      },
-    });
+  const { search, size } = req.query;
 
   try {
-    const users = await User.aggregate([...query, { $limit: Number(pageSize || 20) }]);
-
-    const [{ totalCount } = { totalCount: 0 }] = await User.aggregate([
-      ...query,
-      { $count: 'totalCount' },
-    ]);
+    const data = await User.findMany({
+      match: { _id: { $in: followers } },
+      search,
+      limit: Number(size),
+      exclude: ['password', 'email'],
+    });
 
     return res.status(200).json({
-      data: users,
-      count: totalCount,
+      ...data,
       message: 'Followers fetched successfully',
     });
   } catch (err: Error | any) {
@@ -40,34 +25,20 @@ export const followers = asyncHandler(async (req: Request, res: Response): Promi
 });
 
 export const following = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { following } = res.locals.user;
+  const { followings } = res.locals.user;
 
-  const { search, pageSize } = req.query;
-
-  const query: PipelineStage[] = [
-    { $match: { _id: { $in: following } } },
-    { $project: { password: 0, email: 0 } },
-  ];
-
-  if (search)
-    query.unshift({
-      $search: {
-        index: 'blog-user-search',
-        autocomplete: { query: String(search), path: 'fullname' },
-      },
-    });
+  const { search, size } = req.query;
 
   try {
-    const users = await User.aggregate([...query, { $limit: Number(pageSize || 20) }]);
-
-    const [{ totalCount } = { totalCount: 0 }] = await User.aggregate([
-      ...query,
-      { $count: 'totalCount' },
-    ]);
+    const data = await User.findMany({
+      match: { _id: { $in: followings } },
+      search,
+      limit: Number(size),
+      exclude: ['password', 'email'],
+    });
 
     return res.status(200).json({
-      data: users,
-      count: totalCount,
+      ...data,
       message: 'Following fetched successfully',
     });
   } catch (err: Error | any) {

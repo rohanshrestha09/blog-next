@@ -24,7 +24,7 @@ const Likes: React.FC = () => {
   } = useSelector((state: RootState) => state.modal);
 
   const {
-    pageSize: { [LIKES]: pageSize },
+    size: { [LIKES]: size },
   } = useSelector((state: RootState) => state.sortFilter);
 
   const dispatch = useDispatch();
@@ -34,8 +34,8 @@ const Likes: React.FC = () => {
   const blogAxios = BlogAxios();
 
   const { data: likers } = useQuery({
-    queryFn: () => blogAxios.getLikers({ id: String(blogId), pageSize }),
-    queryKey: [GET_LIKERS, blogId, { pageSize }],
+    queryFn: () => blogAxios.getLikers({ id: String(blogId), size }),
+    queryKey: [GET_LIKERS, blogId, { size }],
   });
 
   return (
@@ -53,7 +53,7 @@ const Likes: React.FC = () => {
             <UserSkeleton
               key={user._id}
               user={user}
-              shouldFollow={!authUser?.following.includes(user._id as never)}
+              shouldFollow={!authUser?.followings.includes(user._id as never)}
             />
           ))}
         </div>

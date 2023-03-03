@@ -7,7 +7,7 @@ import { BiSearch } from 'react-icons/bi';
 import { useAuth } from '../../utils/UserAuth';
 import UserAxios from '../../api/UserAxios';
 import UserSkeleton from './UserSkeleton';
-import { setPageSize, setSearch } from '../../store/sortFilterSlice';
+import { setSize, setSearch } from '../../store/sortFilterSlice';
 import { closeModal } from '../../store/modalSlice';
 import { HOME_KEYS, MODAL_KEYS } from '../../constants/reduxKeys';
 import { GET_USER_SUGGESTIONS } from '../../constants/queryKeys';
@@ -22,7 +22,7 @@ const UserSuggestions: React.FC = () => {
   } = useSelector((state: RootState) => state.modal);
 
   const {
-    pageSize: { [USER_SUGGESTIONS]: pageSize },
+    size: { [USER_SUGGESTIONS]: size },
     search: { [USER_SUGGESTIONS]: search },
   } = useSelector((state: RootState) => state.sortFilter);
 
@@ -33,8 +33,8 @@ const UserSuggestions: React.FC = () => {
   const userAxios = UserAxios();
 
   const { data: users, isPreviousData: isLoading } = useQuery({
-    queryFn: () => userAxios.getUserSuggestions({ pageSize, search }),
-    queryKey: [GET_USER_SUGGESTIONS, { pageSize, search }],
+    queryFn: () => userAxios.getUserSuggestions({ size, search }),
+    queryKey: [GET_USER_SUGGESTIONS, { size, search }],
     keepPreviousData: true,
   });
 
@@ -71,7 +71,7 @@ const UserSuggestions: React.FC = () => {
 
       <InfiniteScroll
         dataLength={users?.data.length ?? 0}
-        next={() => dispatch(setPageSize({ key: USER_SUGGESTIONS, pageSize: 10 }))}
+        next={() => dispatch(setSize({ key: USER_SUGGESTIONS, size: 10 }))}
         hasMore={users?.data ? users?.data.length < users?.count : false}
         loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
       >
@@ -82,7 +82,7 @@ const UserSuggestions: React.FC = () => {
             <UserSkeleton
               key={user._id}
               user={user}
-              shouldFollow={!authUser?.following.includes(user._id as never)}
+              shouldFollow={!authUser?.followings.includes(user._id as never)}
               bioAsDesc
               isModal
             />

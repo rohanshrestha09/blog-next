@@ -37,7 +37,7 @@ export enum FOLLOWERS_KEYS {
 }
 
 export enum SORT_TYPE {
-  LIKES = 'likesCount',
+  LIKE = 'like',
   CREATED_AT = 'createdAt',
 }
 
@@ -89,7 +89,7 @@ const { HOME, USER_SUGGESTIONS } = HOME_KEYS;
 const { AUTH_PROFILE } = PROFILE_KEYS;
 
 export const getSortFilterKeys = {
-  pageSize: {
+  size: {
     ...HOME_KEYS,
     ...PROFILE_KEYS,
     ...FOLLOWERS_KEYS,
@@ -106,7 +106,7 @@ export const getSortFilterKeys = {
   },
   genre: { HOME, AUTH_PROFILE, ...BOOKMARKS_KEYS },
   sort: { HOME, AUTH_PROFILE },
-  sortOrder: { AUTH_PROFILE },
+  order: { AUTH_PROFILE },
 };
 
 export type SORT_FILTER_KEYS =

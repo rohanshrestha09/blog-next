@@ -21,10 +21,10 @@ export interface IUserSchema {
   blogs: Types.ObjectId[];
   bio: string;
   website: string;
-  following: Types.ObjectId[];
-  followingCount: number;
+  followings: Types.ObjectId[];
+  following: number;
   followers: Types.ObjectId[];
-  followersCount: number;
+  follower: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -48,10 +48,10 @@ export interface IBlogSchema {
     enum: { values: String[]; message: string };
     map: (tag: any) => JSX.Element;
   };
-  likers: Types.ObjectId[];
-  likesCount: number;
+  likes: Types.ObjectId[];
+  like: number;
   comments: Types.ObjectId[];
-  commentsCount: number;
+  comment: number;
   isPublished: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -67,8 +67,8 @@ export interface ICommentSchema {
     image: string;
   };
   comment: string;
-  likers: Types.ObjectId[];
-  likesCount: number;
+  likes: Types.ObjectId[];
+  like: number;
   createdAt: Date;
   updatedAt: Date;
 }

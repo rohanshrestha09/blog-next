@@ -14,7 +14,14 @@ const asyncHandler = require('express-async-handler');
 moment.suppressDeprecationWarnings = true;
 
 export const authHandler = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  return res.status(200).json({ data: res.locals.auth, message: 'Authentication Success' });
+  try {
+    return res.status(200).json({
+      data: res.locals.auth,
+      message: 'Authentication Successful',
+    });
+  } catch (err: Error | any) {
+    return res.status(404).json({ message: err.message });
+  }
 });
 
 export const completeAuth = asyncHandler(async (req: Request, res: Response): Promise<Response> => {

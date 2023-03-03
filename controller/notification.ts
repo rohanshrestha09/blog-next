@@ -10,13 +10,13 @@ export const notifications = asyncHandler(
   async (req: Request, res: Response): Promise<Response> => {
     const { _id: authId } = res.locals.auth;
 
-    const { pageSize } = req.query;
+    const { size } = req.query;
 
     try {
       return res.status(200).json({
         data: await Notification.find({ listener: { $in: authId } })
           .sort({ createdAt: -1 })
-          .limit(Number(pageSize || 20))
+          .limit(Number(size || 20))
           .populate('user', 'fullname image')
           .populate('blog', 'title image')
           .populate('comment', 'comment'),

@@ -9,7 +9,7 @@ import AuthAxios from '../api/AuthAxios';
 import BlogAxios from '../api/BlogAxios';
 import BlogList from '../components/Blogs/BlogList';
 import SortFilter from '../components/Blogs/SortFilter';
-import { setPageSize } from '../store/sortFilterSlice';
+import { setSize } from '../store/sortFilterSlice';
 import { AUTH, GET_ALL_BLOGS, GET_FOLLOWING_BLOGS, GET_GENRE } from '../constants/queryKeys';
 import { SORT_TYPE, HOME_KEYS } from '../constants/reduxKeys';
 import { useAuth } from '../utils/UserAuth';
@@ -17,7 +17,7 @@ import type { IBlogs } from '../interface/blog';
 
 const { HOME, FOLLOWING } = HOME_KEYS;
 
-const { LIKES } = SORT_TYPE;
+const { LIKE } = SORT_TYPE;
 
 const Empty: React.FC = () => (
   <RenderEmpty className='bg-zinc-900 py-8 mx-0 rounded-lg'>
@@ -40,7 +40,7 @@ const Home: NextPage = () => {
     sort: { [HOME]: sort },
     search: { [HOME]: search },
     genre: { [HOME]: genre },
-    pageSize,
+    size,
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const dispatch = useDispatch();
@@ -54,14 +54,14 @@ const Home: NextPage = () => {
     isPreviousData,
     isFetchedAfterMount,
   } = useQuery({
-    queryFn: () => blogAxios.getAllBlog({ sort, genre, pageSize: pageSize[HOME], search }),
-    queryKey: [GET_ALL_BLOGS, { genre, sort, pageSize: pageSize[HOME], search }],
+    queryFn: () => blogAxios.getAllBlog({ sort, genre, size: size[HOME], search }),
+    queryKey: [GET_ALL_BLOGS, { genre, sort, size: size[HOME], search }],
     keepPreviousData: true,
   });
 
   const { data: followingBlogs } = useQuery({
-    queryFn: () => authAxios.getFollowingBlogs({ pageSize: pageSize[FOLLOWING] }),
-    queryKey: [GET_FOLLOWING_BLOGS, { pageSize: pageSize[FOLLOWING] }],
+    queryFn: () => authAxios.getFollowingBlogs({ size: size[FOLLOWING] }),
+    queryKey: [GET_FOLLOWING_BLOGS, { size: size[FOLLOWING] }],
     keepPreviousData: true,
   });
 
@@ -80,7 +80,7 @@ const Home: NextPage = () => {
           ) : (
             <InfiniteScroll
               dataLength={blogs?.data.length ?? 0}
-              next={() => dispatch(setPageSize({ key, pageSize: 10 }))}
+              next={() => dispatch(setSize({ key, size: 10 }))}
               hasMore={blogs?.data ? blogs?.data.length < blogs?.count : false}
               loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
               endMessage={<Empty />}
@@ -148,12 +148,12 @@ export const getServerSideProps: GetServerSideProps = async (
 
   await queryClient.prefetchQuery({
     queryFn: () => blogAxios.getAllBlog({}),
-    queryKey: [GET_ALL_BLOGS, { genre: [], sort: LIKES, pageSize: 20, search: '' }],
+    queryKey: [GET_ALL_BLOGS, { genre: [], sort: LIKE, size: 20, search: '' }],
   });
 
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.getFollowingBlogs({}),
-    queryKey: [GET_FOLLOWING_BLOGS, { pageSize: 20 }],
+    queryKey: [GET_FOLLOWING_BLOGS, { size: 20 }],
   });
 
   await queryClient.prefetchQuery({
