@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { NextRouter, Router, useRouter } from 'next/router';
+import { NextRouter, useRouter } from 'next/router';
 import { GetServerSidePropsContext, NextPage } from 'next';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, DehydratedState, QueryClient, useQuery } from '@tanstack/react-query';
@@ -224,7 +224,7 @@ export const getServerSideProps = withAuth(
       queryFn: () => authAxios.getAllBlogs({}),
       queryKey: [
         GET_AUTH_BLOGS,
-        { genre: [], size: 20, sort: LIKE, sortOrder: DESCENDING, search: '' },
+        { genre: [], size: 20, sort: LIKE, order: DESCENDING, search: '' },
       ],
     });
 
