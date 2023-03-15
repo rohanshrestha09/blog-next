@@ -36,7 +36,7 @@ const UserAuth: React.FC<{
     onAuthStateChanged(auth, (user) => {
       if (authUser) return;
 
-      if (user) handleGoogleSignIn.mutate(user);
+      if (user && !pathname.startsWith('/security/reset-password')) handleGoogleSignIn.mutate(user);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
