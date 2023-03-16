@@ -32,7 +32,18 @@ const { DELETE_MODAL } = MODAL_KEYS;
 const BlogList: React.FC<Props> = ({
   editable,
   smallContainer,
-  blog: { _id: id, author, title, content, image, genre, like, comment, isPublished, createdAt },
+  blog: {
+    _id: id,
+    author,
+    title,
+    content,
+    image,
+    genre,
+    likeCount,
+    commentCount,
+    isPublished,
+    createdAt,
+  },
 }) => {
   const router: NextRouter = useRouter();
 
@@ -188,7 +199,7 @@ const BlogList: React.FC<Props> = ({
             <Tooltip title='Likes' placement='bottom'>
               <Space className='flex items-center'>
                 <BsHeart />
-                {like ?? 0}
+                {likeCount}
               </Space>
             </Tooltip>
 
@@ -197,7 +208,7 @@ const BlogList: React.FC<Props> = ({
             <Tooltip title='Comment' placement='bottom'>
               <Space className='flex items-center'>
                 <VscComment />
-                {comment ?? 0}
+                {commentCount}
               </Space>
             </Tooltip>
 

@@ -17,7 +17,7 @@ import type { IBlogs } from '../interface/blog';
 
 const { HOME, FOLLOWING } = HOME_KEYS;
 
-const { LIKE } = SORT_TYPE;
+const { LIKE_COUNT } = SORT_TYPE;
 
 const Empty: React.FC = () => (
   <RenderEmpty className='bg-zinc-900 py-8 mx-0 rounded-lg'>
@@ -148,7 +148,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   await queryClient.prefetchQuery({
     queryFn: () => blogAxios.getAllBlog({}),
-    queryKey: [GET_ALL_BLOGS, { genre: [], sort: LIKE, size: 20, search: '' }],
+    queryKey: [GET_ALL_BLOGS, { genre: [], sort: LIKE_COUNT, size: 20, search: '' }],
   });
 
   await queryClient.prefetchQuery({

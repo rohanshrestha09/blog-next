@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getSortFilterKeys, SORT_FILTER_KEYS, SORT_ORDER, SORT_TYPE } from '../constants/reduxKeys';
 
-const { LIKE } = SORT_TYPE;
+const { LIKE_COUNT } = SORT_TYPE;
 
 const { DESCENDING } = SORT_ORDER;
 
@@ -20,7 +20,7 @@ const sortFilterSlice = createSlice({
       .map((key) => ({ [key]: '' }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
     sort: Object.values(sort)
-      .map((key) => ({ [key]: LIKE }))
+      .map((key) => ({ [key]: LIKE_COUNT }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
     order: Object.values(order)
       .map((key) => ({ [key]: DESCENDING }))

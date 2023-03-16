@@ -4,8 +4,11 @@ import user from './user';
 import blog from './blog';
 import security from './security';
 import notification from './notification';
+import viewer from '../middleware/viewer';
 
 const router = Router();
+
+router.use(viewer);
 
 router.use('/auth', auth);
 

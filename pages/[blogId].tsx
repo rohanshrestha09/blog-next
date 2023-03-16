@@ -123,7 +123,7 @@ const Blog: NextPage = () => {
             </span>
 
             <span className='absolute right-0 flex gap-4 items-center'>
-              {authUser?.bookmarks.includes(blog._id as never) ? (
+              {blog.hasBookmarked ? (
                 <Tooltip title='Unbookmark' placement='left'>
                   <BsBookmarkFill
                     className='cursor-pointer transition-all hover:text-zinc-400'
@@ -131,7 +131,7 @@ const Blog: NextPage = () => {
                     onClick={() =>
                       handleBookmark.mutate({
                         id: String(blogId),
-                        shouldBookmark: !authUser?.bookmarks.includes(blog._id as never),
+                        shouldBookmark: !blog.hasBookmarked,
                       })
                     }
                   />
@@ -144,7 +144,7 @@ const Blog: NextPage = () => {
                     onClick={() =>
                       handleBookmark.mutate({
                         id: String(blogId),
-                        shouldBookmark: !authUser?.bookmarks.includes(blog._id as never),
+                        shouldBookmark: !blog.hasBookmarked,
                       })
                     }
                   />
@@ -165,14 +165,14 @@ const Blog: NextPage = () => {
                 className='text-[#1890ff] text-base cursor-pointer hover:text-blue-600'
                 onClick={() => dispatch(openModal({ key: LIKERS_MODAL }))}
               >
-                View {blog.like ?? 0} Likes
+                View {blog.likeCount} Likes
               </p>
 
               <p
                 className='text-[#1890ff] text-base cursor-pointer hover:text-blue-600'
                 onClick={() => dispatch(openModal({ key: DISCUSSIONS_MODAL }))}
               >
-                {blog.comment ?? 0} Discussions
+                {blog.commentCount} Discussions
               </p>
             </span>
 
@@ -181,16 +181,16 @@ const Blog: NextPage = () => {
             <span className='flex items-center [&>*]:py-2 [&>*]:basis-1/2 [&>*]:rounded-lg [&>*]:text-base [&>*]:cursor-pointer [&>*]:transition-all hover:[&>*]:bg-zinc-800'>
               <span
                 className={`flex items-center justify-center gap-2 ${
-                  blog.likes.includes(authUser?._id as never) && 'text-blue-500'
+                  blog.hasLiked && 'text-blue-500'
                 }`}
                 onClick={() =>
                   handleLike.mutate({
                     id: String(blogId),
-                    shouldLike: !blog.likes.includes(authUser?._id as never),
+                    shouldLike: !blog.hasLiked,
                   })
                 }
               >
-                {blog.likes.includes(authUser?._id as never) ? <BsHeartFill /> : <BsHeart />} Like
+                {blog.hasLiked ? <BsHeartFill /> : <BsHeart />} Like
               </span>
 
               <span

@@ -1,14 +1,17 @@
 import { Request, Response } from 'express';
 import moment from 'moment';
 import { serialize } from 'cookie';
-import { isEmpty } from 'lodash';
 import bcrypt from 'bcryptjs';
-import uploadFile from '../../middleware/uploadFile';
-import deleteFile from '../../middleware/deleteFile';
+import uploadFile from '../../utils/uploadFile';
+import deleteFile from '../../utils/deleteFile';
 import User from '../../model/User';
 import Blog from '../../model/Blog';
 import Notification from '../../model/Notification';
 import Comment from '../../model/Comment';
+import UserFollow from '../../model/UserFollow';
+import BlogLike from '../../model/BlogLike';
+import BlogBookmark from '../../model/BlogBookmark';
+import CommentLike from '../../model/CommentLike';
 const asyncHandler = require('express-async-handler');
 
 moment.suppressDeprecationWarnings = true;
@@ -106,22 +109,31 @@ export const deleteImage = asyncHandler(async (req: Request, res: Response): Pro
 
 export const deleteProfile = asyncHandler(
   async (req: Request, res: Response): Promise<Response> => {
-    const { _id: authId, image, imageName, blogs } = res.locals.auth;
+    const { _id: authId, image, imageName } = res.locals.auth;
 
     try {
-      if (!isEmpty(blogs)) {
+      const blogs = await Blog.find({ author: authId });
+      if (blogs?.length) {
         const allBlogs = await Blog.find({ _id: blogs });
 
         allBlogs?.forEach((blog) => {
           if (blog?.image && blog.imageName) deleteFile(`blogs/${blog.imageName}`);
         });
 
-        await Blog.deleteMany({ _id: blogs });
+        await Blog.deleteMany({ author: authId });
       }
 
       await Notification.deleteMany({ user: authId });
 
       await Comment.deleteMany({ user: authId });
+
+      await UserFollow.deleteMany({ $or: [{ user: authId }, { follows: authId }] });
+
+      await BlogLike.deleteMany({ user: authId });
+
+      await BlogBookmark.deleteMany({ user: authId });
+
+      await CommentLike.deleteMany({ user: authId });
 
       if (image && imageName) deleteFile(`users/${imageName}`);
 

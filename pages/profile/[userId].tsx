@@ -68,6 +68,7 @@ const UserProfile: NextPage = () => {
       onSuccess: (res) => {
         successNotification(res.message);
         queryClient.refetchQueries([AUTH]);
+        queryClient.refetchQueries([GET_USER, userId]);
         queryClient.refetchQueries([GET_USER_FOLLOWERS]);
         queryClient.refetchQueries([GET_USER_FOLLOWING]);
       },
@@ -109,16 +110,16 @@ const UserProfile: NextPage = () => {
             <Button
               type='primary'
               className='sm:order-2 rounded-lg'
-              danger={authUser?.followings.includes(user._id as never)}
+              danger={user.followedByViewer}
               disabled={authUser?._id === user._id}
               onClick={() =>
                 handleFollowUser.mutate({
                   id: user._id,
-                  shouldFollow: !authUser?.followings.includes(user._id as never),
+                  shouldFollow: !user.followedByViewer,
                 })
               }
             >
-              {authUser?.followings.includes(user._id as never) ? 'Unfollow' : 'Follow'}
+              {user?.followedByViewer ? 'Unfollow' : 'Follow'}
             </Button>
           </div>
 

@@ -36,7 +36,9 @@ const BlogAxios = (cookie?: any) => {
     }): Promise<IBlogs> =>
       await axiosFn(
         'get',
-        `?genre=${genre || []}&sort=${sort || 'like'}&size=${size || 20}&search=${search || ''}`
+        `?genre=${genre || []}&sort=${sort || 'likeCount'}&size=${size || 20}&search=${
+          search || ''
+        }`
       ),
 
     getBlogSuggestions: async ({ size }: { size: number }): Promise<IBlogs> =>

@@ -1,21 +1,24 @@
 import { Request, Response } from 'express';
-import Blog from '../../model/Blog';
 import Notification from '../../model/Notification';
-import User from '../../model/User';
 import { dispatchNotification } from '../../socket';
 import { NOTIFICATION } from '../../server.interface';
+import BlogLike from '../../model/BlogLike';
+import Blog from '../../model/Blog';
 const asyncHandler = require('express-async-handler');
 
 const { LIKE_BLOG } = NOTIFICATION;
 
 export const likes = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { likes } = res.locals.blog;
+  const { _id: blogId } = res.locals.blog;
+
+  const { _id: viewer } = res.locals.viewer;
 
   const { size } = req.query;
 
   try {
-    const data = await User.findMany({
-      match: { _id: { $in: likes } },
+    const data = await Blog.findLikes({
+      blog: blogId,
+      viewer,
       limit: Number(size),
       exclude: ['password', 'email'],
     });
@@ -36,13 +39,13 @@ export const like = asyncHandler(async (req: Request, res: Response): Promise<Re
   } = res.locals;
 
   try {
-    const likeExist = await Blog.findOne({
-      $and: [{ _id: blogId }, { likes: authId }],
+    const likeExist = await BlogLike.findOne({
+      $and: [{ user: authId }, { likes: blogId }],
     });
 
     if (likeExist) return res.status(403).json({ message: 'Already Liked' });
 
-    await Blog.findByIdAndUpdate(blogId, { $push: { likes: authId } });
+    await BlogLike.create({ user: authId, likes: blogId });
 
     const { _id: notificationId } = await Notification.create({
       type: LIKE_BLOG,
@@ -67,13 +70,13 @@ export const unlike = asyncHandler(async (req: Request, res: Response): Promise<
   } = res.locals;
 
   try {
-    const likeExist = await Blog.findOne({
-      $and: [{ _id: blogId }, { likes: authId }],
+    const likeExist = await BlogLike.findOne({
+      $and: [{ user: authId }, { likes: blogId }],
     });
 
     if (!likeExist) return res.status(403).json({ message: 'Already Unliked' });
 
-    await Blog.findByIdAndUpdate(blogId, { $pull: { likes: authId } });
+    await BlogLike.deleteOne({ $and: [{ user: authId }, { likes: blogId }] });
 
     return res.status(200).json({ message: 'Unliked' });
   } catch (err: Error | any) {

@@ -1,4 +1,4 @@
-import { Schema, Types } from 'mongoose';
+import { FilterQuery, Model, PipelineStage, Types } from 'mongoose';
 
 export interface IUserSchema {
   fullname: string;
@@ -13,17 +13,20 @@ export interface IUserSchema {
     };
   };
   isSSO: boolean;
-  verified: boolean;
+  isVerified: boolean;
   image: string;
   imageName: string;
-  bookmarks: Types.ObjectId[];
-  blogs: Types.ObjectId[];
   bio: string;
   website: string;
-  followings: Types.ObjectId[];
-  followers: Types.ObjectId[];
-  following: number;
-  follower: number;
+  followingCount: number;
+  followerCount: number;
+  followsViewer: boolean;
+  followedByViewer: boolean;
+}
+
+export interface IUserFollowSchema {
+  user: Types.ObjectId;
+  follows: Types.ObjectId;
 }
 
 export interface IBlogSchema {
@@ -38,19 +41,34 @@ export interface IBlogSchema {
     validate: [(val: any) => boolean, string];
     enum: { values: String[]; message: string };
   };
-  likes: Types.ObjectId[];
-  comments: Types.ObjectId[];
   isPublished: boolean;
-  like: number;
-  comment: number;
+  likeCount: number;
+  commentCount: number;
+  hasLiked: boolean;
+  hasBookmarked: boolean;
+}
+
+export interface IBlogLikeSchema {
+  user: Types.ObjectId;
+  likes: Types.ObjectId;
+}
+
+export interface IBlogBookmarkSchema {
+  user: Types.ObjectId;
+  bookmarks: Types.ObjectId;
 }
 
 export interface ICommentSchema {
   blog: Types.ObjectId;
   user: Types.ObjectId;
   comment: string;
-  likes: Types.ObjectId[];
-  like: number;
+  likeCount: number;
+  hasLiked: boolean;
+}
+
+export interface ICommentLikeSchema {
+  user: Types.ObjectId;
+  likes: Types.ObjectId;
 }
 
 export interface INotificationSchema {
@@ -69,6 +87,143 @@ export interface INotificationSchema {
     enum: { values: String[]; message: string };
     default: NOTIFICATION_STATUS.UNREAD;
   };
+}
+
+export interface IUserModel extends Model<IUserSchema> {
+  findUnique({
+    _id,
+    viewer,
+    exclude,
+  }: {
+    _id: string;
+    viewer?: string;
+    exclude?: string[];
+  }): Promise<IUserSchema>;
+
+  findMany(
+    {
+      match,
+      viewer,
+      search,
+      exclude,
+      limit,
+      sample,
+    }: {
+      match?: FilterQuery<any>;
+      viewer?: string;
+      search?: unknown;
+      exclude?: string[];
+      limit?: number;
+      sample?: boolean;
+    },
+    ...rest: PipelineStage[]
+  ): Promise<{ data: IUserSchema[]; count: number }>;
+
+  findFollowers(
+    {
+      user,
+      viewer,
+      search,
+      exclude,
+      limit,
+    }: {
+      user?: string;
+      search?: unknown;
+      viewer?: string;
+      exclude?: string[];
+      limit?: number;
+      sample?: boolean;
+    },
+    field: 'followers' | 'followings'
+  ): Promise<{ data: IUserSchema[]; count: number }>;
+
+  findFollowingBlogs({
+    user,
+    viewer,
+    exclude,
+    limit,
+    sort,
+  }: {
+    user?: string;
+    viewer?: string;
+    exclude?: string[];
+    limit?: number;
+    sort: { field: string; order: 1 | -1 };
+  }): Promise<{ data: IBlogSchema[]; count: number }>;
+
+  findBookmarks({
+    match,
+    user,
+    viewer,
+    exclude,
+    search,
+    limit,
+  }: {
+    match: FilterQuery<any>;
+    user?: string;
+    viewer?: string;
+    exclude?: string[];
+    search?: unknown;
+    limit?: number;
+  }): Promise<{ data: IBlogSchema[]; count: number }>;
+}
+
+export interface ICommentModel extends Model<ICommentSchema> {
+  findMany({
+    match,
+    viewer,
+    limit,
+    exclude,
+  }: {
+    match?: FilterQuery<any>;
+    viewer?: string;
+    limit?: number;
+    exclude?: string[];
+  }): Promise<{ data: ICommentSchema[]; count: number }>;
+}
+
+export interface IBlogModel extends Model<IBlogSchema> {
+  findUnique({
+    _id,
+    viewer,
+    exclude,
+  }: {
+    _id: string;
+    viewer?: string;
+    exclude?: string[];
+  }): Promise<IBlogSchema>;
+  findMany(
+    {
+      match,
+      viewer,
+      search,
+      exclude,
+      limit,
+      sort,
+      sample,
+    }: {
+      match?: FilterQuery<any>;
+      viewer?: string;
+      search?: unknown;
+      exclude?: string[];
+      limit?: number;
+      sort?: { field: string; order: 1 | -1 };
+      sample?: boolean;
+    },
+    ...rest: PipelineStage[]
+  ): Promise<{ data: IBlogSchema[]; count: number }>;
+
+  findLikes({
+    blog,
+    viewer,
+    exclude,
+    limit,
+  }: {
+    blog?: string;
+    viewer?: string;
+    exclude?: string[];
+    limit?: number;
+  }): Promise<{ data: IUserSchema[]; count: number }>;
 }
 
 export const genre: string[] = [

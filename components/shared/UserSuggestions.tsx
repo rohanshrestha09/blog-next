@@ -4,7 +4,6 @@ import { Modal, Input, Spin, Divider, Skeleton, List } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { BiSearch } from 'react-icons/bi';
-import { useAuth } from '../../utils/UserAuth';
 import UserAxios from '../../api/UserAxios';
 import UserSkeleton from './UserSkeleton';
 import { setSize, setSearch } from '../../store/sortFilterSlice';
@@ -27,8 +26,6 @@ const UserSuggestions: React.FC = () => {
   } = useSelector((state: RootState) => state.sortFilter);
 
   const dispatch = useDispatch();
-
-  const { authUser } = useAuth();
 
   const userAxios = UserAxios();
 
@@ -78,15 +75,7 @@ const UserSuggestions: React.FC = () => {
         <List
           itemLayout='vertical'
           dataSource={users?.data}
-          renderItem={(user) => (
-            <UserSkeleton
-              key={user._id}
-              user={user}
-              shouldFollow={!authUser?.followings.includes(user._id as never)}
-              bioAsDesc
-              isModal
-            />
-          )}
+          renderItem={(user) => <UserSkeleton key={user._id} user={user} bioAsDesc isModal />}
         />
       </InfiniteScroll>
     </Modal>

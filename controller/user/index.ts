@@ -1,10 +1,9 @@
 import { Request, Response } from 'express';
 import moment from 'moment';
-import { PipelineStage } from 'mongoose';
 import { serialize } from 'cookie';
 import bcrypt from 'bcryptjs';
 import { sign, Secret } from 'jsonwebtoken';
-import uploadFile from '../../middleware/uploadFile';
+import uploadFile from '../../utils/uploadFile';
 import User from '../../model/User';
 const asyncHandler = require('express-async-handler');
 
@@ -32,7 +31,7 @@ export const register = asyncHandler(async (req: Request, res: Response): Promis
       email,
       password: encryptedPassword,
       dateOfBirth: dateOfBirth && new Date(moment(dateOfBirth).format()),
-      verified: true,
+      isVerified: true,
     });
 
     if (req.files) {
@@ -118,7 +117,7 @@ export const googleLogin = asyncHandler(async (req: Request, res: Response): Pro
         dateOfBirth: new Date(2000, 1, 1),
         isSSO: true,
         provider: 'google',
-        verified: false,
+        isVerified: false,
       });
     }
 
@@ -143,9 +142,14 @@ export const googleLogin = asyncHandler(async (req: Request, res: Response): Pro
 });
 
 export const user = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
+  const {
+    user: { _id: user },
+    viewer: { _id: viewer },
+  } = res.locals;
+
   try {
     return res.status(200).json({
-      data: res.locals.user,
+      data: await User.findUnique({ _id: user, viewer, exclude: ['password', 'email'] }),
       message: 'User Fetched Successfully',
     });
   } catch (err: Error | any) {
@@ -154,11 +158,14 @@ export const user = asyncHandler(async (req: Request, res: Response): Promise<Re
 });
 
 export const suggestions = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
+  const { _id: viewer } = res.locals.viewer;
+
   const { size, search } = req.query;
 
   try {
     const data = await User.findMany({
       search,
+      viewer,
       sample: true,
       limit: Number(size),
       exclude: ['password', 'email'],

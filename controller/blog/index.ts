@@ -1,10 +1,13 @@
 import { Request, Response } from 'express';
-import uploadFile from '../../middleware/uploadFile';
-import deleteFile from '../../middleware/deleteFile';
+import uploadFile from '../../utils/uploadFile';
+import deleteFile from '../../utils/deleteFile';
 import Blog from '../../model/Blog';
-import User from '../../model/User';
 import Comment from '../../model/Comment';
 import Notification from '../../model/Notification';
+import BlogLike from '../../model/BlogLike';
+import UserFollow from '../../model/UserFollow';
+import BlogBookmark from '../../model/BlogBookmark';
+import CommentLike from '../../model/CommentLike';
 import { dispatchNotification } from '../../socket';
 import { NOTIFICATION } from '../../server.interface';
 const asyncHandler = require('express-async-handler');
@@ -23,7 +26,7 @@ export const blogs = asyncHandler(async (req: Request, res: Response): Promise<R
       match: query,
       search,
       limit: Number(size),
-      sort: { field: String(sort || 'like'), order: -1 },
+      sort: { field: String(sort || 'likeCount'), order: -1 },
     });
 
     return res.status(200).json({
@@ -36,9 +39,14 @@ export const blogs = asyncHandler(async (req: Request, res: Response): Promise<R
 });
 
 export const blog = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
+  const {
+    blog: { _id: blogId },
+    viewer: { _id: viewer },
+  } = res.locals;
+
   try {
     return res.status(200).json({
-      data: res.locals.blog,
+      data: await Blog.findUnique({ _id: blogId, viewer }),
       message: 'Blog Fetched Successfully',
     });
   } catch (err: Error | any) {
@@ -47,7 +55,7 @@ export const blog = asyncHandler(async (req: Request, res: Response): Promise<Re
 });
 
 export const postBlog = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { _id: authId, fullname, followers } = res.locals.auth;
+  const { _id: authId, fullname } = res.locals.auth;
 
   const { title, content, genre, isPublished } = req.body;
 
@@ -76,7 +84,9 @@ export const postBlog = asyncHandler(async (req: Request, res: Response): Promis
       });
     }
 
-    await User.findByIdAndUpdate(authId, { $push: { blogs: blogId } });
+    const followers = (await UserFollow.find({ follows: authId })).map(({ follows }) =>
+      follows.toString()
+    );
 
     if (isPublished) {
       const { id: notificationId } = await Notification.create({
@@ -133,8 +143,6 @@ export const updateBlog = asyncHandler(async (req: Request, res: Response): Prom
 });
 
 export const deleteBlog = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { _id: authId } = res.locals.auth;
-
   const { _id: blogId, image, imageName } = res.locals.blog;
 
   try {
@@ -142,9 +150,17 @@ export const deleteBlog = asyncHandler(async (req: Request, res: Response): Prom
 
     await Blog.findByIdAndDelete(blogId);
 
+    await BlogLike.deleteMany({ likes: blogId });
+
+    await BlogBookmark.deleteMany({ bookmarks: blogId });
+
+    const comments = (await Comment.find({ blog: blogId })).map(({ blog }) => blog.toString());
+
     await Comment.deleteMany({ blog: blogId });
 
-    await User.findByIdAndUpdate(authId, { $pull: { blogs: blogId } });
+    await CommentLike.deleteMany({ likes: { $in: comments } });
+
+    await Notification.deleteMany({ blog: blogId });
 
     return res.status(200).json({ message: 'Blog Deleted Successfully' });
   } catch (err: Error | any) {
@@ -153,11 +169,14 @@ export const deleteBlog = asyncHandler(async (req: Request, res: Response): Prom
 });
 
 export const suggestions = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
+  const { _id: viewer } = res.locals.viewer;
+
   const { size } = req.query;
 
   try {
     const data = await Blog.findMany({
       match: { isPublished: true },
+      viewer,
       sample: true,
       limit: Number(size || 4),
     });

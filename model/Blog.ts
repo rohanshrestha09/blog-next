@@ -1,5 +1,6 @@
-import { Schema, model, Model, FilterQuery, PipelineStage, Types } from 'mongoose';
-import { genre, IBlogSchema, IUserSchema } from '../server.interface';
+import { Schema, model, FilterQuery, PipelineStage, Types } from 'mongoose';
+import { genre, IBlogModel, IBlogSchema } from '../server.interface';
+import { blogLookup, userLookup } from '../utils/lookup';
 import User from './User';
 
 const BlogSchema = new Schema<IBlogSchema>(
@@ -33,93 +34,23 @@ const BlogSchema = new Schema<IBlogSchema>(
         message: '{VALUE} not supported',
       },
     },
-    likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
     isPublished: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
-interface IBlogModel extends Model<IBlogSchema> {
-  findUnique({ _id, exclude }: { _id: string; exclude?: string[] }): Promise<IBlogSchema>;
-  findMany(
-    {
-      match,
-      search,
-      exclude,
-      limit,
-      sort,
-      sample,
-    }: {
-      match?: FilterQuery<any>;
-      search?: unknown;
-      exclude?: string[];
-      limit?: number;
-      sort?: { field: string; order: 1 | -1 };
-      sample?: boolean;
-    },
-    ...rest: PipelineStage[]
-  ): Promise<{ data: IBlogSchema[]; count: number }>;
-}
-
-const blogLookup = [
-  {
-    $lookup: {
-      from: 'users',
-      localField: 'likes',
-      foreignField: '_id',
-      as: 'like_count',
-      pipeline: [{ $count: 'like' }],
-    },
-  },
-  {
-    $replaceRoot: {
-      newRoot: { $mergeObjects: [{ $arrayElemAt: ['$like_count', 0] }, '$$ROOT'] },
-    },
-  },
-  {
-    $lookup: {
-      from: 'comments',
-      localField: 'comments',
-      foreignField: '_id',
-      as: 'comment_count',
-      pipeline: [{ $count: 'comment' }],
-    },
-  },
-  {
-    $replaceRoot: {
-      newRoot: { $mergeObjects: [{ $arrayElemAt: ['$comment_count', 0] }, '$$ROOT'] },
-    },
-  },
-  // {
-  //   $fill: {
-  //     output: {
-  //       like: { value: 0 },
-  //       comment: { value: 0 },
-  //     },
-  //   },
-  // },
-];
-
 BlogSchema.statics.findUnique = async function ({
   _id,
+  viewer,
   exclude,
 }: {
   _id: string;
+  viewer?: string;
   exclude?: string[];
 }) {
   const query: PipelineStage[] = [
     { $match: { _id: new Types.ObjectId(_id) } },
-    ...blogLookup,
-    {
-      $project: {
-        ...exclude
-          ?.map((field: string) => ({ [field]: 0 }))
-          .reduce((prev, curr) => ({ ...prev, ...curr })),
-        like_count: 0,
-        comment_count: 0,
-      },
-    },
+    ...blogLookup({ viewer, exclude }),
   ];
 
   const [data = null] = await this.aggregate(query);
@@ -132,6 +63,7 @@ BlogSchema.statics.findUnique = async function ({
 BlogSchema.statics.findMany = async function (
   {
     match,
+    viewer,
     search,
     exclude,
     limit,
@@ -139,26 +71,16 @@ BlogSchema.statics.findMany = async function (
     sample,
   }: {
     match?: FilterQuery<any>;
+    viewer?: string;
     search?: unknown;
     exclude?: string[];
     limit?: number;
-    sort?: { field: 'like' | 'createdAt'; order: 1 | -1 };
+    sort?: { field: 'likeCount' | 'createdAt'; order: 1 | -1 };
     sample?: boolean;
   },
   ...rest: PipelineStage[]
 ) {
-  const query: PipelineStage[] = [
-    ...blogLookup,
-    {
-      $project: {
-        ...exclude
-          ?.map((field: string) => ({ [field]: 0 }))
-          .reduce((prev, curr) => ({ ...prev, ...curr })),
-        like_count: 0,
-        comment_count: 0,
-      },
-    },
-  ];
+  const query: PipelineStage[] = [...blogLookup({ viewer, exclude })];
 
   if (sort) query.push({ $sort: { [sort.field]: sort.order } });
 
@@ -168,7 +90,7 @@ BlogSchema.statics.findMany = async function (
     query.unshift({
       $search: {
         index: 'blog-search',
-        autocomplete: { query: String(search), path: 'title' },
+        autocomplete: { query: search, path: 'title' },
       },
     });
 
@@ -181,6 +103,71 @@ BlogSchema.statics.findMany = async function (
   await User.populate(data, { path: 'author', select: 'fullname image' });
 
   const count = total?.count ?? 0;
+
+  return { data, count };
+};
+
+BlogSchema.statics.findLikes = async function ({
+  blog,
+  viewer,
+  exclude,
+  limit,
+}: {
+  blog?: string;
+  viewer?: string;
+  exclude?: string[];
+  limit?: number;
+}) {
+  const lookupPipeline: Exclude<PipelineStage, PipelineStage.Merge | PipelineStage.Out>[] = [
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'user',
+        foreignField: '_id',
+        as: 'users',
+      },
+    },
+    { $set: { _id: '$user._id' } },
+    {
+      $replaceRoot: {
+        newRoot: { $mergeObjects: [{ $arrayElemAt: ['$users', 0] }, '$$ROOT'] },
+      },
+    },
+    ...userLookup({ viewer, exclude }),
+    {
+      $project: {
+        users: 0,
+        likes: 0,
+        user: 0,
+      },
+    },
+  ];
+
+  const query = (
+    lookupPipeline: Exclude<PipelineStage, PipelineStage.Merge | PipelineStage.Out>[]
+  ): PipelineStage[] => [
+    { $match: { _id: blog } },
+    {
+      $lookup: {
+        from: 'bloglikes',
+        localField: '_id',
+        foreignField: 'likes',
+        as: 'likes',
+        pipeline: lookupPipeline,
+      },
+    },
+    { $project: { _id: 0 } },
+  ];
+
+  const [docs] = await this.aggregate([
+    ...query([...lookupPipeline, { $limit: limit || 20 }]),
+  ]).project({ likes: 1 });
+
+  const [total] = await this.aggregate([...query([...lookupPipeline, { $count: 'count' }])]);
+
+  const count = total?.likes[0]?.count ?? 0;
+
+  const data = docs?.likes || [];
 
   return { data, count };
 };

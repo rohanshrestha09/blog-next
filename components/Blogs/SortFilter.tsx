@@ -17,7 +17,7 @@ interface Props {
   hasSortOrder?: boolean;
 }
 
-const { LIKE, CREATED_AT } = SORT_TYPE;
+const { LIKE_COUNT, CREATED_AT } = SORT_TYPE;
 
 const { ASCENDING, DESCENDING } = SORT_ORDER;
 
@@ -46,7 +46,7 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, h
 
   const getSortVal = (sort: SORT_TYPE) => {
     switch (sort) {
-      case LIKE:
+      case LIKE_COUNT:
         return 'Most Liked';
 
       case CREATED_AT:
@@ -56,8 +56,8 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, h
 
   const menuSort = [
     {
-      key: LIKE,
-      label: <p className='py-1'>{getSortVal(LIKE)}</p>,
+      key: LIKE_COUNT,
+      label: <p className='py-1'>{getSortVal(LIKE_COUNT)}</p>,
     },
     {
       key: CREATED_AT,

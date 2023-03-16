@@ -14,17 +14,15 @@ export interface IUserSchema {
     };
   };
   isSSO: boolean;
-  verified: boolean;
+  isVerified: boolean;
   image: string;
   imageName: string;
-  bookmarks: Types.ObjectId[];
-  blogs: Types.ObjectId[];
   bio: string;
   website: string;
-  followings: Types.ObjectId[];
-  following: number;
-  followers: Types.ObjectId[];
-  follower: number;
+  followingCount: number;
+  followerCount: number;
+  followsViewer: boolean;
+  followedByViewer: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -48,11 +46,11 @@ export interface IBlogSchema {
     enum: { values: String[]; message: string };
     map: (tag: any) => JSX.Element;
   };
-  likes: Types.ObjectId[];
-  like: number;
-  comments: Types.ObjectId[];
-  comment: number;
   isPublished: boolean;
+  likeCount: number;
+  commentCount: number;
+  hasLiked: boolean;
+  hasBookmarked: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -67,8 +65,8 @@ export interface ICommentSchema {
     image: string;
   };
   comment: string;
-  likes: Types.ObjectId[];
-  like: number;
+  likeCount: number;
+  hasLiked: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

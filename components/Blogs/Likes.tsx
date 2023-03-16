@@ -50,11 +50,7 @@ const Likes: React.FC = () => {
       ) : (
         <div className='pt-7'>
           {likers?.data.map((user) => (
-            <UserSkeleton
-              key={user._id}
-              user={user}
-              shouldFollow={!authUser?.followings.includes(user._id as never)}
-            />
+            <UserSkeleton key={user._id} user={user} />
           ))}
         </div>
       )}

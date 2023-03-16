@@ -63,12 +63,7 @@ const HomeSider: React.FC = () => {
             ))
           : userSuggestions &&
             userSuggestions.data.map((user) => (
-              <UserSkeleton
-                key={user._id}
-                user={user}
-                shouldFollow={!authUser?.followings.includes(user._id as never)}
-                bioAsDesc
-              />
+              <UserSkeleton key={user._id} user={user} bioAsDesc />
             ))}
 
         <p

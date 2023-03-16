@@ -170,7 +170,7 @@ const Discussions: React.FC = () => {
             header={`${comments.count} discussions`}
             itemLayout='vertical'
             dataSource={comments.data}
-            renderItem={({ _id: commentId, user, comment, like, likes, createdAt }) => (
+            renderItem={({ _id: commentId, user, comment, likeCount, hasLiked, createdAt }) => (
               <li>
                 <Comment
                   author={
@@ -202,12 +202,12 @@ const Discussions: React.FC = () => {
                           handleLikeComment.mutate({
                             blogId: String(blogId),
                             commentId,
-                            shouldLike: !likes.includes(authUser?._id as never),
+                            shouldLike: !hasLiked,
                           })
                         }
                       >
-                        {likes.includes(authUser?._id as never) ? <LikeFilled /> : <LikeOutlined />}
-                        <span className='pl-2'>{like}</span>
+                        {hasLiked ? <LikeFilled /> : <LikeOutlined />}
+                        <span className='pl-2'>{likeCount}</span>
                       </span>
                     </Tooltip>,
                     authUser?._id === user._id && (

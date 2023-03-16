@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import User from '../../model/User';
+import BlogBookmark from '../../model/BlogBookmark';
 const asyncHandler = require('express-async-handler');
 
 export const bookmark = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
@@ -9,13 +9,13 @@ export const bookmark = asyncHandler(async (req: Request, res: Response): Promis
   } = res.locals;
 
   try {
-    const bookmarkExist = await User.findOne({
-      $and: [{ _id: authId }, { bookmarks: blogId }],
+    const bookmarkExist = await BlogBookmark.findOne({
+      $and: [{ user: authId }, { bookmarks: blogId }],
     });
 
     if (bookmarkExist) return res.status(403).json({ message: 'Already Bookmarked' });
 
-    await User.findByIdAndUpdate(authId, { $push: { bookmarks: blogId } });
+    await BlogBookmark.create({ user: authId, bookmarks: blogId });
 
     return res.status(200).json({ message: 'Bookmarked Successfully' });
   } catch (err: Error | any) {
@@ -30,13 +30,13 @@ export const unbookmark = asyncHandler(async (req: Request, res: Response): Prom
   } = res.locals;
 
   try {
-    const bookmarkExist = await User.findOne({
-      $and: [{ _id: authId }, { bookmarks: blogId }],
+    const bookmarkExist = await BlogBookmark.findOne({
+      $and: [{ user: authId }, { bookmarks: blogId }],
     });
 
     if (!bookmarkExist) return res.status(403).json({ message: 'Already Unbookmarked' });
 
-    await User.findByIdAndUpdate(authId, { $pull: { bookmarks: blogId } });
+    await BlogBookmark.deleteOne({ $and: [{ user: authId, bookmarks: blogId }] });
 
     return res.status(200).json({ message: 'Unbookmarked Successfully' });
   } catch (err: Error | any) {

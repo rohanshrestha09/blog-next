@@ -136,13 +136,7 @@ const Profile: React.FC<Props> = ({ isSider }) => {
                 <List
                   itemLayout='vertical'
                   dataSource={users?.data}
-                  renderItem={(user) => (
-                    <UserSkeleton
-                      key={user._id}
-                      user={user}
-                      shouldFollow={!authUser.followings.includes(user._id as never)}
-                    />
-                  )}
+                  renderItem={(user) => <UserSkeleton key={user._id} user={user} />}
                 />
               </ConfigProvider>
             </InfiniteScroll>

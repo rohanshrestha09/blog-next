@@ -22,7 +22,6 @@ import type { IUserData } from '../../interface/user';
 
 interface Props {
   user: IUserData;
-  shouldFollow: boolean;
   bioAsDesc?: boolean;
   isModal?: boolean;
 }
@@ -30,8 +29,7 @@ interface Props {
 const { USER_SUGGESTIONS_MODAL } = MODAL_KEYS;
 
 const UserSkeleton: React.FC<Props> = ({
-  user: { _id: id, bio, image, fullname, follower },
-  shouldFollow,
+  user: { _id: id, bio, image, fullname, followerCount, followedByViewer },
   bioAsDesc,
   isModal,
 }) => {
@@ -90,7 +88,7 @@ const UserSkeleton: React.FC<Props> = ({
           {bioAsDesc && bio ? (
             <p className='multiline-truncate-title text-xs text-zinc-500 break-words'>{bio}</p>
           ) : (
-            <p className='text-sm text-zinc-500 break-words'>{follower ?? 0} followers</p>
+            <p className='text-sm text-zinc-500 break-words'>{followerCount} followers</p>
           )}
         </Space>
       </div>
@@ -100,11 +98,11 @@ const UserSkeleton: React.FC<Props> = ({
         className='rounded-lg text-xs'
         hidden={authUser?._id === id}
         size='small'
-        danger={!shouldFollow}
+        danger={followedByViewer}
         loading={handleFollowUser.isLoading}
-        onClick={() => handleFollowUser.mutate({ id, shouldFollow })}
+        onClick={() => handleFollowUser.mutate({ id, shouldFollow: !followedByViewer })}
       >
-        {shouldFollow ? 'Follow' : 'Unfollow'}
+        {!followedByViewer ? 'Follow' : 'Unfollow'}
       </Button>
     </div>
   );

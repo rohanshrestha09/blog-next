@@ -10,7 +10,7 @@ import {
   logout,
   updateProfile,
 } from '../controller/auth';
-import { blogs, bookmarks, followingBlogs } from '../controller/auth/blog';
+import { blogs, followingBlogs, bookmarks } from '../controller/auth/blog';
 import { follow, unfollow } from '../controller/auth/follow';
 import { followers, following } from '../controller/auth/followers';
 

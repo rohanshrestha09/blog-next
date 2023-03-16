@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
-import Comment from '../../../model/Comment';
+import { Types } from 'mongoose';
 import Notification from '../../../model/Notification';
+import CommentLike from '../../../model/CommentLike';
 import { dispatchNotification } from '../../../socket';
-import { NOTIFICATION } from '../../../server.interface';
+import { ICommentSchema, NOTIFICATION } from '../../../server.interface';
 const asyncHandler = require('express-async-handler');
 
 const { LIKE_COMMENT } = NOTIFICATION;
@@ -13,26 +14,30 @@ export const likeComment = asyncHandler(async (req: Request, res: Response): Pro
   const { commentId } = req.query;
 
   try {
-    const likeExist = await Comment.findOne({
-      $and: [{ _id: commentId }, { likes: authId }],
+    const likeExist = await CommentLike.findOne({
+      $and: [{ user: authId }, { likes: commentId }],
     });
 
     if (likeExist) return res.status(403).json({ message: 'Already Liked' });
 
-    const comment = await Comment.findByIdAndUpdate(commentId, { $push: { likes: authId } });
+    const comment = (await (
+      await CommentLike.create({ user: authId, likes: commentId })
+    ).populate('likes')) as ICommentSchema & {
+      likes: { user: Types.ObjectId; blog: Types.ObjectId };
+    };
 
     if (!comment) return res.status(404).json({ message: 'Comment does not exist' });
 
     const { _id: notificationId } = await Notification.create({
       type: LIKE_COMMENT,
       user: authId,
-      listener: [comment.user],
-      blog: comment.blog,
+      listener: [comment.likes.user],
+      blog: comment.likes.blog,
       comment: commentId,
       description: `${fullname} liked your comment.`,
     });
 
-    dispatchNotification({ listeners: [comment.user.toString()], notificationId });
+    dispatchNotification({ listeners: [comment.likes.user.toString()], notificationId });
 
     return res.status(200).json({ message: 'Liked' });
   } catch (err: Error | any) {
@@ -47,15 +52,15 @@ export const unlikeComment = asyncHandler(
     const { commentId } = req.query;
 
     try {
-      const likeExist = await Comment.findOne({
-        $and: [{ _id: commentId }, { likes: authId }],
+      const likeExist = await CommentLike.findOne({
+        $and: [{ user: authId }, { likes: commentId }],
       });
 
       if (!likeExist) return res.status(403).json({ message: 'Already Unliked' });
 
-      const comment = await Comment.findByIdAndUpdate(commentId, { $pull: { likes: authId } });
-
-      if (!comment) return res.status(404).json({ message: 'Comment does not exist' });
+      await CommentLike.deleteOne({
+        $and: [{ user: authId }, { likes: commentId }],
+      });
 
       return res.status(200).json({ message: 'Unliked' });
     } catch (err: Error | any) {

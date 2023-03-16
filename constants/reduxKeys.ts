@@ -37,7 +37,7 @@ export enum FOLLOWERS_KEYS {
 }
 
 export enum SORT_TYPE {
-  LIKE = 'like',
+  LIKE_COUNT = 'likeCount',
   CREATED_AT = 'createdAt',
 }
 

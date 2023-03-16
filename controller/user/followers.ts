@@ -3,17 +3,23 @@ import User from '../../model/User';
 const asyncHandler = require('express-async-handler');
 
 export const followers = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { followers } = res.locals.user;
+  const { _id: user } = res.locals.user;
+
+  const { _id: viewer } = res.locals.viewer;
 
   const { search, size } = req.query;
 
   try {
-    const data = await User.findMany({
-      match: { _id: { $in: followers } },
-      search,
-      limit: Number(size),
-      exclude: ['password', 'email'],
-    });
+    const data = await User.findFollowers(
+      {
+        user,
+        viewer,
+        search,
+        limit: Number(size),
+        exclude: ['password', 'email'],
+      },
+      'followers'
+    );
 
     return res.status(200).json({
       ...data,
@@ -25,17 +31,23 @@ export const followers = asyncHandler(async (req: Request, res: Response): Promi
 });
 
 export const following = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { followings } = res.locals.user;
+  const { _id: user } = res.locals.user;
+
+  const { _id: viewer } = res.locals.viewer;
 
   const { search, size } = req.query;
 
   try {
-    const data = await User.findMany({
-      match: { _id: { $in: followings } },
-      search,
-      limit: Number(size),
-      exclude: ['password', 'email'],
-    });
+    const data = await User.findFollowers(
+      {
+        user,
+        viewer,
+        search,
+        limit: Number(size),
+        exclude: ['password', 'email'],
+      },
+      'followings'
+    );
 
     return res.status(200).json({
       ...data,

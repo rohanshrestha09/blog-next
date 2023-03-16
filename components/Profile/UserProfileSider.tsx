@@ -9,7 +9,6 @@ import { IconType } from 'react-icons';
 import { BiLink, BiSearch } from 'react-icons/bi';
 import { BsFillCalendarDateFill, BsFillInfoCircleFill } from 'react-icons/bs';
 import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/ri';
-import { useAuth } from '../../utils/UserAuth';
 import UserAxios from '../../api/UserAxios';
 import UserSkeleton from '../shared/UserSkeleton';
 import { changeKey } from '../../store/followersSlice';
@@ -39,8 +38,6 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
   const { isOpen } = useSelector((state: RootState) => state.modal);
 
   const dispatch = useDispatch();
-
-  const { authUser } = useAuth();
 
   const userAxios = UserAxios();
 
@@ -133,13 +130,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
               <List
                 itemLayout='vertical'
                 dataSource={users?.data}
-                renderItem={(user) => (
-                  <UserSkeleton
-                    key={user._id}
-                    user={user}
-                    shouldFollow={!authUser?.followings.includes(user._id as never)}
-                  />
-                )}
+                renderItem={(user) => <UserSkeleton key={user._id} user={user} />}
               />
             </InfiniteScroll>
           )}

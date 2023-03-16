@@ -52,7 +52,7 @@ const AuthAxios = (cookie?: any) => {
     }): Promise<IBlogs> =>
       await axiosFn(
         'get',
-        `blog?genre=${genre || []}&sort=${sort || 'like'}&size=${size || 20}&order=${
+        `blog?genre=${genre || []}&sort=${sort || 'likeCount'}&size=${size || 20}&order=${
           order || 'desc'
         }&isPublished=${typeof isPublished === 'boolean' ? isPublished : ''}&search=${search || ''}`
       ),

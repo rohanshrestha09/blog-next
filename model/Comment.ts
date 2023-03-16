@@ -1,5 +1,5 @@
-import { Schema, model, Model, FilterQuery, PipelineStage } from 'mongoose';
-import { ICommentSchema } from '../server.interface';
+import { Schema, model, FilterQuery, PipelineStage, Types } from 'mongoose';
+import { ICommentModel, ICommentSchema } from '../server.interface';
 import User from './User';
 
 const CommentSchema = new Schema<ICommentSchema>(
@@ -18,38 +18,27 @@ const CommentSchema = new Schema<ICommentSchema>(
       type: String,
       required: [true, 'Comment missing'],
     },
-    likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   },
   { timestamps: true }
 );
 
-interface ICommentModel extends Model<ICommentSchema> {
-  findMany(
-    {
-      match,
-      limit,
-      exclude,
-    }: {
-      match?: FilterQuery<any>;
-      limit?: number;
-      exclude?: string[];
-    },
-    ...rest: PipelineStage[]
-  ): Promise<{ data: ICommentSchema[]; count: number }>;
-}
-
 CommentSchema.statics.findMany = async function (
-  { match, limit, exclude }: { match?: FilterQuery<any>; limit?: number; exclude?: string[] },
+  {
+    match,
+    viewer,
+    limit,
+    exclude,
+  }: { match?: FilterQuery<any>; viewer?: string; limit?: number; exclude?: string[] },
   ...rest: PipelineStage[]
 ) {
   const query: PipelineStage[] = [
     {
       $lookup: {
-        from: 'users',
-        localField: 'likes',
-        foreignField: '_id',
+        from: 'commentlikes',
+        localField: '_id',
+        foreignField: 'likes',
         as: 'like_count',
-        pipeline: [{ $count: 'like' }],
+        pipeline: [{ $count: 'likeCount' }],
       },
     },
     {
@@ -57,9 +46,21 @@ CommentSchema.statics.findMany = async function (
         newRoot: { $mergeObjects: [{ $arrayElemAt: ['$like_count', 0] }, '$$ROOT'] },
       },
     },
-    // {
-    //   $fill: { output: { like: { value: 0 } } },
-    // },
+    {
+      $lookup: {
+        from: 'commentlikes',
+        localField: '_id',
+        foreignField: 'likes',
+        as: 'hasLiked',
+        pipeline: [{ $match: { user: new Types.ObjectId(viewer) } }],
+      },
+    },
+    {
+      $set: {
+        likeCount: { $ifNull: ['$likeCount', 0] },
+        hasLiked: { $gt: [{ $size: '$hasLiked' }, 0] },
+      },
+    },
     {
       $project: {
         ...exclude

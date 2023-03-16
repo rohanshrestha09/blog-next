@@ -43,7 +43,7 @@ const { CREATE_NAV } = NAV_KEYS;
 
 const { EDIT_PROFILE_MODAL } = MODAL_KEYS;
 
-const { LIKE } = SORT_TYPE;
+const { LIKE_COUNT } = SORT_TYPE;
 
 const { DESCENDING } = SORT_ORDER;
 
@@ -224,7 +224,7 @@ export const getServerSideProps = withAuth(
       queryFn: () => authAxios.getAllBlogs({}),
       queryKey: [
         GET_AUTH_BLOGS,
-        { genre: [], size: 20, sort: LIKE, order: DESCENDING, search: '' },
+        { genre: [], size: 20, sort: LIKE_COUNT, order: DESCENDING, search: '' },
       ],
     });
 

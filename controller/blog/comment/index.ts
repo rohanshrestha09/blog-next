@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import Blog from '../../../model/Blog';
 import Comment from '../../../model/Comment';
 import Notification from '../../../model/Notification';
+import CommentLike from '../../../model/CommentLike';
 import { dispatchNotification } from '../../../socket';
 import { NOTIFICATION } from '../../../server.interface';
 const asyncHandler = require('express-async-handler');
@@ -9,12 +9,14 @@ const asyncHandler = require('express-async-handler');
 const { POST_COMMENT } = NOTIFICATION;
 
 export const comments = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { comments } = res.locals.blog;
+  const { _id: blogId } = res.locals.blog;
+
+  const { _id: viewer } = res.locals.viewer;
 
   const { size } = req.query;
 
   try {
-    const data = await Comment.findMany({ match: { _id: { $in: comments } }, limit: Number(size) });
+    const data = await Comment.findMany({ match: { blog: blogId }, viewer, limit: Number(size) });
 
     return res.status(200).json({
       ...data,
@@ -40,8 +42,6 @@ export const comment = asyncHandler(async (req: Request, res: Response): Promise
       comment,
     });
 
-    await Blog.findByIdAndUpdate(blogId, { $push: { comments: commentId } });
-
     const { _id: notificationId } = await Notification.create({
       type: POST_COMMENT,
       user: authId,
@@ -60,14 +60,12 @@ export const comment = asyncHandler(async (req: Request, res: Response): Promise
 });
 
 export const uncomment = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
-  const { _id: blogId } = res.locals.blog;
-
   const { commentId } = req.query;
 
   try {
     await Comment.findByIdAndDelete(commentId);
 
-    await Blog.findByIdAndUpdate(blogId, { $pull: { comments: commentId } });
+    await CommentLike.deleteMany({ likes: commentId });
 
     return res.status(200).json({ message: 'Comment Deleted Successfully' });
   } catch (err: Error | any) {

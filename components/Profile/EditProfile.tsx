@@ -192,12 +192,12 @@ const EditProfile = () => {
               type='primary'
               className='h-10 rounded-lg'
               htmlType='submit'
-              disabled={!authUser.verified}
+              disabled={!authUser.isVerified}
             >
               Update
             </Button>
 
-            {!authUser.verified && (
+            {!authUser.isVerified && (
               <Button
                 type='primary'
                 className='h-10 rounded-lg'
