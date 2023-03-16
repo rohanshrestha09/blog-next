@@ -70,7 +70,7 @@ const Blog: NextPage = () => {
     {
       onSuccess: (res) => {
         successNotification(res.message);
-        queryClient.refetchQueries([AUTH]);
+        queryClient.refetchQueries([GET_BLOG, blogId]);
       },
       onError: (err: AxiosError) => errorNotification(err),
     }
