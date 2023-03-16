@@ -56,7 +56,9 @@ export const unfollow = asyncHandler(async (req: Request, res: Response): Promis
 
     if (!followingExists) return res.status(403).json({ message: 'Not following' });
 
-    await UserFollow.deleteOne({ $and: [{ user: authId }, { folows: userId }] });
+    console.log(authId, userId);
+
+    await UserFollow.deleteOne({ $and: [{ user: authId }, { follows: userId }] });
 
     return res.status(200).json({ message: 'Unfollow Successful' });
   } catch (err: Error | any) {

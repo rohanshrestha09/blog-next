@@ -165,18 +165,15 @@ UserSchema.statics.findFollowers = async function (
         pipeline: lookupPipeline,
       },
     },
-    { $project: { _id: 0 } },
+    { $unwind: `$${field}` },
+    { $replaceWith: `$${field}` },
   ];
 
-  const [docs] = await this.aggregate([
-    ...query([...lookupPipeline, { $limit: limit || 20 }]),
-  ]).project({ [field]: 1 });
+  const data = await this.aggregate([...query([...lookupPipeline, { $limit: limit || 20 }])]);
 
   const [total] = await this.aggregate([...query([...lookupPipeline, { $count: 'count' }])]);
 
-  const count = total?.[field][0]?.count ?? 0;
-
-  const data = docs?.[field] || [];
+  const count = total?.count ?? 0;
 
   return { data, count };
 };
@@ -233,18 +230,15 @@ UserSchema.statics.findFollowingBlogs = async function ({
         pipeline: lookupPipeline,
       },
     },
-    { $project: { _id: 0 } },
+    { $unwind: '$followings' },
+    { $replaceWith: '$followings' },
   ];
 
-  const [docs] = await this.aggregate([
-    ...query([...lookupPipeline, { $limit: limit || 20 }]),
-  ]).project({ followings: 1 });
+  const data = await this.aggregate([...query([...lookupPipeline, { $limit: limit || 20 }])]);
 
   const [total] = await this.aggregate([...query([...lookupPipeline, { $count: 'count' }])]);
 
-  const count = total?.followings[0]?.count ?? 0;
-
-  const data = docs?.followings || [];
+  const count = total?.count ?? 0;
 
   await this.populate(data, { path: 'author', select: 'fullname image' });
 
@@ -313,20 +307,17 @@ UserSchema.statics.findBookmarks = async function ({
         pipeline: lookupPipeline,
       },
     },
-    { $project: { _id: 0 } },
+    { $unwind: '$bookmarks' },
+    { $replaceWith: '$bookmarks' },
   ];
 
-  const [docs] = await this.aggregate([
-    ...query([...lookupPipeline, { $limit: limit || 20 }]),
-  ]).project({ bookmarks: 1 });
+  const data = await this.aggregate([...query([...lookupPipeline, { $limit: limit || 20 }])]);
 
   const [total] = await this.aggregate([...query([...lookupPipeline, { $count: 'count' }])]);
 
-  const count = total?.bookmarks[0]?.count ?? 0;
-
-  const data = docs?.bookmarks || [];
-
   await this.populate(data, { path: 'author', select: 'fullname image' });
+
+  const count = total?.count ?? 0;
 
   return { data, count };
 };
