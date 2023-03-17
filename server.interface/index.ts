@@ -119,53 +119,53 @@ export interface IUserModel extends Model<IUserSchema> {
     ...rest: PipelineStage[]
   ): Promise<{ data: IUserSchema[]; count: number }>;
 
-  findFollowers(
-    {
-      user,
-      viewer,
-      search,
-      exclude,
-      limit,
-    }: {
-      user?: string;
-      search?: unknown;
-      viewer?: string;
-      exclude?: string[];
-      limit?: number;
-      sample?: boolean;
-    },
-    field: 'followers' | 'followings'
-  ): Promise<{ data: IUserSchema[]; count: number }>;
+  // findFollowers(
+  //   {
+  //     user,
+  //     viewer,
+  //     search,
+  //     exclude,
+  //     limit,
+  //   }: {
+  //     user?: string;
+  //     search?: unknown;
+  //     viewer?: string;
+  //     exclude?: string[];
+  //     limit?: number;
+  //     sample?: boolean;
+  //   },
+  //   field: 'followers' | 'following'
+  // ): Promise<{ data: IUserSchema[]; count: number }>;
 
-  findFollowingBlogs({
-    user,
-    viewer,
-    exclude,
-    limit,
-    sort,
-  }: {
-    user?: string;
-    viewer?: string;
-    exclude?: string[];
-    limit?: number;
-    sort: { field: string; order: 1 | -1 };
-  }): Promise<{ data: IBlogSchema[]; count: number }>;
+  // findFollowingBlogs({
+  //   user,
+  //   viewer,
+  //   exclude,
+  //   limit,
+  //   sort,
+  // }: {
+  //   user?: string;
+  //   viewer?: string;
+  //   exclude?: string[];
+  //   limit?: number;
+  //   sort: { field: string; order: 1 | -1 };
+  // }): Promise<{ data: IBlogSchema[]; count: number }>;
 
-  findBookmarks({
-    match,
-    user,
-    viewer,
-    exclude,
-    search,
-    limit,
-  }: {
-    match: FilterQuery<any>;
-    user?: string;
-    viewer?: string;
-    exclude?: string[];
-    search?: unknown;
-    limit?: number;
-  }): Promise<{ data: IBlogSchema[]; count: number }>;
+  // findBookmarks({
+  //   match,
+  //   user,
+  //   viewer,
+  //   exclude,
+  //   search,
+  //   limit,
+  // }: {
+  //   match: FilterQuery<any>;
+  //   user?: string;
+  //   viewer?: string;
+  //   exclude?: string[];
+  //   search?: unknown;
+  //   limit?: number;
+  // }): Promise<{ data: IBlogSchema[]; count: number }>;
 }
 
 export interface ICommentModel extends Model<ICommentSchema> {
@@ -213,17 +213,17 @@ export interface IBlogModel extends Model<IBlogSchema> {
     ...rest: PipelineStage[]
   ): Promise<{ data: IBlogSchema[]; count: number }>;
 
-  findLikes({
-    blog,
-    viewer,
-    exclude,
-    limit,
-  }: {
-    blog?: string;
-    viewer?: string;
-    exclude?: string[];
-    limit?: number;
-  }): Promise<{ data: IUserSchema[]; count: number }>;
+  // findLikes({
+  //   blog,
+  //   viewer,
+  //   exclude,
+  //   limit,
+  // }: {
+  //   blog?: string;
+  //   viewer?: string;
+  //   exclude?: string[];
+  //   limit?: number;
+  // }): Promise<{ data: IUserSchema[]; count: number }>;
 }
 
 export const genre: string[] = [

@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import Notification from '../../model/Notification';
+import User from '../../model/User';
 import { dispatchNotification } from '../../socket';
 import { NOTIFICATION } from '../../server.interface';
 import BlogLike from '../../model/BlogLike';
-import Blog from '../../model/Blog';
 const asyncHandler = require('express-async-handler');
 
 const { LIKE_BLOG } = NOTIFICATION;
@@ -16,8 +16,17 @@ export const likes = asyncHandler(async (req: Request, res: Response): Promise<R
   const { size } = req.query;
 
   try {
-    const data = await Blog.findLikes({
-      blog: blogId,
+    const likes = (await BlogLike.find({ likes: blogId }))?.map(({ user }) => user) ?? [];
+
+    // const data = await Blog.findLikes({
+    //   blog: blogId,
+    //   viewer,
+    //   limit: Number(size),
+    //   exclude: ['password', 'email'],
+    // });
+
+    const data = await User.findMany({
+      match: { _id: { $in: likes } },
       viewer,
       limit: Number(size),
       exclude: ['password', 'email'],

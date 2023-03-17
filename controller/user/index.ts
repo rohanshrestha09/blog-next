@@ -3,7 +3,7 @@ import moment from 'moment';
 import { serialize } from 'cookie';
 import bcrypt from 'bcryptjs';
 import { sign, Secret } from 'jsonwebtoken';
-import uploadFile from '../../utils/uploadFile';
+import uploadFile from '../../middleware/uploadFile';
 import User from '../../model/User';
 const asyncHandler = require('express-async-handler');
 

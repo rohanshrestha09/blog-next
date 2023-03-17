@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import uploadFile from '../../utils/uploadFile';
-import deleteFile from '../../utils/deleteFile';
+import uploadFile from '../../middleware/uploadFile';
+import deleteFile from '../../middleware/deleteFile';
 import Blog from '../../model/Blog';
 import Comment from '../../model/Comment';
 import Notification from '../../model/Notification';

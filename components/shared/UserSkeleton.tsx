@@ -12,6 +12,7 @@ import {
   GET_AUTH_FOLLOWERS,
   GET_AUTH_FOLLOWING,
   GET_FOLLOWING_BLOGS,
+  GET_LIKERS,
   GET_USER,
   GET_USER_FOLLOWERS,
   GET_USER_FOLLOWING,
@@ -55,6 +56,7 @@ const UserSkeleton: React.FC<Props> = ({
         queryClient.refetchQueries([GET_USER_FOLLOWERS]);
         queryClient.refetchQueries([GET_USER_FOLLOWING]);
         queryClient.refetchQueries([GET_FOLLOWING_BLOGS]);
+        queryClient.refetchQueries([GET_LIKERS]);
       },
       onError: (err: AxiosError) => errorNotification(err),
     }
