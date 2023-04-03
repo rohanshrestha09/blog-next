@@ -53,7 +53,7 @@ const CompleteAuth: React.FC = () => {
         layout='vertical'
         name='completeAuth'
         requiredMark={false}
-        onFinish={() => form.validateFields().then((values) => handleCompleteAuth.mutate(values))}
+        onFinish={(values) => handleCompleteAuth.mutate(values)}
       >
         <Form.Item
           label='New Password'

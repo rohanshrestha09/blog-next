@@ -25,14 +25,22 @@ export const follow = asyncHandler(async (req: Request, res: Response): Promise<
 
     await UserFollow.create({ user: authId, follows: userId });
 
-    const { _id: notificationId } = await Notification.create({
+    const notificationExists = await Notification.findOne({
       type: FOLLOW_USER,
       user: authId,
       listener: [userId],
-      description: `${fullname} followed you.`,
     });
 
-    dispatchNotification({ listeners: [userId], notificationId });
+    if (!notificationExists) {
+      const { _id: notificationId } = await Notification.create({
+        type: FOLLOW_USER,
+        user: authId,
+        listener: [userId],
+        description: `${fullname} followed you.`,
+      });
+
+      dispatchNotification({ listeners: [userId], notificationId });
+    }
 
     return res.status(200).json({ message: 'Follow Successful' });
   } catch (err: Error | any) {

@@ -36,12 +36,12 @@ const AuthAxios = (cookie?: any) => {
     deleteUserImage: async (): Promise<IMessage> => await axiosFn('delete', 'image'),
 
     getAllBlogs: async ({
-      sort,
-      size,
-      genre,
-      order,
+      sort = SORT_TYPE.LIKE_COUNT,
+      size = 20,
+      genre = [],
+      order = SORT_ORDER.DESCENDING,
       isPublished,
-      search,
+      search = '',
     }: {
       sort?: SORT_TYPE;
       size?: number;
@@ -52,33 +52,40 @@ const AuthAxios = (cookie?: any) => {
     }): Promise<IBlogs> =>
       await axiosFn(
         'get',
-        `blog?genre=${genre || []}&sort=${sort || 'likeCount'}&size=${size || 20}&order=${
-          order || 'desc'
-        }&isPublished=${typeof isPublished === 'boolean' ? isPublished : ''}&search=${search || ''}`
+        `blog?genre=${genre}&sort=${sort}&size=${size}&order=${order}&isPublished=${
+          typeof isPublished === 'boolean' ? isPublished : ''
+        }&search=${search}`
       ),
 
     getBookmarks: async ({
-      size,
-      genre,
-      search,
+      size = 20,
+      genre = [],
+      search = '',
     }: {
       size?: number;
       genre?: string[] | [];
       search?: string;
     }): Promise<IBlogs> =>
-      await axiosFn(
-        'get',
-        `blog/bookmarks?genre=${genre || []}&size=${size || 20}&search=${search || ''}`
-      ),
+      await axiosFn('get', `blog/bookmarks?genre=${genre}&size=${size}&search=${search}`),
 
-    getFollowingBlogs: async ({ size }: { size?: number }): Promise<IBlogs> =>
-      await axiosFn('get', `blog/following?size=${size || 20}`),
+    getFollowingBlogs: async ({ size = 20 }: { size?: number }): Promise<IBlogs> =>
+      await axiosFn('get', `blog/following?size=${size}`),
 
-    getFollowers: async ({ size, search }: { size?: number; search?: string }): Promise<IUsers> =>
-      await axiosFn('get', `followers?size=${size || 20}&search=${search || ''}`),
+    getFollowers: async ({
+      size = 20,
+      search = '',
+    }: {
+      size?: number;
+      search?: string;
+    }): Promise<IUsers> => await axiosFn('get', `followers?size=${size}&search=${search}`),
 
-    getFollowing: async ({ size, search }: { size?: number; search?: string }): Promise<IUsers> =>
-      await axiosFn('get', `following?size=${size || 20}&search=${search || ''}`),
+    getFollowing: async ({
+      size = 20,
+      search = '',
+    }: {
+      size?: number;
+      search?: string;
+    }): Promise<IUsers> => await axiosFn('get', `following?size=${size}&search=${search}`),
 
     followUser: async ({
       id,

@@ -100,9 +100,7 @@ const EditProfile = () => {
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
-        onFinish={async () =>
-          form.validateFields().then(() => dispatch(openModal({ key: PWD_AUTH_MODAL })))
-        }
+        onFinish={() => dispatch(openModal({ key: PWD_AUTH_MODAL }))}
       >
         <Form.Item
           label='Full Name'

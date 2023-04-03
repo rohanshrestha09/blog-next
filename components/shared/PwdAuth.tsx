@@ -35,7 +35,7 @@ const PwdAuth: React.FC<Props> = ({ isLoading, mutation }) => {
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
-        onFinish={() => form.validateFields().then(({ password }) => mutation({ password }))}
+        onFinish={({ password }) => mutation({ password })}
       >
         <Form.Item
           label='Password'

@@ -156,13 +156,11 @@ UserSchema.statics.findMany = async function (
       },
     });
 
-  const [total] = await this.aggregate([...query, ...rest, { $count: 'count' }]);
+  const [{ count } = { count: 0 }] = await this.aggregate([...query, ...rest, { $count: 'count' }]);
 
   if (sample) query.push({ $sample: { size: limit || 20 } });
 
   const data = await this.aggregate([...query, ...rest, { $limit: limit || 20 }]);
-
-  const count = total?.count ?? 0;
 
   return { data, count };
 };

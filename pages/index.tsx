@@ -7,10 +7,17 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { GithubOutlined } from '@ant-design/icons';
 import AuthAxios from '../api/AuthAxios';
 import BlogAxios from '../api/BlogAxios';
+import UserAxios from '../api/UserAxios';
 import BlogList from '../components/Blogs/BlogList';
 import SortFilter from '../components/Blogs/SortFilter';
 import { setSize } from '../store/sortFilterSlice';
-import { AUTH, GET_ALL_BLOGS, GET_FOLLOWING_BLOGS, GET_GENRE } from '../constants/queryKeys';
+import {
+  AUTH,
+  GET_ALL_BLOGS,
+  GET_FOLLOWING_BLOGS,
+  GET_GENRE,
+  GET_USER_SUGGESTIONS,
+} from '../constants/queryKeys';
 import { SORT_TYPE, HOME_KEYS } from '../constants/reduxKeys';
 import { useAuth } from '../utils/UserAuth';
 import type { IBlogs } from '../interface/blog';
@@ -137,6 +144,8 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const authAxios = AuthAxios(ctx.req.headers.cookie);
 
+  const userAxios = UserAxios(ctx.req.headers.cookie);
+
   const blogAxios = BlogAxios(ctx.req.headers.cookie);
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
@@ -154,6 +163,11 @@ export const getServerSideProps: GetServerSideProps = async (
   await queryClient.prefetchQuery({
     queryFn: () => authAxios.getFollowingBlogs({}),
     queryKey: [GET_FOLLOWING_BLOGS, { size: 20 }],
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => userAxios.getUserSuggestions({}),
+    queryKey: [GET_USER_SUGGESTIONS, { size: 20, search: '' }],
   });
 
   await queryClient.prefetchQuery({

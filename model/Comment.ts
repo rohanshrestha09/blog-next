@@ -73,13 +73,11 @@ CommentSchema.statics.findMany = async function (
 
   if (match) query.unshift({ $match: match });
 
-  const [total] = await this.aggregate([...query, ...rest, { $count: 'count' }]);
+  const [{ count } = { count: 0 }] = await this.aggregate([...query, ...rest, { $count: 'count' }]);
 
   const data = await this.aggregate([...query, ...rest, { $limit: limit || 20 }]);
 
   await User.populate(data, { path: 'user', select: 'fullname image' });
-
-  const count = total?.count ?? 0;
 
   return { data, count };
 };

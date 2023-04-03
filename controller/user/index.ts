@@ -166,7 +166,7 @@ export const suggestions = asyncHandler(async (req: Request, res: Response): Pro
     const data = await User.findMany({
       search,
       viewer,
-      sample: true,
+      sample: Number(size) < 4,
       limit: Number(size),
       exclude: ['password', 'email'],
     });

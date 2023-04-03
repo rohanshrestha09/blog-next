@@ -56,7 +56,7 @@ export const like = asyncHandler(async (req: Request, res: Response): Promise<Re
 
     await BlogLike.create({ user: authId, likes: blogId });
 
-    const { _id: notificationId } = await Notification.create({
+    const notificationExists = await Notification.findOne({
       type: LIKE_BLOG,
       user: authId,
       listener: [author._id],
@@ -64,7 +64,17 @@ export const like = asyncHandler(async (req: Request, res: Response): Promise<Re
       description: `${fullname} liked your blog.`,
     });
 
-    dispatchNotification({ listeners: [author._id], notificationId });
+    if (!notificationExists) {
+      const { _id: notificationId } = await Notification.create({
+        type: LIKE_BLOG,
+        user: authId,
+        listener: [author._id],
+        blog: blogId,
+        description: `${fullname} liked your blog.`,
+      });
+
+      dispatchNotification({ listeners: [author._id], notificationId });
+    }
 
     return res.status(200).json({ message: 'Liked' });
   } catch (err: Error | any) {

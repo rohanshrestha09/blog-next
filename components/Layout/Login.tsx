@@ -62,7 +62,7 @@ const Login: React.FC = () => {
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
-        onFinish={async () => form.validateFields().then((values) => handleLogin.mutate(values))}
+        onFinish={(values) => handleLogin.mutate(values)}
       >
         <Form.Item
           label='Email'

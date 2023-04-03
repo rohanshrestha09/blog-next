@@ -103,13 +103,11 @@ const Register: React.FC = () => {
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
-        onFinish={() =>
-          form.validateFields().then((values) =>
-            handleRegister.mutate({
-              ...values,
-              dateOfBirth: values.dateOfBirth._d.toString(),
-            })
-          )
+        onFinish={(values) =>
+          handleRegister.mutate({
+            ...values,
+            dateOfBirth: values.dateOfBirth._d.toString(),
+          })
         }
       >
         <Form.Item

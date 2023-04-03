@@ -28,16 +28,26 @@ export const likeComment = asyncHandler(async (req: Request, res: Response): Pro
 
     if (!comment) return res.status(404).json({ message: 'Comment does not exist' });
 
-    const { _id: notificationId } = await Notification.create({
+    const notificationExists = await Notification.findOne({
       type: LIKE_COMMENT,
       user: authId,
       listener: [comment.likes.user],
       blog: comment.likes.blog,
       comment: commentId,
-      description: `${fullname} liked your comment.`,
     });
 
-    dispatchNotification({ listeners: [comment.likes.user.toString()], notificationId });
+    if (!notificationExists) {
+      const { _id: notificationId } = await Notification.create({
+        type: LIKE_COMMENT,
+        user: authId,
+        listener: [comment.likes.user],
+        blog: comment.likes.blog,
+        comment: commentId,
+        description: `${fullname} liked your comment.`,
+      });
+
+      dispatchNotification({ listeners: [comment.likes.user.toString()], notificationId });
+    }
 
     return res.status(200).json({ message: 'Liked' });
   } catch (err: Error | any) {

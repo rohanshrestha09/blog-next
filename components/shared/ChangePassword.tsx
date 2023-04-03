@@ -54,7 +54,7 @@ const ChangePassword: React.FC = () => {
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
-        onFinish={() => form.validateFields().then((values) => handleChangePassword.mutate(values))}
+        onFinish={(values) => handleChangePassword.mutate(values)}
       >
         <Form.Item
           label='Current Password'

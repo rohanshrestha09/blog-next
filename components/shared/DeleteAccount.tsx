@@ -63,9 +63,7 @@ const DeleteAccount: React.FC = () => {
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
-        onFinish={() =>
-          form.validateFields().then(() => dispatch(openModal({ key: DELETE_MODAL })))
-        }
+        onFinish={() => dispatch(openModal({ key: DELETE_MODAL }))}
       >
         <Form.Item label={`Type 'CONFIRM'`} name='confirm'>
           <Input
