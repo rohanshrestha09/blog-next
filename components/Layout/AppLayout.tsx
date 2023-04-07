@@ -15,6 +15,7 @@ import HomeSider from '../Home/HomeSider';
 import ProfileSider from '../Profile/ProfileSider';
 import UserProfileSider from '../Profile/UserProfileSider';
 import MobileNav from '../shared/MobileNav';
+import UserSuggestions from '../shared/UserSuggestions';
 import NotificationList from '../Notifications';
 import { closeDrawer, openDrawer } from '../../store/drawerSlice';
 import { useAuth } from '../../utils/UserAuth';
@@ -102,6 +103,8 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
           size={42}
           onClick={() => dispatch(openDrawer())}
         />
+
+        <UserSuggestions />
 
         <Drawer
           placement='left'

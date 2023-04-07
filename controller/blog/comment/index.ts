@@ -15,16 +15,12 @@ export const comments = asyncHandler(async (req: Request, res: Response): Promis
 
   const { size } = req.query;
 
-  try {
-    const data = await Comment.findMany({ match: { blog: blogId }, viewer, limit: Number(size) });
+  const data = await Comment.findMany({ match: { blog: blogId }, viewer, limit: Number(size) });
 
-    return res.status(200).json({
-      ...data,
-      message: 'Comments Fetched Successfully',
-    });
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
-  }
+  return res.status(200).json({
+    ...data,
+    message: 'Comments Fetched Successfully',
+  });
 });
 
 export const comment = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
@@ -35,40 +31,32 @@ export const comment = asyncHandler(async (req: Request, res: Response): Promise
 
   const { comment } = req.body;
 
-  try {
-    const { _id: commentId } = await Comment.create({
-      blog: blogId,
-      user: authId,
-      comment,
-    });
+  const { _id: commentId } = await Comment.create({
+    blog: blogId,
+    user: authId,
+    comment,
+  });
 
-    const { _id: notificationId } = await Notification.create({
-      type: POST_COMMENT,
-      user: authId,
-      listener: [author._id],
-      blog: blogId,
-      comment: commentId,
-      description: `${fullname} commented on your blog.`,
-    });
+  const { _id: notificationId } = await Notification.create({
+    type: POST_COMMENT,
+    user: authId,
+    listener: [author._id],
+    blog: blogId,
+    comment: commentId,
+    description: `${fullname} commented on your blog.`,
+  });
 
-    dispatchNotification({ listeners: [author._id], notificationId });
+  dispatchNotification({ listeners: [author._id], notificationId });
 
-    return res.status(200).json({ message: 'Comment Successful' });
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
-  }
+  return res.status(201).json({ message: 'Comment Successful' });
 });
 
 export const uncomment = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const { commentId } = req.query;
 
-  try {
-    await Comment.findByIdAndDelete(commentId);
+  await Comment.findByIdAndDelete(commentId);
 
-    await CommentLike.deleteMany({ likes: commentId });
+  await CommentLike.deleteMany({ likes: commentId });
 
-    return res.status(200).json({ message: 'Comment Deleted Successfully' });
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
-  }
+  return res.status(201).json({ message: 'Comment Deleted Successfully' });
 });

@@ -15,15 +15,11 @@ export default asyncHandler(
       },
     };
 
-    try {
-      const { data } = await axios.request(options as AxiosRequestConfig);
+    const { data } = await axios.request(options as AxiosRequestConfig);
 
-      if (data.response.email_status !== 'Yes')
-        return res.status(404).json({ message: 'Invalid Email' });
+    if (data.response.email_status !== 'Yes')
+      return res.status(404).json({ message: 'Invalid Email' });
 
-      next();
-    } catch (err: Error | any) {
-      return res.status(404).json({ message: err.message });
-    }
+    next();
   }
 );

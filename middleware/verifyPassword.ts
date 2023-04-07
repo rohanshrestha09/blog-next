@@ -21,8 +21,8 @@ export default asyncHandler(
       if (!isMatched) return res.status(403).json({ message: 'Incorrect Password' });
 
       next();
-    } catch (err: Error | any) {
-      return res.status(404).json({ message: err.message });
+    } catch (err) {
+      next(err);
     }
   }
 );

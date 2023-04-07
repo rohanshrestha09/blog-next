@@ -13,46 +13,42 @@ export const likeComment = asyncHandler(async (req: Request, res: Response): Pro
 
   const { commentId } = req.query;
 
-  try {
-    const likeExist = await CommentLike.findOne({
-      $and: [{ user: authId }, { likes: commentId }],
-    });
+  const likeExist = await CommentLike.findOne({
+    $and: [{ user: authId }, { likes: commentId }],
+  });
 
-    if (likeExist) return res.status(403).json({ message: 'Already Liked' });
+  if (likeExist) return res.status(403).json({ message: 'Already Liked' });
 
-    const comment = (await (
-      await CommentLike.create({ user: authId, likes: commentId })
-    ).populate('likes')) as ICommentSchema & {
-      likes: { user: Types.ObjectId; blog: Types.ObjectId };
-    };
+  const comment = (await (
+    await CommentLike.create({ user: authId, likes: commentId })
+  ).populate('likes')) as ICommentSchema & {
+    likes: { user: Types.ObjectId; blog: Types.ObjectId };
+  };
 
-    if (!comment) return res.status(404).json({ message: 'Comment does not exist' });
+  if (!comment) return res.status(404).json({ message: 'Comment does not exist' });
 
-    const notificationExists = await Notification.findOne({
+  const notificationExists = await Notification.findOne({
+    type: LIKE_COMMENT,
+    user: authId,
+    listener: [comment.likes.user],
+    blog: comment.likes.blog,
+    comment: commentId,
+  });
+
+  if (!notificationExists) {
+    const { _id: notificationId } = await Notification.create({
       type: LIKE_COMMENT,
       user: authId,
       listener: [comment.likes.user],
       blog: comment.likes.blog,
       comment: commentId,
+      description: `${fullname} liked your comment.`,
     });
 
-    if (!notificationExists) {
-      const { _id: notificationId } = await Notification.create({
-        type: LIKE_COMMENT,
-        user: authId,
-        listener: [comment.likes.user],
-        blog: comment.likes.blog,
-        comment: commentId,
-        description: `${fullname} liked your comment.`,
-      });
-
-      dispatchNotification({ listeners: [comment.likes.user.toString()], notificationId });
-    }
-
-    return res.status(200).json({ message: 'Liked' });
-  } catch (err: Error | any) {
-    return res.status(404).json({ message: err.message });
+    dispatchNotification({ listeners: [comment.likes.user.toString()], notificationId });
   }
+
+  return res.status(201).json({ message: 'Liked' });
 });
 
 export const unlikeComment = asyncHandler(
@@ -61,20 +57,16 @@ export const unlikeComment = asyncHandler(
 
     const { commentId } = req.query;
 
-    try {
-      const likeExist = await CommentLike.findOne({
-        $and: [{ user: authId }, { likes: commentId }],
-      });
+    const likeExist = await CommentLike.findOne({
+      $and: [{ user: authId }, { likes: commentId }],
+    });
 
-      if (!likeExist) return res.status(403).json({ message: 'Already Unliked' });
+    if (!likeExist) return res.status(403).json({ message: 'Already Unliked' });
 
-      await CommentLike.deleteOne({
-        $and: [{ user: authId }, { likes: commentId }],
-      });
+    await CommentLike.deleteOne({
+      $and: [{ user: authId }, { likes: commentId }],
+    });
 
-      return res.status(200).json({ message: 'Unliked' });
-    } catch (err: Error | any) {
-      return res.status(404).json({ message: err.message });
-    }
+    return res.status(201).json({ message: 'Unliked' });
   }
 );

@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import auth from './auth';
 import user from './user';
 import blog from './blog';
@@ -19,5 +19,17 @@ router.use('/blog', blog);
 router.use('/security', security);
 
 router.use('/notification', notification);
+
+router.use((err: Error & { status: number }, req: Request, res: Response, next: NextFunction) => {
+  const status = err.status || 500;
+
+  const message = err.message || 'Something went wrong';
+
+  res.status(status).json({
+    ...err,
+    status,
+    message,
+  });
+});
 
 export default router;

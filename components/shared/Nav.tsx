@@ -14,7 +14,6 @@ import { useAuth } from '../../utils/UserAuth';
 import { auth } from '../../utils/firebase';
 import AuthAxios from '../../api/AuthAxios';
 import NotificationAxios from '../../api/NotificationAxios';
-import UserSuggestions from './UserSuggestions';
 import ChangePassword from './ChangePassword';
 import DeleteAccount from './DeleteAccount';
 import CompleteAuth from './CompleteAuth';
@@ -188,7 +187,6 @@ const Nav: React.FC<Props> = ({ additionalProps, isDrawer }) => {
             size={22}
             onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
           />
-          <UserSuggestions />
         </span>
 
         {authUser && (
