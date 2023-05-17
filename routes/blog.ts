@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import auth from '../middleware/auth';
 import verifyBlog from '../middleware/verifyBlog';
+import authorizeBlog from '../middleware/authorizeBlog';
 import { blog, blogs, suggestions, postBlog, updateBlog, deleteBlog } from '../controller/blog';
 import { genre } from '../controller/blog/genre';
 import { publish, unpublish } from '../controller/blog/publish';
@@ -29,13 +30,13 @@ router.use(['/', '/*'], auth);
 
 router.post('/', postBlog);
 
-router.put('/:blog', updateBlog);
+router.put('/:blog', authorizeBlog, updateBlog);
 
-router.delete('/:blog', deleteBlog);
+router.delete('/:blog', authorizeBlog, deleteBlog);
 
-router.post('/:blog/publish', publish);
+router.post('/:blog/publish', authorizeBlog, publish);
 
-router.delete('/:blog/publish', unpublish);
+router.delete('/:blog/publish', authorizeBlog, unpublish);
 
 router.post('/:blog/like', like);
 

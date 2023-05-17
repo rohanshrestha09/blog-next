@@ -34,7 +34,12 @@ export const notifications = asyncHandler(
 export const markAsRead = asyncHandler(async (req: Request, res: Response): Promise<Response> => {
   const { notification: notificationId } = req.params;
 
-  await Notification.findByIdAndUpdate(notificationId, { status: READ });
+  const { _id: authId } = res.locals.auth;
+
+  await Notification.findOneAndUpdate(
+    { _id: notificationId, listener: { $in: authId } },
+    { status: READ }
+  );
 
   return res.status(201).json({ message: 'Notification updated successfully' });
 });
