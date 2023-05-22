@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   dehydrate,
   DehydratedState,
@@ -11,7 +11,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import moment from 'moment';
-import { Divider, Image, Skeleton, Tooltip } from 'antd';
+import { Divider, Image, Skeleton, Tooltip, Switch } from 'antd';
 import parse from 'html-react-parser';
 import { BsBookmark, BsBookmarkFill, BsHeart, BsHeartFill } from 'react-icons/bs';
 import { VscComment } from 'react-icons/vsc';
@@ -21,6 +21,7 @@ import UserAxios from '../api/UserAxios';
 import AuthAxios from '../api/AuthAxios';
 import BlogList from '../components/Blogs/BlogList';
 import { openModal } from '../store/modalSlice';
+import { turnReadingMode } from '../store/readingModeSlice';
 import Likes from '../components/Blogs/Likes';
 import Discussions from '../components/Blogs/Discussions';
 import { errorNotification, successNotification } from '../utils/notification';
@@ -42,6 +43,8 @@ const Blog: NextPage = () => {
     query: { blogId },
     push,
   }: NextRouter = useRouter();
+
+  const { isTurned: isReadingMode } = useSelector((state: RootState) => state.readingMode);
 
   const queryClient = useQueryClient();
 
@@ -151,6 +154,14 @@ const Blog: NextPage = () => {
                 </Tooltip>
               )}
             </span>
+          </div>
+
+          <div className='sm:flex items-center items-base gap-4 hidden'>
+            <p className='text-lg'>Reading Mode:</p>
+            <Switch
+              checked={isReadingMode}
+              onChange={(checked) => dispatch(turnReadingMode({ isTurned: checked }))}
+            />
           </div>
 
           <p className='text-3xl text-white'>{blog.title}</p>

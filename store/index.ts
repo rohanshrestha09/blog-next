@@ -4,6 +4,7 @@ import drawerReducer from './drawerSlice';
 import authBlogReducer from './authBlogSlice';
 import followersReducer from './followersSlice';
 import sortFilterReducer from './sortFilterSlice';
+import readingModeReducer from './readingModeSlice';
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     authBlog: authBlogReducer,
     followers: followersReducer,
     sortFilter: sortFilterReducer,
+    readingMode: readingModeReducer,
   },
 });
 

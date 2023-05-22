@@ -18,6 +18,7 @@ import MobileNav from '../shared/MobileNav';
 import UserSuggestions from '../shared/UserSuggestions';
 import NotificationList from '../Notifications';
 import { closeDrawer, openDrawer } from '../../store/drawerSlice';
+import { turnReadingMode } from '../../store/readingModeSlice';
 import { useAuth } from '../../utils/UserAuth';
 import { jsxNotification } from '../../utils/notification';
 import { GET_NOTIFICATIONS } from '../../constants/queryKeys';
@@ -37,6 +38,8 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
   const loaderRef = useRef<any>(null);
 
   const { isOpen: isDrawerOpen } = useSelector((state: RootState) => state.drawer);
+
+  const { isTurned: isReadingMode } = useSelector((state: RootState) => state.readingMode);
 
   const dispatch = useDispatch();
 
@@ -74,6 +77,11 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
       sidebarAffixB?.current?.updatePosition();
     });
   }, [events, sidebarAffixA, sidebarAffixB]);
+
+  useEffect(() => {
+    if (pathname !== '/[blogId]') dispatch(turnReadingMode({ isTurned: false }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   useEffect(() => {
     if (authUser) {
@@ -119,11 +127,15 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
           <Nav additionalProps='w-72' isDrawer />
         </Drawer>
 
-        <Affix ref={sidebarAffixA} offsetTop={1}>
+        <Affix
+          className={`${isReadingMode && 'opacity-0 pointer-events-none'} transition-all`}
+          ref={sidebarAffixA}
+          offsetTop={1}
+        >
           <Sider
             breakpoint='xl'
             className={`${!getSider() && 'sm:hidden'} bg-inherit sm:block hidden z-10`}
-            width={270}
+            width={isReadingMode ? 350 : 270}
           >
             <Nav additionalProps='bg-inherit border-none' />
           </Sider>
@@ -131,7 +143,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
 
         <Layout>
           <Content
-            className={`${getSider() && 'sm:border-x'} border-[#303030] py-[1.20rem] xl:px-12 px-4`}
+            className={`${getSider() && 'sm:border-x'} ${
+              isReadingMode && 'border-none'
+            } border-[#303030] py-[1.20rem] xl:px-12 px-4`}
           >
             {children}
           </Content>
@@ -141,12 +155,16 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
           </Footer>
         </Layout>
 
-        <Affix ref={sidebarAffixB} offsetTop={1}>
+        <Affix
+          className={`${isReadingMode && 'opacity-0 pointer-events-none'} transition-all`}
+          ref={sidebarAffixB}
+          offsetTop={1}
+        >
           <Sider
             className={`${
               !getSider() && 'lg:hidden'
             } h-screen scrollbar bg-inherit lg:block hidden py-[1.20rem] xl:pl-12 xl:pr-10 px-4 z-10`}
-            width={450}
+            width={isReadingMode ? 350 : 450}
           >
             {getSider()}
           </Sider>
