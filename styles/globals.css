@@ -28,6 +28,10 @@
     all: revert;
   }
 
+  .tiny-content img {
+    width: 100%;
+  }
+
   .reset a {
     @apply text-[rgb(22,125,220)] no-underline hover:text-[rgba(22,125,220,0.8)] transition-all duration-300;
   }

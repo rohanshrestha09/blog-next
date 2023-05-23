@@ -182,6 +182,10 @@ const UpdateBlog: NextPage = () => {
               />
             </Form.Item>
 
+            <Form.Item>
+              <p className='text-sm'>Note: To upload custom image, use drag n drop</p>
+            </Form.Item>
+
             <div className='w-full grid grid-cols-8'>
               <Form.Item className='sm:col-span-2 col-span-full w-48'>
                 <Upload {...fileUploadOptions}>

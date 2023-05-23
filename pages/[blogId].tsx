@@ -168,7 +168,7 @@ const Blog: NextPage = () => {
 
           {blog.image && <Image alt='' src={blog.image} />}
 
-          <div className='w-full text-base reset'>{parse(blog.content)}</div>
+          <div className='w-full text-base reset tiny-content'>{parse(blog.content)}</div>
 
           <div className='w-full'>
             <span className='flex justify-between'>
