@@ -159,7 +159,9 @@ const CreateBlog: NextPage = () => {
           </Form.Item>
 
           <Form.Item>
-            <p className='text-sm'>Note: To upload custom image, use drag n drop</p>
+            <p className='text-sm'>
+              Note: To upload custom image, use drag and drop or copy/paste shortcut
+            </p>
           </Form.Item>
 
           <div className='w-full grid grid-cols-8'>
