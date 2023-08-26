@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
-import { signOut } from 'firebase/auth';
 import { Modal, Form, Input, Button } from 'antd';
 import {
   CheckCircleOutlined,
@@ -9,7 +8,6 @@ import {
   EyeTwoTone,
   LockOutlined,
 } from '@ant-design/icons';
-import { auth } from '../../utils/firebase';
 import AuthAxios from '../../api/AuthAxios';
 import ConfirmDelete from './ConfirmDelete';
 import { closeModal, openModal } from '../../store/modalSlice';
@@ -36,12 +34,11 @@ const DeleteAccount: React.FC = () => {
     {
       onSuccess: (res) => {
         successNotification(res.message);
-        signOut(auth);
         dispatch(closeModal({ key: DELETE_ACCOUNT_MODAL }));
         window.location.reload();
       },
       onError: (err: AxiosError) => errorNotification(err),
-    }
+    },
   );
 
   return (

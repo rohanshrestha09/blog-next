@@ -15,7 +15,6 @@ import {
 } from '@ant-design/icons';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { openModal, closeModal } from '../../store/modalSlice';
-import { googleSignIn } from '../../utils/firebase';
 import {
   errorNotification,
   successNotification,
@@ -84,7 +83,7 @@ const Register: React.FC = () => {
         router.push('/profile');
       },
       onError: (err: AxiosError) => errorNotification(err),
-    }
+    },
   );
 
   return (
@@ -250,7 +249,7 @@ const Register: React.FC = () => {
             type='primary'
             className='w-full flex items-center justify-center gap-4 h-[3.2rem] rounded-lg text-base btn-secondary'
             icon={<Image alt='' src='/google.svg' height={30} width={30} />}
-            onClick={() => googleSignIn()}
+            // onClick={() => googleSignIn()}
           >
             Login with Google
           </Button>

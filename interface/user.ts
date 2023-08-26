@@ -3,6 +3,8 @@ import { IUserSchema } from './schema';
 
 type RegisterKeys = Record<string, string | boolean>;
 
+
+
 export interface IToken extends IMessage {
   token: string;
 }

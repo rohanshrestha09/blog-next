@@ -30,7 +30,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
 
   const queryClient = useQueryClient();
 
-  const { authUser, socket } = useAuth();
+  const { authUser } = useAuth();
 
   const sidebarAffixA = useRef<any>(),
     sidebarAffixB = useRef<any>();
@@ -83,15 +83,15 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  useEffect(() => {
-    if (authUser) {
-      socket.current.off('incoming notification').on('incoming notification', (notification) => {
-        jsxNotification(<NotificationList notification={notification} smallContainer />);
-        queryClient.refetchQueries([GET_NOTIFICATIONS]);
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   if (authUser) {
+  //     socket.current.off('incoming notification').on('incoming notification', (notification) => {
+  //       jsxNotification(<NotificationList notification={notification} smallContainer />);
+  //       queryClient.refetchQueries([GET_NOTIFICATIONS]);
+  //     });
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return (
     <ConfigProvider renderEmpty={() => <Empty />}>

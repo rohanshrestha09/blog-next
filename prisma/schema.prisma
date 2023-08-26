@@ -1,0 +1,122 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Provider {
+  EMAIL
+  GOOGLE
+}
+
+enum Genre {
+  Technology
+  Science
+  Programming
+  Fashion
+  Food
+  Travel
+  Music
+  Lifestyle
+  Fitness
+  DIY
+  Sports
+  Finance
+  Gaming
+  News
+  Movie
+  Personal
+  Business
+  Politics
+}
+
+enum NotificationStatus {
+  READ
+  UNREAD
+}
+
+enum NotificationType {
+  FOLLOW_USER
+  POST_BLOG
+  LIKE_BLOG
+  POST_COMMENT
+  LIKE_COMMENT
+}
+
+model User {
+  id                    String         @id @default(uuid())
+  name                  String
+  email                 String         @unique
+  password              String
+  dateOfBirth           DateTime
+  image                 String?
+  imageName             String?
+  bio                   String?
+  website               String?
+  provider              Provider       @default(EMAIL)
+  isSSO                 Boolean        @default(false)
+  isVerified            Boolean        @default(false)
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt()
+  blogs                 Blog[]
+  comments              Comment[]
+  following             User[]         @relation("UserFollows")
+  followedBy            User[]         @relation("UserFollows")
+  likedBlogs            Blog[]         @relation("BlogLikes")
+  likedComments         Comment[]      @relation("CommentLikes")
+  bookmarkedBlogs       Blog[]         @relation("BlogBookmarks")
+  sentNotifications     Notification[] @relation(name: "NotificationSender")
+  receivedNotifications Notification[] @relation(name: "NotificationReceiver")
+}
+
+model Blog {
+  id            Int            @id @default(autoincrement())
+  title         String
+  content       String
+  image         String?
+  imageName     String?
+  genre         Genre
+  isPublished   Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt()
+  authorId      String
+  author        User           @relation(fields: [authorId], references: [id])
+  bookmarkedBy  User[]         @relation("BlogBookmarks")
+  likedBy       User[]         @relation("BlogLikes")
+  comments      Comment[]
+  notifications Notification[]
+}
+
+model Comment {
+  id            Int            @id @default(autoincrement())
+  content       String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt()
+  userId        String
+  user          User           @relation(fields: [userId], references: [id])
+  blogId        Int
+  blog          Blog           @relation(fields: [blogId], references: [id])
+  likedBy       User[]         @relation("CommentLikes")
+  notifications Notification[]
+}
+
+model Notification {
+  id          String             @id @default(cuid())
+  description String
+  type        NotificationType
+  status      NotificationStatus @default(UNREAD)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt()
+  senderId    String
+  sender      User               @relation(fields: [senderId], references: [id], name: "NotificationSender")
+  receiverId  String
+  receiver    User               @relation(fields: [receiverId], references: [id], name: "NotificationReceiver")
+  blogId      Int?
+  blog        Blog?              @relation(fields: [blogId], references: [id])
+  commentId   Int?
+  comment     Comment?           @relation(fields: [commentId], references: [id])
+}

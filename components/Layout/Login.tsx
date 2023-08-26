@@ -9,7 +9,6 @@ import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { openModal, closeModal } from '../../store/modalSlice';
-import { googleSignIn } from '../../utils/firebase';
 import { errorNotification, successNotification } from '../../utils/notification';
 import UserAxios from '../../api/UserAxios';
 import { AUTH } from '../../constants/queryKeys';
@@ -132,7 +131,7 @@ const Login: React.FC = () => {
             type='primary'
             className='w-full flex items-center justify-center gap-4 h-[3.2rem] rounded-lg text-base btn-secondary'
             icon={<Image alt='' src='/google.svg' height={30} width={30} />}
-            onClick={() => googleSignIn()}
+            // onClick={() => googleSignIn()}
           >
             Login with Google
           </Button>

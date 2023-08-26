@@ -1,14 +1,9 @@
 import { NextRouter, useRouter } from 'next/router';
 import { createContext, Fragment, useContext, useEffect, useRef, useState } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { io } from 'socket.io-client';
-import { auth } from './firebase';
 import AuthAxios from '../api/AuthAxios';
-import UserAxios from '../api/UserAxios';
 import AppLayout from '../components/Layout/AppLayout';
-import { errorNotification } from './notification';
 import { AUTH } from '../constants/queryKeys';
 import type IContext from '../interface/context';
 
@@ -19,27 +14,10 @@ const UserAuth: React.FC<{
 }> = ({ children }): JSX.Element => {
   const { pathname, push }: NextRouter = useRouter();
 
-  const socket = useRef(io(process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:5000'));
-
   const { data: authUser } = useQuery({
     queryFn: () => AuthAxios().auth(),
     queryKey: [AUTH],
-    onSuccess: (authUser) => socket.current.emit('add user', authUser._id),
   });
-
-  const handleGoogleSignIn = useMutation((user: User) => UserAxios().googleSignIn(user), {
-    onSuccess: () => push('/profile'),
-    onError: (err: AxiosError) => errorNotification(err),
-  });
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (authUser) return;
-
-      if (user && !pathname.startsWith('/security/reset-password')) handleGoogleSignIn.mutate(user);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   switch (pathname) {
     case '/security/reset-password':
@@ -48,7 +26,7 @@ const UserAuth: React.FC<{
 
     default:
       return (
-        <UserContext.Provider value={{ authUser, socket }}>
+        <UserContext.Provider value={{ authUser }}>
           <AppLayout>
             {children} <ReactQueryDevtools />
           </AppLayout>
