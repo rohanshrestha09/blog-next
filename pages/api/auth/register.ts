@@ -34,9 +34,7 @@ const router = createRouter<NextApiRequest, NextApiResponse>();
 router.post(async (req, res) => {
   const { fields, files } = await parseFormData(req);
 
-  const body = await validator.validateAsync(fields);
-
-  const { name, email, password, dateOfBirth } = body;
+  const { name, email, password, dateOfBirth } = await validator.validateAsync(fields);
 
   const userExists = await prisma.user.findUnique({ where: { email } });
 
@@ -83,7 +81,7 @@ router.post(async (req, res) => {
     });
   }
 
-  const token: string = sign({ id: user.id, email: user.email }, process.env.JWT_TOKEN as Secret, {
+  const token = sign({ id: user.id, email: user.email }, process.env.JWT_TOKEN as Secret, {
     expiresIn: '30d',
   });
 
@@ -97,7 +95,7 @@ router.post(async (req, res) => {
 
   res.setHeader('Set-Cookie', serialized);
 
-  return res.status(201).json(httpResponse({ token }, 'Signup Successful'));
+  return res.status(201).json(httpResponse('Signup Successful', { token }));
 });
 
 export default router.handler({ onError: errorHandler });

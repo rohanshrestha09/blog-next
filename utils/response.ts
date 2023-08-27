@@ -1,3 +1,3 @@
-export const httpResponse = <T>(data: T, message: string) => {
-  return { data, message }
-}
+export const httpResponse = <T>(message: string, data?: T) => {
+  return { data, message };
+};

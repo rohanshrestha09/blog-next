@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Blog, Prisma, PrismaClient, User } from '@prisma/client';
 
 const prismaClientSingleton = () => {
   return new PrismaClient();
@@ -14,22 +14,18 @@ export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
-export const userFields = {
-  id: true,
-  name: true,
-  email: true,
-  password: true,
-  dateOfBirth: true,
-  image: true,
-  imageName: true,
-  bio: true,
-  website: true,
-  provider: true,
-  isSSO: true,
-  isVerified: true,
-  createdAt: true,
-  updatedAt: true,
+const generateFields = <
+  T extends Prisma.UserFieldRefs | Prisma.BlogFieldRefs,
+  V extends User | Blog,
+>(
+  fields: T,
+) => {
+  return Object.values(fields)
+    .map((k) => ({ [k.name as keyof V]: true }))
+    .reduce((initial, curr) => ({ ...initial, ...curr })) as { [x in keyof V]: boolean };
 };
+
+export const userFields = generateFields<Prisma.UserFieldRefs, User>(prisma.user.fields);
 
 export const exculdeFields = <T>(model: T, fields: (keyof T)[]) => {
   fields.forEach((field) => delete model[field]);
@@ -37,4 +33,4 @@ export const exculdeFields = <T>(model: T, fields: (keyof T)[]) => {
   return model;
 };
 
-export { type User } from '@prisma/client';
+export { type User, Provider } from '@prisma/client';
