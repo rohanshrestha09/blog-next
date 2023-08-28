@@ -27,6 +27,8 @@ const generateFields = <
 
 export const userFields = generateFields<Prisma.UserFieldRefs, User>(prisma.user.fields);
 
+export const blogFields = generateFields<Prisma.BlogFieldRefs, Blog>(prisma.blog.fields);
+
 export const exculdeFields = <T>(model: T, fields: (keyof T)[]) => {
   fields.forEach((field) => delete model[field]);
 

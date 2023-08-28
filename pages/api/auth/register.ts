@@ -10,7 +10,7 @@ import { isEmpty } from 'lodash';
 import { prisma } from 'lib/prisma';
 import { supabase } from 'lib/supabase';
 import { parseFormData } from 'utils/parseFormData';
-import { httpResponse } from 'utils/response';
+import { getResponse } from 'utils/response';
 import { errorHandler, HttpException } from 'utils/exception';
 import { SUPABASE_BUCKET_NAME } from 'constants/index';
 import { SUPABASE_BUCKET_DIRECTORY } from 'constants/index';
@@ -95,7 +95,7 @@ router.post(async (req, res) => {
 
   res.setHeader('Set-Cookie', serialized);
 
-  return res.status(201).json(httpResponse('Signup Successful', { token }));
+  return res.status(201).json(getResponse('Signup Successful', { token }));
 });
 
 export default router.handler({ onError: errorHandler });

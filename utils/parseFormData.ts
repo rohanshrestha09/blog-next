@@ -11,11 +11,11 @@ export const parseFormData = async <T>(req: NextApiRequest) => {
     });
   });
 
-  let { fields, files } = data as { fields: object; files: any };
+  const { fields, files } = data as { fields: { [x: string]: string[] }; files: any };
 
-  fields = Object.entries(fields)
+  const parsedFields = Object.entries(fields)
     .map(([k, v]) => ({ [k]: v.length === 1 ? v[0] : v }))
     .reduce((prev, curr) => ({ ...prev, ...curr }));
 
-  return { fields, files } as { fields: T; files: any };
+  return { fields: parsedFields, files } as { fields: T; files: any };
 };

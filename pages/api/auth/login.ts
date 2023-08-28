@@ -6,7 +6,7 @@ import { serialize } from 'cookie';
 import { Secret, sign } from 'jsonwebtoken';
 import { prisma } from 'lib/prisma';
 import { errorHandler, HttpException } from 'utils/exception';
-import { httpResponse } from 'utils/response';
+import { getResponse } from 'utils/response';
 
 const validator = Joi.object<{ email: string; password: string }>({
   email: Joi.string().email().required(),
@@ -38,7 +38,7 @@ router.post(async (req, res) => {
 
   res.setHeader('Set-Cookie', serialized);
 
-  return res.status(200).json(httpResponse('Login Successful', { token }));
+  return res.status(200).json(getResponse('Login Successful', { token }));
 });
 
 export default router.handler({ onError: errorHandler });
