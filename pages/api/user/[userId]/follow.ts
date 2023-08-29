@@ -1,11 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { prisma } from 'lib/prisma';
+import { prisma, User } from 'lib/prisma';
 import { auth } from 'middlewares/auth';
 import { validateUser } from 'middlewares/validateUser';
 import { errorHandler } from 'utils/exception';
 import { httpResponse } from 'utils/response';
-import { User } from 'interface/models';
 
 const router = createRouter<NextApiRequest & { auth: User; user: User }, NextApiResponse>();
 

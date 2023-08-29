@@ -1,12 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { exculdeFields, prisma, userFields } from 'lib/prisma';
+import { exculdeFields, prisma, userFields, User } from 'lib/prisma';
 import { validateUser } from 'middlewares/validateUser';
 import { errorHandler } from 'utils/exception';
 import { getAllResponse } from 'utils/response';
 import { parseQuery } from 'utils/parseQuery';
 import { getPages } from 'utils';
-import { User } from 'interface/models';
 
 const router = createRouter<NextApiRequest & { user: User }, NextApiResponse>();
 
@@ -15,7 +14,22 @@ router.use(validateUser()).get(async (req, res) => {
 
   const { take, skip, search, sort, order } = await parseQuery(req.query);
 
-  const count = await prisma.user.count({ where: { followedBy: { some: { id: user.id } } } });
+  const count = await prisma.user.count({
+    where: {
+      followedBy: {
+        some: {
+          id: user.id,
+        },
+      },
+      following: {
+        some: {
+          name: {
+            search,
+          },
+        },
+      },
+    },
+  });
 
   const following = await prisma.user
     .findUnique({

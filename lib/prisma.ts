@@ -22,7 +22,7 @@ const generateFields = <
 ) => {
   return Object.values(fields)
     .map((k) => ({ [k.name as keyof V]: true }))
-    .reduce((initial, curr) => ({ ...initial, ...curr })) as { [x in keyof V]: boolean };
+    .reduce((initial, curr) => ({ ...initial, ...curr })) as Record<keyof V, boolean>;
 };
 
 export const userFields = generateFields<Prisma.UserFieldRefs, User>(prisma.user.fields);
@@ -35,4 +35,11 @@ export const exculdeFields = <T>(model: T, fields: (keyof T)[]) => {
   return model;
 };
 
-export { type User, Provider } from '@prisma/client';
+export {
+  type User,
+  type Blog,
+  type Comment,
+  type Notification,
+  Provider,
+  Genre,
+} from '@prisma/client';

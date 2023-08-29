@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { User } from 'interface/models';
+import { User } from 'lib/prisma';
 import { auth } from 'middlewares/auth';
 import { errorHandler } from 'utils/exception';
 import { getResponse } from 'utils/response';

@@ -1,22 +1,22 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import { blogFields, exculdeFields, prisma, User, userFields } from 'lib/prisma';
-import { validateUser } from 'middlewares/validateUser';
+import { auth } from 'middlewares/auth';
 import { errorHandler } from 'utils/exception';
 import { parseQuery } from 'utils/parseQuery';
 import { getAllResponse } from 'utils/response';
 import { getPages } from 'utils';
 
-const router = createRouter<NextApiRequest & { user: User }, NextApiResponse>();
+const router = createRouter<NextApiRequest & { auth: User }, NextApiResponse>();
 
-router.use(validateUser()).get(async (req, res) => {
-  const user = req.user;
+router.use(auth()).get(async (req, res) => {
+  const authUser = req.auth;
 
   const { take, skip, search, sort, order } = await parseQuery(req.query);
 
   const count = await prisma.blog.count({
     where: {
-      authorId: user.id,
+      authorId: authUser.id,
       title: {
         search,
       },
@@ -26,7 +26,7 @@ router.use(validateUser()).get(async (req, res) => {
   const blogs = await prisma.user
     .findUnique({
       where: {
-        id: user.id,
+        id: authUser.id,
       },
     })
     .blogs({

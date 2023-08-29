@@ -40,7 +40,7 @@
     "react-toastify": "^9.0.8",
     "react-top-loading-bar": "^2.3.1",
     "sharp": "^0.31.2",
-    "uuid-v4": "^0.1.0"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -54,6 +54,7 @@
     "@types/passport-google-oauth2": "^0.1.5",
     "@types/react": "18.0.17",
     "@types/react-dom": "18.0.6",
+    "@types/uuid": "^9.0.2",
     "autoprefixer": "^10.4.8",
     "eslint": "8.23.1",
     "eslint-config-next": "12.3.1",
