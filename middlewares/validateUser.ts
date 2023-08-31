@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextHandler } from 'next-connect';
-import { exculdeFields, prisma, userFields } from 'lib/prisma';
+import { exculdeFields, prisma, userFields, User } from 'lib/prisma';
 import { HttpException } from 'utils/exception';
-import { User } from 'interface/models';
 
 export const validateUser = () => {
   return async (req: NextApiRequest & { user: User }, _res: NextApiResponse, next: NextHandler) => {
@@ -12,7 +11,15 @@ export const validateUser = () => {
 
     const user = await prisma.user.findUniqueOrThrow({
       where: { id: userId },
-      select: exculdeFields(userFields, ['email', 'password']),
+      select: {
+        ...exculdeFields(userFields, ['password', 'email']),
+        _count: {
+          select: {
+            following: true,
+            followedBy: true,
+          },
+        },
+      },
     });
 
     req.user = user;

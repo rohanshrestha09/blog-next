@@ -23,7 +23,9 @@ const validator = Joi.object<{
   title: Joi.string().required(),
   content: Joi.string().required(),
   isPublished: Joi.boolean(),
-  genre: Joi.string().allow(...Object.values(Genre)),
+  genre: Joi.string()
+    .allow(...Object.values(Genre))
+    .required(),
 });
 
 const router = createRouter<NextApiRequest & { auth: User }, NextApiResponse>();
@@ -85,12 +87,14 @@ router.get(async (req, res) => {
       title: {
         search,
       },
+      isPublished: true,
     },
   });
 
   const blogs = await prisma.blog.findMany({
     where: {
       title: { search },
+      isPublished: true,
     },
     select: {
       ...blogFields,

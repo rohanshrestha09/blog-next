@@ -1,9 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextHandler } from 'next-connect';
 import { JwtPayload, Secret, verify } from 'jsonwebtoken';
-import { exculdeFields, prisma, userFields } from 'lib/prisma';
+import { exculdeFields, prisma, userFields, User } from 'lib/prisma';
 import { HttpException } from 'utils/exception';
-import { User } from 'interface/models';
 
 export const auth = () => {
   return async (req: NextApiRequest & { auth: User }, _res: NextApiResponse, next: NextHandler) => {
@@ -15,7 +14,15 @@ export const auth = () => {
 
     const auth = await prisma.user.findUniqueOrThrow({
       where: { id, email },
-      select: exculdeFields(userFields, ['password']),
+      select: {
+        ...exculdeFields(userFields, ['password', 'email']),
+        _count: {
+          select: {
+            following: true,
+            followedBy: true,
+          },
+        },
+      },
     });
 
     req.auth = auth;
