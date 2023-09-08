@@ -15,8 +15,8 @@ export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 const generateFields = <
-  T extends Prisma.UserFieldRefs | Prisma.BlogFieldRefs,
-  V extends User | Blog,
+  T extends Prisma.UserFieldRefs | Prisma.BlogFieldRefs | Prisma.CommentFieldRefs,
+  V extends User | Blog | Comment,
 >(
   fields: T,
 ) => {
@@ -28,6 +28,10 @@ const generateFields = <
 export const userFields = generateFields<Prisma.UserFieldRefs, User>(prisma.user.fields);
 
 export const blogFields = generateFields<Prisma.BlogFieldRefs, Blog>(prisma.blog.fields);
+
+export const commentFields = generateFields<Prisma.CommentFieldRefs, Comment>(
+  prisma.comment.fields,
+);
 
 export const exculdeFields = <T>(model: T, fields: (keyof T)[]) => {
   fields.forEach((field) => delete model[field]);

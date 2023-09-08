@@ -15,7 +15,7 @@ export const auth = () => {
     const auth = await prisma.user.findUniqueOrThrow({
       where: { id, email },
       select: {
-        ...exculdeFields(userFields, ['password', 'email']),
+        ...exculdeFields(userFields, ['password']),
         _count: {
           select: {
             following: true,

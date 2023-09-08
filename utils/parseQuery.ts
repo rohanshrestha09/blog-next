@@ -17,7 +17,7 @@ export async function parseQuery(query: NextApiRequest['query']): Promise<ParseQ
     blogId: Joi.string().disallow(''),
     page: Joi.number().empty('').default(1),
     size: Joi.number().empty('').default(20),
-    search: Joi.string().allow(''),
+    search: Joi.string().empty(''),
     sort: Joi.string()
       .valid('id', 'createdAt', 'name', 'title', ...countSort)
       .empty('')
@@ -33,7 +33,7 @@ export async function parseQuery(query: NextApiRequest['query']): Promise<ParseQ
     skip,
     take,
     sort,
+    search,
     order: countSort.includes(sort) ? { _count: order } : order,
-    search: search ? search : undefined,
   };
 }

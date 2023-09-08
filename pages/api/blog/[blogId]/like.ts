@@ -27,19 +27,25 @@ router.get(async (req, res) => {
     },
   });
 
-  const likes = await prisma.blog.findUnique({ where: { id: blog.id } }).likedBy({
-    select: {
-      ...exculdeFields(userFields, ['password', 'email']),
-      _count: {
-        select: {
-          following: true,
-          followedBy: true,
+  const likes = await prisma.blog
+    .findUnique({
+      where: {
+        id: blog.id,
+      },
+    })
+    .likedBy({
+      select: {
+        ...exculdeFields(userFields, ['password', 'email']),
+        _count: {
+          select: {
+            following: true,
+            followedBy: true,
+          },
         },
       },
-    },
-    skip,
-    take,
-  });
+      skip,
+      take,
+    });
 
   const { currentPage, totalPage } = getPages({ skip, take, count });
 
