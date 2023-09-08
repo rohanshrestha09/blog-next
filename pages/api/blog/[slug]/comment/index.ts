@@ -1,6 +1,17 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { prisma, Blog, User, commentFields } from 'lib/prisma';
+import {
+  prisma,
+  Blog,
+  User,
+  commentFields,
+  NotificationType,
+  notificationFields,
+  selectFields,
+  userFields,
+  blogFields,
+} from 'lib/prisma';
+import { dispatchNotification } from 'lib/pusher';
 import { auth } from 'middlewares/auth';
 import { validateBlog } from 'middlewares/validateBlog';
 import { errorHandler } from 'utils/exception';
@@ -54,15 +65,44 @@ router.use(auth()).post(async (req, res) => {
 
   const blog = req.blog;
 
-  const { comment } = req.body;
+  const { comment: content } = req.body;
 
-  await prisma.comment.create({
+  const comment = await prisma.comment.create({
     data: {
       userId: authUser.id,
       blogId: blog.id,
-      content: comment,
+      content,
+    },
+    select: {
+      id: true,
+      blog: true,
     },
   });
+
+  const notification = await prisma.notification.create({
+    data: {
+      type: NotificationType.POST_COMMENT,
+      senderId: authUser.id,
+      receiverId: comment.blog.authorId,
+      blogId: comment.blog.id,
+      commentId: comment.id,
+      description: `${authUser.name} liked your comment.`,
+    },
+    select: {
+      ...notificationFields,
+      sender: {
+        select: selectFields(userFields, ['id', 'name', 'image']),
+      },
+      blog: {
+        select: selectFields(blogFields, ['id', 'slug', 'title', 'image']),
+      },
+      comment: {
+        select: selectFields(commentFields, ['id', 'content']),
+      },
+    },
+  });
+
+  dispatchNotification(notification);
 
   return res.status(201).json(httpResponse('Comment Successful'));
 });

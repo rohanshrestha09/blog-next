@@ -1,6 +1,18 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { Blog, exculdeFields, prisma, User, userFields } from 'lib/prisma';
+import {
+  Blog,
+  blogFields,
+  commentFields,
+  exculdeFields,
+  notificationFields,
+  NotificationType,
+  prisma,
+  selectFields,
+  User,
+  userFields,
+} from 'lib/prisma';
+import { dispatchNotification } from 'lib/pusher';
 import { auth } from 'middlewares/auth';
 import { validateBlog } from 'middlewares/validateBlog';
 import { errorHandler } from 'utils/exception';
@@ -71,6 +83,41 @@ router.post(auth(), async (req, res) => {
       },
     },
   });
+
+  const notificationExists = await prisma.notification.findFirst({
+    where: {
+      type: NotificationType.LIKE_BLOG,
+      senderId: authUser.id,
+      receiverId: blog.authorId,
+      blogId: blog.id,
+    },
+  });
+
+  if (!notificationExists) {
+    const notification = await prisma.notification.create({
+      data: {
+        type: NotificationType.LIKE_BLOG,
+        senderId: authUser.id,
+        receiverId: blog.authorId,
+        blogId: blog.id,
+        description: `${authUser.name} liked your blog.`,
+      },
+      select: {
+        ...notificationFields,
+        sender: {
+          select: selectFields(userFields, ['id', 'name', 'image']),
+        },
+        blog: {
+          select: selectFields(blogFields, ['id', 'slug', 'title', 'image']),
+        },
+        comment: {
+          select: selectFields(commentFields, ['id', 'content']),
+        },
+      },
+    });
+
+    dispatchNotification(notification);
+  }
 
   return res.status(201).json(httpResponse('Liked'));
 });

@@ -41,6 +41,14 @@ export const notificationFields = generateFields<Prisma.NotificationFieldRefs, N
   prisma.notification.fields,
 );
 
+export const selectFields = <T extends Record<string, unknown>>(model: T, fields: (keyof T)[]) => {
+  Object.keys(model).forEach((key) => {
+    if (!fields.includes(key)) delete model[key];
+  });
+
+  return model;
+};
+
 export const exculdeFields = <T>(model: T, fields: (keyof T)[]) => {
   fields.forEach((field) => delete model[field]);
 
@@ -55,4 +63,5 @@ export {
   Provider,
   Genre,
   NotificationStatus,
+  NotificationType,
 } from '@prisma/client';

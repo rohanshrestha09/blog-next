@@ -1,5 +1,5 @@
 import Pusher from 'pusher';
-import { notificationFields, prisma } from './prisma';
+import { Notification } from './prisma';
 
 export const pusher = new Pusher({
   appId: process.env.PUSHER_APP_ID as string,
@@ -9,42 +9,6 @@ export const pusher = new Pusher({
   useTLS: true,
 });
 
-export const dispatchNotification = async ({
-  receiver,
-  notificationId,
-}: {
-  receiver: string;
-  notificationId: string;
-}) => {
-  const notification = await prisma.notification.findUniqueOrThrow({
-    where: {
-      id: notificationId,
-    },
-    select: {
-      ...notificationFields,
-      sender: {
-        select: {
-          id: true,
-          name: true,
-          image: true,
-        },
-      },
-      blog: {
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          image: true,
-        },
-      },
-      comment: {
-        select: {
-          id: true,
-          content: true,
-        },
-      },
-    },
-  });
-
-  pusher.sendToUser(receiver, 'dispatch-notification', notification);
+export const dispatchNotification = async (notification: Notification) => {
+  pusher.sendToUser(notification.receiverId, 'dispatch-notification', notification);
 };

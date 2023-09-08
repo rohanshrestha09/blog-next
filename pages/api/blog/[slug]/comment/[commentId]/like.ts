@@ -1,6 +1,16 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { prisma, User } from 'lib/prisma';
+import {
+  blogFields,
+  commentFields,
+  notificationFields,
+  NotificationType,
+  prisma,
+  selectFields,
+  User,
+  userFields,
+} from 'lib/prisma';
+import { dispatchNotification } from 'lib/pusher';
 import { auth } from 'middlewares/auth';
 import { errorHandler, HttpException } from 'utils/exception';
 import { httpResponse } from 'utils/response';
@@ -16,7 +26,7 @@ router.post(async (req, res) => {
 
   if (Array.isArray(commentId)) throw new HttpException(400, 'Invalid operation');
 
-  await prisma.comment.update({
+  const comment = await prisma.comment.update({
     where: {
       id: Number(commentId),
     },
@@ -28,6 +38,43 @@ router.post(async (req, res) => {
       },
     },
   });
+
+  const notificationExists = await prisma.notification.findFirst({
+    where: {
+      type: NotificationType.LIKE_COMMENT,
+      senderId: authUser.id,
+      receiverId: comment.userId,
+      blogId: comment.blogId,
+      commentId: comment.id,
+    },
+  });
+
+  if (!notificationExists) {
+    const notification = await prisma.notification.create({
+      data: {
+        type: NotificationType.LIKE_COMMENT,
+        senderId: authUser.id,
+        receiverId: comment.userId,
+        blogId: comment.blogId,
+        commentId: comment.id,
+        description: `${authUser.name} liked your comment.`,
+      },
+      select: {
+        ...notificationFields,
+        sender: {
+          select: selectFields(userFields, ['id', 'name', 'image']),
+        },
+        blog: {
+          select: selectFields(blogFields, ['id', 'slug', 'title', 'image']),
+        },
+        comment: {
+          select: selectFields(commentFields, ['id', 'content']),
+        },
+      },
+    });
+
+    dispatchNotification(notification);
+  }
 
   return res.status(201).json(httpResponse('Liked'));
 });

@@ -1,6 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { notificationFields, prisma, User, NotificationStatus } from 'lib/prisma';
+import {
+  notificationFields,
+  prisma,
+  User,
+  NotificationStatus,
+  selectFields,
+  userFields,
+  blogFields,
+  commentFields,
+} from 'lib/prisma';
 import { auth } from 'middlewares/auth';
 import { errorHandler } from 'utils/exception';
 import { parseQuery } from 'utils/parseQuery';
@@ -15,60 +24,41 @@ router.use(auth()).get(async (req, res) => {
 
   const count = await prisma.notification.count({
     where: {
-      receiver: {
-        id: authUser.id,
-      },
+      receiverId: authUser.id,
     },
   });
 
   const read = await prisma.notification.count({
     where: {
-      receiver: {
-        id: authUser.id,
-      },
+      receiverId: authUser.id,
       status: NotificationStatus.READ,
     },
   });
 
   const unread = await prisma.notification.count({
     where: {
-      receiver: {
-        id: authUser.id,
-      },
+      receiverId: authUser.id,
       status: NotificationStatus.UNREAD,
     },
   });
 
   const notifications = await prisma.notification.findMany({
     where: {
-      receiver: {
-        id: authUser.id,
-      },
+      receiverId: authUser.id,
     },
     select: {
       ...notificationFields,
       sender: {
-        select: {
-          id: true,
-          name: true,
-          image: true,
-        },
+        select: selectFields(userFields, ['id', 'name', 'image']),
       },
       blog: {
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          image: true,
-        },
+        select: selectFields(blogFields, ['id', 'slug', 'title', 'image']),
       },
       comment: {
-        select: {
-          id: true,
-          content: true,
-        },
+        select: selectFields(commentFields, ['id', 'content']),
       },
     },
+
     skip,
     take,
     orderBy: {

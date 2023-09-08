@@ -1,6 +1,16 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { prisma, User } from 'lib/prisma';
+import {
+  blogFields,
+  commentFields,
+  notificationFields,
+  NotificationType,
+  prisma,
+  selectFields,
+  User,
+  userFields,
+} from 'lib/prisma';
+import { dispatchNotification } from 'lib/pusher';
 import { auth } from 'middlewares/auth';
 import { validateUser } from 'middlewares/validateUser';
 import { errorHandler } from 'utils/exception';
@@ -25,6 +35,39 @@ router.post(async (req, res) => {
       },
     },
   });
+
+  const notificationExists = await prisma.notification.findFirst({
+    where: {
+      type: NotificationType.FOLLOW_USER,
+      senderId: authUser.id,
+      receiverId: user.id,
+    },
+  });
+
+  if (!notificationExists) {
+    const notification = await prisma.notification.create({
+      data: {
+        type: NotificationType.FOLLOW_USER,
+        senderId: authUser.id,
+        receiverId: user.id,
+        description: `${authUser.name} followed you.`,
+      },
+      select: {
+        ...notificationFields,
+        sender: {
+          select: selectFields(userFields, ['id', 'name', 'image']),
+        },
+        blog: {
+          select: selectFields(blogFields, ['id', 'slug', 'title', 'image']),
+        },
+        comment: {
+          select: selectFields(commentFields, ['id', 'content']),
+        },
+      },
+    });
+
+    dispatchNotification(notification);
+  }
 
   return res.status(200).json(httpResponse('Followed'));
 });

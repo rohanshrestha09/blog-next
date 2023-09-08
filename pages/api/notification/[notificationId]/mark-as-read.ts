@@ -17,9 +17,7 @@ router.use(auth()).post(async (req, res) => {
   await prisma.notification.update({
     where: {
       id: notificationId,
-      receiver: {
-        id: authUser.id,
-      },
+      receiverId: authUser.id,
     },
     data: {
       status: NotificationStatus.READ,
