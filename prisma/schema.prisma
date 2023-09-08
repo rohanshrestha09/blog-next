@@ -72,11 +72,11 @@ model User {
   bookmarkedBlogs       Blog[]         @relation("BlogBookmarks")
   sentNotifications     Notification[] @relation(name: "NotificationSender")
   receivedNotifications Notification[] @relation(name: "NotificationReceiver")
-  isFollowed            Boolean        @map("CASE WHEN id = $authId THEN true ELSE EXISTS (SELECT 1 FROM Follow WHERE followedId = $authId AND followerId = User.id) END")
 }
 
 model Blog {
   id            Int            @id @default(autoincrement())
+  slug          String         @unique
   title         String
   content       String
   image         String?

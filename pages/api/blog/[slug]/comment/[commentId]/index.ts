@@ -1,17 +1,26 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { prisma, Blog, User } from 'lib/prisma';
+import { prisma, User } from 'lib/prisma';
 import { auth } from 'middlewares/auth';
-import { validateBlog } from 'middlewares/validateBlog';
 import { errorHandler, HttpException } from 'utils/exception';
 import { httpResponse } from 'utils/response';
 
-const router = createRouter<NextApiRequest & { auth: User; blog: Blog }, NextApiResponse>();
+const router = createRouter<NextApiRequest & { auth: User }, NextApiResponse>();
 
-router.use(auth(), validateBlog()).delete(async (req, res) => {
+router.use(auth()).delete(async (req, res) => {
+  const authUser = req.auth;
+
   const { commentId } = req.query;
 
   if (Array.isArray(commentId)) throw new HttpException(400, 'Invalid operation');
+
+  const comment = await prisma.comment.findUniqueOrThrow({
+    where: {
+      id: Number(commentId),
+    },
+  });
+
+  if (comment.userId !== authUser.id) throw new HttpException(401, 'Unauthorised');
 
   await prisma.comment.delete({ where: { id: Number(commentId) } });
 

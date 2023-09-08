@@ -3,7 +3,7 @@ import { createRouter } from 'next-connect';
 import { readFileSync } from 'fs';
 import { v4 as uuidV4 } from 'uuid';
 import Joi from 'joi';
-import { isEmpty } from 'lodash';
+import { isEmpty, kebabCase } from 'lodash';
 import { prisma, Genre, User, blogFields, exculdeFields, userFields } from 'lib/prisma';
 import { supabase } from 'lib/supabase';
 import { auth } from 'middlewares/auth';
@@ -40,6 +40,7 @@ router.post(auth(), async (req, res) => {
   const blog = await prisma.blog.create({
     data: {
       authorId: authUser.id,
+      slug: kebabCase(title),
       title,
       content,
       genre,

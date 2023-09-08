@@ -5,12 +5,12 @@ import { HttpException } from 'utils/exception';
 
 export const validateBlog = () => {
   return async (req: NextApiRequest & { blog: Blog }, _res: NextApiResponse, next: NextHandler) => {
-    const { blogId } = req.query;
+    const { slug } = req.query;
 
-    if (Array.isArray(blogId)) throw new HttpException(400, 'Invalid operation');
+    if (Array.isArray(slug)) throw new HttpException(400, 'Invalid operation');
 
     const blog = await prisma.blog.findUniqueOrThrow({
-      where: { id: Number(blogId) },
+      where: { slug },
       select: {
         ...blogFields,
         author: {

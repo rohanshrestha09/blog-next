@@ -1,4 +1,4 @@
-import { Blog, Prisma, PrismaClient, User } from '@prisma/client';
+import { Blog, Comment, Notification, Prisma, PrismaClient, User } from '@prisma/client';
 
 const prismaClientSingleton = () => {
   return new PrismaClient();
@@ -15,8 +15,12 @@ export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 const generateFields = <
-  T extends Prisma.UserFieldRefs | Prisma.BlogFieldRefs | Prisma.CommentFieldRefs,
-  V extends User | Blog | Comment,
+  T extends
+    | Prisma.UserFieldRefs
+    | Prisma.BlogFieldRefs
+    | Prisma.CommentFieldRefs
+    | Prisma.NotificationFieldRefs,
+  V extends User | Blog | Comment | Notification,
 >(
   fields: T,
 ) => {
@@ -33,6 +37,10 @@ export const commentFields = generateFields<Prisma.CommentFieldRefs, Comment>(
   prisma.comment.fields,
 );
 
+export const notificationFields = generateFields<Prisma.NotificationFieldRefs, Notification>(
+  prisma.notification.fields,
+);
+
 export const exculdeFields = <T>(model: T, fields: (keyof T)[]) => {
   fields.forEach((field) => delete model[field]);
 
@@ -46,4 +54,5 @@ export {
   type Notification,
   Provider,
   Genre,
+  NotificationStatus,
 } from '@prisma/client';
