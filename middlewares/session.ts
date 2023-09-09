@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { NextHandler } from 'next-connect';
 import { JwtPayload, Secret, verify } from 'jsonwebtoken';
 import { exculdeFields, prisma, userFields } from 'lib/prisma';
-import { Session } from 'interface';
 
 export const session = () => {
   return async (

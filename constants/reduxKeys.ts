@@ -37,7 +37,7 @@ export enum FOLLOWERS_KEYS {
 }
 
 export enum SORT_TYPE {
-  LIKE_COUNT = 'likedBy',
+  LIKE_COUNT = 'likeCount',
   CREATED_AT = 'createdAt',
 }
 
@@ -97,13 +97,11 @@ export const getSortFilterKeys = {
     ...BOOKMARKS_KEYS,
     ...NOTIFICATIONS_KEYS,
   },
-  title: {
+  search: {
     HOME,
+    USER_SUGGESTIONS,
     AUTH_PROFILE,
     ...BOOKMARKS_KEYS,
-  },
-  name: {
-    USER_SUGGESTIONS,
     ...FOLLOWERS_KEYS,
   },
   genre: { HOME, AUTH_PROFILE, ...BOOKMARKS_KEYS },

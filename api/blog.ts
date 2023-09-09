@@ -10,7 +10,7 @@ export const getBlog: Get<string, Blog> = async (id) => {
 };
 
 export const getAllBlogs: GetAll<
-  IQueryParamaters & Pick<Blog, 'title' | 'genre' | 'isPublished'>,
+  IQueryParamaters & Pick<Blog, 'genre' | 'isPublished'> & { search?: string },
   Blog
 > = async ({
   pagination = true,
@@ -19,10 +19,10 @@ export const getAllBlogs: GetAll<
   sort = SORT_TYPE.LIKE_COUNT,
   order = SORT_ORDER.DESCENDING,
   genre = '',
-  title = '',
+  search = '',
 }) => {
   const res = await axios.get(
-    `/blog?pagination=${pagination}&page=${page}&size=${size}&sort=${sort}&order=${order}&genre=${genre}&title=${title}`,
+    `/blog?pagination=${pagination}&page=${page}&size=${size}&sort=${sort}&order=${order}&genre=${genre}&search=${search}`,
   );
 
   return res.data;

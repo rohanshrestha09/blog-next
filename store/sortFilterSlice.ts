@@ -5,7 +5,7 @@ const { LIKE_COUNT } = SORT_TYPE;
 
 const { DESCENDING } = SORT_ORDER;
 
-const { size, genre, name, title, sort, order } = getSortFilterKeys;
+const { size, genre, search, sort, order } = getSortFilterKeys;
 
 const sortFilterSlice = createSlice({
   name: 'sortFilter',
@@ -16,10 +16,7 @@ const sortFilterSlice = createSlice({
     genre: Object.values(genre)
       .map((key) => ({ [key]: <string[]>[] }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
-    name: Object.values(name)
-      .map((key) => ({ [key]: '' }))
-      .reduce((prev, curr) => ({ ...prev, ...curr })),
-    title: Object.values(title)
+    search: Object.values(search)
       .map((key) => ({ [key]: '' }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
     sort: Object.values(sort)
@@ -30,23 +27,11 @@ const sortFilterSlice = createSlice({
       .reduce((prev, curr) => ({ ...prev, ...curr })),
   },
   reducers: {
-    setNameSearch: (
+    setSearch: (
       state,
-      { payload: { key, name } }: { payload: { key: SORT_FILTER_KEYS; name: string } },
+      { payload: { key, search } }: { payload: { key: SORT_FILTER_KEYS; search: string } },
     ) => {
-      return (state = {
-        ...state,
-        name: { ...state.name, [key]: name },
-      });
-    },
-    setTitleSearch: (
-      state,
-      { payload: { key, title } }: { payload: { key: SORT_FILTER_KEYS; title: string } },
-    ) => {
-      return (state = {
-        ...state,
-        title: { ...state.title, [key]: title },
-      });
+      return (state = { ...state, search: { ...state.search, [key]: search } });
     },
     setSize: (
       state,
@@ -86,7 +71,6 @@ const sortFilterSlice = createSlice({
   },
 });
 
-export const { setSize, setNameSearch, setTitleSearch, setSort, setOrder, setGenre } =
-  sortFilterSlice.actions;
+export const { setSize, setSearch, setSort, setOrder, setGenre } = sortFilterSlice.actions;
 
 export default sortFilterSlice.reducer;

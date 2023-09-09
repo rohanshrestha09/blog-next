@@ -8,7 +8,7 @@ import { httpResponse } from 'utils/response';
 
 const router = createRouter<NextApiRequest & { auth: User; blog: Blog }, NextApiResponse>();
 
-router.use(auth()).use(validateBlog());
+router.use(auth(), validateBlog());
 
 router.post(async (req, res) => {
   const blog = req.blog;

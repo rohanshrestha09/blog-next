@@ -4,9 +4,10 @@ import { readFileSync } from 'fs';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
 import { v4 as uuidV4 } from 'uuid';
-import { Blog, Genre, prisma, User } from 'lib/prisma';
+import { Blog, blogFields, exculdeFields, Genre, prisma, User, userFields } from 'lib/prisma';
 import { supabase } from 'lib/supabase';
 import { auth } from 'middlewares/auth';
+import { session } from 'middlewares/session';
 import { validateBlog } from 'middlewares/validateBlog';
 import { errorHandler, HttpException } from 'utils/exception';
 import { getResponse, httpResponse } from 'utils/response';
@@ -23,13 +24,46 @@ const validator = Joi.object<{
   genre: Joi.string().allow(...Object.values(Genre)),
 });
 
-const router = createRouter<NextApiRequest & { auth: User; blog: Blog }, NextApiResponse>();
+const router = createRouter<
+  NextApiRequest & { session: Session; auth: User; blog: Blog },
+  NextApiResponse
+>();
 
-router.get(validateBlog(), async (req, res) => {
-  return res.status(200).json(getResponse('Blog fetched', req.blog));
+router.use(session(), validateBlog());
+
+router.get(async (req, res) => {
+  const blog = await prisma.blog.findUnique({
+    where: {
+      id: req.blog.id,
+    },
+    select: {
+      ...blogFields,
+      author: {
+        select: {
+          ...exculdeFields(userFields, ['password', 'email']),
+        },
+      },
+      likedBy: {
+        where: {
+          id: req.session.userId,
+        },
+        select: {
+          id: true,
+        },
+      },
+      _count: {
+        select: {
+          likedBy: true,
+          comments: true,
+        },
+      },
+    },
+  });
+
+  return res.status(200).json(getResponse('Blog fetched', blog));
 });
 
-router.use(auth(), validateBlog(), async (req, _res, next) => {
+router.use(auth(), async (req, _res, next) => {
   if (req.auth.id !== req.blog.authorId) throw new HttpException(401, 'Unauthorised');
 
   await next();

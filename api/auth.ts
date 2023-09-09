@@ -56,7 +56,7 @@ export const deleteProfileImage: Delete<undefined> = async () => {
 };
 
 export const getAuthBlogs: GetAll<
-  IQueryParamaters & Pick<Blog, 'title' | 'genre' | 'isPublished'>,
+  IQueryParamaters & Pick<Blog, 'genre' | 'isPublished'> & { search?: string },
   Blog
 > = async ({
   pagination = true,
@@ -66,24 +66,21 @@ export const getAuthBlogs: GetAll<
   order = SORT_ORDER.DESCENDING,
   genre = '',
   isPublished = '',
-  title = '',
+  search = '',
 }) => {
   const res = await axios.get(
-    `/auth/blog?pagination=${pagination}&page=${page}&size=${size}&sort=${sort}&order=${order}&genre=${genre}&isPublished=${isPublished}&title=${title}`,
+    `/auth/blog?pagination=${pagination}&page=${page}&size=${size}&sort=${sort}&order=${order}&genre=${genre}&isPublished=${isPublished}&search=${search}`,
   );
 
   return res.data;
 };
 
-export const getBookmarks: GetAll<IQueryParamaters & Pick<Blog, 'title' | 'genre'>, Blog> = async ({
-  pagination = true,
-  page = 1,
-  size = 20,
-  genre = '',
-  title = '',
-}) => {
+export const getBookmarks: GetAll<
+  IQueryParamaters & Pick<Blog, 'genre'> & { search?: string },
+  Blog
+> = async ({ pagination = true, page = 1, size = 20, genre = '', search = '' }) => {
   const res = await axios.get(
-    `/auth/blog/bookmarks?pagination=${pagination}&page=${page}&size=${size}&genre=${genre}&title=${title}`,
+    `/auth/blog/bookmarks?pagination=${pagination}&page=${page}&size=${size}&genre=${genre}&search=${search}`,
   );
 
   return res.data;
@@ -101,27 +98,27 @@ export const getFollowingBlogs: GetAll<IQueryParamaters, Blog> = async ({
   return res.data;
 };
 
-export const getFollowers: GetAll<IQueryParamaters & Pick<User, 'name'>, User> = async ({
+export const getFollowers: GetAll<IQueryParamaters & { search?: string }, User> = async ({
   pagination = true,
   page = 1,
   size = 20,
-  name = '',
+  search = '',
 }) => {
   const res = await axios.get(
-    `/auth/followers?pagination=${pagination}&page=${page}&size=${size}&name=${name}`,
+    `/auth/followers?pagination=${pagination}&page=${page}&size=${size}&search=${search}`,
   );
 
   return res.data;
 };
 
-export const getFollowing: GetAll<IQueryParamaters & Pick<User, 'name'>, User> = async ({
+export const getFollowing: GetAll<IQueryParamaters & { search?: string }, User> = async ({
   pagination = true,
   page = 1,
   size = 20,
-  name = '',
+  search = '',
 }) => {
   const res = await axios.get(
-    `/auth/following?pagination=${pagination}&page=${page}&size=${size}&name=${name}`,
+    `/auth/following?pagination=${pagination}&page=${page}&size=${size}&search=${search}`,
   );
 
   return res.data;

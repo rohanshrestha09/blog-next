@@ -31,42 +31,36 @@ export const getUserBlogs: GetAll<IQueryParamaters & Pick<User, 'id'>, Blog> = a
   return res.data;
 };
 
-export const getUserFollowing: GetAll<IQueryParamaters & Pick<User, 'id' | 'name'>, User> = async ({
-  id,
-  pagination = true,
-  page = 1,
-  size = 20,
-  name = '',
-}) => {
+export const getUserFollowing: GetAll<
+  IQueryParamaters & Pick<User, 'id'> & { search?: string },
+  User
+> = async ({ id, pagination = true, page = 1, size = 20, search = '' }) => {
   const res = await axios.get(
-    `/user/${id}/following?pagination=${pagination}&page=${page}&size=${size}&name=${name}`,
+    `/user/${id}/following?pagination=${pagination}&page=${page}&size=${size}&search=${search}`,
   );
 
   return res.data;
 };
 
-export const getUserFollowers: GetAll<IQueryParamaters & Pick<User, 'id' | 'name'>, User> = async ({
-  id,
-  pagination = true,
-  page = 1,
-  size = 20,
-  name = '',
-}) => {
+export const getUserFollowers: GetAll<
+  IQueryParamaters & Pick<User, 'id'> & { search?: string },
+  User
+> = async ({ id, pagination = true, page = 1, size = 20, search = '' }) => {
   const res = await axios.get(
-    `/user/${id}/followers?pagination=${pagination}&page=${page}&size=${size}&name=${name}`,
+    `/user/${id}/followers?pagination=${pagination}&page=${page}&size=${size}&search=${search}`,
   );
 
   return res.data;
 };
 
-export const getUserSuggestions: GetAll<IQueryParamaters & Pick<User, 'name'>, User> = async ({
+export const getUserSuggestions: GetAll<IQueryParamaters & { search?: string }, User> = async ({
   pagination = true,
   page = 1,
   size = 20,
-  name = '',
+  search = '',
 }) => {
   const res = await axios.get(
-    `/user/suggestions?pagination=${pagination}&page=${page}&size=${size}&name=${name}`,
+    `/user/suggestions?pagination=${pagination}&page=${page}&size=${size}&search=${search}`,
   );
 
   return res.data;

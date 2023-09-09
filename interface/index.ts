@@ -1,8 +1,6 @@
 import { SORT_ORDER, SORT_TYPE } from 'constants/reduxKeys';
 import { type User } from './models';
 
-export type Session = { userId?: string };
-
 export interface IContext {
   authUser?: User;
 }
@@ -40,4 +38,6 @@ declare global {
   type Put<T> = (args: T) => Promise<IMessage>;
 
   type Delete<T> = (args: T) => Promise<IMessage>;
+
+  type Session = { userId?: string };
 }

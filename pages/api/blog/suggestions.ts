@@ -1,12 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import { blogFields, exculdeFields, prisma, userFields } from 'lib/prisma';
+import { session } from 'middlewares/session';
 import { getPages } from 'utils';
 import { errorHandler } from 'utils/exception';
 import { parseQuery } from 'utils/parseQuery';
 import { getAllResponse } from 'utils/response';
 
-const router = createRouter<NextApiRequest, NextApiResponse>();
+const router = createRouter<NextApiRequest & { session: Session }, NextApiResponse>();
+
+router.use(session());
 
 router.get(async (req, res) => {
   const { take, skip, search, sort, order } = await parseQuery(req.query);
@@ -30,6 +33,14 @@ router.get(async (req, res) => {
       author: {
         select: {
           ...exculdeFields(userFields, ['password', 'email']),
+        },
+      },
+      likedBy: {
+        where: {
+          id: req.session.userId,
+        },
+        select: {
+          id: true,
         },
       },
       _count: {

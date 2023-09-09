@@ -7,6 +7,7 @@ import { isEmpty, kebabCase } from 'lodash';
 import { prisma, Genre, User, blogFields, exculdeFields, userFields } from 'lib/prisma';
 import { supabase } from 'lib/supabase';
 import { auth } from 'middlewares/auth';
+import { session } from 'middlewares/session';
 import { errorHandler, HttpException } from 'utils/exception';
 import { parseFormData } from 'utils/parseFormData';
 import { parseQuery } from 'utils/parseQuery';
@@ -28,7 +29,9 @@ const validator = Joi.object<{
     .required(),
 });
 
-const router = createRouter<NextApiRequest & { auth: User }, NextApiResponse>();
+const router = createRouter<NextApiRequest & { session: Session; auth: User }, NextApiResponse>();
+
+router.use(session());
 
 router.post(auth(), async (req, res) => {
   const { fields, files } = await parseFormData(req);
@@ -102,6 +105,14 @@ router.get(async (req, res) => {
       author: {
         select: {
           ...exculdeFields(userFields, ['password', 'email']),
+        },
+      },
+      likedBy: {
+        where: {
+          id: req.session.userId,
+        },
+        select: {
+          id: true,
         },
       },
       _count: {
