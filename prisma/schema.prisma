@@ -86,7 +86,7 @@ model Blog {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt()
   authorId      String
-  author        User           @relation(fields: [authorId], references: [id])
+  author        User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
   bookmarkedBy  User[]         @relation("BlogBookmarks")
   likedBy       User[]         @relation("BlogLikes")
   comments      Comment[]
@@ -99,9 +99,9 @@ model Comment {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt()
   userId        String
-  user          User           @relation(fields: [userId], references: [id])
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   blogId        Int
-  blog          Blog           @relation(fields: [blogId], references: [id])
+  blog          Blog           @relation(fields: [blogId], references: [id], onDelete: Cascade)
   likedBy       User[]         @relation("CommentLikes")
   notifications Notification[]
 }
@@ -114,11 +114,11 @@ model Notification {
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt()
   senderId    String
-  sender      User               @relation(fields: [senderId], references: [id], name: "NotificationSender")
+  sender      User               @relation(fields: [senderId], references: [id], name: "NotificationSender", onDelete: Cascade)
   receiverId  String
-  receiver    User               @relation(fields: [receiverId], references: [id], name: "NotificationReceiver")
+  receiver    User               @relation(fields: [receiverId], references: [id], name: "NotificationReceiver", onDelete: Cascade)
   blogId      Int?
-  blog        Blog?              @relation(fields: [blogId], references: [id])
+  blog        Blog?              @relation(fields: [blogId], references: [id], onDelete: Cascade)
   commentId   Int?
-  comment     Comment?           @relation(fields: [commentId], references: [id])
+  comment     Comment?           @relation(fields: [commentId], references: [id], onDelete: Cascade)
 }

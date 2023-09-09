@@ -30,7 +30,7 @@ router.post(async (req, res) => {
 
   const salt = await bcrypt.genSalt(10);
 
-  const encryptedPassword: string = await bcrypt.hash(password, salt);
+  const encryptedPassword = await bcrypt.hash(password, salt);
 
   await prisma.user.update({
     where: { id, email },

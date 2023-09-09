@@ -14,12 +14,15 @@ router.use(auth()).get(async (req, res) => {
 
   const { take, skip, search, sort, order } = await parseQuery(req.query);
 
+  const { isPublished } = req.query;
+
   const count = await prisma.blog.count({
     where: {
       authorId: authUser.id,
       title: {
         search,
       },
+      isPublished: isPublished ? isPublished == 'true' : undefined,
     },
   });
 
@@ -32,6 +35,7 @@ router.use(auth()).get(async (req, res) => {
     .blogs({
       where: {
         title: { search },
+        isPublished: isPublished ? isPublished == 'true' : undefined,
       },
       select: {
         ...blogFields,

@@ -5,7 +5,7 @@ const { LIKE_COUNT } = SORT_TYPE;
 
 const { DESCENDING } = SORT_ORDER;
 
-const { size, genre, search, sort, order } = getSortFilterKeys;
+const { size, genre, name, title, sort, order } = getSortFilterKeys;
 
 const sortFilterSlice = createSlice({
   name: 'sortFilter',
@@ -16,7 +16,10 @@ const sortFilterSlice = createSlice({
     genre: Object.values(genre)
       .map((key) => ({ [key]: <string[]>[] }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
-    search: Object.values(search)
+    name: Object.values(name)
+      .map((key) => ({ [key]: '' }))
+      .reduce((prev, curr) => ({ ...prev, ...curr })),
+    title: Object.values(title)
       .map((key) => ({ [key]: '' }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
     sort: Object.values(sort)
@@ -27,15 +30,27 @@ const sortFilterSlice = createSlice({
       .reduce((prev, curr) => ({ ...prev, ...curr })),
   },
   reducers: {
-    setSearch: (
+    setNameSearch: (
       state,
-      { payload: { key, search } }: { payload: { key: SORT_FILTER_KEYS; search: string } }
+      { payload: { key, name } }: { payload: { key: SORT_FILTER_KEYS; name: string } },
     ) => {
-      return (state = { ...state, search: { ...state.search, [key]: search } });
+      return (state = {
+        ...state,
+        name: { ...state.name, [key]: name },
+      });
+    },
+    setTitleSearch: (
+      state,
+      { payload: { key, title } }: { payload: { key: SORT_FILTER_KEYS; title: string } },
+    ) => {
+      return (state = {
+        ...state,
+        title: { ...state.title, [key]: title },
+      });
     },
     setSize: (
       state,
-      { payload: { key, size } }: { payload: { key: SORT_FILTER_KEYS; size: number } }
+      { payload: { key, size } }: { payload: { key: SORT_FILTER_KEYS; size: number } },
     ) => {
       return (state = {
         ...state,
@@ -44,19 +59,19 @@ const sortFilterSlice = createSlice({
     },
     setSort: (
       state,
-      { payload: { key, sort } }: { payload: { key: SORT_FILTER_KEYS; sort: SORT_TYPE } }
+      { payload: { key, sort } }: { payload: { key: SORT_FILTER_KEYS; sort: SORT_TYPE } },
     ) => {
       return (state = { ...state, sort: { ...state.sort, [key]: sort } });
     },
     setOrder: (
       state,
-      { payload: { key, order } }: { payload: { key: SORT_FILTER_KEYS; order: SORT_ORDER } }
+      { payload: { key, order } }: { payload: { key: SORT_FILTER_KEYS; order: SORT_ORDER } },
     ) => {
       return (state = { ...state, order: { ...state.order, [key]: order } });
     },
     setGenre: (
       state,
-      { payload: { key, genre } }: { payload: { key: SORT_FILTER_KEYS; genre: string } }
+      { payload: { key, genre } }: { payload: { key: SORT_FILTER_KEYS; genre: string } },
     ) => {
       return (state = state.genre[key].includes(genre)
         ? {
@@ -71,6 +86,7 @@ const sortFilterSlice = createSlice({
   },
 });
 
-export const { setSize, setSearch, setSort, setOrder, setGenre } = sortFilterSlice.actions;
+export const { setSize, setNameSearch, setTitleSearch, setSort, setOrder, setGenre } =
+  sortFilterSlice.actions;
 
 export default sortFilterSlice.reducer;

@@ -15,5 +15,5 @@ export const getAllResponse = <T>(
     totalPage,
   }: { data: T; count: number; currentPage: number; totalPage: number },
 ) => {
-  return { data, count, currentPage, totalPage, message };
+  return { result: data, count, currentPage, totalPage, message };
 };

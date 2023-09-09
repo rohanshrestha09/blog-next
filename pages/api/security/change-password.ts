@@ -7,13 +7,15 @@ import { auth } from 'middlewares/auth';
 import { errorHandler, HttpException } from 'utils/exception';
 import { httpResponse } from 'utils/response';
 
-const validator = Joi.object<{ password: string; newPassword: string; confirmNewPassword: string }>(
-  {
-    password: Joi.string().required(),
-    newPassword: Joi.string().min(8).max(18).required(),
-    confirmNewPassword: Joi.ref('newPassword'),
-  },
-);
+const validator = Joi.object<{
+  password: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}>({
+  password: Joi.string().required(),
+  newPassword: Joi.string().min(8).max(18).required(),
+  confirmNewPassword: Joi.ref('newPassword'),
+});
 
 const router = createRouter<NextApiRequest & { auth: User }, NextApiResponse>();
 

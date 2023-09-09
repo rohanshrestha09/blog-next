@@ -42,29 +42,32 @@ router.use(auth()).get(async (req, res) => {
     },
   });
 
-  const notifications = await prisma.notification.findMany({
-    where: {
-      receiverId: authUser.id,
-    },
-    select: {
-      ...notificationFields,
-      sender: {
-        select: selectFields(userFields, ['id', 'name', 'image']),
+  const notifications = await prisma.user
+    .findUnique({
+      where: {
+        id: authUser.id,
       },
-      blog: {
-        select: selectFields(blogFields, ['id', 'slug', 'title', 'image']),
+    })
+    .receivedNotifications({
+      select: {
+        ...notificationFields,
+        sender: {
+          select: selectFields(userFields, ['id', 'name', 'image']),
+        },
+        blog: {
+          select: selectFields(blogFields, ['id', 'slug', 'title', 'image']),
+        },
+        comment: {
+          select: selectFields(commentFields, ['id', 'content']),
+        },
       },
-      comment: {
-        select: selectFields(commentFields, ['id', 'content']),
-      },
-    },
 
-    skip,
-    take,
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+      skip,
+      take,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
   const { currentPage, totalPage } = getPages({ skip, take, count });
 
