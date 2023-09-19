@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { blogFields, exculdeFields, prisma, User, userFields } from 'lib/prisma';
+import { prisma, User } from 'lib/prisma';
 import { auth } from 'middlewares/auth';
 import { session } from 'middlewares/session';
 import { errorHandler } from 'utils/exception';
@@ -31,7 +31,7 @@ router.use(auth(), session()).get(async (req, res) => {
     },
   });
 
-  const blogs = await prisma.blog.findMany({
+  const blogs = await prisma.blog.findManyWithSession({
     where: {
       author: {
         followedBy: {
@@ -45,28 +45,7 @@ router.use(auth(), session()).get(async (req, res) => {
       },
       isPublished: true,
     },
-    select: {
-      ...blogFields,
-      author: {
-        select: {
-          ...exculdeFields(userFields, ['password', 'email']),
-        },
-      },
-      likedBy: {
-        where: {
-          id: req.session.userId,
-        },
-        select: {
-          id: true,
-        },
-      },
-      _count: {
-        select: {
-          likedBy: true,
-          comments: true,
-        },
-      },
-    },
+    session: req.session,
     skip,
     take,
     orderBy: {

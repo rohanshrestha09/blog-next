@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { blogFields, exculdeFields, prisma, User, userFields } from 'lib/prisma';
+import { prisma, User } from 'lib/prisma';
 import { auth } from 'middlewares/auth';
 import { session } from 'middlewares/session';
 import { errorHandler } from 'utils/exception';
@@ -27,45 +27,21 @@ router.use(auth(), session()).get(async (req, res) => {
     },
   });
 
-  const blogs = await prisma.user
-    .findUnique({
-      where: {
-        id: authUser.id,
+  const blogs = await prisma.blog.findManyWithSession({
+    where: {
+      authorId: authUser.id,
+      title: {
+        search,
       },
-    })
-    .blogs({
-      where: {
-        title: { search },
-        isPublished: isPublished ? isPublished == 'true' : undefined,
-      },
-      select: {
-        ...blogFields,
-        author: {
-          select: {
-            ...exculdeFields(userFields, ['password', 'email']),
-          },
-        },
-        likedBy: {
-          where: {
-            id: req.session.userId,
-          },
-          select: {
-            id: true,
-          },
-        },
-        _count: {
-          select: {
-            likedBy: true,
-            comments: true,
-          },
-        },
-      },
-      skip,
-      take,
-      orderBy: {
-        [sort]: order,
-      },
-    });
+      isPublished: isPublished ? isPublished == 'true' : undefined,
+    },
+    session: req.session,
+    skip,
+    take,
+    orderBy: {
+      [sort]: order,
+    },
+  });
 
   const { currentPage, totalPage } = getPages({ skip, take, count });
 

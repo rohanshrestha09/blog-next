@@ -12,16 +12,21 @@ import {
   blogFields,
 } from 'lib/prisma';
 import { dispatchNotification } from 'lib/pusher';
+import { session } from 'middlewares/session';
 import { auth } from 'middlewares/auth';
 import { validateBlog } from 'middlewares/validateBlog';
 import { errorHandler } from 'utils/exception';
 import { parseQuery } from 'utils/parseQuery';
 import { getAllResponse, httpResponse } from 'utils/response';
 import { getPages } from 'utils';
+import { isEmpty } from 'lodash';
 
-const router = createRouter<NextApiRequest & { auth: User; blog: Blog }, NextApiResponse>();
+const router = createRouter<
+  NextApiRequest & { session: Session; auth: User; blog: Blog },
+  NextApiResponse
+>();
 
-router.use(validateBlog());
+router.use(session(), validateBlog());
 
 router.get(async (req, res) => {
   const blog = req.blog;
@@ -43,6 +48,11 @@ router.get(async (req, res) => {
     .comments({
       select: {
         ...commentFields,
+        likedBy: {
+          where: {
+            id: req.session.userId,
+          },
+        },
         _count: {
           select: {
             likedBy: true,
@@ -53,11 +63,28 @@ router.get(async (req, res) => {
       take,
     });
 
+  const transformedComments =
+    comments &&
+    comments.map((comment) => {
+      const hasLiked = !isEmpty(comment.likedBy);
+
+      return {
+        ...comment,
+        hasLiked,
+        likedBy: undefined,
+      };
+    });
+
   const { currentPage, totalPage } = getPages({ skip, take, count });
 
-  return res
-    .status(200)
-    .json(getAllResponse('Comments fetched', { data: comments, count, currentPage, totalPage }));
+  return res.status(200).json(
+    getAllResponse('Comments fetched', {
+      data: transformedComments,
+      count,
+      currentPage,
+      totalPage,
+    }),
+  );
 });
 
 router.use(auth()).post(async (req, res) => {

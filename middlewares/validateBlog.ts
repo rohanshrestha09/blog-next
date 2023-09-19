@@ -16,12 +16,6 @@ export const validateBlog = () => {
         author: {
           select: exculdeFields(userFields, ['password', 'email']),
         },
-        _count: {
-          select: {
-            likedBy: true,
-            comments: true,
-          },
-        },
       },
     });
 

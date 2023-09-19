@@ -13,6 +13,7 @@ import {
   userFields,
 } from 'lib/prisma';
 import { dispatchNotification } from 'lib/pusher';
+import { session } from 'middlewares/session';
 import { auth } from 'middlewares/auth';
 import { validateBlog } from 'middlewares/validateBlog';
 import { errorHandler } from 'utils/exception';
@@ -20,9 +21,12 @@ import { getAllResponse, httpResponse } from 'utils/response';
 import { parseQuery } from 'utils/parseQuery';
 import { getPages } from 'utils';
 
-const router = createRouter<NextApiRequest & { auth: User; blog: Blog }, NextApiResponse>();
+const router = createRouter<
+  NextApiRequest & { session: Session; auth: User; blog: Blog },
+  NextApiResponse
+>();
 
-router.use(validateBlog());
+router.use(session(), validateBlog());
 
 router.get(async (req, res) => {
   const blog = req.blog;
@@ -39,25 +43,18 @@ router.get(async (req, res) => {
     },
   });
 
-  const likes = await prisma.blog
-    .findUnique({
-      where: {
-        id: blog.id,
-      },
-    })
-    .likedBy({
-      select: {
-        ...exculdeFields(userFields, ['password', 'email']),
-        _count: {
-          select: {
-            following: true,
-            followedBy: true,
-          },
+  const likes = await prisma.user.findManyWithSession({
+    session: req.session,
+    where: {
+      likedBlogs: {
+        some: {
+          id: blog.id,
         },
       },
-      skip,
-      take,
-    });
+    },
+    skip,
+    take,
+  });
 
   const { currentPage, totalPage } = getPages({ skip, take, count });
 

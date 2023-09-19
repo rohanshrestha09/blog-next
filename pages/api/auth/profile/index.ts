@@ -9,6 +9,7 @@ import bcrypt from 'bcryptjs';
 import { v4 as uuidV4 } from 'uuid';
 import { prisma, User } from 'lib/prisma';
 import { supabase } from 'lib/supabase';
+import { session } from 'middlewares/session';
 import { auth } from 'middlewares/auth';
 import { errorHandler, HttpException } from 'utils/exception';
 import { getResponse, httpResponse } from 'utils/response';
@@ -27,11 +28,20 @@ const validator = Joi.object<{
   dateOfBirth: Joi.date(),
 });
 
-const router = createRouter<NextApiRequest & { auth: User }, NextApiResponse>();
+const router = createRouter<NextApiRequest & { session: Session; auth: User }, NextApiResponse>();
 
-router.use(auth());
+router.use(session(), auth());
 
-router.get((req, res) => res.status(200).json(getResponse('Profile fetched', req.auth)));
+router.get(async (req, res) => {
+  const authUser = await prisma.user.findUniqueWithSession({
+    session: req.session,
+    where: {
+      id: req.auth.id,
+    },
+  });
+
+  return res.status(200).json(getResponse('Profile fetched', authUser));
+});
 
 router.put(async (req, res) => {
   const authUser = req.auth;

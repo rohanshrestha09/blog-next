@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { blogFields, exculdeFields, prisma, User, userFields } from 'lib/prisma';
+import { prisma, User } from 'lib/prisma';
 import { validateUser } from 'middlewares/validateUser';
 import { session } from 'middlewares/session';
 import { errorHandler } from 'utils/exception';
@@ -21,47 +21,25 @@ router.use(session(), validateUser()).get(async (req, res) => {
       title: {
         search,
       },
+      isPublished: true,
     },
   });
 
-  const blogs = await prisma.user
-    .findUnique({
-      where: {
-        id: user.id,
+  const blogs = await prisma.blog.findManyWithSession({
+    where: {
+      authorId: user.id,
+      title: {
+        search,
       },
-    })
-    .blogs({
-      where: {
-        title: { search },
-      },
-      select: {
-        ...blogFields,
-        author: {
-          select: {
-            ...exculdeFields(userFields, ['password', 'email']),
-          },
-        },
-        likedBy: {
-          where: {
-            id: req.session.userId,
-          },
-          select: {
-            id: true,
-          },
-        },
-        _count: {
-          select: {
-            likedBy: true,
-            comments: true,
-          },
-        },
-      },
-      skip,
-      take,
-      orderBy: {
-        [sort]: order,
-      },
-    });
+      isPublished: true,
+    },
+    session: req.session,
+    skip,
+    take,
+    orderBy: {
+      [sort]: order,
+    },
+  });
 
   const { currentPage, totalPage } = getPages({ skip, take, count });
 

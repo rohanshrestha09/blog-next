@@ -11,15 +11,7 @@ export const validateUser = () => {
 
     const user = await prisma.user.findUniqueOrThrow({
       where: { id: userId },
-      select: {
-        ...exculdeFields(userFields, ['password', 'email']),
-        _count: {
-          select: {
-            following: true,
-            followedBy: true,
-          },
-        },
-      },
+      select: exculdeFields(userFields, ['password', 'email']),
     });
 
     req.user = user;

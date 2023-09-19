@@ -1,7 +1,19 @@
 import { Blog, Comment, Notification, Prisma, PrismaClient, User } from '@prisma/client';
+import { blogExtensions, userExtensions } from './extensions';
 
 const prismaClientSingleton = () => {
-  return new PrismaClient();
+  return new PrismaClient().$extends({
+    model: {
+      blog: {
+        findManyWithSession: blogExtensions.findManyWithSession,
+        findUniqueWithSession: blogExtensions.findUniqueWithSession,
+      },
+      user: {
+        findManyWithSession: userExtensions.findManyWithSession,
+        findUniqueWithSession: userExtensions.findUniqueWithSession,
+      },
+    },
+  });
 };
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;

@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
 import { v4 as uuidV4 } from 'uuid';
-import { Blog, blogFields, exculdeFields, Genre, prisma, User, userFields } from 'lib/prisma';
+import { Blog, Genre, prisma, User } from 'lib/prisma';
 import { supabase } from 'lib/supabase';
 import { auth } from 'middlewares/auth';
 import { session } from 'middlewares/session';
@@ -32,31 +32,10 @@ const router = createRouter<
 router.use(session(), validateBlog());
 
 router.get(async (req, res) => {
-  const blog = await prisma.blog.findUnique({
+  const blog = await prisma.blog.findUniqueWithSession({
+    session: req.session,
     where: {
       id: req.blog.id,
-    },
-    select: {
-      ...blogFields,
-      author: {
-        select: {
-          ...exculdeFields(userFields, ['password', 'email']),
-        },
-      },
-      likedBy: {
-        where: {
-          id: req.session.userId,
-        },
-        select: {
-          id: true,
-        },
-      },
-      _count: {
-        select: {
-          likedBy: true,
-          comments: true,
-        },
-      },
     },
   });
 
