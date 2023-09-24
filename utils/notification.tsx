@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import React from 'react';
 import { toast, ToastOptions } from 'react-toastify';
 
@@ -17,7 +18,7 @@ export const defaultNotification = (message: string) => toast(message, config);
 
 export const successNotification = (message: string) => toast.success(message, config);
 
-export const errorNotification = (err: AxiosError) =>
+export const errorNotification = (err: AxiosError<{ message?: string }>) =>
   toast.error(err.response?.data?.message, config);
 
 export const infoNotification = (message: string) => toast.info(message, config);

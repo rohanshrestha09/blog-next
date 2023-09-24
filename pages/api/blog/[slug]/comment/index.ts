@@ -1,9 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
+import { isEmpty } from 'lodash';
 import {
   prisma,
   Blog,
   User,
+  exculdeFields,
   commentFields,
   NotificationType,
   notificationFields,
@@ -19,7 +21,6 @@ import { errorHandler } from 'utils/exception';
 import { parseQuery } from 'utils/parseQuery';
 import { getAllResponse, httpResponse } from 'utils/response';
 import { getPages } from 'utils';
-import { isEmpty } from 'lodash';
 
 const router = createRouter<
   NextApiRequest & { session: Session; auth: User; blog: Blog },
@@ -48,6 +49,12 @@ router.get(async (req, res) => {
     .comments({
       select: {
         ...commentFields,
+        blog: {
+          select: blogFields,
+        },
+        user: {
+          select: exculdeFields(userFields, ['email', 'password']),
+        },
         likedBy: {
           where: {
             id: req.session.userId,

@@ -10,10 +10,9 @@ export const getBlog: Get<string, Blog> = async (id) => {
 };
 
 export const getAllBlogs: GetAll<
-  IQueryParamaters & Pick<Blog, 'genre' | 'isPublished'> & { search?: string },
+  IQueryParamaters & Partial<Pick<Blog, 'genre' | 'isPublished'>> & { search?: string },
   Blog
 > = async ({
-  pagination = true,
   page = 1,
   size = 20,
   sort = SORT_TYPE.LIKE_COUNT,
@@ -22,142 +21,136 @@ export const getAllBlogs: GetAll<
   search = '',
 }) => {
   const res = await axios.get(
-    `/blog?pagination=${pagination}&page=${page}&size=${size}&sort=${sort}&order=${order}&genre=${genre}&search=${search}`,
+    `/blog?page=${page}&size=${size}&sort=${sort}&order=${order}&genre=${genre}&search=${search}`,
   );
 
   return res.data;
 };
 
 export const getBlogSuggestions: GetAll<IQueryParamaters, Blog> = async ({
-  pagination = true,
   page = 1,
   size = 4,
 }) => {
-  const res = await axios.get(
-    `/blog/suggestions?pagination=${pagination}&page=${page}&size=${size}`,
-  );
+  const res = await axios.get(`/blog/suggestions?page=${page}&size=${size}`);
 
   return res.data;
 };
 
-export const createBlog: Post<FormData> = async (data) => {
+export const createBlog = async (data: FormData): Promise<{ slug: string; message: string }> => {
   const res = await axios.post('/blog', data);
 
   return res.data;
 };
 
-export const updateBlog: Put<Pick<Blog, 'id'> & { data: FormData }> = async ({ id, data }) => {
-  const res = await axios.put(`/blog/${id}`, data);
+export const updateBlog = async ({
+  slug,
+  data,
+}: Pick<Blog, 'slug'> & { data: FormData }): Promise<{ slug: string; message: string }> => {
+  const res = await axios.put(`/blog/${slug}`, data);
 
   return res.data;
 };
 
-export const deleteBlog: Delete<string> = async (id) => {
-  const res = await axios.delete(`/blog/${id}`);
+export const deleteBlog: Delete<string> = async (slug) => {
+  const res = await axios.delete(`/blog/${slug}`);
 
   return res.data;
 };
 
-export const publishBlog: Put<string> = async (id) => {
-  const res = await axios.put(`/blog/${id}/publish`);
+export const publishBlog: Put<string> = async (slug) => {
+  const res = await axios.put(`/blog/${slug}/publish`);
 
   return res.data;
 };
 
-export const unpublishBlog: Delete<string> = async (id) => {
-  const res = await axios.delete(`/blog/${id}/publish`);
+export const unpublishBlog: Delete<string> = async (slug) => {
+  const res = await axios.delete(`/blog/${slug}/publish`);
 
   return res.data;
 };
 
-export const getLikes: GetAll<IQueryParamaters & Pick<Blog, 'id'>, User> = async ({
-  id,
-  pagination = true,
+export const getLikes: GetAll<IQueryParamaters & Pick<Blog, 'slug'>, User> = async ({
+  slug,
   page = 1,
   size = 20,
 }) => {
-  const res = await axios.get(
-    `/blog/${id}/like?pagination=${pagination}&page=${page}&size=${size}`,
-  );
+  const res = await axios.get(`/blog/${slug}/like?page=${page}&size=${size}`);
 
   return res.data;
 };
 
-export const likeBlog: Put<string> = async (id) => {
-  const res = await axios.put(`/blog/${id}/like`);
+export const likeBlog: Put<string> = async (slug) => {
+  const res = await axios.put(`/blog/${slug}/like`);
 
   return res.data;
 };
 
-export const unlikeBlog: Delete<string> = async (id) => {
-  const res = await axios.delete(`/blog/${id}/like`);
+export const unlikeBlog: Delete<string> = async (slug) => {
+  const res = await axios.delete(`/blog/${slug}/like`);
 
   return res.data;
 };
 
-export const bookmarkBlog: Put<string> = async (id) => {
-  const res = await axios.put(`/blog/${id}/bookmark`);
+export const bookmarkBlog: Put<string> = async (slug) => {
+  const res = await axios.put(`/blog/${slug}/bookmark`);
 
   return res.data;
 };
 
-export const unbookmarkBlog: Delete<string> = async (id) => {
-  const res = await axios.delete(`/blog/${id}/bookmark`);
+export const unbookmarkBlog: Delete<string> = async (slug) => {
+  const res = await axios.delete(`/blog/${slug}/bookmark`);
 
   return res.data;
 };
 
-export const getComments: GetAll<IQueryParamaters & Pick<Blog, 'id'>, Comment> = async ({
-  id,
-  pagination = true,
+export const getComments: GetAll<IQueryParamaters & Pick<Blog, 'slug'>, Comment> = async ({
+  slug,
   page = 1,
   size = 20,
 }) => {
-  const res = await axios.get(
-    `/blog/${id}/comment?pagination=${pagination}&page=${page}&size=${size}`,
-  );
+  const res = await axios.get(`/blog/${slug}/comment?page=${page}&size=${size}`);
 
   return res.data;
 };
 
-export const createComment: Post<Pick<Blog, 'id'> & { data: Pick<Comment, 'content'> }> = async ({
-  id,
+export const createComment: Post<Pick<Blog, 'slug'> & { data: Pick<Comment, 'content'> }> = async ({
+  slug,
   data,
 }) => {
-  const res = await axios.post(`/blog/${id}/comment`, data);
+  const res = await axios.post(`/blog/${slug}/comment`, data);
 
   return res.data;
 };
 
-export const deleteComment: Delete<{ blogId: string; commentId: string }> = async ({
-  blogId,
+export const deleteComment: Delete<{ slug: string; commentId: number }> = async ({
+  slug,
   commentId,
 }) => {
-  const res = await axios.delete(`/blog/${blogId}/comment/${commentId}`);
+  const res = await axios.delete(`/blog/${slug}/comment/${commentId}`);
 
   return res.data;
 };
 
-export const likeComment: Post<{ blogId: string; commentId: string }> = async ({
-  blogId,
+export const likeComment: Post<{ slug: string; commentId: number }> = async ({
+  slug,
   commentId,
 }) => {
-  const res = await axios.post(`/blog/${blogId}/comment/${commentId}/like`);
+  const res = await axios.post(`/blog/${slug}/comment/${commentId}/like`);
 
   return res.data;
 };
 
-export const unlikeComment: Delete<{ blogId: string; commentId: string }> = async ({
-  blogId,
+export const unlikeComment: Delete<{ slug: string; commentId: number }> = async ({
+  slug,
   commentId,
 }) => {
-  const res = await axios.delete(`/blog/${blogId}/comment/${commentId}/like`);
+  const res = await axios.delete(`/blog/${slug}/comment/${commentId}/like`);
 
   return res.data;
 };
 
-export const getGenre: Get<undefined, Genre> = async () => {
+export const getGenre: Get<unknown, Record<Genre, Genre>> = async () => {
   const res = await axios.get('/blog/genre');
 
-  return res.data;
+  return res.data?.data;
 };

@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import type { NextPage } from 'next';
 import { useDispatch } from 'react-redux';
 import { Button, Space } from 'antd';
 import { openModal } from '../store/modalSlice';
@@ -7,7 +6,7 @@ import { MODAL_KEYS } from '../constants/reduxKeys';
 
 const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
 
-const Fallback: NextPage = () => {
+const Fallback = () => {
   const dispatch = useDispatch();
 
   return (

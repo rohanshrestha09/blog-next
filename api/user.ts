@@ -22,11 +22,10 @@ export const unfollowUser: Delete<string> = async (id) => {
 
 export const getUserBlogs: GetAll<IQueryParamaters & Pick<User, 'id'>, Blog> = async ({
   id,
-  pagination = true,
   page = 1,
   size = 20,
 }) => {
-  const res = await axios.get(`/user/${id}?pagination=${pagination}&page=${page}&size=${size}`);
+  const res = await axios.get(`/user/${id}?page=${page}&size=${size}`);
 
   return res.data;
 };
@@ -34,10 +33,8 @@ export const getUserBlogs: GetAll<IQueryParamaters & Pick<User, 'id'>, Blog> = a
 export const getUserFollowing: GetAll<
   IQueryParamaters & Pick<User, 'id'> & { search?: string },
   User
-> = async ({ id, pagination = true, page = 1, size = 20, search = '' }) => {
-  const res = await axios.get(
-    `/user/${id}/following?pagination=${pagination}&page=${page}&size=${size}&search=${search}`,
-  );
+> = async ({ id, page = 1, size = 20, search = '' }) => {
+  const res = await axios.get(`/user/${id}/following?page=${page}&size=${size}&search=${search}`);
 
   return res.data;
 };
@@ -45,23 +42,18 @@ export const getUserFollowing: GetAll<
 export const getUserFollowers: GetAll<
   IQueryParamaters & Pick<User, 'id'> & { search?: string },
   User
-> = async ({ id, pagination = true, page = 1, size = 20, search = '' }) => {
-  const res = await axios.get(
-    `/user/${id}/followers?pagination=${pagination}&page=${page}&size=${size}&search=${search}`,
-  );
+> = async ({ id, page = 1, size = 20, search = '' }) => {
+  const res = await axios.get(`/user/${id}/followers?page=${page}&size=${size}&search=${search}`);
 
   return res.data;
 };
 
 export const getUserSuggestions: GetAll<IQueryParamaters & { search?: string }, User> = async ({
-  pagination = true,
   page = 1,
   size = 20,
   search = '',
 }) => {
-  const res = await axios.get(
-    `/user/suggestions?pagination=${pagination}&page=${page}&size=${size}&search=${search}`,
-  );
+  const res = await axios.get(`/user/suggestions?page=${page}&size=${size}&search=${search}`);
 
   return res.data;
 };

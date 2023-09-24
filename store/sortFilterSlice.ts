@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { Genre } from 'interface/models';
 import { getSortFilterKeys, SORT_FILTER_KEYS, SORT_ORDER, SORT_TYPE } from '../constants/reduxKeys';
 
 const { LIKE_COUNT } = SORT_TYPE;
@@ -14,7 +15,7 @@ const sortFilterSlice = createSlice({
       .map((key) => ({ [key]: 20 }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
     genre: Object.values(genre)
-      .map((key) => ({ [key]: <string[]>[] }))
+      .map((key) => ({ [key]: <Genre[]>[] }))
       .reduce((prev, curr) => ({ ...prev, ...curr })),
     search: Object.values(search)
       .map((key) => ({ [key]: '' }))
@@ -56,7 +57,7 @@ const sortFilterSlice = createSlice({
     },
     setGenre: (
       state,
-      { payload: { key, genre } }: { payload: { key: SORT_FILTER_KEYS; genre: string } },
+      { payload: { key, genre } }: { payload: { key: SORT_FILTER_KEYS; genre: Genre } },
     ) => {
       return (state = state.genre[key].includes(genre)
         ? {

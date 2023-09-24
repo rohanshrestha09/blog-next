@@ -27,7 +27,7 @@ export const completeProfile: Put<{ password: string; confirmPassword: string }>
   return res.data;
 };
 
-export const logout: Put<undefined> = async () => {
+export const logout: Put<unknown> = async () => {
   const res = await axios.put('/auth/logout');
 
   return res.data;
@@ -49,17 +49,16 @@ export const deleteProfile: Delete<Pick<User, 'password'>> = async (data) => {
   return res.data;
 };
 
-export const deleteProfileImage: Delete<undefined> = async () => {
+export const deleteProfileImage: Delete<unknown> = async () => {
   const res = await axios.delete('/auth/profile/image');
 
   return res.data;
 };
 
 export const getAuthBlogs: GetAll<
-  IQueryParamaters & Pick<Blog, 'genre' | 'isPublished'> & { search?: string },
+  IQueryParamaters & Partial<Pick<Blog, 'genre' | 'isPublished'>> & { search?: string },
   Blog
 > = async ({
-  pagination = true,
   page = 1,
   size = 20,
   sort = SORT_TYPE.LIKE_COUNT,
@@ -69,57 +68,48 @@ export const getAuthBlogs: GetAll<
   search = '',
 }) => {
   const res = await axios.get(
-    `/auth/blog?pagination=${pagination}&page=${page}&size=${size}&sort=${sort}&order=${order}&genre=${genre}&isPublished=${isPublished}&search=${search}`,
+    `/auth/blog?page=${page}&size=${size}&sort=${sort}&order=${order}&genre=${genre}&isPublished=${isPublished}&search=${search}`,
   );
 
   return res.data;
 };
 
 export const getBookmarks: GetAll<
-  IQueryParamaters & Pick<Blog, 'genre'> & { search?: string },
+  IQueryParamaters & Partial<Pick<Blog, 'genre'>> & { search?: string },
   Blog
-> = async ({ pagination = true, page = 1, size = 20, genre = '', search = '' }) => {
+> = async ({ page = 1, size = 20, genre = '', search = '' }) => {
   const res = await axios.get(
-    `/auth/blog/bookmarks?pagination=${pagination}&page=${page}&size=${size}&genre=${genre}&search=${search}`,
+    `/auth/blog/bookmarks?page=${page}&size=${size}&genre=${genre}&search=${search}`,
   );
 
   return res.data;
 };
 
 export const getFollowingBlogs: GetAll<IQueryParamaters, Blog> = async ({
-  pagination = true,
   page = 1,
   size = 20,
 }) => {
-  const res = await axios.get(
-    `/auth/blog/following?pagination=${pagination}&page=${page}&size=${size}`,
-  );
+  const res = await axios.get(`/auth/blog/following?page=${page}&size=${size}`);
 
   return res.data;
 };
 
 export const getFollowers: GetAll<IQueryParamaters & { search?: string }, User> = async ({
-  pagination = true,
   page = 1,
   size = 20,
   search = '',
 }) => {
-  const res = await axios.get(
-    `/auth/followers?pagination=${pagination}&page=${page}&size=${size}&search=${search}`,
-  );
+  const res = await axios.get(`/auth/followers?page=${page}&size=${size}&search=${search}`);
 
   return res.data;
 };
 
 export const getFollowing: GetAll<IQueryParamaters & { search?: string }, User> = async ({
-  pagination = true,
   page = 1,
   size = 20,
   search = '',
 }) => {
-  const res = await axios.get(
-    `/auth/following?pagination=${pagination}&page=${page}&size=${size}&search=${search}`,
-  );
+  const res = await axios.get(`/auth/following?page=${page}&size=${size}&search=${search}`);
 
   return res.data;
 };

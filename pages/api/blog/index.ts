@@ -19,13 +19,13 @@ const validator = Joi.object<{
   title: string;
   content: string;
   isPublished: boolean;
-  genre: Genre;
+  genre: Genre[];
 }>({
   title: Joi.string().required(),
   content: Joi.string().required(),
   isPublished: Joi.boolean(),
-  genre: Joi.string()
-    .allow(...Object.values(Genre))
+  genre: Joi.array()
+    .items(...Object.values(Genre))
     .required(),
 });
 
@@ -80,7 +80,7 @@ router.post(auth(), async (req, res) => {
     });
   }
 
-  return res.status(201).json({ data: { blogId: blog.id }, message: 'Blog Posted Successfully' });
+  return res.status(201).json({ data: { slug: blog.slug }, message: 'Blog Posted Successfully' });
 });
 
 router.get(async (req, res) => {

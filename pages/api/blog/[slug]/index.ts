@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import { readFileSync } from 'fs';
 import Joi from 'joi';
-import { isEmpty } from 'lodash';
+import { isEmpty, kebabCase } from 'lodash';
 import { v4 as uuidV4 } from 'uuid';
 import { Blog, Genre, prisma, User } from 'lib/prisma';
 import { supabase } from 'lib/supabase';
@@ -17,11 +17,11 @@ import { SUPABASE_BUCKET_DIRECTORY, SUPABASE_BUCKET_NAME } from 'constants/index
 const validator = Joi.object<{
   title: string;
   content: string;
-  genre: Genre;
+  genre: Genre[];
 }>({
   title: Joi.string(),
   content: Joi.string(),
-  genre: Joi.string().allow(...Object.values(Genre)),
+  genre: Joi.array().items(...Object.values(Genre)),
 });
 
 const router = createRouter<
@@ -92,16 +92,17 @@ router.put(async (req, res) => {
     });
   }
 
-  await prisma.blog.update({
+  const updatedBlog = await prisma.blog.update({
     where: { id: blog.id },
     data: {
       title,
+      slug: kebabCase(title),
       content,
       genre,
     },
   });
 
-  return res.status(201).json({ blog: blog.id, message: 'Blog Updated Successfully' });
+  return res.status(201).json({ slug: updatedBlog.slug, message: 'Blog Updated Successfully' });
 });
 
 router.delete(async (req, res) => {

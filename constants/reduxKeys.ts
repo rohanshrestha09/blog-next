@@ -14,13 +14,13 @@ export enum MODAL_KEYS {
   EDIT_PROFILE_MODAL = 'edit-profile-modal',
   AUTH_FOLLOWERS_MODAL = 'auth-followers-modal',
   USER_FOLLOWERS_MODAL = 'user-followers-modal',
-  PWD_AUTH_MODAL = 'password-auth-modal',
+  PASSWORD_AUTH_MODAL = 'password-auth-modal',
   DISCUSSIONS_MODAL = 'discussions-modal',
   LIKERS_MODAL = 'likers-modal',
   USER_SUGGESTIONS_MODAL = 'user-suggestions-modal',
   CHANGE_PASSWORD_MODAL = 'change-password-modal',
   DELETE_ACCOUNT_MODAL = 'delete-account-modal',
-  COMPLETE_AUTH_MODAL = 'complete-auth-modal',
+  COMPLETE_PROFILE_MODAL = 'complete-profile-modal',
 }
 
 export enum AUTH_PROFILE_KEYS {
@@ -37,7 +37,7 @@ export enum FOLLOWERS_KEYS {
 }
 
 export enum SORT_TYPE {
-  LIKE_COUNT = 'likeCount',
+  LIKE_COUNT = 'likedBy',
   CREATED_AT = 'createdAt',
 }
 
@@ -46,18 +46,18 @@ export enum SORT_ORDER {
   DESCENDING = 'desc',
 }
 
-export enum NOTIFICATIONS_TYPE {
-  FOLLOW_USER = 'followUser',
-  LIKE_BLOG = 'likeBlog',
-  LIKE_COMMENT = 'likeComment',
-  POST_COMMENT = 'postComment',
-  POST_BLOG = 'postBlog',
-}
+export const NOTIFICATIONS_TYPE = Object.freeze({
+  FOLLOW_USER: 'FOLLOW_USER',
+  LIKE_BLOG: 'LIKE_BLOG',
+  LIKE_COMMENT: 'LIKE_COMMENT',
+  POST_COMMENT: 'POST_COMMENT',
+  POST_BLOG: 'POST_BLOG',
+});
 
-export enum NOTIFICATIONS_STATUS {
-  READ = 'read',
-  UNREAD = 'unread',
-}
+export const NOTIFICATIONS_STATUS = Object.freeze({
+  READ: 'READ',
+  UNREAD: 'UNREAD',
+});
 
 export enum PROFILE_KEYS {
   AUTH_PROFILE = 'auth-profile',

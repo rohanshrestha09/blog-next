@@ -2,12 +2,18 @@ import axios from '.';
 import { type Notification } from 'interface/models';
 import { IQueryParamaters } from 'interface';
 
-export const getNotifications: GetAll<IQueryParamaters, Notification> = async ({
-  pagination = true,
+export const getNotifications = async ({
   page = 1,
   size = 20,
-}) => {
-  const res = await axios.get(`/notification?pagination=${pagination}&page=${page}&size=${size}`);
+}: IQueryParamaters): Promise<{
+  result: Notification[];
+  currentPage: number;
+  totalPage: number;
+  count: number;
+  read: number;
+  unread: number;
+}> => {
+  const res = await axios.get(`/notification/?page=${page}&size=${size}`);
 
   return res.data;
 };

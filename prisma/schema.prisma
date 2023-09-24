@@ -81,7 +81,7 @@ model Blog {
   content       String
   image         String?
   imageName     String?
-  genre         Genre
+  genre         Genre[]
   isPublished   Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt()
