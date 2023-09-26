@@ -87,7 +87,7 @@ const Blog = () => {
 
   const { data: userBlogs, isFetchedAfterMount: isUserBlogFetchedAfterMount } = useQuery({
     queryFn: () => (blog?.authorId ? getUserBlogs({ id: blog?.authorId, size: 4 }) : undefined),
-    queryKey: queryKeys(BLOG).list({ id: blog?.authorId, size: 4 }),
+    queryKey: queryKeys(USER, BLOG).list({ id: blog?.authorId, size: 4 }),
     enabled: !!blog,
   });
 
@@ -320,35 +320,37 @@ export const getServerSideProps: GetServerSideProps = async (
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
+  const config = { headers: { Cookie: ctx.req.headers.cookie || '' } };
+
   await queryClient.prefetchQuery({
-    queryFn: getProfile,
+    queryFn: () => getProfile(config),
     queryKey: queryKeys(AUTH).details(),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getBlog(String(ctx.params?.slug)),
+    queryFn: () => getBlog(String(ctx.params?.slug), config),
     queryKey: queryKeys(BLOG).detail(String(ctx.params?.slug)),
   });
 
   const blog = queryClient.getQueryData(queryKeys(BLOG).detail(String(ctx.params?.slug))) as Blog;
 
   await queryClient.prefetchQuery({
-    queryFn: () => getUserBlogs({ id: blog?.authorId, size: 4 }),
-    queryKey: queryKeys(BLOG).list({ id: blog?.authorId, size: 4 }),
+    queryFn: () => getUserBlogs({ id: blog?.authorId, size: 4 }, config),
+    queryKey: queryKeys(USER, BLOG).list({ id: blog?.authorId, size: 4 }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getLikes({ slug: String(ctx.params?.slug), size: 20 }),
+    queryFn: () => getLikes({ slug: String(ctx.params?.slug), size: 20 }, config),
     queryKey: queryKeys(USER).list({ slug: String(ctx.params?.slug), size: 20 }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getComments({ slug: String(ctx.params?.slug), size: 20 }),
+    queryFn: () => getComments({ slug: String(ctx.params?.slug), size: 20 }, config),
     queryKey: queryKeys(COMMENT).list({ slug: String(ctx.params?.slug), size: 20 }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: getGenre,
+    queryFn: () => getGenre(config),
     queryKey: queryKeys(GENRE).lists(),
   });
 

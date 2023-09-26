@@ -1,11 +1,12 @@
+import { AxiosRequestConfig } from 'axios';
 import axios from '.';
 import { type Notification } from 'interface/models';
 import { IQueryParamaters } from 'interface';
 
-export const getNotifications = async ({
-  page = 1,
-  size = 20,
-}: IQueryParamaters): Promise<{
+export const getNotifications = async (
+  { page = 1, size = 20 }: IQueryParamaters,
+  config?: AxiosRequestConfig,
+): Promise<{
   result: Notification[];
   currentPage: number;
   totalPage: number;
@@ -13,9 +14,9 @@ export const getNotifications = async ({
   read: number;
   unread: number;
 }> => {
-  const res = await axios.get(`/notification/?page=${page}&size=${size}`);
+  const res = await axios.get(`/notification/?page=${page}&size=${size}`, config);
 
-  return res.data;
+  return res.data?.data;
 };
 
 export const markAsRead: Put<string> = async (id) => {

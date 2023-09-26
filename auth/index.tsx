@@ -1,11 +1,9 @@
-import { useRouter } from 'next/router';
 import type { GetServerSidePropsContext } from 'next';
 import { createContext, useContext } from 'react';
-import { dehydrate, QueryClient, useMutation, useQuery } from '@tanstack/react-query';
-import { getProfile, logout } from 'api/auth';
+import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query';
+import { getProfile } from 'api/auth';
 import { queryKeys } from 'utils';
 import { AUTH } from 'constants/queryKeys';
-import type { AxiosError } from 'axios';
 import type { IContext, TGetServerSidePropsReturnType } from 'interface';
 
 export const AuthContext = createContext<IContext>({});
@@ -15,19 +13,9 @@ interface Props {
 }
 
 const Auth: React.FC<Props> = ({ children }) => {
-  const router = useRouter();
-
-  const handleLogout = useMutation(logout);
-
   const { data: authUser } = useQuery({
-    queryFn: getProfile,
+    queryFn: () => getProfile(undefined),
     queryKey: queryKeys(AUTH).details(),
-    onError: (err: AxiosError) => {
-      if (err?.response?.status === 401) {
-        handleLogout.mutate(undefined);
-        router.push('/fallback');
-      }
-    },
   });
 
   return <AuthContext.Provider value={{ authUser }}>{children}</AuthContext.Provider>;

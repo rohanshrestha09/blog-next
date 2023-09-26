@@ -1,4 +1,4 @@
-import { NextRouter, useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Divider, Skeleton } from 'antd';
@@ -15,7 +15,7 @@ import { BLOG, GENRE, USER } from 'constants/queryKeys';
 const { USER_SUGGESTIONS_MODAL, LOGIN_MODAL } = MODAL_KEYS;
 
 const HomeSider = () => {
-  const router: NextRouter = useRouter();
+  const router = useRouter();
 
   const dispatch = useDispatch();
 
@@ -32,7 +32,7 @@ const HomeSider = () => {
   });
 
   const { data: genre } = useQuery({
-    queryFn: getGenre,
+    queryFn: () => getGenre(undefined),
     queryKey: queryKeys(GENRE).lists(),
   });
 

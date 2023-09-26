@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { NextRouter, useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -17,7 +17,7 @@ import { MODAL_KEYS } from 'constants/reduxKeys';
 const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
 
 const Login: React.FC = () => {
-  const router: NextRouter = useRouter();
+  const router = useRouter();
 
   const {
     isOpen: { [LOGIN_MODAL]: isOpen },
@@ -128,7 +128,7 @@ const Login: React.FC = () => {
             type='primary'
             className='w-full flex items-center justify-center gap-4 h-[3.2rem] rounded-lg text-base btn-secondary'
             icon={<Image alt='' src='/google.svg' height={30} width={30} />}
-            // onClick={() => googleSignIn()}
+            onClick={() => router.push('/api/auth/google')}
           >
             Login with Google
           </Button>

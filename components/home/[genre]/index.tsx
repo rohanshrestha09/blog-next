@@ -87,18 +87,20 @@ export const getServerSideProps: GetServerSideProps = async (
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
+  const config = { headers: { Cookie: ctx.req.headers.cookie || '' } };
+
   await queryClient.prefetchQuery({
-    queryFn: getProfile,
+    queryFn: () => getProfile(config),
     queryKey: queryKeys(AUTH).details(),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getAllBlogs({ genre: [capitalize(String(ctx.params?.genre)) as Genre] }),
+    queryFn: () => getAllBlogs({ genre: [capitalize(String(ctx.params?.genre)) as Genre] }, config),
     queryKey: queryKeys(BLOG).list({ genre: [capitalize(String(ctx.params?.genre))], size: 20 }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: getGenre,
+    queryFn: () => getGenre(config),
     queryKey: queryKeys(GENRE).lists(),
   });
 

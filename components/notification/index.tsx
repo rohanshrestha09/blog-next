@@ -82,18 +82,20 @@ export default Notifications;
 export const getServerSideProps = withAuth(async (ctx, queryClient) => {
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
+  const config = { headers: { Cookie: ctx.req.headers.cookie || '' } };
+
   await queryClient.prefetchQuery({
-    queryFn: getProfile,
+    queryFn: () => getProfile(config),
     queryKey: queryKeys(AUTH).details(),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getNotifications({}),
+    queryFn: () => getNotifications({}, config),
     queryKey: queryKeys(NOTIFICATION).list({ size: 20 }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: getGenre,
+    queryFn: () => getGenre(config),
     queryKey: queryKeys(GENRE).lists(),
   });
 

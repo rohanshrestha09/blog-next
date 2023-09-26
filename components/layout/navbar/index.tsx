@@ -213,7 +213,7 @@ export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
                       />
                     ) : (
                       <Avatar className='bg-[#1890ff]' size='large'>
-                        {authUser?.name[0]}
+                        {authUser?.name?.[0]}
                       </Avatar>
                     )}
                   </span>

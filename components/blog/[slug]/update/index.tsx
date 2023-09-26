@@ -245,19 +245,7 @@ const UpdateBlog = () => {
 
 export default UpdateBlog;
 
-export const getServerSideProps = withAuth(async (ctx, queryClient) => {
-  ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
-
-  await queryClient.prefetchQuery({
-    queryFn: () => getBlog(String(ctx.params?.slug)),
-    queryKey: queryKeys(BLOG).detail(String(ctx.params?.slug)),
-  });
-
-  await queryClient.prefetchQuery({
-    queryFn: getGenre,
-    queryKey: queryKeys(GENRE).lists(),
-  });
-
+export const getServerSideProps = withAuth(async () => {
   return {
     props: {},
   };

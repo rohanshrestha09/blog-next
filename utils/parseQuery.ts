@@ -14,7 +14,9 @@ export async function parseQuery(query: NextApiRequest['query']): Promise<ParseQ
 
   const { page, size, search, sort, order } = await Joi.object({
     userId: Joi.string().disallow(''),
-    blogId: Joi.string().disallow(''),
+    notificationId: Joi.string().disallow(''),
+    token: Joi.string().disallow(''),
+    slug: Joi.string().disallow(''),
     page: Joi.number().empty('').default(1),
     size: Joi.number().empty('').default(20),
     search: Joi.string().empty(''),
@@ -23,7 +25,9 @@ export async function parseQuery(query: NextApiRequest['query']): Promise<ParseQ
       .empty('')
       .default('createdAt'),
     order: Joi.string().valid('asc', 'desc').empty('').default('desc'),
-  }).validateAsync(query);
+  })
+    .unknown(true)
+    .validateAsync(query);
 
   const skip = (page - 1) * (size || 20);
 

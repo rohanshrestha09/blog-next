@@ -27,7 +27,7 @@ import {
 } from 'api/user';
 import { queryKeys } from 'utils';
 import { errorNotification, successNotification } from 'utils/notification';
-import { AUTH, USER, BLOG } from 'constants/queryKeys';
+import { AUTH, USER, BLOG, FOLLOWER, FOLLOWING } from 'constants/queryKeys';
 import { NAV_KEYS, PROFILE_KEYS } from 'constants/reduxKeys';
 
 const { USER_PROFILE } = PROFILE_KEYS;
@@ -54,7 +54,7 @@ const UserProfile: NextPage = () => {
 
   const { data: blogs, isFetchedAfterMount } = useQuery({
     queryFn: () => getUserBlogs({ id: String(query?.userId), size }),
-    queryKey: queryKeys(BLOG).list({ id: String(query?.userId), size }),
+    queryKey: queryKeys(USER, BLOG).list({ id: String(query?.userId), size }),
     keepPreviousData: true,
   });
 
@@ -178,29 +178,39 @@ export const getServerSideProps: GetServerSideProps = async (
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
+  const config = { headers: { Cookie: ctx.req.headers.cookie || '' } };
+
   await queryClient.prefetchQuery({
-    queryFn: getProfile,
+    queryFn: () => getProfile(config),
     queryKey: queryKeys(AUTH).details(),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getUser(String(ctx.params?.userId)),
+    queryFn: () => getUser(String(ctx.params?.userId), config),
     queryKey: queryKeys(USER).detail(String(ctx.params?.userId)),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getUserBlogs({ id: String(ctx.params?.userId) }),
-    queryKey: queryKeys(BLOG).list({ id: String(ctx.params?.userId), size: 20 }),
+    queryFn: () => getUserBlogs({ id: String(ctx.params?.userId) }, config),
+    queryKey: queryKeys(USER, BLOG).list({ id: String(ctx.params?.userId), size: 20 }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getUserFollowers({ id: String(ctx.params?.userId) }),
-    queryKey: queryKeys(USER).list({ id: String(ctx.params?.userId), size: 20, search: '' }),
+    queryFn: () => getUserFollowers({ id: String(ctx.params?.userId) }, config),
+    queryKey: queryKeys(USER, FOLLOWER).list({
+      id: String(ctx.params?.userId),
+      size: 20,
+      search: '',
+    }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getUserFollowing({ id: String(ctx.params?.userId) }),
-    queryKey: queryKeys(USER).list({ id: String(ctx.params?.userId), size: 20, search: '' }),
+    queryFn: () => getUserFollowing({ id: String(ctx.params?.userId) }, config),
+    queryKey: queryKeys(USER, FOLLOWING).list({
+      id: String(ctx.params?.userId),
+      size: 20,
+      search: '',
+    }),
   });
 
   return {

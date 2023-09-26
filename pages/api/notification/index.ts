@@ -71,8 +71,8 @@ router.use(auth()).get(async (req, res) => {
 
   const { currentPage, totalPage } = getPages({ skip, take, count });
 
-  return res.status(201).json({
-    data: notifications,
+  return res.status(200).json({
+    result: notifications,
     count,
     read,
     unread,

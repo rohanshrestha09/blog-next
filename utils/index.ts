@@ -5,10 +5,10 @@ export const getPages = ({ skip, take, count }: { skip: number; take: number; co
   };
 };
 
-export const queryKeys = (key: string) => ({
-  all: [key] as const,
-  lists: () => [...queryKeys(key).all, 'list'] as const,
-  list: (filters: object) => [...queryKeys(key).lists(), filters] as const,
-  details: () => [...queryKeys(key).all, 'detail'] as const,
-  detail: (id: string | number) => [...queryKeys(key).details(), id] as const,
+export const queryKeys = (...keys: string[]) => ({
+  all: [...keys] as const,
+  lists: () => [...queryKeys(...keys).all, 'list'] as const,
+  list: (filters: object) => [...queryKeys(...keys).lists(), filters] as const,
+  details: () => [...queryKeys(...keys).all, 'detail'] as const,
+  detail: (id: string | number) => [...queryKeys(...keys).details(), id] as const,
 });

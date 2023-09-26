@@ -4,19 +4,19 @@ import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import { DehydratedState, QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import { Empty as RenderEmpty, Tabs, List, Skeleton, Button, ConfigProvider } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { isEmpty } from 'lodash';
 import { GithubOutlined } from '@ant-design/icons';
 import BlogCard from 'components/common/BlogCard';
 import SortFilter from 'components/common/SortFilter';
 import { setSize } from 'store/sortFilterSlice';
-import { AUTH, BLOG, GENRE, USER } from 'constants/queryKeys';
-import { SORT_TYPE, HOME_KEYS } from 'constants/reduxKeys';
 import { useAuth } from 'auth';
-import { getFollowingBlogs, getProfile } from 'api/auth';
-import { queryKeys } from 'utils';
 import { getAllBlogs, getGenre } from 'api/blog';
+import { getFollowingBlogs, getProfile } from 'api/auth';
 import { getUserSuggestions } from 'api/user';
+import { queryKeys } from 'utils';
+import { SORT_TYPE, HOME_KEYS } from 'constants/reduxKeys';
+import { AUTH, BLOG, FOLLOWING as FOLLOWING_QUERY_KEY, GENRE, USER } from 'constants/queryKeys';
 import { Blog } from 'interface/models';
-import { isEmpty } from 'lodash';
 
 const { HOME, FOLLOWING } = HOME_KEYS;
 
@@ -59,7 +59,7 @@ const Home: NextPage = () => {
 
   const { data: followingBlogs } = useQuery({
     queryFn: () => getFollowingBlogs({ size: size[FOLLOWING] }),
-    queryKey: queryKeys(BLOG).list({ size: size[FOLLOWING] }),
+    queryKey: queryKeys(FOLLOWING_QUERY_KEY, BLOG).list({ size: size[FOLLOWING] }),
     keepPreviousData: true,
   });
 
@@ -146,30 +146,33 @@ export const getServerSideProps: GetServerSideProps = async (
   props: { dehydratedState: DehydratedState };
 }> => {
   const queryClient = new QueryClient();
+
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
+  const config = { headers: { Cookie: ctx.req.headers.cookie || '' } };
+
   await queryClient.prefetchQuery({
-    queryFn: getProfile,
+    queryFn: () => getProfile(config),
     queryKey: queryKeys(AUTH).details(),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getAllBlogs({}),
+    queryFn: () => getAllBlogs({}, config),
     queryKey: queryKeys(BLOG).list({ genre: [], sort: LIKE_COUNT, size: 20, search: '' }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getFollowingBlogs({}),
-    queryKey: queryKeys(BLOG).list({ size: 20 }),
+    queryFn: () => getFollowingBlogs({}, config),
+    queryKey: queryKeys(FOLLOWING_QUERY_KEY, BLOG).list({ size: 20 }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getUserSuggestions({}),
+    queryFn: () => getUserSuggestions({}, config),
     queryKey: queryKeys(USER).list({ size: 20, search: '' }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: getGenre,
+    queryFn: () => getGenre(config),
     queryKey: queryKeys(GENRE).details(),
   });
 

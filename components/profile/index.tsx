@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { NextRouter, useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Empty, Tabs, Image, Divider, Skeleton, List, ConfigProvider } from 'antd';
@@ -9,7 +9,7 @@ import { BsBook } from 'react-icons/bs';
 import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md';
 import { useAuth, withAuth } from 'auth';
 import { getGenre } from 'api/blog';
-import { getAuthBlogs, getFollowers, getFollowing, getProfile } from 'api/auth';
+import { getBlogs, getFollowers, getFollowing, getProfile } from 'api/auth';
 import ProfileSider from './components/Sider';
 import BlogCard from 'components/common/BlogCard';
 import EditProfile from './components/EditProfile';
@@ -18,7 +18,7 @@ import { openModal } from 'store/modalSlice';
 import { changeKey } from 'store/authBlogSlice';
 import { setSize } from 'store/sortFilterSlice';
 import { queryKeys } from 'utils';
-import { AUTH, GENRE, BLOG, USER } from 'constants/queryKeys';
+import { AUTH, GENRE, BLOG, FOLLOWER, FOLLOWING } from 'constants/queryKeys';
 import {
   PROFILE_KEYS,
   AUTH_PROFILE_KEYS,
@@ -41,7 +41,7 @@ const { LIKE_COUNT } = SORT_TYPE;
 const { DESCENDING } = SORT_ORDER;
 
 const Profile = () => {
-  const router: NextRouter = useRouter();
+  const router = useRouter();
 
   const { key, isPublished } = useSelector((state: RootState) => state.authBlog, shallowEqual);
 
@@ -62,8 +62,8 @@ const Profile = () => {
     isPreviousData,
     isFetchedAfterMount,
   } = useQuery({
-    queryFn: () => getAuthBlogs({ order, isPublished, sort, genre, size, search }),
-    queryKey: queryKeys(BLOG).list({ order, isPublished, sort, genre, size, search }),
+    queryFn: () => getBlogs({ order, isPublished, sort, genre, size, search }),
+    queryKey: queryKeys(AUTH, BLOG).list({ order, isPublished, sort, genre, size, search }),
     keepPreviousData: true,
   });
 
@@ -193,14 +193,16 @@ export default Profile;
 export const getServerSideProps = withAuth(async (ctx, queryClient) => {
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
+  const config = { headers: { Cookie: ctx.req.headers.cookie || '' } };
+
   await queryClient.prefetchQuery({
-    queryFn: getProfile,
+    queryFn: () => getProfile(config),
     queryKey: queryKeys(AUTH).details(),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getAuthBlogs({}),
-    queryKey: queryKeys(BLOG).list({
+    queryFn: () => getBlogs({}, config),
+    queryKey: queryKeys(AUTH, BLOG).list({
       genre: [],
       size: 20,
       sort: LIKE_COUNT,
@@ -210,17 +212,17 @@ export const getServerSideProps = withAuth(async (ctx, queryClient) => {
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getFollowers({}),
-    queryKey: queryKeys(USER).list({ size: 20, search: '' }),
+    queryFn: () => getFollowers({}, config),
+    queryKey: queryKeys(AUTH, FOLLOWER).list({ size: 20, search: '' }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getFollowing({}),
-    queryKey: queryKeys(USER).list({ size: 20, search: '' }),
+    queryFn: () => getFollowing({}, config),
+    queryKey: queryKeys(AUTH, FOLLOWING).list({ size: 20, search: '' }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: getGenre,
+    queryFn: () => getGenre(config),
     queryKey: queryKeys(GENRE).lists(),
   });
 

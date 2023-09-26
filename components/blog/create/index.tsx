@@ -226,14 +226,7 @@ const CreateBlog = () => {
 
 export default CreateBlog;
 
-export const getServerSideProps = withAuth(async (ctx, queryClient) => {
-  ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
-
-  await queryClient.prefetchQuery({
-    queryFn: getGenre,
-    queryKey: queryKeys(GENRE).lists(),
-  });
-
+export const getServerSideProps = withAuth(async () => {
   return {
     props: {},
   };

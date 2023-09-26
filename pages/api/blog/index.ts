@@ -86,11 +86,16 @@ router.post(auth(), async (req, res) => {
 router.get(async (req, res) => {
   const { take, skip, search, sort, order } = await parseQuery(req.query);
 
+  const { genre } = req.query;
+
   const count = await prisma.blog.count({
     where: {
       title: {
         search,
       },
+      genre: genre
+        ? { hasSome: (Array.isArray(genre) ? genre : genre?.split(',')) as Genre[] }
+        : undefined,
       isPublished: true,
     },
   });
@@ -98,6 +103,9 @@ router.get(async (req, res) => {
   const blogs = await prisma.blog.findManyWithSession({
     where: {
       title: { search },
+      genre: genre
+        ? { hasSome: (Array.isArray(genre) ? genre : genre?.split(',')) as Genre[] }
+        : undefined,
       isPublished: true,
     },
     session: req.session,

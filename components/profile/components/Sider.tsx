@@ -16,7 +16,7 @@ import { changeKey } from 'store/followersSlice';
 import { setSize, setSearch } from 'store/sortFilterSlice';
 import { openModal, closeModal } from 'store/modalSlice';
 import { queryKeys } from 'utils';
-import { USER } from 'constants/queryKeys';
+import { AUTH, FOLLOWER, FOLLOWING } from 'constants/queryKeys';
 import { MODAL_KEYS, FOLLOWERS_KEYS } from 'constants/reduxKeys';
 import { User } from 'interface/models';
 
@@ -49,7 +49,10 @@ const ProfileSider: React.FC<Props> = ({ isSider }) => {
         size: size[AUTH_FOLLOWERS],
         search: search[AUTH_FOLLOWERS],
       }),
-    queryKey: queryKeys(USER).list({ size: size[AUTH_FOLLOWERS], search: search[AUTH_FOLLOWERS] }),
+    queryKey: queryKeys(AUTH, FOLLOWER).list({
+      size: size[AUTH_FOLLOWERS],
+      search: search[AUTH_FOLLOWERS],
+    }),
     keepPreviousData: true,
   });
 
@@ -63,7 +66,10 @@ const ProfileSider: React.FC<Props> = ({ isSider }) => {
         size: size[AUTH_FOLLOWING],
         search: search[AUTH_FOLLOWING],
       }),
-    queryKey: queryKeys(USER).list({ size: size[AUTH_FOLLOWING], search: search[AUTH_FOLLOWING] }),
+    queryKey: queryKeys(AUTH, FOLLOWING).list({
+      size: size[AUTH_FOLLOWING],
+      search: search[AUTH_FOLLOWING],
+    }),
     keepPreviousData: true,
   });
 

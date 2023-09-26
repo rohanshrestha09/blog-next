@@ -9,3 +9,9 @@ export const NOTIFICATION = 'NOTIFICATION';
 export const COMMENT = 'COMMENT';
 
 export const GENRE = 'GENRE';
+
+export const FOLLOWING = 'FOLLOWING';
+
+export const FOLLOWER = 'FOLLOWER';
+
+export const BOOKMARK = 'BOOKMARK';

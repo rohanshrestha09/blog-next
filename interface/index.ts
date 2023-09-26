@@ -1,3 +1,4 @@
+import { AxiosRequestConfig } from 'axios';
 import { SORT_ORDER, SORT_TYPE } from 'constants/reduxKeys';
 import { type User } from './models';
 
@@ -29,9 +30,9 @@ export interface IMessage {
 }
 
 declare global {
-  type Get<T, V> = (args: T) => Promise<V>;
+  type Get<T, V> = (args: T, config?: AxiosRequestConfig) => Promise<V>;
 
-  type GetAll<T, V> = (args: T) => Promise<IGetAll<V>>;
+  type GetAll<T, V> = (args: T, config?: AxiosRequestConfig) => Promise<IGetAll<V>>;
 
   type Post<T> = (args: T) => Promise<IMessage>;
 

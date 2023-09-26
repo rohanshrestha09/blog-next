@@ -15,6 +15,7 @@ function MyApp({ Component, pageProps }: AppProps<{ dehydratedState: DehydratedS
         defaultOptions: {
           queries: {
             refetchOnWindowFocus: false,
+            retry: false,
           },
         },
       }),

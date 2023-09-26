@@ -1,3 +1,4 @@
+import { AxiosRequestConfig } from 'axios';
 import axios from '.';
 import { type Blog, type User } from 'interface/models';
 import { IQueryParamaters } from 'interface';
@@ -9,16 +10,16 @@ export const register: Post<FormData> = async (data) => {
   return res.data;
 };
 
-export const login: Post<Pick<User, 'email' | 'password'>> = async (data) => {
+export const login: Post<Pick<User, 'email'> & { password: string }> = async (data) => {
   const res = await axios.post('/auth/login', data);
 
   return res.data;
 };
 
-export const getProfile = async (): Promise<User> => {
-  const res = await axios.get('/auth/profile');
+export const getProfile: Get<AxiosRequestConfig | undefined, User> = async (config) => {
+  const res = await axios.get('/auth/profile', config);
 
-  return res.data;
+  return res.data?.data;
 };
 
 export const completeProfile: Put<{ password: string; confirmPassword: string }> = async (data) => {
@@ -39,7 +40,7 @@ export const updateProfile: Put<FormData> = async (data) => {
   return res.data;
 };
 
-export const deleteProfile: Delete<Pick<User, 'password'>> = async (data) => {
+export const deleteProfile: Delete<{ password: string }> = async (data) => {
   const res = await axios.request({
     method: 'delete',
     url: '/auth/profile',
@@ -55,61 +56,64 @@ export const deleteProfileImage: Delete<unknown> = async () => {
   return res.data;
 };
 
-export const getAuthBlogs: GetAll<
+export const getBlogs: GetAll<
   IQueryParamaters & Partial<Pick<Blog, 'genre' | 'isPublished'>> & { search?: string },
   Blog
-> = async ({
-  page = 1,
-  size = 20,
-  sort = SORT_TYPE.LIKE_COUNT,
-  order = SORT_ORDER.DESCENDING,
-  genre = '',
-  isPublished = '',
-  search = '',
-}) => {
+> = async (
+  {
+    page = 1,
+    size = 20,
+    sort = SORT_TYPE.LIKE_COUNT,
+    order = SORT_ORDER.DESCENDING,
+    genre = '',
+    isPublished = '',
+    search = '',
+  },
+  config,
+) => {
   const res = await axios.get(
     `/auth/blog?page=${page}&size=${size}&sort=${sort}&order=${order}&genre=${genre}&isPublished=${isPublished}&search=${search}`,
+    config,
   );
 
-  return res.data;
+  return res.data?.data;
 };
 
 export const getBookmarks: GetAll<
   IQueryParamaters & Partial<Pick<Blog, 'genre'>> & { search?: string },
   Blog
-> = async ({ page = 1, size = 20, genre = '', search = '' }) => {
+> = async ({ page = 1, size = 20, genre = '', search = '' }, config) => {
   const res = await axios.get(
     `/auth/blog/bookmarks?page=${page}&size=${size}&genre=${genre}&search=${search}`,
+    config,
   );
 
-  return res.data;
+  return res.data?.data;
 };
 
-export const getFollowingBlogs: GetAll<IQueryParamaters, Blog> = async ({
-  page = 1,
-  size = 20,
-}) => {
-  const res = await axios.get(`/auth/blog/following?page=${page}&size=${size}`);
+export const getFollowingBlogs: GetAll<IQueryParamaters, Blog> = async (
+  { page = 1, size = 20 },
+  config,
+) => {
+  const res = await axios.get(`/auth/blog/following?page=${page}&size=${size}`, config);
 
-  return res.data;
+  return res.data?.data;
 };
 
-export const getFollowers: GetAll<IQueryParamaters & { search?: string }, User> = async ({
-  page = 1,
-  size = 20,
-  search = '',
-}) => {
-  const res = await axios.get(`/auth/followers?page=${page}&size=${size}&search=${search}`);
+export const getFollowers: GetAll<IQueryParamaters & { search?: string }, User> = async (
+  { page = 1, size = 20, search = '' },
+  config,
+) => {
+  const res = await axios.get(`/auth/followers?page=${page}&size=${size}&search=${search}`, config);
 
-  return res.data;
+  return res.data?.data;
 };
 
-export const getFollowing: GetAll<IQueryParamaters & { search?: string }, User> = async ({
-  page = 1,
-  size = 20,
-  search = '',
-}) => {
-  const res = await axios.get(`/auth/following?page=${page}&size=${size}&search=${search}`);
+export const getFollowing: GetAll<IQueryParamaters & { search?: string }, User> = async (
+  { page = 1, size = 20, search = '' },
+  config,
+) => {
+  const res = await axios.get(`/auth/following?page=${page}&size=${size}&search=${search}`, config);
 
-  return res.data;
+  return res.data?.data;
 };

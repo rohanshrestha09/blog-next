@@ -9,7 +9,7 @@ import BlogCard from 'components/common/BlogCard';
 import SearchFilter from 'components/common/SortFilter';
 import { setSize } from 'store/sortFilterSlice';
 import { NAV_KEYS, BOOKMARKS_KEYS } from 'constants/reduxKeys';
-import { AUTH, GENRE, BLOG } from 'constants/queryKeys';
+import { AUTH, GENRE, BOOKMARK } from 'constants/queryKeys';
 import { getBookmarks, getProfile } from 'api/auth';
 import { queryKeys } from 'utils';
 import { getGenre } from 'api/blog';
@@ -37,7 +37,7 @@ const Bookmarks = () => {
     isFetchedAfterMount,
   } = useQuery({
     queryFn: () => getBookmarks({ genre, size, search }),
-    queryKey: queryKeys(BLOG).list({ genre, size, search }),
+    queryKey: queryKeys(BOOKMARK).list({ genre, size, search }),
     keepPreviousData: true,
   });
 
@@ -98,18 +98,20 @@ export default Bookmarks;
 export const getServerSideProps = withAuth(async (ctx, queryClient) => {
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
+  const config = { headers: { Cookie: ctx.req.headers.cookie || '' } };
+
   await queryClient.prefetchQuery({
-    queryFn: getProfile,
+    queryFn: () => getProfile(config),
     queryKey: queryKeys(AUTH).details(),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getBookmarks({}),
-    queryKey: queryKeys(BLOG).list({ genre: [], size: 20, search: '' }),
+    queryFn: () => getBookmarks({}, config),
+    queryKey: queryKeys(BOOKMARK).list({ genre: [], size: 20, search: '' }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: getGenre,
+    queryFn: () => getGenre(config),
     queryKey: queryKeys(GENRE).lists(),
   });
 
