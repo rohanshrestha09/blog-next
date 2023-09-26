@@ -32,7 +32,7 @@ const HomeSider = () => {
   });
 
   const { data: genre } = useQuery({
-    queryFn: () => getGenre(undefined),
+    queryFn: getGenre,
     queryKey: queryKeys(GENRE).lists(),
   });
 
