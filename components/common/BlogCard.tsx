@@ -67,7 +67,7 @@ const BlogCard: React.FC<Props> = ({ blog, editable, size }) => {
       label: (
         <Space
           className='w-full cursor-pointer py-1 text-sm'
-          onClick={() => router.push(`/blog/update/${blog?.slug}`)}
+          onClick={() => router.push(`/blog/${blog?.slug}/update`)}
         >
           <FiEdit3 size={16} />
           Edit
@@ -158,7 +158,7 @@ const BlogCard: React.FC<Props> = ({ blog, editable, size }) => {
 
         <div
           className='w-full flex justify-between sm:gap-12 gap-6 cursor-pointer'
-          onClick={() => router.push(`/${blog?.slug}`)}
+          onClick={() => router.push(`/blog/${blog?.slug}`)}
         >
           <Space direction='vertical' size={4}>
             <p className='sm:text-xl text-base multiline-truncate-title text-white'>
@@ -185,7 +185,7 @@ const BlogCard: React.FC<Props> = ({ blog, editable, size }) => {
               <Tag
                 key={tag}
                 className='rounded-full cursor-pointer'
-                onClick={() => router.push(`/blog/${tag.toLowerCase()}`)}
+                onClick={() => router.push(`/${tag.toLowerCase()}`)}
               >
                 {tag}
               </Tag>

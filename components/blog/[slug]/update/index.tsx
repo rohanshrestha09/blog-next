@@ -83,7 +83,7 @@ const UpdateBlog = () => {
       onSuccess: (res) => {
         successNotification(res.message);
         queryClient.refetchQueries([BLOG]);
-        push(`/${res.slug}`);
+        push(`/blog/${res.slug}`);
       },
       onError: errorNotification,
     },

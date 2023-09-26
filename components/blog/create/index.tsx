@@ -71,7 +71,7 @@ const CreateBlog = () => {
         setSelectedImage(null);
         queryClient.refetchQueries([AUTH]);
         queryClient.refetchQueries([BLOG]);
-        router.push(`/${res.slug}`);
+        router.push(`/blog/${res.slug}`);
       },
       onError: errorNotification,
     },

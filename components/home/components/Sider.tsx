@@ -89,7 +89,7 @@ const HomeSider = () => {
               <span
                 key={genre}
                 className='flex flex-col py-1 px-0.5 cursor-pointer hover:bg-zinc-900 transition-all'
-                onClick={() => router.push(`/blog/${genre.toLowerCase()}`)}
+                onClick={() => router.push(`/${genre.toLowerCase()}`)}
               >
                 <p>&#35;{genre}</p>
               </span>
