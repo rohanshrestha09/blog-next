@@ -28,8 +28,8 @@ export const completeProfile: Put<{ password: string; confirmPassword: string }>
   return res.data;
 };
 
-export const logout: Put<unknown> = async () => {
-  const res = await axios.put('/auth/logout');
+export const logout: Delete<unknown> = async () => {
+  const res = await axios.delete('/auth/logout');
 
   return res.data;
 };
