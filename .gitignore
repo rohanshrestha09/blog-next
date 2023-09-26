@@ -16,6 +16,8 @@
 /build
 /dist
 
+migration.cjs
+
 # misc
 .DS_Store
 *.pem
