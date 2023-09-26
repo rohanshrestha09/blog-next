@@ -39,7 +39,7 @@ export const withAuth = (
     if (!token) {
       return {
         redirect: {
-          destination: '/',
+          destination: '/fallback',
         },
       };
     }

@@ -77,7 +77,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
   }, [events, sidebarAffixA, sidebarAffixB]);
 
   useEffect(() => {
-    if (pathname !== '/[blogId]') dispatch(turnReadingMode({ isTurned: false }));
+    if (pathname !== '/blog/[slug]') dispatch(turnReadingMode({ isTurned: false }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
