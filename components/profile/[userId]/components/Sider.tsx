@@ -10,7 +10,7 @@ import { BiLink, BiSearch } from 'react-icons/bi';
 import { BsFillCalendarDateFill, BsFillInfoCircleFill } from 'react-icons/bs';
 import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/ri';
 import UserSkeleton from 'components/common/UserSkeleton';
-import { getUser, getUserFollowers, getUserFollowing } from 'api/user';
+import { getUser, getUserFollowers, getUserFollowing } from 'request/user';
 import { changeKey } from 'store/followersSlice';
 import { setSize, setSearch } from 'store/sortFilterSlice';
 import { openModal, closeModal } from 'store/modalSlice';

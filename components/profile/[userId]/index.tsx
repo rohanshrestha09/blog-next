@@ -16,7 +16,7 @@ import { useAuth } from 'auth';
 import BlogCard from 'components/common/BlogCard';
 import UserProfileSider from './components/Sider';
 import { setSize } from 'store/sortFilterSlice';
-import { getProfile } from 'api/auth';
+import { getProfile } from 'request/auth';
 import {
   followUser,
   getUser,
@@ -24,7 +24,7 @@ import {
   getUserFollowers,
   getUserFollowing,
   unfollowUser,
-} from 'api/user';
+} from 'request/user';
 import { queryKeys } from 'utils';
 import { errorNotification, successNotification } from 'utils/notification';
 import { AUTH, USER, BLOG, FOLLOWER, FOLLOWING } from 'constants/queryKeys';

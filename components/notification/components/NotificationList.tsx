@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Avatar, Badge, List } from 'antd';
 import moment from 'moment';
 import { GoPrimitiveDot } from 'react-icons/go';
-import { markAsRead } from 'api/notification';
+import { markAsRead } from 'request/notification';
 import { openModal } from 'store/modalSlice';
 import { errorNotification } from 'utils/notification';
 import { MODAL_KEYS, NOTIFICATIONS_STATUS, NOTIFICATIONS_TYPE } from 'constants/reduxKeys';

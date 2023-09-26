@@ -8,11 +8,11 @@ import NotificationList from './components/NotificationList';
 import { setSize } from 'store/sortFilterSlice';
 import { errorNotification } from 'utils/notification';
 import { NOTIFICATIONS_KEYS } from 'constants/reduxKeys';
-import { getProfile } from 'api/auth';
+import { getProfile } from 'request/auth';
 import { queryKeys } from 'utils';
-import { getNotifications, markAllAsRead } from 'api/notification';
+import { getNotifications, markAllAsRead } from 'request/notification';
 import { AUTH, GENRE, NOTIFICATION } from 'constants/queryKeys';
-import { getGenre } from 'api/blog';
+import { getGenre } from 'request/blog';
 
 const { NOTIFICATIONS } = NOTIFICATIONS_KEYS;
 

@@ -6,7 +6,7 @@ import 'antd/dist/antd.min.css';
 import { Form, Input, Button, Result, Spin } from 'antd';
 import { AxiosError } from 'axios';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
-import { sendResetPasswordLink } from 'api/security';
+import { sendResetPasswordLink } from 'request/security';
 import ForgotPassword from 'public/forgot-password.png';
 
 const ResetPassword = () => {

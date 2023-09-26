@@ -3,7 +3,7 @@ import { Form, Modal, Input, Button } from 'antd';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { EyeInvisibleOutlined, EyeTwoTone, LockOutlined } from '@ant-design/icons';
 import { closeModal } from 'store/modalSlice';
-import { changePassword } from 'api/security';
+import { changePassword } from 'request/security';
 import { errorNotification, successNotification } from 'utils/notification';
 import { MODAL_KEYS } from 'constants/reduxKeys';
 import { AUTH } from 'constants/queryKeys';

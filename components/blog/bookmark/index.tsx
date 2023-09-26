@@ -10,9 +10,9 @@ import SearchFilter from 'components/common/SortFilter';
 import { setSize } from 'store/sortFilterSlice';
 import { NAV_KEYS, BOOKMARKS_KEYS } from 'constants/reduxKeys';
 import { AUTH, GENRE, BOOKMARK } from 'constants/queryKeys';
-import { getBookmarks, getProfile } from 'api/auth';
+import { getBookmarks, getProfile } from 'request/auth';
 import { queryKeys } from 'utils';
-import { getGenre } from 'api/blog';
+import { getGenre } from 'request/blog';
 
 const { HOME_NAV } = NAV_KEYS;
 

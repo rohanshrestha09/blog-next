@@ -9,7 +9,7 @@ import { AxiosError } from 'axios';
 import { IoNavigateCircle } from 'react-icons/io5';
 import ForgotPassword from 'public/forgot-password.png';
 import { EyeInvisibleOutlined, EyeTwoTone, LockOutlined } from '@ant-design/icons';
-import { resetPassword } from 'api/security';
+import { resetPassword } from 'request/security';
 
 const ResetPassword = () => {
   const { query }: NextRouter = useRouter();

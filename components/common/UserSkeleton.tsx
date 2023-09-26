@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Avatar, Button, Space } from 'antd';
 import { useAuth } from 'auth';
-import { followUser, unfollowUser } from 'api/user';
+import { followUser, unfollowUser } from 'request/user';
 import { errorNotification, successNotification } from 'utils/notification';
 import { closeModal } from 'store/modalSlice';
 import { MODAL_KEYS } from 'constants/reduxKeys';

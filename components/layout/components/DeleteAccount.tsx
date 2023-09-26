@@ -12,7 +12,7 @@ import ConfirmDelete from 'components/common/ConfirmDelete';
 import { closeModal, openModal } from 'store/modalSlice';
 import { errorNotification, successNotification } from 'utils/notification';
 import { MODAL_KEYS } from 'constants/reduxKeys';
-import { deleteProfile } from 'api/auth';
+import { deleteProfile } from 'request/auth';
 
 const { DELETE_ACCOUNT_MODAL, DELETE_MODAL } = MODAL_KEYS;
 

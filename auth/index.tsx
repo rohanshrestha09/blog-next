@@ -1,7 +1,7 @@
 import type { GetServerSidePropsContext } from 'next';
 import { createContext, useContext } from 'react';
 import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query';
-import { getProfile } from 'api/auth';
+import { getProfile } from 'request/auth';
 import { queryKeys } from 'utils';
 import { AUTH } from 'constants/queryKeys';
 import type { IContext, TGetServerSidePropsReturnType } from 'interface';

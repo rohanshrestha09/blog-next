@@ -6,7 +6,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { Form, Input, Button, Upload, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { withAuth } from 'auth';
-import { createBlog, getGenre } from 'api/blog';
+import { createBlog, getGenre } from 'request/blog';
 import { errorNotification, successNotification, warningNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { AUTH } from 'constants/queryKeys';

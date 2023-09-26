@@ -8,7 +8,7 @@ import { Form, Input, Checkbox, Button, Modal, Divider } from 'antd';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
-import { login } from 'api/auth';
+import { login } from 'request/auth';
 import { openModal, closeModal } from 'store/modalSlice';
 import { errorNotification, successNotification } from 'utils/notification';
 import { AUTH } from 'constants/queryKeys';

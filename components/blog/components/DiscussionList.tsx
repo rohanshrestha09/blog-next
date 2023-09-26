@@ -9,7 +9,7 @@ import { LikeFilled, LikeOutlined } from '@ant-design/icons';
 import { useAuth } from 'auth';
 import { closeModal, openModal } from 'store/modalSlice';
 import ConfirmDelete from 'components/common/ConfirmDelete';
-import { deleteComment, likeComment, unlikeComment } from 'api/blog';
+import { deleteComment, likeComment, unlikeComment } from 'request/blog';
 import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { MODAL_KEYS } from 'constants/reduxKeys';

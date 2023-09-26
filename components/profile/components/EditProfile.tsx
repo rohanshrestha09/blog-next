@@ -7,7 +7,7 @@ import { UserOutlined, UploadOutlined, InfoCircleOutlined, LinkOutlined } from '
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { useAuth } from 'auth';
 import PasswordAuth from './PasswordAuth';
-import { deleteProfileImage, updateProfile } from 'api/auth';
+import { deleteProfileImage, updateProfile } from 'request/auth';
 import { closeModal, openModal } from 'store/modalSlice';
 import { errorNotification, successNotification, warningNotification } from 'utils/notification';
 import { MODAL_KEYS } from 'constants/reduxKeys';

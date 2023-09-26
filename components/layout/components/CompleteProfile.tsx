@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Modal, Form, Input, Button } from 'antd';
 import { EyeTwoTone, EyeInvisibleOutlined, LockOutlined } from '@ant-design/icons';
 import { closeModal } from 'store/modalSlice';
-import { completeProfile } from 'api/auth';
+import { completeProfile } from 'request/auth';
 import { errorNotification, successNotification } from 'utils/notification';
 import { AUTH } from 'constants/queryKeys';
 import { MODAL_KEYS } from 'constants/reduxKeys';

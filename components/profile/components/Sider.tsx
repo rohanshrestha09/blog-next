@@ -11,7 +11,7 @@ import { BsFillCalendarDateFill, BsFillInfoCircleFill } from 'react-icons/bs';
 import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/ri';
 import { useAuth } from 'auth';
 import UserSkeleton from 'components/common/UserSkeleton';
-import { getFollowers, getFollowing } from 'api/auth';
+import { getFollowers, getFollowing } from 'request/auth';
 import { changeKey } from 'store/followersSlice';
 import { setSize, setSearch } from 'store/sortFilterSlice';
 import { openModal, closeModal } from 'store/modalSlice';

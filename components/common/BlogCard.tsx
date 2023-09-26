@@ -13,7 +13,7 @@ import {
   MdOutlinePublishedWithChanges,
   MdOutlineUnpublished,
 } from 'react-icons/md';
-import { deleteBlog, publishBlog, unpublishBlog } from 'api/blog';
+import { deleteBlog, publishBlog, unpublishBlog } from 'request/blog';
 import ConfirmDelete from './ConfirmDelete';
 import { openModal, closeModal } from 'store/modalSlice';
 import { errorNotification, successNotification } from 'utils/notification';

@@ -27,8 +27,8 @@ import { DiscussionForm } from '../components/DiscussionForm';
 import { DiscussionList } from '../components/DiscussionList';
 import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
-import { getProfile } from 'api/auth';
-import { getUserBlogs } from 'api/user';
+import { getProfile } from 'request/auth';
+import { getUserBlogs } from 'request/user';
 import {
   bookmarkBlog,
   createComment,
@@ -39,7 +39,7 @@ import {
   likeBlog,
   unbookmarkBlog,
   unlikeBlog,
-} from 'api/blog';
+} from 'request/blog';
 import { AUTH, BLOG, COMMENT, GENRE, USER } from 'constants/queryKeys';
 import { BLOG_KEYS, MODAL_KEYS } from 'constants/reduxKeys';
 import { Blog } from 'interface/models';

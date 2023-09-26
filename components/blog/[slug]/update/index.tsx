@@ -9,7 +9,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import { openModal, closeModal } from 'store/modalSlice';
 import ConfirmDelete from 'components/common/ConfirmDelete';
 import { withAuth } from 'auth';
-import { deleteBlog, getBlog, getGenre, updateBlog } from 'api/blog';
+import { deleteBlog, getBlog, getGenre, updateBlog } from 'request/blog';
 import { errorNotification, successNotification, warningNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { MODAL_KEYS } from 'constants/reduxKeys';

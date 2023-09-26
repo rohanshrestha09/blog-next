@@ -14,7 +14,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
-import { register } from 'api/auth';
+import { register } from 'request/auth';
 import { openModal, closeModal } from 'store/modalSlice';
 import { errorNotification, successNotification, warningNotification } from 'utils/notification';
 import { AUTH } from 'constants/queryKeys';

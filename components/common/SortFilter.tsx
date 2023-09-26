@@ -5,7 +5,7 @@ import { Divider, Input, Dropdown, Button, Spin } from 'antd';
 import { LoadingOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { BiSearch } from 'react-icons/bi';
 import { FaSort } from 'react-icons/fa';
-import { getGenre } from 'api/blog';
+import { getGenre } from 'request/blog';
 import { setSearch, setGenre, setSort, setOrder } from 'store/sortFilterSlice';
 import { queryKeys } from 'utils';
 import { GENRE } from 'constants/queryKeys';

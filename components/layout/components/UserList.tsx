@@ -7,7 +7,7 @@ import { BiSearch } from 'react-icons/bi';
 import UserSkeleton from 'components/common/UserSkeleton';
 import { setSize, setSearch } from 'store/sortFilterSlice';
 import { closeModal } from 'store/modalSlice';
-import { getUserSuggestions } from 'api/user';
+import { getUserSuggestions } from 'request/user';
 import { queryKeys } from 'utils';
 import { HOME_KEYS, MODAL_KEYS } from 'constants/reduxKeys';
 import { USER } from 'constants/queryKeys';
