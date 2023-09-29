@@ -16,12 +16,7 @@ import { getResponse, httpResponse } from 'utils/response';
 import { parseFormData } from 'utils/parseFormData';
 import { SUPABASE_BUCKET_NAME, SUPABASE_BUCKET_DIRECTORY } from 'constants/index';
 
-const validator = Joi.object<{
-  name: string;
-  bio: string;
-  website: string;
-  dateOfBirth: Date;
-}>({
+const validator = Joi.object<Partial<Pick<User, 'name' | 'bio' | 'website' | 'dateOfBirth'>>>({
   name: Joi.string(),
   bio: Joi.string(),
   website: Joi.string().domain(),

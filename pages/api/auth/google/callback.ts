@@ -19,7 +19,7 @@ router.get(
 
     res.setHeader('Set-Cookie', serialized);
 
-    res.redirect('/profile');
+    res.redirect('/');
   },
 );
 

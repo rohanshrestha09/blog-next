@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Form, Input, Button, Checkbox, DatePicker, Upload, Modal, Divider } from 'antd';
-import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import {
   EyeInvisibleOutlined,
   EyeTwoTone,
@@ -34,8 +33,6 @@ const Register: React.FC = () => {
   const queryClient = useQueryClient();
 
   const [form] = Form.useForm();
-
-  const [rememberMe, setRememberMe] = useState<boolean>(true);
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
@@ -209,14 +206,9 @@ const Register: React.FC = () => {
           </Form.Item>
         </div>
 
-        <Form.Item>
-          <Form.Item name='remember' noStyle>
-            <Checkbox
-              checked={rememberMe}
-              onChange={(e: CheckboxChangeEvent) => setRememberMe(e.target.checked)}
-            >
-              Remember me
-            </Checkbox>
+        <div className='mb-[24px] min-h-[32px] relative flex items-center'>
+          <Form.Item valuePropName='checked' name='remember' noStyle>
+            <Checkbox>Remember me</Checkbox>
           </Form.Item>
 
           <Link href='/security/reset-password' passHref={true}>
@@ -224,7 +216,7 @@ const Register: React.FC = () => {
               Forgot password
             </a>
           </Link>
-        </Form.Item>
+        </div>
 
         <Form.Item>
           <Button

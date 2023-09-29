@@ -33,6 +33,8 @@ export const blogExtensions = {
     where: Prisma.BlogWhereUniqueInput;
     select?: Prisma.BlogSelect;
   }) {
+    const condition = session?.userId ? { where: { id: session.userId } } : false;
+
     const blog = await prisma.blog.findUnique({
       where,
       select: {
@@ -41,12 +43,8 @@ export const blogExtensions = {
         author: {
           select: exculdeFields(userFields, ['password', 'email']),
         },
-        likedBy: {
-          where: { id: session.userId },
-        },
-        bookmarkedBy: {
-          where: { id: session.userId },
-        },
+        likedBy: condition,
+        bookmarkedBy: condition,
         _count: {
           select: {
             likedBy: true,
@@ -76,6 +74,8 @@ export const blogExtensions = {
       | Prisma.BlogOrderByWithRelationAndSearchRelevanceInput
       | Prisma.BlogOrderByWithRelationAndSearchRelevanceInput[];
   }) {
+    const condition = session?.userId ? { where: { id: session.userId } } : false;
+
     const blogs = await prisma.blog.findMany({
       where,
       select: {
@@ -84,12 +84,8 @@ export const blogExtensions = {
         author: {
           select: exculdeFields(userFields, ['password', 'email']),
         },
-        likedBy: {
-          where: { id: session.userId },
-        },
-        bookmarkedBy: {
-          where: { id: session.userId },
-        },
+        likedBy: condition,
+        bookmarkedBy: condition,
         _count: {
           select: {
             likedBy: true,
@@ -132,17 +128,15 @@ export const userExtensions = {
     where: Prisma.UserWhereUniqueInput;
     select?: Prisma.UserSelect;
   }) {
+    const condition = session?.userId ? { where: { id: session.userId } } : false;
+
     const user = await prisma.user.findUnique({
       where,
       select: {
         ...select,
         ...exculdeFields(userFields, ['password', 'email']),
-        followedBy: {
-          where: { id: session.userId },
-        },
-        following: {
-          where: { id: session.userId },
-        },
+        followedBy: condition,
+        following: condition,
         _count: {
           select: {
             following: true,
@@ -172,17 +166,15 @@ export const userExtensions = {
       | Prisma.UserOrderByWithRelationAndSearchRelevanceInput
       | Prisma.UserOrderByWithRelationAndSearchRelevanceInput[];
   }) {
+    const condition = session?.userId ? { where: { id: session.userId } } : false;
+
     const users = await prisma.user.findMany({
       where,
       select: {
         ...select,
         ...exculdeFields(userFields, ['password', 'email']),
-        followedBy: {
-          where: { id: session.userId },
-        },
-        following: {
-          where: { id: session.userId },
-        },
+        followedBy: condition,
+        following: condition,
         _count: {
           select: {
             following: true,

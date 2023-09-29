@@ -4,11 +4,11 @@ import Joi from 'joi';
 import bcrypt from 'bcryptjs';
 import { serialize } from 'cookie';
 import { Secret, sign } from 'jsonwebtoken';
-import { prisma } from 'lib/prisma';
+import { prisma, User } from 'lib/prisma';
 import { errorHandler, HttpException } from 'utils/exception';
 import { getResponse } from 'utils/response';
 
-const validator = Joi.object<{ email: string; password: string }>({
+const validator = Joi.object<Pick<User, 'email' | 'password'>>({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
 });

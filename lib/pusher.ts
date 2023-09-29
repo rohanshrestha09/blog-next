@@ -10,5 +10,5 @@ export const pusher = new Pusher({
 });
 
 export const dispatchNotification = async (notification: Notification) => {
-  pusher.sendToUser(notification.receiverId, 'dispatch-notification', notification);
+  await pusher.trigger(`${notification.receiverId}`, 'dispatch-notification', notification);
 };

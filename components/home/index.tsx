@@ -173,7 +173,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   await queryClient.prefetchQuery({
     queryFn: () => getGenre(config),
-    queryKey: queryKeys(GENRE).details(),
+    queryKey: queryKeys(GENRE).lists(),
   });
 
   return {

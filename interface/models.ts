@@ -36,7 +36,8 @@ export type Comment = CommentSchema & {
 };
 
 export type Notification = NotificationSchema & {
-  user: Omit<UserSchema, 'password'>;
+  sender: Omit<UserSchema, 'password' | 'email'>;
+  receiver: Omit<UserSchema, 'password' | 'email'>;
   blog: BlogSchema;
   comment: CommentSchema;
 };

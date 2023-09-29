@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 import { v4 as uuidV4 } from 'uuid';
 import Joi from 'joi';
 import { isEmpty, kebabCase } from 'lodash';
-import { prisma, Genre, User } from 'lib/prisma';
+import { prisma, Genre, User, Blog } from 'lib/prisma';
 import { supabase } from 'lib/supabase';
 import { auth } from 'middlewares/auth';
 import { session } from 'middlewares/session';
@@ -15,12 +15,7 @@ import { getAllResponse } from 'utils/response';
 import { getPages } from 'utils';
 import { SUPABASE_BUCKET_NAME, SUPABASE_BUCKET_DIRECTORY } from 'constants/index';
 
-const validator = Joi.object<{
-  title: string;
-  content: string;
-  isPublished: boolean;
-  genre: Genre[];
-}>({
+const validator = Joi.object<Pick<Blog, 'title' | 'content' | 'isPublished' | 'genre'>>({
   title: Joi.string().required(),
   content: Joi.string().required(),
   isPublished: Joi.boolean(),

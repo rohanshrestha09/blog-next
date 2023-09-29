@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { NextRouter, useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import { ReactNode, Key, Fragment } from 'react';
 import { useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -39,7 +39,7 @@ const {
 type MenuItem = Required<MenuProps>['items'][number];
 
 export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
-  const { pathname, push }: NextRouter = useRouter();
+  const { pathname, push } = useRouter();
 
   const dispatch = useDispatch();
 

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useQueryClient } from '@tanstack/react-query';
 import 'antd/dist/antd.dark.min.css';
 import { Layout, Drawer, Affix, ConfigProvider, Empty } from 'antd';
+import Pusher from 'pusher-js';
 import LoadingBar, { LoadingBarRef } from 'react-top-loading-bar';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -15,13 +16,24 @@ import HomeSider from 'components/home/components/Sider';
 import ProfileSider from 'components/profile/components/Sider';
 import UserProfileSider from 'components/profile/[userId]/components/Sider';
 import UserList from './components/UserList';
-import NotificationList from 'components/notification/components/NotificationList';
+import NotificationCard from 'components/notification/components/NotificationCard';
 import { useAuth } from 'auth';
 import { closeDrawer, openDrawer } from 'store/drawerSlice';
 import { turnReadingMode } from 'store/readingModeSlice';
 import { jsxNotification } from 'utils/notification';
+import { queryKeys } from 'utils';
+import { NOTIFICATION } from 'constants/queryKeys';
+import { Notification } from 'interface/models';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.Element => {
+  const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY as string, {
+    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER as string,
+    channelAuthorization: {
+      endpoint: '/api/pusher/auth',
+      transport: 'ajax',
+    },
+  });
+
   const { Content, Sider, Footer } = Layout;
 
   const { pathname, events } = useRouter();
@@ -47,7 +59,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
       case '/blog/[slug]':
       case '/blog/bookmark':
       case '/[genre]':
-      case '/notifications':
+      case '/notification':
         return <HomeSider />;
 
       case '/profile':
@@ -81,15 +93,21 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  // useEffect(() => {
-  //   if (authUser) {
-  //     socket.current.off('incoming notification').on('incoming notification', (notification) => {
-  //       jsxNotification(<NotificationList notification={notification} smallContainer />);
-  //       queryClient.refetchQueries([GET_NOTIFICATIONS]);
-  //     });
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  useEffect(() => {
+    if (!authUser) return;
+
+    const channel = pusher.subscribe(`${authUser?.id}`);
+
+    channel.bind('dispatch-notification', (notification: Notification) => {
+      jsxNotification(<NotificationCard notification={notification} size='small' />);
+      queryClient.refetchQueries(queryKeys(NOTIFICATION).all);
+    });
+
+    return () => {
+      pusher.unsubscribe(`${authUser?.id}`);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <ConfigProvider renderEmpty={() => <Empty />}>

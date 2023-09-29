@@ -14,11 +14,7 @@ import { getResponse, httpResponse } from 'utils/response';
 import { parseFormData } from 'utils/parseFormData';
 import { SUPABASE_BUCKET_DIRECTORY, SUPABASE_BUCKET_NAME } from 'constants/index';
 
-const validator = Joi.object<{
-  title: string;
-  content: string;
-  genre: Genre[];
-}>({
+const validator = Joi.object<Partial<Pick<Blog, 'title' | 'content' | 'genre'>>>({
   title: Joi.string(),
   content: Joi.string(),
   genre: Joi.array().items(...Object.values(Genre)),

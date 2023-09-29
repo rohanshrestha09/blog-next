@@ -99,7 +99,7 @@ router.use(auth()).post(async (req, res) => {
 
   const blog = req.blog;
 
-  const { comment: content } = req.body;
+  const { content } = req.body;
 
   const comment = await prisma.comment.create({
     data: {

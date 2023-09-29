@@ -7,7 +7,7 @@ import Joi from 'joi';
 import { Secret, sign } from 'jsonwebtoken';
 import { serialize } from 'cookie';
 import { isEmpty } from 'lodash';
-import { prisma } from 'lib/prisma';
+import { prisma, User } from 'lib/prisma';
 import { supabase } from 'lib/supabase';
 import { parseFormData } from 'utils/parseFormData';
 import { getResponse } from 'utils/response';
@@ -15,13 +15,11 @@ import { errorHandler, HttpException } from 'utils/exception';
 import { SUPABASE_BUCKET_NAME } from 'constants/index';
 import { SUPABASE_BUCKET_DIRECTORY } from 'constants/index';
 
-const validator = Joi.object<{
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  dateOfBirth: Date;
-}>({
+const validator = Joi.object<
+  Pick<User, 'name' | 'email' | 'password' | 'dateOfBirth'> & {
+    confirmPassword: string;
+  }
+>({
   name: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(8).max(18).required(),

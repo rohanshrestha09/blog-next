@@ -11,6 +11,8 @@ export const register: Post<FormData> = async (data) => {
 };
 
 export const login: Post<Pick<User, 'email'> & { password: string }> = async (data) => {
+  delete data.remember;
+
   const res = await axios.post('/auth/login', data);
 
   return res.data;

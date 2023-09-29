@@ -1,18 +1,18 @@
 import Head from 'next/head';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Divider, Skeleton } from 'antd';
+import { Divider, List, Skeleton } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { withAuth } from 'auth';
-import NotificationList from './components/NotificationList';
+import NotificationCard from './components/NotificationCard';
 import { setSize } from 'store/sortFilterSlice';
 import { errorNotification } from 'utils/notification';
 import { NOTIFICATIONS_KEYS } from 'constants/reduxKeys';
+import { getGenre } from 'request/blog';
 import { getProfile } from 'request/auth';
 import { queryKeys } from 'utils';
 import { getNotifications, markAllAsRead } from 'request/notification';
 import { AUTH, GENRE, NOTIFICATION } from 'constants/queryKeys';
-import { getGenre } from 'request/blog';
 
 const { NOTIFICATIONS } = NOTIFICATIONS_KEYS;
 
@@ -69,7 +69,11 @@ const Notifications = () => {
             }
             loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
           >
-            {notifications?.result && <NotificationList data={notifications?.result} />}
+            <List
+              itemLayout='vertical'
+              dataSource={notifications?.result}
+              renderItem={(notification) => <NotificationCard notification={notification} />}
+            />
           </InfiniteScroll>
         )}
       </main>

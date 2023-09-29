@@ -1,11 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Form, Input, Checkbox, Button, Modal, Divider } from 'antd';
-import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { login } from 'request/auth';
@@ -28,8 +26,6 @@ const Login: React.FC = () => {
   const queryClient = useQueryClient();
 
   const [form] = Form.useForm();
-
-  const [rememberMe, setRememberMe] = useState<boolean>(true);
 
   const handleLogin = useMutation(login, {
     onSuccess: (res) => {

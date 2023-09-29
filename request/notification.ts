@@ -19,14 +19,14 @@ export const getNotifications = async (
   return res.data?.data;
 };
 
-export const markAsRead: Put<string> = async (id) => {
-  const res = await axios.put(`/notification/${id}/mark-as-read`);
+export const markAsRead: Post<string> = async (id) => {
+  const res = await axios.post(`/notification/${id}/mark-as-read`);
 
   return res.data;
 };
 
-export const markAllAsRead: Put<undefined> = async () => {
-  const res = await axios.put(`/notification/mark-all-as-read`);
+export const markAllAsRead: Post<undefined> = async () => {
+  const res = await axios.post(`/notification/mark-all-as-read`);
 
   return res.data;
 };

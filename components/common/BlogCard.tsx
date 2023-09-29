@@ -167,7 +167,7 @@ const BlogCard: React.FC<Props> = ({ blog, editable, size }) => {
 
             {!size && (
               <p className='multiline-truncate-content leading-loose'>
-                {he.decode(blog?.content.replace(/<[^>]+>/g, ''))}
+                {he.decode(blog?.content?.replace(/<[^>]+>/g, ''))}
               </p>
             )}
           </Space>

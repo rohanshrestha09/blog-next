@@ -72,12 +72,14 @@ router.use(auth()).get(async (req, res) => {
   const { currentPage, totalPage } = getPages({ skip, take, count });
 
   return res.status(200).json({
-    result: notifications,
-    count,
-    read,
-    unread,
-    currentPage,
-    totalPage,
+    data: {
+      result: notifications,
+      count,
+      read,
+      unread,
+      currentPage,
+      totalPage,
+    },
     message: 'Notification fetched',
   });
 });

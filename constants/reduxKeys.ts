@@ -1,9 +1,9 @@
 export enum NAV_KEYS {
   HOME_NAV = '/',
   PROFILE_NAV = '/profile',
-  BOOKMARKS_NAV = '/blog/bookmarks',
+  BOOKMARKS_NAV = '/blog/bookmark',
   CREATE_NAV = '/blog/create',
-  NOTIF_NAV = '/notifications',
+  NOTIF_NAV = '/notification',
   LOGOUT_NAV = 'logout',
 }
 
