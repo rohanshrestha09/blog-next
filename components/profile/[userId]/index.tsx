@@ -61,8 +61,8 @@ const UserProfile: NextPage = () => {
   const handleFollowUser = useMutation(followUser, {
     onSuccess: (res) => {
       successNotification(res.message);
-      queryClient.refetchQueries([AUTH]);
-      queryClient.refetchQueries([USER]);
+      queryClient.refetchQueries(queryKeys(FOLLOWING).all);
+      queryClient.refetchQueries(queryKeys(FOLLOWER).all);
     },
     onError: errorNotification,
   });
@@ -70,8 +70,8 @@ const UserProfile: NextPage = () => {
   const handleUnfollowUser = useMutation(unfollowUser, {
     onSuccess: (res) => {
       successNotification(res.message);
-      queryClient.refetchQueries([AUTH]);
-      queryClient.refetchQueries([USER]);
+      queryClient.refetchQueries(queryKeys(FOLLOWING).all);
+      queryClient.refetchQueries(queryKeys(FOLLOWER).all);
     },
     onError: errorNotification,
   });

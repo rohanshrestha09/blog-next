@@ -5,6 +5,7 @@ import { EyeTwoTone, EyeInvisibleOutlined, LockOutlined } from '@ant-design/icon
 import { closeModal } from 'store/modalSlice';
 import { completeProfile } from 'request/auth';
 import { errorNotification, successNotification } from 'utils/notification';
+import { queryKeys } from 'utils';
 import { AUTH } from 'constants/queryKeys';
 import { MODAL_KEYS } from 'constants/reduxKeys';
 
@@ -24,7 +25,7 @@ const CompleteProfile: React.FC = () => {
   const handleCompleteAuth = useMutation(completeProfile, {
     onSuccess: (res) => {
       successNotification(res.message);
-      queryClient.refetchQueries([AUTH]);
+      queryClient.refetchQueries(queryKeys(AUTH).all);
       dispatch(closeModal({ key: COMPLETE_PROFILE_MODAL }));
       form.resetFields();
     },

@@ -9,6 +9,7 @@ import { GoPrimitiveDot } from 'react-icons/go';
 import { markAsRead } from 'request/notification';
 import { openModal } from 'store/modalSlice';
 import { errorNotification } from 'utils/notification';
+import { queryKeys } from 'utils';
 import { MODAL_KEYS, NOTIFICATIONS_STATUS, NOTIFICATIONS_TYPE } from 'constants/reduxKeys';
 import { NOTIFICATION } from 'constants/queryKeys';
 import { Notification } from 'interface/models';
@@ -38,7 +39,7 @@ const NotificationCard: React.FC<Props> = ({ notification, size }) => {
   }, []);
 
   const handleMarkAsRead = useMutation(markAsRead, {
-    onSuccess: () => queryClient.refetchQueries([NOTIFICATION]),
+    onSuccess: () => queryClient.refetchQueries(queryKeys(NOTIFICATION).all),
     onError: errorNotification,
   });
 

@@ -17,7 +17,10 @@ import { SUPABASE_BUCKET_DIRECTORY, SUPABASE_BUCKET_NAME } from 'constants/index
 const validator = Joi.object<Partial<Pick<Blog, 'title' | 'content' | 'genre'>>>({
   title: Joi.string(),
   content: Joi.string(),
-  genre: Joi.array().items(...Object.values(Genre)),
+  genre: Joi.alternatives().try(
+    Joi.array().items(...Object.values(Genre)),
+    Joi.string().allow(...Object.values(Genre)),
+  ),
 });
 
 const router = createRouter<
@@ -94,11 +97,13 @@ router.put(async (req, res) => {
       title,
       slug: kebabCase(title),
       content,
-      genre,
+      genre: genre && (Array.isArray(genre) ? genre : [genre]),
     },
   });
 
-  return res.status(201).json({ slug: updatedBlog.slug, message: 'Blog Updated Successfully' });
+  return res
+    .status(201)
+    .json({ data: { slug: updatedBlog.slug }, message: 'Blog Updated Successfully' });
 });
 
 router.delete(async (req, res) => {

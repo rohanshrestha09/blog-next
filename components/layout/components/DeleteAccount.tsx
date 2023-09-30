@@ -31,6 +31,7 @@ const DeleteAccount: React.FC = () => {
     onSuccess: (res) => {
       successNotification(res.message);
       dispatch(closeModal({ key: DELETE_ACCOUNT_MODAL }));
+      localStorage.clear();
       window.location.reload();
     },
     onError: errorNotification,
@@ -101,9 +102,13 @@ const DeleteAccount: React.FC = () => {
 
       <ConfirmDelete
         isLoading={handleDeleteAccount.isLoading}
-        deleteMutation={() =>
-          handleDeleteAccount.mutate({ password: form.getFieldValue('password') as string })
-        }
+        deleteMutation={() => {
+          const formData = new FormData();
+
+          formData.append('password', form.getFieldValue('password'));
+
+          handleDeleteAccount.mutate(formData);
+        }}
       />
     </Modal>
   );

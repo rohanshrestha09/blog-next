@@ -32,7 +32,7 @@ const Notifications = () => {
   });
 
   const handleMarkAllAsRead = useMutation(markAllAsRead, {
-    onSuccess: () => queryClient.refetchQueries([NOTIFICATION]),
+    onSuccess: () => queryClient.refetchQueries(queryKeys(NOTIFICATION).all),
     onError: errorNotification,
   });
 

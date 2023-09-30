@@ -17,6 +17,7 @@ import { deleteBlog, publishBlog, unpublishBlog } from 'request/blog';
 import ConfirmDelete from './ConfirmDelete';
 import { openModal, closeModal } from 'store/modalSlice';
 import { errorNotification, successNotification } from 'utils/notification';
+import { queryKeys } from 'utils';
 import { MODAL_KEYS } from 'constants/reduxKeys';
 import { BLOG } from 'constants/queryKeys';
 import { Blog } from 'interface/models';
@@ -39,15 +40,15 @@ const BlogCard: React.FC<Props> = ({ blog, editable, size }) => {
   const handlePublishBlog = useMutation(publishBlog, {
     onSuccess: (res) => {
       successNotification(res.message);
-      queryClient.refetchQueries([BLOG]);
+      queryClient.refetchQueries(queryKeys(BLOG).all);
     },
     onError: errorNotification,
   });
 
-  const handleUnublishBlog = useMutation(unpublishBlog, {
+  const handleUnpublishBlog = useMutation(unpublishBlog, {
     onSuccess: (res) => {
       successNotification(res.message);
-      queryClient.refetchQueries([BLOG]);
+      queryClient.refetchQueries(queryKeys(BLOG).all);
     },
     onError: errorNotification,
   });
@@ -55,7 +56,7 @@ const BlogCard: React.FC<Props> = ({ blog, editable, size }) => {
   const handleDeleteBlog = useMutation(deleteBlog, {
     onSuccess: (res) => {
       successNotification(res.message);
-      queryClient.refetchQueries([BLOG]);
+      queryClient.refetchQueries(queryKeys(BLOG).all);
       dispatch(closeModal({ key: DELETE_MODAL }));
     },
     onError: errorNotification,
@@ -81,8 +82,8 @@ const BlogCard: React.FC<Props> = ({ blog, editable, size }) => {
           className='w-full cursor-pointer py-1 text-sm'
           onClick={() =>
             blog?.isPublished
-              ? handlePublishBlog.mutate(blog?.slug)
-              : handleUnublishBlog.mutate(blog?.slug)
+              ? handleUnpublishBlog.mutate(blog?.slug)
+              : handlePublishBlog.mutate(blog?.slug)
           }
         >
           <MdOutlinePublishedWithChanges size={16} />

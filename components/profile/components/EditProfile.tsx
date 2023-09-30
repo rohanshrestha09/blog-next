@@ -10,6 +10,7 @@ import PasswordAuth from './PasswordAuth';
 import { deleteProfileImage, updateProfile } from 'request/auth';
 import { closeModal, openModal } from 'store/modalSlice';
 import { errorNotification, successNotification, warningNotification } from 'utils/notification';
+import { queryKeys } from 'utils';
 import { MODAL_KEYS } from 'constants/reduxKeys';
 import { AUTH, BLOG } from 'constants/queryKeys';
 
@@ -47,10 +48,10 @@ const EditProfile = () => {
     onRemove: () => setSelectedImage(null),
   };
 
-  const handleDeletePicture = useMutation(deleteProfileImage, {
+  const handleDeleteProfileImage = useMutation(deleteProfileImage, {
     onSuccess: (res) => {
       successNotification(res.message);
-      queryClient.refetchQueries([AUTH]);
+      queryClient.refetchQueries(queryKeys(AUTH).all);
     },
     onError: errorNotification,
   });
@@ -71,8 +72,8 @@ const EditProfile = () => {
     {
       onSuccess: (res) => {
         successNotification(res.message);
-        queryClient.refetchQueries([AUTH]);
-        queryClient.refetchQueries([BLOG]);
+        queryClient.refetchQueries(queryKeys(AUTH).all);
+        queryClient.refetchQueries(queryKeys(BLOG).all);
         dispatch(closeModal({ key: EDIT_PROFILE_MODAL }));
         dispatch(closeModal({ key: PASSWORD_AUTH_MODAL }));
       },
@@ -150,7 +151,7 @@ const EditProfile = () => {
                 <span>Display Picture</span>
                 <span
                   className='text-blue-500 cursor-pointer text-[0.65rem] leading-3'
-                  onClick={handleDeletePicture.mutate}
+                  onClick={handleDeleteProfileImage.mutate}
                 >
                   Remove
                 </span>

@@ -7,8 +7,9 @@ import { useAuth } from 'auth';
 import { followUser, unfollowUser } from 'request/user';
 import { errorNotification, successNotification } from 'utils/notification';
 import { closeModal } from 'store/modalSlice';
+import { queryKeys } from 'utils';
 import { MODAL_KEYS } from 'constants/reduxKeys';
-import { AUTH, USER } from 'constants/queryKeys';
+import { FOLLOWER, FOLLOWING } from 'constants/queryKeys';
 import { User } from 'interface/models';
 
 interface Props {
@@ -31,8 +32,8 @@ const UserSkeleton: React.FC<Props> = ({ user, descriptionMode, isModal }) => {
   const handleFollowUser = useMutation(followUser, {
     onSuccess: (res) => {
       successNotification(res.message);
-      queryClient.refetchQueries([AUTH]);
-      queryClient.refetchQueries([USER]);
+      queryClient.refetchQueries(queryKeys(FOLLOWER).all);
+      queryClient.refetchQueries(queryKeys(FOLLOWING).all);
     },
     onError: errorNotification,
   });
@@ -40,8 +41,8 @@ const UserSkeleton: React.FC<Props> = ({ user, descriptionMode, isModal }) => {
   const handleUnfollowUser = useMutation(unfollowUser, {
     onSuccess: (res) => {
       successNotification(res.message);
-      queryClient.refetchQueries([AUTH]);
-      queryClient.refetchQueries([USER]);
+      queryClient.refetchQueries(queryKeys(FOLLOWER).all);
+      queryClient.refetchQueries(queryKeys(FOLLOWING).all);
     },
     onError: errorNotification,
   });

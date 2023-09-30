@@ -9,6 +9,7 @@ import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { login } from 'request/auth';
 import { openModal, closeModal } from 'store/modalSlice';
 import { errorNotification, successNotification } from 'utils/notification';
+import { queryKeys } from 'utils';
 import { AUTH } from 'constants/queryKeys';
 import { MODAL_KEYS } from 'constants/reduxKeys';
 
@@ -31,7 +32,7 @@ const Login: React.FC = () => {
     onSuccess: (res) => {
       successNotification(res.message);
       form.resetFields();
-      queryClient.refetchQueries([AUTH]);
+      queryClient.refetchQueries(queryKeys(AUTH).all);
       dispatch(closeModal({ key: LOGIN_MODAL }));
       router.push('/profile');
     },
@@ -54,7 +55,13 @@ const Login: React.FC = () => {
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
-        onFinish={handleLogin.mutate}
+        onFinish={(values) => {
+          if (values.rememberCredential) localStorage.setItem('rememberCredential', 'true');
+
+          delete values?.rememberCredential;
+
+          handleLogin.mutate(values);
+        }}
       >
         <Form.Item
           label='Email'
@@ -90,7 +97,7 @@ const Login: React.FC = () => {
         </Form.Item>
 
         <div className='mb-[24px] min-h-[32px] relative flex items-center'>
-          <Form.Item valuePropName='checked' name='remember' noStyle>
+          <Form.Item valuePropName='checked' name='rememberCredential' noStyle>
             <Checkbox>Remember me</Checkbox>
           </Form.Item>
 

@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import 'antd/dist/antd.dark.min.css';
 import { Layout, Drawer, Affix, ConfigProvider, Empty } from 'antd';
 import Pusher from 'pusher-js';
@@ -18,6 +18,7 @@ import UserProfileSider from 'components/profile/[userId]/components/Sider';
 import UserList from './components/UserList';
 import NotificationCard from 'components/notification/components/NotificationCard';
 import { useAuth } from 'auth';
+import { logout } from 'request/auth';
 import { closeDrawer, openDrawer } from 'store/drawerSlice';
 import { turnReadingMode } from 'store/readingModeSlice';
 import { jsxNotification } from 'utils/notification';
@@ -52,6 +53,8 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
   const { isTurned: isReadingMode } = useSelector((state: RootState) => state.readingMode);
 
   const dispatch = useDispatch();
+
+  const handleLogout = useMutation(logout);
 
   const getSider = useCallback(() => {
     switch (pathname) {
@@ -106,6 +109,19 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
     return () => {
       pusher.unsubscribe(`${authUser?.id}`);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authUser]);
+
+  useEffect(() => {
+    window.addEventListener('beforeunload', () => {
+      const rememberCredential = localStorage.getItem('rememberCredential');
+
+      if (!rememberCredential) {
+        handleLogout.mutate(undefined);
+
+        localStorage.clear();
+      }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

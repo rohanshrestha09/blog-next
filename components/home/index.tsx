@@ -47,6 +47,7 @@ const Home: NextPage = () => {
   } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
 
   const dispatch = useDispatch();
+
   const {
     data: blogs,
     isPreviousData,

@@ -5,6 +5,7 @@ import { EyeInvisibleOutlined, EyeTwoTone, LockOutlined } from '@ant-design/icon
 import { closeModal } from 'store/modalSlice';
 import { changePassword } from 'request/security';
 import { errorNotification, successNotification } from 'utils/notification';
+import { queryKeys } from 'utils';
 import { MODAL_KEYS } from 'constants/reduxKeys';
 import { AUTH } from 'constants/queryKeys';
 
@@ -24,7 +25,7 @@ const ChangePassword: React.FC = () => {
   const handleChangePassword = useMutation(changePassword, {
     onSuccess: (res) => {
       successNotification(res.message);
-      queryClient.refetchQueries([AUTH]);
+      queryClient.refetchQueries(queryKeys(AUTH).all);
       dispatch(closeModal({ key: CHANGE_PASSWORD_MODAL }));
       form.resetFields();
     },

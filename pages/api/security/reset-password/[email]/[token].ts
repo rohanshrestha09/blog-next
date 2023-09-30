@@ -15,16 +15,16 @@ const validator = Joi.object<{ password: string; confirmPassword: string }>({
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.post(async (req, res) => {
-  const { token, userId } = req.query;
+  const { token, email: userEmail } = req.query;
 
   if (!token) throw new HttpException(403, 'Invalid token');
 
   const { password } = await validator.validateAsync(req.body);
 
-  if (Array.isArray(userId) || Array.isArray(token))
+  if (Array.isArray(userEmail) || Array.isArray(token))
     throw new HttpException(400, 'Invalid operation');
 
-  const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
+  const user = await prisma.user.findUniqueOrThrow({ where: { email: userEmail } });
 
   const { id, email } = verify(token, `${process.env.JWT_PASSWORD}${user.password}`) as JwtPayload;
 

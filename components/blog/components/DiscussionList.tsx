@@ -40,19 +40,19 @@ export const DiscussionList: React.FC<Props> = ({ data, count }) => {
   const [isSSR, setIsSSR] = useState(true);
 
   const handleLikeComment = useMutation(likeComment, {
-    onSuccess: () => queryClient.refetchQueries([COMMENT]),
+    onSuccess: () => queryClient.refetchQueries(queryKeys(COMMENT).all),
     onError: errorNotification,
   });
 
   const handleUnlikeComment = useMutation(unlikeComment, {
-    onSuccess: () => queryClient.refetchQueries([COMMENT]),
+    onSuccess: () => queryClient.refetchQueries(queryKeys(COMMENT).all),
     onError: errorNotification,
   });
 
   const handleDeleteComment = useMutation(deleteComment, {
     onSuccess: (res) => {
       successNotification(res.message);
-      queryClient.refetchQueries([COMMENT]);
+      queryClient.refetchQueries(queryKeys(COMMENT).all);
       queryClient.refetchQueries(queryKeys(BLOG).detail(comment.slug as string));
       setComment({ id: null, slug: null });
       dispatch(closeModal({ key: DELETE_MODAL }));

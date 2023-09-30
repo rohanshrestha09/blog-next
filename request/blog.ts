@@ -41,7 +41,9 @@ export const getBlogSuggestions: GetAll<IQueryParamaters, Blog> = async (
   return res.data?.data;
 };
 
-export const createBlog = async (data: FormData): Promise<{ slug: string; message: string }> => {
+export const createBlog = async (
+  data: FormData,
+): Promise<{ data: { slug: string }; message: string }> => {
   const res = await axios.post('/blog', data);
 
   return res.data;
@@ -50,7 +52,10 @@ export const createBlog = async (data: FormData): Promise<{ slug: string; messag
 export const updateBlog = async ({
   slug,
   data,
-}: Pick<Blog, 'slug'> & { data: FormData }): Promise<{ slug: string; message: string }> => {
+}: Pick<Blog, 'slug'> & { data: FormData }): Promise<{
+  data: { slug: string };
+  message: string;
+}> => {
   const res = await axios.put(`/blog/${slug}`, data);
 
   return res.data;
@@ -62,8 +67,8 @@ export const deleteBlog: Delete<string> = async (slug) => {
   return res.data;
 };
 
-export const publishBlog: Put<string> = async (slug) => {
-  const res = await axios.put(`/blog/${slug}/publish`);
+export const publishBlog: Post<string> = async (slug) => {
+  const res = await axios.post(`/blog/${slug}/publish`);
 
   return res.data;
 };
@@ -83,8 +88,8 @@ export const getLikes: GetAll<IQueryParamaters & Pick<Blog, 'slug'>, User> = asy
   return res.data?.data;
 };
 
-export const likeBlog: Put<string> = async (slug) => {
-  const res = await axios.put(`/blog/${slug}/like`);
+export const likeBlog: Post<string> = async (slug) => {
+  const res = await axios.post(`/blog/${slug}/like`);
 
   return res.data;
 };
@@ -95,8 +100,8 @@ export const unlikeBlog: Delete<string> = async (slug) => {
   return res.data;
 };
 
-export const bookmarkBlog: Put<string> = async (slug) => {
-  const res = await axios.put(`/blog/${slug}/bookmark`);
+export const bookmarkBlog: Post<string> = async (slug) => {
+  const res = await axios.post(`/blog/${slug}/bookmark`);
 
   return res.data;
 };

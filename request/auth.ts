@@ -11,8 +11,6 @@ export const register: Post<FormData> = async (data) => {
 };
 
 export const login: Post<Pick<User, 'email'> & { password: string }> = async (data) => {
-  delete data.remember;
-
   const res = await axios.post('/auth/login', data);
 
   return res.data;
@@ -30,7 +28,7 @@ export const completeProfile: Put<{ password: string; confirmPassword: string }>
   return res.data;
 };
 
-export const logout: Delete<unknown> = async () => {
+export const logout: Delete<undefined> = async () => {
   const res = await axios.delete('/auth/logout');
 
   return res.data;
@@ -42,7 +40,7 @@ export const updateProfile: Put<FormData> = async (data) => {
   return res.data;
 };
 
-export const deleteProfile: Delete<{ password: string }> = async (data) => {
+export const deleteProfile: Delete<FormData> = async (data) => {
   const res = await axios.request({
     method: 'delete',
     url: '/auth/profile',

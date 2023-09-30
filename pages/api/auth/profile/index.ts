@@ -98,7 +98,9 @@ router.put(async (req, res) => {
 router.delete(async (req, res) => {
   const { id: authId } = req.auth;
 
-  const { password } = await req.body;
+  const { fields } = await parseFormData<{ password: string }>(req);
+
+  const { password } = fields;
 
   const authUser = await prisma.user.findUniqueOrThrow({ where: { id: authId } });
 

@@ -53,6 +53,7 @@ export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
   const handleLogout = useMutation(logout, {
     onSuccess: (res) => {
       successNotification(res.message);
+      localStorage.clear();
       window.location.reload();
     },
     onError: errorNotification,
@@ -126,7 +127,7 @@ export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
   const routingFn = (key: NAV_KEYS | 'blogsansar') => {
     switch (key) {
       case LOGOUT_NAV:
-        return handleLogout.mutate({});
+        return handleLogout.mutate(undefined);
 
       case 'blogsansar':
         return push('/');

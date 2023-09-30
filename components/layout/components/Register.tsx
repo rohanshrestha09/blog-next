@@ -16,6 +16,7 @@ import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { register } from 'request/auth';
 import { openModal, closeModal } from 'store/modalSlice';
 import { errorNotification, successNotification, warningNotification } from 'utils/notification';
+import { queryKeys } from 'utils';
 import { AUTH } from 'constants/queryKeys';
 import { MODAL_KEYS } from 'constants/reduxKeys';
 
@@ -70,7 +71,7 @@ const Register: React.FC = () => {
       onSuccess: (res) => {
         successNotification(res.message);
         form.resetFields();
-        queryClient.refetchQueries([AUTH]);
+        queryClient.refetchQueries(queryKeys(AUTH).all);
         dispatch(closeModal({ key: REGISTER_MODAL }));
         router.push('/profile');
       },
@@ -94,16 +95,20 @@ const Register: React.FC = () => {
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
-        onFinish={(values) =>
+        onFinish={(values) => {
+          if (values.rememberCredential) localStorage.setItem('rememberCredential', 'true');
+
+          delete values?.rememberCredential;
+
           handleRegister.mutate({
             ...values,
             dateOfBirth: values.dateOfBirth._d.toString(),
-          })
-        }
+          });
+        }}
       >
         <Form.Item
           label='Full Name'
-          name='fullname'
+          name='name'
           rules={[{ required: true, message: 'Please input your fullname!' }]}
         >
           <Input
@@ -207,7 +212,7 @@ const Register: React.FC = () => {
         </div>
 
         <div className='mb-[24px] min-h-[32px] relative flex items-center'>
-          <Form.Item valuePropName='checked' name='remember' noStyle>
+          <Form.Item valuePropName='checked' name='rememberCredential' noStyle>
             <Checkbox>Remember me</Checkbox>
           </Form.Item>
 

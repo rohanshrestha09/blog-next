@@ -69,9 +69,9 @@ const CreateBlog = () => {
         successNotification(res.message);
         form.resetFields();
         setSelectedImage(null);
-        queryClient.refetchQueries([AUTH]);
-        queryClient.refetchQueries([BLOG]);
-        router.push(`/blog/${res.slug}`);
+        queryClient.refetchQueries(queryKeys(AUTH).all);
+        queryClient.refetchQueries(queryKeys(BLOG).all);
+        router.push(`/blog/${res.data.slug}`);
       },
       onError: errorNotification,
     },

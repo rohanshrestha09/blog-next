@@ -19,8 +19,8 @@ const validator = Joi.object<Pick<Blog, 'title' | 'content' | 'isPublished' | 'g
   title: Joi.string().required(),
   content: Joi.string().required(),
   isPublished: Joi.boolean(),
-  genre: Joi.array()
-    .items(...Object.values(Genre))
+  genre: Joi.alternatives()
+    .try(Joi.array().items(...Object.values(Genre)), Joi.string().allow(...Object.values(Genre)))
     .required(),
 });
 
@@ -41,7 +41,7 @@ router.post(auth(), async (req, res) => {
       slug: kebabCase(title),
       title,
       content,
-      genre,
+      genre: Array.isArray(genre) ? genre : [genre],
       isPublished,
     },
   });
