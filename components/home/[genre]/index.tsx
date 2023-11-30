@@ -1,6 +1,7 @@
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { Fragment } from 'react';
+import { NextSeo } from 'next-seo';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, QueryClient, DehydratedState, useQuery } from '@tanstack/react-query';
 import { Divider, List, PageHeader, Skeleton } from 'antd';
@@ -15,7 +16,6 @@ import { queryKeys } from 'utils';
 import { AUTH, BLOG, GENRE } from 'constants/queryKeys';
 import { HOME_KEYS } from 'constants/reduxKeys';
 import { Genre } from 'interface/models';
-
 const { GENERIC_BLOGS } = HOME_KEYS;
 
 const GenericBlogs = () => {
@@ -35,11 +35,8 @@ const GenericBlogs = () => {
   });
 
   return (
-    <div className='w-full flex justify-center'>
-      <Head>
-        <title>{`Blog / ${capitalize(query?.genre as string)}`}</title>
-        <link href='/favicon.ico' rel='icon' />
-      </Head>
+    <Fragment>
+      <NextSeo noindex nofollow title={`Blog / ${capitalize(query?.genre as string)}`} />
 
       <main className='w-full flex flex-col'>
         <PageHeader
@@ -72,7 +69,7 @@ const GenericBlogs = () => {
           )}
         </div>
       </main>
-    </div>
+    </Fragment>
   );
 };
 

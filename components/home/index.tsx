@@ -1,5 +1,6 @@
-import Head from 'next/head';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import { Fragment } from 'react';
+import { NextSeo } from 'next-seo';
 import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import { DehydratedState, QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import { Empty as RenderEmpty, Tabs, List, Skeleton, Button, ConfigProvider } from 'antd';
@@ -17,7 +18,6 @@ import { queryKeys } from 'utils';
 import { SORT_TYPE, HOME_KEYS } from 'constants/reduxKeys';
 import { AUTH, BLOG, FOLLOWING as FOLLOWING_QUERY_KEY, GENRE, USER } from 'constants/queryKeys';
 import { Blog } from 'interface/models';
-
 const { HOME, FOLLOWING } = HOME_KEYS;
 
 const { LIKE_COUNT } = SORT_TYPE;
@@ -124,18 +124,17 @@ const Home: NextPage = () => {
   ].map(({ key, label, blogs }) => getTabItems(label, key, blogs));
 
   return (
-    <div className='w-full flex justify-center'>
-      <Head>
-        <title>Home | BlogSansar</title>
-        <link href='/favicon.ico' rel='icon' />
-      </Head>
+    <Fragment>
+      <NextSeo noindex nofollow title='Home | Blogsansar' />
 
-      <main className='w-full flex flex-col'>
-        <header className='text-2xl uppercase pb-2'>Home</header>
+      <div className='w-full flex justify-center'>
+        <main className='w-full flex flex-col'>
+          <header className='text-2xl uppercase pb-2'>Home</header>
 
-        <Tabs className='w-full' defaultActiveKey={HOME} items={items} />
-      </main>
-    </div>
+          <Tabs className='w-full' defaultActiveKey={HOME} items={items} />
+        </main>
+      </div>
+    </Fragment>
   );
 };
 

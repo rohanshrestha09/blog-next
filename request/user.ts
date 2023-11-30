@@ -24,7 +24,7 @@ export const getUserBlogs: GetAll<IQueryParamaters & Pick<User, 'id'>, Blog> = a
   { id, page = 1, size = 20 },
   config,
 ) => {
-  const res = await axios.get(`/user/${id}?page=${page}&size=${size}`, config);
+  const res = await axios.get(`/user/${id}/blog?page=${page}&size=${size}`, config);
 
   return res.data?.data;
 };

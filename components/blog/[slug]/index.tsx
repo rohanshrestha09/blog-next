@@ -1,6 +1,7 @@
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { NextSeo } from 'next-seo';
+import { Fragment } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   dehydrate,
@@ -15,6 +16,7 @@ import { Divider, Image, Skeleton, Tooltip, Switch, Modal, Empty } from 'antd';
 import parse from 'html-react-parser';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { isEmpty } from 'lodash';
+import he from 'he';
 import { BsBookmark, BsBookmarkFill, BsHeart, BsHeartFill } from 'react-icons/bs';
 import { VscComment } from 'react-icons/vsc';
 import { useAuth } from 'auth';
@@ -43,7 +45,6 @@ import {
 import { AUTH, BLOG, COMMENT, GENRE, USER } from 'constants/queryKeys';
 import { BLOG_KEYS, MODAL_KEYS } from 'constants/reduxKeys';
 import { Blog } from 'interface/models';
-
 const { DISCUSSIONS_MODAL, LIKERS_MODAL } = MODAL_KEYS;
 
 const { LIKES, COMMENTS } = BLOG_KEYS;
@@ -137,11 +138,29 @@ const Blog = () => {
   });
 
   return (
-    <div className='w-full flex justify-center'>
-      <Head>
-        <title>{blog && blog.title}</title>
-        <link href='/favicon.ico' rel='icon' />
-      </Head>
+    <Fragment>
+      <NextSeo
+        title={blog?.title}
+        description={he.decode(blog?.content?.replace(/<[^>]+>/g, '') || '')}
+        openGraph={{
+          type: 'article',
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/blog/${query?.slug}`,
+          title: blog?.title,
+          description: he.decode(blog?.content?.replace(/<[^>]+>/g, '') || ''),
+          article: {
+            publishedTime: blog?.createdAt?.toString(),
+            modifiedTime: blog?.updatedAt?.toString(),
+            authors: [blog?.author?.name || 'BlogSansar', `${blog?.author?.website}`],
+            tags: blog?.genre,
+          },
+          images: [
+            {
+              url: `${blog?.image}`,
+              alt: blog?.title,
+            },
+          ],
+        }}
+      />
 
       <main className='w-full flex flex-col gap-9 py-4' style={{ overflowWrap: 'anywhere' }}>
         <div className='flex items-center gap-4 relative'>
@@ -305,7 +324,7 @@ const Blog = () => {
           </InfiniteScroll>
         </Modal>
       </main>
-    </div>
+    </Fragment>
   );
 };
 
