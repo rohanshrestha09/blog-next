@@ -7,13 +7,15 @@ import { serialize } from 'cookie';
 import { isEmpty } from 'lodash';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidV4 } from 'uuid';
-import { prisma, User } from 'lib/prisma';
+import { prisma, User, userFields } from 'lib/prisma';
 import { supabase } from 'lib/supabase';
 import { session } from 'middlewares/session';
 import { auth } from 'middlewares/auth';
 import { errorHandler, HttpException } from 'utils/exception';
 import { getResponse, httpResponse } from 'utils/response';
+import { transformUser } from 'lib/prisma/extensions';
 import { parseFormData } from 'utils/parseFormData';
+import { excludeFields } from 'lib/prisma';
 import { SUPABASE_BUCKET_NAME, SUPABASE_BUCKET_DIRECTORY } from 'constants/index';
 
 const validator = Joi.object<Partial<Pick<User, 'name' | 'bio' | 'website' | 'dateOfBirth'>>>({
@@ -28,12 +30,26 @@ const router = createRouter<NextApiRequest & { session: Session; auth: User }, N
 router.use(session(), auth());
 
 router.get(async (req, res) => {
-  const authUser = await prisma.user.findUniqueWithSession({
-    session: req.session,
+  const condition = req.session?.userId ? { where: { id: req.session.userId } } : false;
+
+  const user = await prisma.user.findUnique({
     where: {
       id: req.auth.id,
     },
+    select: {
+      ...excludeFields(userFields, ['password']),
+      followedBy: condition,
+      following: condition,
+      _count: {
+        select: {
+          following: true,
+          followedBy: true,
+        },
+      },
+    },
   });
+
+  const authUser = user && transformUser(user);
 
   return res.status(200).json(getResponse('Profile fetched', authUser));
 });

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextHandler } from 'next-connect';
 import { JwtPayload, Secret, verify } from 'jsonwebtoken';
-import { exculdeFields, prisma, userFields } from 'lib/prisma';
+import { excludeFields, prisma, userFields } from 'lib/prisma';
 
 export const session = () => {
   return async (
@@ -16,7 +16,7 @@ export const session = () => {
 
       const user = await prisma.user.findUniqueOrThrow({
         where: { id, email },
-        select: exculdeFields(userFields, ['password']),
+        select: excludeFields(userFields, ['password']),
       });
 
       req.session = { userId: user.id };

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextHandler } from 'next-connect';
-import { exculdeFields, prisma, userFields, User } from 'lib/prisma';
+import { excludeFields, prisma, userFields, User } from 'lib/prisma';
 import { HttpException } from 'utils/exception';
 
 export const validateUser = () => {
@@ -11,7 +11,7 @@ export const validateUser = () => {
 
     const user = await prisma.user.findUniqueOrThrow({
       where: { id: userId },
-      select: exculdeFields(userFields, ['password', 'email']),
+      select: excludeFields(userFields, ['password', 'email']),
     });
 
     req.user = user;

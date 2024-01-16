@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextHandler } from 'next-connect';
-import { Blog, blogFields, exculdeFields, prisma, userFields } from 'lib/prisma';
+import { Blog, blogFields, excludeFields, prisma, userFields } from 'lib/prisma';
 import { HttpException } from 'utils/exception';
 
 export const validateBlog = () => {
@@ -14,7 +14,7 @@ export const validateBlog = () => {
       select: {
         ...blogFields,
         author: {
-          select: exculdeFields(userFields, ['password', 'email']),
+          select: excludeFields(userFields, ['password', 'email']),
         },
       },
     });

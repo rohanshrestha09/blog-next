@@ -5,7 +5,7 @@ import {
   prisma,
   Blog,
   User,
-  exculdeFields,
+  excludeFields,
   commentFields,
   NotificationType,
   notificationFields,
@@ -53,7 +53,7 @@ router.get(async (req, res) => {
           select: blogFields,
         },
         user: {
-          select: exculdeFields(userFields, ['email', 'password']),
+          select: excludeFields(userFields, ['email', 'password']),
         },
         likedBy: {
           where: {

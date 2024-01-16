@@ -61,7 +61,7 @@ export const selectFields = <T extends Record<string, unknown>>(model: T, fields
   return model;
 };
 
-export const exculdeFields = <T>(model: T, fields: (keyof T)[]) => {
+export const excludeFields = <T>(model: T, fields: (keyof T)[]) => {
   fields.forEach((field) => delete model[field]);
 
   return model;

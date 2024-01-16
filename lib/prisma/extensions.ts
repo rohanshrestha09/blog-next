@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { isEmpty } from 'lodash';
-import { blogFields, prisma, userFields, exculdeFields, Blog, User } from '.';
+import { blogFields, prisma, userFields, excludeFields, Blog, User } from '.';
 
 const transformBlog = (
   blog: Blog & {
@@ -41,7 +41,7 @@ export const blogExtensions = {
         ...select,
         ...blogFields,
         author: {
-          select: exculdeFields(userFields, ['password', 'email']),
+          select: excludeFields(userFields, ['password', 'email']),
         },
         likedBy: condition,
         bookmarkedBy: condition,
@@ -82,7 +82,7 @@ export const blogExtensions = {
         ...select,
         ...blogFields,
         author: {
-          select: exculdeFields(userFields, ['password', 'email']),
+          select: excludeFields(userFields, ['password', 'email']),
         },
         likedBy: condition,
         bookmarkedBy: condition,
@@ -134,7 +134,7 @@ export const userExtensions = {
       where,
       select: {
         ...select,
-        ...exculdeFields(userFields, ['password', 'email']),
+        ...excludeFields(userFields, ['password', 'email']),
         followedBy: condition,
         following: condition,
         _count: {
@@ -172,7 +172,7 @@ export const userExtensions = {
       where,
       select: {
         ...select,
-        ...exculdeFields(userFields, ['password', 'email']),
+        ...excludeFields(userFields, ['password', 'email']),
         followedBy: condition,
         following: condition,
         _count: {
