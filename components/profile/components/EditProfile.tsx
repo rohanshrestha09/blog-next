@@ -93,7 +93,6 @@ const EditProfile = () => {
       <Form
         autoComplete='off'
         form={form}
-        initialValues={{ remember: true }}
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
