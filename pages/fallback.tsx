@@ -1,13 +1,23 @@
 import Head from 'next/head';
 import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 import { Button, Space } from 'antd';
-import { openModal } from '../store/modalSlice';
+import { closeModal, openModal } from '../store/modalSlice';
 import { MODAL_KEYS } from '../constants/reduxKeys';
 
 const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
 
 const Fallback = () => {
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(openModal({ key: LOGIN_MODAL }));
+
+    return () => {
+      dispatch(closeModal({ key: LOGIN_MODAL }));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className='h-full'>

@@ -21,7 +21,8 @@ router.use(auth(), session()).get(async (req, res) => {
     where: {
       authorId: authUser.id,
       title: {
-        search,
+        contains: search,
+        mode: 'insensitive',
       },
       isPublished: isPublished ? isPublished == 'true' : undefined,
     },
@@ -31,7 +32,8 @@ router.use(auth(), session()).get(async (req, res) => {
     where: {
       authorId: authUser.id,
       title: {
-        search,
+        contains: search,
+        mode: 'insensitive',
       },
       isPublished: isPublished ? isPublished == 'true' : undefined,
     },

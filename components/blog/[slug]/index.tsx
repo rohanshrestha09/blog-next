@@ -332,9 +332,12 @@ export default Blog;
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
-): Promise<{
-  props: { dehydratedState: DehydratedState };
-}> => {
+): Promise<
+  | {
+      props: { dehydratedState: DehydratedState };
+    }
+  | { notFound: true }
+> => {
   const queryClient = new QueryClient();
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
@@ -352,6 +355,12 @@ export const getServerSideProps: GetServerSideProps = async (
   });
 
   const blog = queryClient.getQueryData(queryKeys(BLOG).detail(String(ctx.params?.slug))) as Blog;
+
+  if (!blog) {
+    return {
+      notFound: true,
+    };
+  }
 
   await queryClient.prefetchQuery({
     queryFn: () => getUserBlogs({ id: blog?.authorId, size: 4 }, config),

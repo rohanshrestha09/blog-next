@@ -25,7 +25,8 @@ router.use(session(), auth()).get(async (req, res) => {
       followedBy: {
         some: {
           name: {
-            search,
+            contains: search,
+            mode: 'insensitive',
           },
         },
       },
@@ -43,7 +44,8 @@ router.use(session(), auth()).get(async (req, res) => {
       followedBy: {
         some: {
           name: {
-            search,
+            contains: search,
+            mode: 'insensitive',
           },
         },
       },

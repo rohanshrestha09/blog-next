@@ -86,7 +86,8 @@ router.get(async (req, res) => {
   const count = await prisma.blog.count({
     where: {
       title: {
-        search,
+        contains: search,
+        mode: 'insensitive',
       },
       genre: genre
         ? { hasSome: (Array.isArray(genre) ? genre : genre?.split(',')) as Genre[] }
@@ -97,7 +98,10 @@ router.get(async (req, res) => {
 
   const blogs = await prisma.blog.findManyWithSession({
     where: {
-      title: { search },
+      title: {
+        contains: search,
+        mode: 'insensitive',
+      },
       genre: genre
         ? { hasSome: (Array.isArray(genre) ? genre : genre?.split(',')) as Genre[] }
         : undefined,

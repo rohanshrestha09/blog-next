@@ -25,7 +25,8 @@ router.use(auth(), session()).get(async (req, res) => {
         },
       },
       title: {
-        search,
+        contains: search,
+        mode: 'insensitive',
       },
       isPublished: true,
     },
@@ -41,7 +42,8 @@ router.use(auth(), session()).get(async (req, res) => {
         },
       },
       title: {
-        search,
+        contains: search,
+        mode: 'insensitive',
       },
       isPublished: true,
     },

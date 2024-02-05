@@ -27,7 +27,8 @@ router.use(validateUser()).get(async (req, res) => {
       followedBy: {
         some: {
           name: {
-            search,
+            contains: search,
+            mode: 'insensitive',
           },
         },
       },
@@ -45,7 +46,8 @@ router.use(validateUser()).get(async (req, res) => {
       followedBy: {
         some: {
           name: {
-            search,
+            contains: search,
+            mode: 'insensitive',
           },
         },
       },

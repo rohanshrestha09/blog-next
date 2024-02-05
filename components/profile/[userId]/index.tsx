@@ -171,9 +171,12 @@ export default UserProfile;
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
-): Promise<{
-  props: { dehydratedState: DehydratedState };
-}> => {
+): Promise<
+  | {
+      props: { dehydratedState: DehydratedState };
+    }
+  | { notFound: true }
+> => {
   const queryClient = new QueryClient();
 
   ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
@@ -189,6 +192,13 @@ export const getServerSideProps: GetServerSideProps = async (
     queryFn: () => getUser(String(ctx.params?.userId), config),
     queryKey: queryKeys(USER).detail(String(ctx.params?.userId)),
   });
+
+  const user = await queryClient.getQueryData(queryKeys(USER).detail(String(ctx.params?.userId)));
+
+  if (!user)
+    return {
+      notFound: true,
+    };
 
   await queryClient.prefetchQuery({
     queryFn: () => getUserBlogs({ id: String(ctx.params?.userId) }, config),

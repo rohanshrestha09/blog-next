@@ -19,7 +19,8 @@ router.use(session(), validateUser()).get(async (req, res) => {
     where: {
       authorId: user.id,
       title: {
-        search,
+        contains: search,
+        mode: 'insensitive',
       },
       isPublished: true,
     },
@@ -29,7 +30,8 @@ router.use(session(), validateUser()).get(async (req, res) => {
     where: {
       authorId: user.id,
       title: {
-        search,
+        contains: search,
+        mode: 'insensitive',
       },
       isPublished: true,
     },

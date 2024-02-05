@@ -91,7 +91,7 @@ const Register: React.FC = () => {
       <Form
         autoComplete='off'
         form={form}
-        initialValues={{ remember: true }}
+        initialValues={{ rememberCredential: true }}
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}

@@ -12,12 +12,22 @@ const router = createRouter<NextApiRequest & { session: Session }, NextApiRespon
 router.use(session());
 
 router.get(async (req, res) => {
-  const { take, skip, search, sort, order } = await parseQuery(req.query);
+  const { take, skip, search } = await parseQuery(req.query);
+
+  const results = await prisma.$queryRawUnsafe<{ id: string }[]>(
+    `SELECT id FROM public."User" ORDER BY RANDOM() LIMIT ${take};`,
+  );
+
+  const ids = results.map((item) => item.id);
 
   const count = await prisma.user.count({
     where: {
+      id: {
+        in: ids,
+      },
       name: {
-        search,
+        contains: search,
+        mode: 'insensitive',
       },
     },
   });
@@ -25,15 +35,16 @@ router.get(async (req, res) => {
   const users = await prisma.user.findManyWithSession({
     session: req.session,
     where: {
+      id: {
+        in: ids,
+      },
       name: {
-        search,
+        contains: search,
+        mode: 'insensitive',
       },
     },
     take,
     skip,
-    orderBy: {
-      [sort]: order,
-    },
   });
 
   const { currentPage, totalPage } = getPages({ skip, take, count });
