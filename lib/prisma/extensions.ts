@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { isEmpty } from 'lodash';
-import { blogFields, prisma, userFields, excludeFields, Blog, User } from '.';
+import { prisma, Blog, User } from '.';
 
 const transformBlog = (
   blog: Blog & {
@@ -38,10 +38,31 @@ export const blogExtensions = {
     const blog = await prisma.blog.findUnique({
       where,
       select: {
-        ...select,
-        ...blogFields,
+        id: true,
+        slug: true,
+        content: true,
+        image: true,
+        imageName: true,
+        genre: true,
+        isPublished: true,
+        createdAt: true,
+        updatedAt: true,
+        authorId: true,
         author: {
-          select: excludeFields(userFields, ['password', 'email']),
+          select: {
+            id: true,
+            name: true,
+            dateOfBirth: true,
+            image: true,
+            imageName: true,
+            bio: true,
+            website: true,
+            provider: true,
+            isSSO: true,
+            isVerified: true,
+            createdAt: true,
+            updatedAt: true,
+          },
         },
         likedBy: condition,
         bookmarkedBy: condition,
@@ -51,6 +72,7 @@ export const blogExtensions = {
             comments: true,
           },
         },
+        ...select,
       },
     });
 
@@ -79,10 +101,31 @@ export const blogExtensions = {
     const blogs = await prisma.blog.findMany({
       where,
       select: {
-        ...select,
-        ...blogFields,
+        id: true,
+        slug: true,
+        content: true,
+        image: true,
+        imageName: true,
+        genre: true,
+        isPublished: true,
+        createdAt: true,
+        updatedAt: true,
+        authorId: true,
         author: {
-          select: excludeFields(userFields, ['password', 'email']),
+          select: {
+            id: true,
+            name: true,
+            dateOfBirth: true,
+            image: true,
+            imageName: true,
+            bio: true,
+            website: true,
+            provider: true,
+            isSSO: true,
+            isVerified: true,
+            createdAt: true,
+            updatedAt: true,
+          },
         },
         likedBy: condition,
         bookmarkedBy: condition,
@@ -92,6 +135,7 @@ export const blogExtensions = {
             comments: true,
           },
         },
+        ...select,
       },
       skip,
       take,
@@ -133,8 +177,18 @@ export const userExtensions = {
     const user = await prisma.user.findUnique({
       where,
       select: {
-        ...select,
-        ...excludeFields(userFields, ['password', 'email']),
+        id: true,
+        name: true,
+        dateOfBirth: true,
+        image: true,
+        imageName: true,
+        bio: true,
+        website: true,
+        provider: true,
+        isSSO: true,
+        isVerified: true,
+        createdAt: true,
+        updatedAt: true,
         followedBy: condition,
         following: condition,
         _count: {
@@ -143,6 +197,7 @@ export const userExtensions = {
             followedBy: true,
           },
         },
+        ...select,
       },
     });
 
@@ -171,8 +226,18 @@ export const userExtensions = {
     const users = await prisma.user.findMany({
       where,
       select: {
-        ...select,
-        ...excludeFields(userFields, ['password', 'email']),
+        id: true,
+        name: true,
+        dateOfBirth: true,
+        image: true,
+        imageName: true,
+        bio: true,
+        website: true,
+        provider: true,
+        isSSO: true,
+        isVerified: true,
+        createdAt: true,
+        updatedAt: true,
         followedBy: condition,
         following: condition,
         _count: {
@@ -181,6 +246,7 @@ export const userExtensions = {
             followedBy: true,
           },
         },
+        ...select,
       },
       take,
       skip,

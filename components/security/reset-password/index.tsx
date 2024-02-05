@@ -1,15 +1,23 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
 import 'antd/dist/antd.min.css';
 import { Form, Input, Button, Result, Spin } from 'antd';
 import { AxiosError } from 'axios';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { sendResetPasswordLink } from 'request/security';
+import { closeModal } from 'store/modalSlice';
+import { closeDrawer } from 'store/drawerSlice';
 import ForgotPassword from 'public/forgot-password.png';
+import { MODAL_KEYS } from 'constants/reduxKeys';
+
+const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
 
 const ResetPassword = () => {
+  const dispatch = useDispatch();
+
   const [form] = Form.useForm();
 
   const handleSendEmail = useMutation(sendResetPasswordLink, {
@@ -18,6 +26,13 @@ const ResetPassword = () => {
     },
     onError: (_err: AxiosError<{ message: string }>) => {},
   });
+
+  useEffect(() => {
+    dispatch(closeModal({ key: LOGIN_MODAL }));
+    dispatch(closeModal({ key: REGISTER_MODAL }));
+    dispatch(closeDrawer());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className='font-sans bg-[#DFF6E5] w-full h-screen flex justify-center items-center'>
