@@ -39,6 +39,7 @@ export const blogExtensions = {
       where,
       select: {
         id: true,
+        title: true,
         slug: true,
         content: true,
         image: true,
@@ -102,6 +103,7 @@ export const blogExtensions = {
       where,
       select: {
         id: true,
+        title: true,
         slug: true,
         content: true,
         image: true,
