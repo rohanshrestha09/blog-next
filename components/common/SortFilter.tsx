@@ -138,7 +138,9 @@ const SortFilter: React.FC<Props> = ({ sortFilterKey: key, isLoading, hasSort, h
               <Button
                 key={val}
                 ref={(index === 0 && initialRef) || (index === refPosition && finalRef) || null}
-                className={`rounded-full ${genre[key].includes(val) ? 'btn-secondary' : 'btn-tag'}`}
+                className={`rounded-lg bg-[#272727] border-none hover:bg-gray-200 hover:border-gray-200 hover:text-black transition-all duration-300 ${
+                  genre[key].includes(val) ? 'btn-secondary' : ''
+                }`}
                 onClick={(e) => {
                   dispatch(setGenre({ key, genre: val }));
                   e.currentTarget.blur();

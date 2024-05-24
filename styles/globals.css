@@ -119,10 +119,6 @@ svg {
   @apply bg-gray-200 hover:bg-gray-300 border-gray-200 hover:border-gray-300 transition-all duration-300 text-black !important;
 }
 
-.btn-tag {
-  @apply hover:bg-gray-200 hover:border-gray-200 hover:text-black transition-all duration-300 !important;
-}
-
 .ant-image-preview-img {
   height: 80%;
   position: absolute;
