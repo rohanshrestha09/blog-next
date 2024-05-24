@@ -60,13 +60,13 @@ const ChangePassword: React.FC = () => {
             className='rounded-lg p-3'
             iconRender={(visible) =>
               visible ? (
-                <EyeTwoTone className='text-gray-600' />
+                <EyeTwoTone className='text-zinc-400' />
               ) : (
-                <EyeInvisibleOutlined className='text-gray-600' />
+                <EyeInvisibleOutlined className='text-zinc-400' />
               )
             }
             placeholder='Password'
-            prefix={<LockOutlined className='text-gray-600 mr-2' />}
+            prefix={<LockOutlined className='text-zinc-400 mr-2' />}
             type='password'
           />
         </Form.Item>
@@ -88,13 +88,13 @@ const ChangePassword: React.FC = () => {
             className='rounded-lg p-3'
             iconRender={(visible) =>
               visible ? (
-                <EyeTwoTone className='text-gray-600' />
+                <EyeTwoTone className='text-zinc-400' />
               ) : (
-                <EyeInvisibleOutlined className='text-gray-600' />
+                <EyeInvisibleOutlined className='text-zinc-400' />
               )
             }
             placeholder='Password'
-            prefix={<LockOutlined className='text-gray-600 mr-2' />}
+            prefix={<LockOutlined className='text-zinc-400 mr-2' />}
             type='password'
           />
         </Form.Item>
@@ -116,13 +116,13 @@ const ChangePassword: React.FC = () => {
             className='rounded-lg p-3'
             iconRender={(visible) =>
               visible ? (
-                <EyeTwoTone className='text-gray-600' />
+                <EyeTwoTone className='text-zinc-400' />
               ) : (
-                <EyeInvisibleOutlined className='text-gray-600' />
+                <EyeInvisibleOutlined className='text-zinc-400' />
               )
             }
             placeholder='Password'
-            prefix={<LockOutlined className='text-gray-600 mr-2' />}
+            prefix={<LockOutlined className='text-zinc-400 mr-2' />}
             type='password'
           />
         </Form.Item>

@@ -25,7 +25,7 @@ const { LIKE_COUNT } = SORT_TYPE;
 const Empty = () => (
   <RenderEmpty className='bg-zinc-900 py-8 mx-0 rounded-lg'>
     <Button
-      className='rounded-lg'
+      className='rounded-lg text-white hover:text-white'
       icon={<GithubOutlined />}
       type='primary'
       target='_blank'

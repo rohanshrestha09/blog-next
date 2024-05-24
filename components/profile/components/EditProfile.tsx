@@ -107,7 +107,7 @@ const EditProfile = () => {
           <Input
             className='rounded-lg p-3'
             placeholder='Full Name'
-            prefix={<UserOutlined className='text-gray-600 mr-2' />}
+            prefix={<UserOutlined className='text-zinc-400 mr-2' />}
           />
         </Form.Item>
 
@@ -120,7 +120,7 @@ const EditProfile = () => {
           <Input
             className='rounded-lg p-3'
             placeholder='Email'
-            prefix={<MdOutlineAlternateEmail className='text-gray-600 mr-2' />}
+            prefix={<MdOutlineAlternateEmail className='text-zinc-400 mr-2' />}
             type='email'
             disabled
           />
@@ -130,7 +130,7 @@ const EditProfile = () => {
           <Input
             className='rounded-lg p-3'
             placeholder='Bio'
-            prefix={<InfoCircleOutlined className='text-gray-600 mr-2' />}
+            prefix={<InfoCircleOutlined className='text-zinc-400 mr-2' />}
           />
         </Form.Item>
 
@@ -138,7 +138,7 @@ const EditProfile = () => {
           <Input
             className='rounded-lg p-3'
             placeholder='Website'
-            prefix={<LinkOutlined className='text-gray-600 mr-2' />}
+            prefix={<LinkOutlined className='text-zinc-400 mr-2' />}
           />
         </Form.Item>
 

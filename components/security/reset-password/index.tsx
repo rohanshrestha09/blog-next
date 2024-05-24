@@ -73,7 +73,7 @@ const ResetPassword = () => {
                   <Input
                     className='rounded-lg p-3'
                     placeholder='Email'
-                    prefix={<MdOutlineAlternateEmail className='text-gray-600 mr-2' />}
+                    prefix={<MdOutlineAlternateEmail className='text-zinc-400 mr-2' />}
                     type='email'
                   />
                 </Form.Item>

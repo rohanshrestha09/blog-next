@@ -114,7 +114,7 @@ const Register: React.FC = () => {
           <Input
             className='rounded-lg p-3'
             placeholder='Full Name'
-            prefix={<UserOutlined className='text-gray-600 mr-2' />}
+            prefix={<UserOutlined className='text-zinc-400 mr-2' />}
           />
         </Form.Item>
 
@@ -126,7 +126,7 @@ const Register: React.FC = () => {
           <Input
             className='rounded-lg p-3'
             placeholder='Email'
-            prefix={<MdOutlineAlternateEmail className='text-gray-600 mr-2' />}
+            prefix={<MdOutlineAlternateEmail className='text-zinc-400 mr-2' />}
             type='email'
           />
         </Form.Item>
@@ -148,13 +148,13 @@ const Register: React.FC = () => {
             className='rounded-lg p-3'
             iconRender={(visible) =>
               visible ? (
-                <EyeTwoTone className='text-gray-600' />
+                <EyeTwoTone className='text-zinc-400' />
               ) : (
-                <EyeInvisibleOutlined className='text-gray-600' />
+                <EyeInvisibleOutlined className='text-zinc-400' />
               )
             }
             placeholder='Password'
-            prefix={<LockOutlined className='text-gray-600 mr-2' />}
+            prefix={<LockOutlined className='text-zinc-400 mr-2' />}
             type='password'
           />
         </Form.Item>
@@ -176,13 +176,13 @@ const Register: React.FC = () => {
             className='rounded-lg p-3'
             iconRender={(visible) =>
               visible ? (
-                <EyeTwoTone className='text-gray-600' />
+                <EyeTwoTone className='text-zinc-400' />
               ) : (
-                <EyeInvisibleOutlined className='text-gray-600' />
+                <EyeInvisibleOutlined className='text-zinc-400' />
               )
             }
             placeholder='Confirm Password'
-            prefix={<LockOutlined className='text-gray-600 mr-2' />}
+            prefix={<LockOutlined className='text-zinc-400 mr-2' />}
             type='password'
           />
         </Form.Item>
@@ -251,7 +251,7 @@ const Register: React.FC = () => {
           <span>
             Already have an account?{' '}
             <label
-              className='text-[#0579FD] cursor-pointer'
+              className='text-[#1890ff] cursor-pointer'
               onClick={() => {
                 dispatch(openModal({ key: LOGIN_MODAL }));
                 dispatch(closeModal({ key: REGISTER_MODAL }));

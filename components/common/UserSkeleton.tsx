@@ -73,11 +73,11 @@ const UserSkeleton: React.FC<Props> = ({ user, descriptionMode, isModal }) => {
           </p>
 
           {descriptionMode === 'bio' && user?.bio ? (
-            <p className='multiline-truncate-title text-xs text-zinc-500 break-words'>
+            <p className='multiline-truncate-title text-xs text-zinc-400 break-words'>
               {user?.bio}
             </p>
           ) : (
-            <p className='text-sm text-zinc-500 break-words'>
+            <p className='text-sm text-zinc-400 break-words'>
               {user?._count?.followedBy} followers
             </p>
           )}

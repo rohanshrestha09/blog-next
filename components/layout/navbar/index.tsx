@@ -63,7 +63,7 @@ export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
     {
       key: 'deleteAccount',
       label: (
-        <p className={`py-2 ${!authUser?.isVerified ? 'line-through' : 'text-red-500'}`}>
+        <p className={`py-2 ${!authUser?.isVerified ? 'line-through' : 'text-[red]'}`}>
           Delete Account
         </p>
       ),

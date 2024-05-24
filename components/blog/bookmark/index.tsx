@@ -70,7 +70,7 @@ const Bookmarks = () => {
               renderEmpty={() => (
                 <Empty>
                   <Button
-                    className='h-10 uppercase rounded-lg'
+                    className='h-10 btn-secondary rounded-lg'
                     onClick={() => router.push(HOME_NAV)}
                   >
                     Browse Blogs

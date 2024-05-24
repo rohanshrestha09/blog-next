@@ -99,10 +99,11 @@ const Profile = () => {
                 renderEmpty={() => (
                   <Empty>
                     <Button
-                      className='h-10 uppercase rounded-lg'
+                      type='primary'
+                      className='h-10 rounded-lg'
                       onClick={() => router.push(CREATE_NAV)}
                     >
-                      Create One
+                      Write a Blog
                     </Button>
                   </Empty>
                 )}

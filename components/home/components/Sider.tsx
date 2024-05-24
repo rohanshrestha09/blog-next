@@ -62,12 +62,12 @@ const HomeSider = () => {
               <UserSkeleton key={user.id} user={user} descriptionMode='bio' />
             ))}
 
-        <p
+        <span
           className='text-[#1890ff] cursor-pointer hover:text-blue-600 transition-all duration-300'
           onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
         >
           View More Suggestions
-        </p>
+        </span>
 
         <Divider />
 
