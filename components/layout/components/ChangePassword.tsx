@@ -1,22 +1,17 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { Form, Modal, Input, Button } from 'antd';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { EyeInvisibleOutlined, EyeTwoTone, LockOutlined } from '@ant-design/icons';
-import { closeModal } from 'store/modalSlice';
 import { changePassword } from 'request/security';
+import { useModalStore } from 'store/hooks';
 import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
-import { MODAL_KEYS } from 'constants/reduxKeys';
+import { MODALS } from 'constants/reduxKeys';
 import { AUTH } from 'constants/queryKeys';
 
-const { CHANGE_PASSWORD_MODAL } = MODAL_KEYS;
-
 const ChangePassword: React.FC = () => {
-  const {
-    isOpen: { [CHANGE_PASSWORD_MODAL]: isOpen },
-  } = useSelector((state: RootState) => state.modal);
-
-  const dispatch = useDispatch();
+  const { isOpen: isChangePasswordModalOpen, closeModal: closeChangePasswordModal } = useModalStore(
+    MODALS.CHANGE_PASSWORD_MODAL,
+  );
 
   const [form] = Form.useForm();
 
@@ -26,7 +21,7 @@ const ChangePassword: React.FC = () => {
     onSuccess: (res) => {
       successNotification(res.message);
       queryClient.refetchQueries(queryKeys(AUTH).all);
-      dispatch(closeModal({ key: CHANGE_PASSWORD_MODAL }));
+      closeChangePasswordModal();
       form.resetFields();
     },
     onError: errorNotification,
@@ -37,8 +32,8 @@ const ChangePassword: React.FC = () => {
       centered
       destroyOnClose
       className='font-sans'
-      open={isOpen}
-      onCancel={() => dispatch(closeModal({ key: CHANGE_PASSWORD_MODAL }))}
+      open={isChangePasswordModalOpen}
+      onCancel={closeChangePasswordModal}
       afterClose={() => form.resetFields()}
       footer={null}
     >

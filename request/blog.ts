@@ -18,7 +18,7 @@ export const getAllBlogs: GetAll<
     page = 1,
     size = 20,
     sort = SORT_TYPE.LIKE_COUNT,
-    order = SORT_ORDER.DESCENDING,
+    order = SORT_ORDER.DESC,
     genre = '',
     search = '',
   },

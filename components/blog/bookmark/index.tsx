@@ -1,33 +1,24 @@
 import Head from 'next/head';
-import { NextRouter, useRouter } from 'next/router';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 import { dehydrate, useQuery } from '@tanstack/react-query';
 import { Button, ConfigProvider, Divider, Empty, List, Skeleton } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAuth, withAuth } from 'auth';
 import BlogCard from 'components/common/BlogCard';
-import SearchFilter from 'components/common/SortFilter';
-import { setSize } from 'store/sortFilterSlice';
-import { NAV_KEYS, BOOKMARKS_KEYS } from 'constants/reduxKeys';
-import { AUTH, GENRE, BOOKMARK } from 'constants/queryKeys';
+import Filter from 'components/common/Filter';
 import { getBookmarks, getProfile } from 'request/auth';
-import { queryKeys } from 'utils';
 import { getGenre } from 'request/blog';
+import { useFilterStore } from 'store/hooks';
+import { queryKeys } from 'utils';
+import { NAV_KEYS, FILTERS } from 'constants/reduxKeys';
+import { AUTH, GENRE, BOOKMARK } from 'constants/queryKeys';
 
 const { HOME_NAV } = NAV_KEYS;
 
-const { BOOKMARKS } = BOOKMARKS_KEYS;
-
 const Bookmarks = () => {
-  const router: NextRouter = useRouter();
+  const router = useRouter();
 
-  const {
-    genre: { [BOOKMARKS]: genre },
-    size: { [BOOKMARKS]: size },
-    search: { [BOOKMARKS]: search },
-  } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
-
-  const dispatch = useDispatch();
+  const { size, search, genre, setSize } = useFilterStore(FILTERS.BOOKMARK_FILTER);
 
   const { authUser } = useAuth();
 
@@ -53,7 +44,7 @@ const Bookmarks = () => {
 
         <Divider />
 
-        <SearchFilter sortFilterKey={BOOKMARKS} isLoading={isPreviousData} />
+        <Filter filterType={FILTERS.BOOKMARK_FILTER} isLoading={isPreviousData} />
 
         {blogs?.count && !isFetchedAfterMount ? (
           Array.from({ length: 3 }).map((_, i) => (
@@ -62,7 +53,7 @@ const Bookmarks = () => {
         ) : (
           <InfiniteScroll
             dataLength={blogs?.result?.length ?? 0}
-            next={() => dispatch(setSize({ key: BOOKMARKS, size: 10 }))}
+            next={() => setSize(10)}
             hasMore={blogs?.result ? blogs?.result?.length < blogs?.count : false}
             loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
           >

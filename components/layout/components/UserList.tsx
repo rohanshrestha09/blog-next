@@ -1,32 +1,22 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { Modal, Input, Spin, Divider, Skeleton, List } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { BiSearch } from 'react-icons/bi';
 import UserSkeleton from 'components/common/UserSkeleton';
-import { setSize, setSearch } from 'store/sortFilterSlice';
-import { closeModal } from 'store/modalSlice';
+import { useFilterStore } from 'store/hooks';
 import { getUserSuggestions } from 'request/user';
+import { useModalStore } from 'store/hooks';
 import { queryKeys } from 'utils';
-import { HOME_KEYS, MODAL_KEYS } from 'constants/reduxKeys';
+import { FILTERS, MODALS } from 'constants/reduxKeys';
 import { USER } from 'constants/queryKeys';
 
-const { USER_SUGGESTIONS_MODAL } = MODAL_KEYS;
-
-const { USER_SUGGESTIONS } = HOME_KEYS;
-
 const UserList: React.FC = () => {
-  const {
-    isOpen: { [USER_SUGGESTIONS_MODAL]: isOpen },
-  } = useSelector((state: RootState) => state.modal);
+  const { isOpen: isUserSuggestionModalOpen, closeModal: closeUserSuggestionModal } = useModalStore(
+    MODALS.USER_SUGGESTION_MODAL,
+  );
 
-  const {
-    size: { [USER_SUGGESTIONS]: size },
-    search: { [USER_SUGGESTIONS]: search },
-  } = useSelector((state: RootState) => state.sortFilter);
-
-  const dispatch = useDispatch();
+  const { size, search, setSize, setSearch } = useFilterStore(FILTERS.USER_SUGGESTION_FILTER);
 
   const { data: users, isPreviousData: isLoading } = useQuery({
     queryFn: () => getUserSuggestions({ size, search }),
@@ -40,8 +30,8 @@ const UserList: React.FC = () => {
     <Modal
       destroyOnClose
       className='font-sans'
-      open={isOpen}
-      onCancel={() => dispatch(closeModal({ key: USER_SUGGESTIONS_MODAL }))}
+      open={isUserSuggestionModalOpen}
+      onCancel={closeUserSuggestionModal}
       footer={null}
     >
       <span className='w-full flex gap-3 items-center pt-7'>
@@ -52,10 +42,7 @@ const UserList: React.FC = () => {
           prefix={<BiSearch />}
           onChange={({ target: { value } }) => {
             if (timeout) clearTimeout(timeout);
-            timeout = setTimeout(
-              () => dispatch(setSearch({ key: USER_SUGGESTIONS, search: value })),
-              700,
-            );
+            timeout = setTimeout(() => setSearch(value), 700);
           }}
           allowClear
         />
@@ -67,7 +54,7 @@ const UserList: React.FC = () => {
 
       <InfiniteScroll
         dataLength={users?.result?.length ?? 0}
-        next={() => dispatch(setSize({ key: USER_SUGGESTIONS, size: 10 }))}
+        next={() => setSize(10)}
         hasMore={users?.result ? users?.result?.length < users?.count : false}
         loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
       >

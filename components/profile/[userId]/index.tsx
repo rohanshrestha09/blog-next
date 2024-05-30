@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import { useRouter, NextRouter } from 'next/router';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import {
   DehydratedState,
   QueryClient,
@@ -15,7 +14,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAuth } from 'auth';
 import BlogCard from 'components/common/BlogCard';
 import UserProfileSider from './components/Sider';
-import { setSize } from 'store/sortFilterSlice';
+import { useFilterStore } from 'store/hooks';
 import { getProfile } from 'request/auth';
 import {
   followUser,
@@ -28,20 +27,14 @@ import {
 import { queryKeys } from 'utils';
 import { errorNotification, successNotification } from 'utils/notification';
 import { AUTH, USER, BLOG, FOLLOWER, FOLLOWING } from 'constants/queryKeys';
-import { NAV_KEYS, PROFILE_KEYS } from 'constants/reduxKeys';
-
-const { USER_PROFILE } = PROFILE_KEYS;
+import { FILTERS, NAV_KEYS } from 'constants/reduxKeys';
 
 const { HOME_NAV } = NAV_KEYS;
 
-const UserProfile: NextPage = () => {
+const UserProfile = () => {
   const { query, push }: NextRouter = useRouter();
 
-  const {
-    size: { [USER_PROFILE]: size },
-  } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
-
-  const dispatch = useDispatch();
+  const { size, setSize } = useFilterStore(FILTERS.USER_PROFILE_FILTER);
 
   const queryClient = useQueryClient();
 
@@ -134,7 +127,7 @@ const UserProfile: NextPage = () => {
           ) : (
             <InfiniteScroll
               dataLength={blogs?.result?.length ?? 0}
-              next={() => dispatch(setSize({ key: USER_PROFILE, size: 10 }))}
+              next={() => setSize(10)}
               hasMore={blogs?.result ? blogs?.result?.length < blogs?.count : false}
               loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
             >

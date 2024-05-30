@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import { Button, DatePicker, Form, Input, Modal, Upload } from 'antd';
@@ -8,20 +7,22 @@ import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { useAuth } from 'auth';
 import PasswordAuth from './PasswordAuth';
 import { deleteProfileImage, updateProfile } from 'request/auth';
-import { closeModal, openModal } from 'store/modalSlice';
+import { useModalStore } from 'store/hooks';
 import { errorNotification, successNotification, warningNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
-import { MODAL_KEYS } from 'constants/reduxKeys';
+import { MODALS } from 'constants/reduxKeys';
 import { AUTH, BLOG } from 'constants/queryKeys';
 
-const { EDIT_PROFILE_MODAL, PASSWORD_AUTH_MODAL, COMPLETE_PROFILE_MODAL } = MODAL_KEYS;
-
 const EditProfile = () => {
-  const {
-    isOpen: { [EDIT_PROFILE_MODAL]: isOpen },
-  } = useSelector((state: RootState) => state.modal);
+  const { isOpen: isEditProfileModalOpen, closeModal: closeEditProfileModal } = useModalStore(
+    MODALS.EDIT_PROFILE_MODAL,
+  );
 
-  const dispatch = useDispatch();
+  const { openModal: openPasswordAuthModal, closeModal: closePasswordAuthModal } = useModalStore(
+    MODALS.PASSWORD_AUTH_MODAL,
+  );
+
+  const { openModal: openCompleteProfileModal } = useModalStore(MODALS.COMPLETE_PROFILE_MODAL);
 
   const queryClient = useQueryClient();
 
@@ -74,8 +75,8 @@ const EditProfile = () => {
         successNotification(res.message);
         queryClient.refetchQueries(queryKeys(AUTH).all);
         queryClient.refetchQueries(queryKeys(BLOG).all);
-        dispatch(closeModal({ key: EDIT_PROFILE_MODAL }));
-        dispatch(closeModal({ key: PASSWORD_AUTH_MODAL }));
+        closeEditProfileModal();
+        closePasswordAuthModal();
       },
       onError: errorNotification,
     },
@@ -86,8 +87,8 @@ const EditProfile = () => {
       centered
       destroyOnClose
       className='font-sans'
-      open={isOpen}
-      onCancel={() => dispatch(closeModal({ key: EDIT_PROFILE_MODAL }))}
+      open={isEditProfileModalOpen}
+      onCancel={closeEditProfileModal}
       footer={null}
     >
       <Form
@@ -96,7 +97,7 @@ const EditProfile = () => {
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
-        onFinish={() => dispatch(openModal({ key: PASSWORD_AUTH_MODAL }))}
+        onFinish={openPasswordAuthModal}
       >
         <Form.Item
           label='Full Name'
@@ -192,11 +193,7 @@ const EditProfile = () => {
             </Button>
 
             {!authUser?.isVerified && (
-              <Button
-                type='primary'
-                className='h-10 rounded-lg'
-                onClick={() => dispatch(openModal({ key: COMPLETE_PROFILE_MODAL }))}
-              >
+              <Button type='primary' className='h-10 rounded-lg' onClick={openCompleteProfileModal}>
                 Complete Profile
               </Button>
             )}

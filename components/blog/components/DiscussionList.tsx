@@ -1,18 +1,17 @@
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { Fragment, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { List, Comment, Avatar, Tooltip } from 'antd';
 import moment from 'moment';
 import { LikeFilled, LikeOutlined } from '@ant-design/icons';
 import { useAuth } from 'auth';
-import { closeModal, openModal } from 'store/modalSlice';
 import ConfirmDelete from 'components/common/ConfirmDelete';
+import { useModalStore } from 'store/hooks';
 import { deleteComment, likeComment, unlikeComment } from 'request/blog';
 import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
-import { MODAL_KEYS } from 'constants/reduxKeys';
+import { MODALS } from 'constants/reduxKeys';
 import { BLOG, COMMENT } from 'constants/queryKeys';
 import { Comment as CommentSchema } from 'interface/models';
 
@@ -21,16 +20,16 @@ interface Props {
   count: number;
 }
 
-const { DELETE_MODAL } = MODAL_KEYS;
-
 export const DiscussionList: React.FC<Props> = ({ data, count }) => {
   const { push } = useRouter();
-
-  const dispatch = useDispatch();
 
   const queryClient = useQueryClient();
 
   const { authUser } = useAuth();
+
+  const { openModal: openDeleteModal, closeModal: closeDeleteModal } = useModalStore(
+    MODALS.DELETE_MODAL,
+  );
 
   const [comment, setComment] = useState<{
     id: number | null;
@@ -55,7 +54,7 @@ export const DiscussionList: React.FC<Props> = ({ data, count }) => {
       queryClient.refetchQueries(queryKeys(COMMENT).all);
       queryClient.refetchQueries(queryKeys(BLOG).detail(comment.slug as string));
       setComment({ id: null, slug: null });
-      dispatch(closeModal({ key: DELETE_MODAL }));
+      closeDeleteModal();
     },
     onError: errorNotification,
   });
@@ -122,7 +121,7 @@ export const DiscussionList: React.FC<Props> = ({ data, count }) => {
                     key={comment?.id}
                     onClick={() => {
                       setComment({ id: comment?.id, slug: comment?.blog?.slug });
-                      dispatch(openModal({ key: DELETE_MODAL }));
+                      openDeleteModal();
                     }}
                   >
                     Delete

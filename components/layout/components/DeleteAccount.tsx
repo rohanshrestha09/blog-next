@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
 import { Modal, Form, Input, Button } from 'antd';
 import {
@@ -9,19 +8,17 @@ import {
   LockOutlined,
 } from '@ant-design/icons';
 import ConfirmDelete from 'components/common/ConfirmDelete';
-import { closeModal, openModal } from 'store/modalSlice';
-import { errorNotification, successNotification } from 'utils/notification';
-import { MODAL_KEYS } from 'constants/reduxKeys';
 import { deleteProfile } from 'request/auth';
-
-const { DELETE_ACCOUNT_MODAL, DELETE_MODAL } = MODAL_KEYS;
+import { useModalStore } from 'store/hooks';
+import { errorNotification, successNotification } from 'utils/notification';
+import { MODALS } from 'constants/reduxKeys';
 
 const DeleteAccount: React.FC = () => {
-  const {
-    isOpen: { [DELETE_ACCOUNT_MODAL]: isOpen },
-  } = useSelector((state: RootState) => state.modal);
+  const { isOpen: isDeleteAccountModalOpen, closeModal: closeDeleteAccountModal } = useModalStore(
+    MODALS.DELETE_ACCOUNT_MODAL,
+  );
 
-  const dispatch = useDispatch();
+  const { openModal: openDeleteModal } = useModalStore(MODALS.DELETE_MODAL);
 
   const [isConfirmed, setIsConfirmed] = useState('');
 
@@ -30,7 +27,7 @@ const DeleteAccount: React.FC = () => {
   const handleDeleteAccount = useMutation(deleteProfile, {
     onSuccess: (res) => {
       successNotification(res.message);
-      dispatch(closeModal({ key: DELETE_ACCOUNT_MODAL }));
+      closeDeleteAccountModal();
       localStorage.clear();
       window.location.reload();
     },
@@ -42,8 +39,8 @@ const DeleteAccount: React.FC = () => {
       centered
       destroyOnClose
       className='font-sans'
-      open={isOpen}
-      onCancel={() => dispatch(closeModal({ key: DELETE_ACCOUNT_MODAL }))}
+      open={isDeleteAccountModalOpen}
+      onCancel={closeDeleteAccountModal}
       afterClose={() => {
         form.resetFields();
         setIsConfirmed('');
@@ -56,7 +53,7 @@ const DeleteAccount: React.FC = () => {
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
-        onFinish={() => dispatch(openModal({ key: DELETE_MODAL }))}
+        onFinish={openDeleteModal}
       >
         <Form.Item label={`Type 'CONFIRM'`} name='confirm'>
           <Input

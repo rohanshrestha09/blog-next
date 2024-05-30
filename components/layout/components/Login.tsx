@@ -1,28 +1,25 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Form, Input, Checkbox, Button, Modal, Divider } from 'antd';
 import { LockOutlined, EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { login } from 'request/auth';
-import { openModal, closeModal } from 'store/modalSlice';
+import { useModalStore } from 'store/hooks';
 import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { AUTH } from 'constants/queryKeys';
-import { MODAL_KEYS } from 'constants/reduxKeys';
-
-const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
+import { MODALS } from 'constants/reduxKeys';
 
 const Login: React.FC = () => {
   const router = useRouter();
 
-  const {
-    isOpen: { [LOGIN_MODAL]: isOpen },
-  } = useSelector((state: RootState) => state.modal);
+  const { isOpen: isLoginModalOpen, closeModal: closeLoginModal } = useModalStore(
+    MODALS.LOGIN_MODAL,
+  );
 
-  const dispatch = useDispatch();
+  const { openModal: openRegisterModal } = useModalStore(MODALS.REGISTER_MODAL);
 
   const queryClient = useQueryClient();
 
@@ -33,7 +30,7 @@ const Login: React.FC = () => {
       successNotification(res.message);
       form.resetFields();
       queryClient.refetchQueries(queryKeys(AUTH).all);
-      dispatch(closeModal({ key: LOGIN_MODAL }));
+      closeLoginModal();
       router.push('/profile');
     },
     onError: errorNotification,
@@ -44,8 +41,8 @@ const Login: React.FC = () => {
       centered
       destroyOnClose
       className='font-sans'
-      open={isOpen}
-      onCancel={() => dispatch(closeModal({ key: LOGIN_MODAL }))}
+      open={isLoginModalOpen}
+      onCancel={closeLoginModal}
       footer={null}
     >
       <Form
@@ -138,8 +135,8 @@ const Login: React.FC = () => {
             <label
               className='text-[#1890ff] cursor-pointer'
               onClick={() => {
-                dispatch(openModal({ key: REGISTER_MODAL }));
-                dispatch(closeModal({ key: LOGIN_MODAL }));
+                openRegisterModal();
+                closeLoginModal();
               }}
             >
               Create One

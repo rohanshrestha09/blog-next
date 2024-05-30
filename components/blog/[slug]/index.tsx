@@ -20,9 +20,7 @@ import he from 'he';
 import { BsBookmark, BsBookmarkFill, BsHeart, BsHeartFill } from 'react-icons/bs';
 import { VscComment } from 'react-icons/vsc';
 import { useAuth } from 'auth';
-import { closeModal, openModal } from 'store/modalSlice';
 import { turnReadingMode } from 'store/readingModeSlice';
-import { setSize } from 'store/sortFilterSlice';
 import BlogCard from 'components/common/BlogCard';
 import UserSkeleton from 'components/common/UserSkeleton';
 import { DiscussionForm } from '../components/DiscussionForm';
@@ -42,12 +40,10 @@ import {
   unbookmarkBlog,
   unlikeBlog,
 } from 'request/blog';
+import { useModalStore, useFilterStore } from 'store/hooks';
 import { AUTH, BLOG, COMMENT, GENRE, USER } from 'constants/queryKeys';
-import { BLOG_KEYS, MODAL_KEYS } from 'constants/reduxKeys';
+import { FILTERS, MODALS } from 'constants/reduxKeys';
 import { Blog } from 'interface/models';
-const { DISCUSSIONS_MODAL, LIKERS_MODAL } = MODAL_KEYS;
-
-const { LIKES, COMMENTS } = BLOG_KEYS;
 
 const Blog = () => {
   const { query, push } = useRouter();
@@ -61,12 +57,20 @@ const Blog = () => {
   const { isTurned: isReadingMode } = useSelector((state: RootState) => state.readingMode);
 
   const {
-    isOpen: { [LIKERS_MODAL]: isLikersModalOpen, [DISCUSSIONS_MODAL]: isDiscussionModalOpen },
-  } = useSelector((state: RootState) => state.modal);
+    isOpen: isDiscussionModalOpen,
+    openModal: openDiscussionModal,
+    closeModal: closeDiscussionModal,
+  } = useModalStore(MODALS.DISCUSSION_MODAL);
 
   const {
-    size: { [LIKES]: likesSize, [COMMENTS]: commentsSize },
-  } = useSelector((state: RootState) => state.sortFilter);
+    isOpen: isLikeModalOpen,
+    openModal: openLikeModal,
+    closeModal: closeLikeModal,
+  } = useModalStore(MODALS.LIKE_MODAL);
+
+  const { size: likeSize, setSize: setCommentSize } = useFilterStore(FILTERS.LIKE_FILTER);
+
+  const { size: commentSize } = useFilterStore(FILTERS.COMMENT_FILTER);
 
   const { data: blog } = useQuery({
     queryFn: () => getBlog(String(query?.slug)),
@@ -75,14 +79,14 @@ const Blog = () => {
   });
 
   const { data: likers } = useQuery({
-    queryFn: () => getLikes({ slug: String(query?.slug), size: likesSize }),
-    queryKey: queryKeys(USER).list({ slug: String(query?.slug), size: likesSize }),
+    queryFn: () => getLikes({ slug: String(query?.slug), size: likeSize }),
+    queryKey: queryKeys(USER).list({ slug: String(query?.slug), size: likeSize }),
     enabled: !!query?.slug,
   });
 
   const { data: comments } = useQuery({
-    queryFn: () => getComments({ slug: String(query?.slug), size: commentsSize }),
-    queryKey: queryKeys(COMMENT).list({ slug: String(query?.slug), size: commentsSize }),
+    queryFn: () => getComments({ slug: String(query?.slug), size: commentSize }),
+    queryKey: queryKeys(COMMENT).list({ slug: String(query?.slug), size: commentSize }),
     keepPreviousData: true,
   });
 
@@ -130,7 +134,7 @@ const Blog = () => {
     onSuccess: (res) => {
       successNotification(res.message);
       queryClient.refetchQueries(
-        queryKeys(COMMENT).list({ slug: String(query?.slug), size: commentsSize }),
+        queryKeys(COMMENT).list({ slug: String(query?.slug), size: commentSize }),
       );
       queryClient.refetchQueries(queryKeys(BLOG).detail(query?.slug as string));
     },
@@ -228,14 +232,14 @@ const Blog = () => {
           <span className='flex justify-between'>
             <p
               className='text-[#1890ff] text-base cursor-pointer hover:text-blue-600'
-              onClick={() => dispatch(openModal({ key: LIKERS_MODAL }))}
+              onClick={openLikeModal}
             >
               View {blog?._count?.likedBy} Likes
             </p>
 
             <p
               className='text-[#1890ff] text-base cursor-pointer hover:text-blue-600'
-              onClick={() => dispatch(openModal({ key: DISCUSSIONS_MODAL }))}
+              onClick={openDiscussionModal}
             >
               {blog?._count?.comments} Discussions
             </p>
@@ -257,10 +261,7 @@ const Blog = () => {
               {blog?.hasLiked ? <BsHeartFill /> : <BsHeart />} Like
             </span>
 
-            <span
-              className='flex items-center justify-center gap-2'
-              onClick={() => dispatch(openModal({ key: DISCUSSIONS_MODAL }))}
-            >
+            <span className='flex items-center justify-center gap-2' onClick={openDiscussionModal}>
               <VscComment size='17' /> Discussions
             </span>
           </span>
@@ -278,12 +279,7 @@ const Blog = () => {
               ))}
         </div>
 
-        <Modal
-          className='font-sans'
-          open={isLikersModalOpen}
-          onCancel={() => dispatch(closeModal({ key: LIKERS_MODAL }))}
-          footer={null}
-        >
+        <Modal className='font-sans' open={isLikeModalOpen} onCancel={closeLikeModal} footer={null}>
           {isEmpty(likers?.result) ? (
             <Empty />
           ) : (
@@ -298,9 +294,7 @@ const Blog = () => {
         <Modal
           className='font-sans'
           open={isDiscussionModalOpen}
-          onCancel={() => {
-            dispatch(closeModal({ key: DISCUSSIONS_MODAL }));
-          }}
+          onCancel={closeDiscussionModal}
           footer={null}
         >
           {authUser && (
@@ -314,7 +308,7 @@ const Blog = () => {
 
           <InfiniteScroll
             dataLength={comments?.result?.length ?? 0}
-            next={() => dispatch(setSize({ key: COMMENTS, size: 10 }))}
+            next={() => setCommentSize(10)}
             hasMore={comments?.result ? comments?.result?.length < comments?.count : false}
             loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
           >

@@ -1,16 +1,15 @@
 import Image from 'next/image';
 import { NextRouter, useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Avatar, Badge } from 'antd';
 import moment from 'moment';
 import { GoPrimitiveDot } from 'react-icons/go';
 import { markAsRead } from 'request/notification';
-import { openModal } from 'store/modalSlice';
+import { useModalStore } from 'store/hooks';
 import { errorNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
-import { MODAL_KEYS, NOTIFICATIONS_STATUS, NOTIFICATIONS_TYPE } from 'constants/reduxKeys';
+import { MODALS, NOTIFICATIONS_STATUS, NOTIFICATIONS_TYPE } from 'constants/reduxKeys';
 import { NOTIFICATION } from 'constants/queryKeys';
 import { Notification } from 'interface/models';
 
@@ -23,14 +22,12 @@ const { FOLLOW_USER, LIKE_BLOG, LIKE_COMMENT, POST_BLOG, POST_COMMENT } = NOTIFI
 
 const { UNREAD } = NOTIFICATIONS_STATUS;
 
-const { DISCUSSIONS_MODAL } = MODAL_KEYS;
-
 const NotificationCard: React.FC<Props> = ({ notification, size }) => {
   const router: NextRouter = useRouter();
 
   const queryClient = useQueryClient();
 
-  const dispatch = useDispatch();
+  const { openModal: openDiscussionModal } = useModalStore(MODALS.DISCUSSION_MODAL);
 
   const [isSSR, setIsSSR] = useState(true);
 
@@ -82,7 +79,7 @@ const NotificationCard: React.FC<Props> = ({ notification, size }) => {
       case LIKE_COMMENT:
       case POST_COMMENT:
         router.push(`/blog/${notification?.blog?.slug}`);
-        dispatch(openModal({ key: DISCUSSIONS_MODAL }));
+        openDiscussionModal();
     }
   };
 

@@ -13,45 +13,30 @@ import { getBlogs, getFollowers, getFollowing, getProfile } from 'request/auth';
 import ProfileSider from './components/Sider';
 import BlogCard from 'components/common/BlogCard';
 import EditProfile from './components/EditProfile';
-import SortFilter from 'components/common/SortFilter';
-import { openModal } from 'store/modalSlice';
+import Filter from 'components/common/Filter';
+import { useModalStore, useFilterStore } from 'store/hooks';
 import { changeKey } from 'store/authBlogSlice';
-import { setSize } from 'store/sortFilterSlice';
 import { queryKeys } from 'utils';
 import { AUTH, GENRE, BLOG, FOLLOWER, FOLLOWING } from 'constants/queryKeys';
 import {
-  PROFILE_KEYS,
   AUTH_PROFILE_KEYS,
-  MODAL_KEYS,
+  MODALS,
   NAV_KEYS,
   SORT_ORDER,
   SORT_TYPE,
+  FILTERS,
 } from 'constants/reduxKeys';
 
 const { ALL_BLOGS, PUBLISHED, UNPUBLISHED } = AUTH_PROFILE_KEYS;
-
-const { AUTH_PROFILE } = PROFILE_KEYS;
-
-const { CREATE_NAV } = NAV_KEYS;
-
-const { EDIT_PROFILE_MODAL } = MODAL_KEYS;
-
-const { LIKE_COUNT } = SORT_TYPE;
-
-const { DESCENDING } = SORT_ORDER;
 
 const Profile = () => {
   const router = useRouter();
 
   const { key, isPublished } = useSelector((state: RootState) => state.authBlog, shallowEqual);
 
-  const {
-    search: { [AUTH_PROFILE]: search },
-    size: { [AUTH_PROFILE]: size },
-    sort: { [AUTH_PROFILE]: sort },
-    order: { [AUTH_PROFILE]: order },
-    genre: { [AUTH_PROFILE]: genre },
-  } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
+  const { openModal: openEditProfileModal } = useModalStore(MODALS.EDIT_PROFILE_MODAL);
+
+  const { size, search, sort, order, genre, setSize } = useFilterStore(FILTERS.AUTH_PROFILE_FILTER);
 
   const dispatch = useDispatch();
 
@@ -77,8 +62,8 @@ const Profile = () => {
       ),
       children: (
         <div className='w-full pt-3'>
-          <SortFilter
-            sortFilterKey={AUTH_PROFILE}
+          <Filter
+            filterType={FILTERS.AUTH_PROFILE_FILTER}
             isLoading={isPreviousData}
             hasSort
             hasSortOrder
@@ -91,7 +76,7 @@ const Profile = () => {
           ) : (
             <InfiniteScroll
               dataLength={blogs?.result?.length ?? 0}
-              next={() => dispatch(setSize({ key: AUTH_PROFILE, size: 10 }))}
+              next={() => setSize(10)}
               hasMore={blogs?.result ? blogs?.result?.length < blogs?.count : false}
               loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
             >
@@ -101,7 +86,7 @@ const Profile = () => {
                     <Button
                       type='primary'
                       className='h-10 rounded-lg'
-                      onClick={() => router.push(CREATE_NAV)}
+                      onClick={() => router.push(NAV_KEYS.CREATE_NAV)}
                     >
                       Write a Blog
                     </Button>
@@ -163,11 +148,7 @@ const Profile = () => {
 
           <ProfileSider />
 
-          <Button
-            type='primary'
-            className='sm:order-2 rounded-lg'
-            onClick={() => dispatch(openModal({ key: EDIT_PROFILE_MODAL }))}
-          >
+          <Button type='primary' className='sm:order-2 rounded-lg' onClick={openEditProfileModal}>
             Edit Profile
           </Button>
 
@@ -206,8 +187,8 @@ export const getServerSideProps = withAuth(async (ctx, queryClient) => {
     queryKey: queryKeys(AUTH, BLOG).list({
       genre: [],
       size: 20,
-      sort: LIKE_COUNT,
-      order: DESCENDING,
+      sort: SORT_TYPE.LIKE_COUNT,
+      order: SORT_ORDER.DESC,
       search: '',
     }),
   });

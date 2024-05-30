@@ -8,17 +8,19 @@ import { Form, Input, Button, Result, Spin } from 'antd';
 import { AxiosError } from 'axios';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { sendResetPasswordLink } from 'request/security';
-import { closeModal } from 'store/modalSlice';
+import { useModalStore } from 'store/hooks';
 import { closeDrawer } from 'store/drawerSlice';
 import ForgotPassword from 'public/forgot-password.png';
-import { MODAL_KEYS } from 'constants/reduxKeys';
-
-const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
+import { MODALS } from 'constants/reduxKeys';
 
 const ResetPassword = () => {
   const dispatch = useDispatch();
 
   const [form] = Form.useForm();
+
+  const { closeModal: closeLoginModal } = useModalStore(MODALS.LOGIN_MODAL);
+
+  const { closeModal: closeRegisterModal } = useModalStore(MODALS.REGISTER_MODAL);
 
   const handleSendEmail = useMutation(sendResetPasswordLink, {
     onSuccess: () => {
@@ -28,8 +30,8 @@ const ResetPassword = () => {
   });
 
   useEffect(() => {
-    dispatch(closeModal({ key: LOGIN_MODAL }));
-    dispatch(closeModal({ key: REGISTER_MODAL }));
+    closeLoginModal();
+    closeRegisterModal();
     dispatch(closeDrawer());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

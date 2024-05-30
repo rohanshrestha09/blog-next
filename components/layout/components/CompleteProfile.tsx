@@ -1,22 +1,16 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Modal, Form, Input, Button } from 'antd';
 import { EyeTwoTone, EyeInvisibleOutlined, LockOutlined } from '@ant-design/icons';
-import { closeModal } from 'store/modalSlice';
 import { completeProfile } from 'request/auth';
+import { useModalStore } from 'store/hooks';
 import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { AUTH } from 'constants/queryKeys';
-import { MODAL_KEYS } from 'constants/reduxKeys';
-
-const { COMPLETE_PROFILE_MODAL } = MODAL_KEYS;
+import { MODALS } from 'constants/reduxKeys';
 
 const CompleteProfile: React.FC = () => {
-  const dispatch = useDispatch();
-
-  const {
-    isOpen: { [COMPLETE_PROFILE_MODAL]: isOpen },
-  } = useSelector((state: RootState) => state.modal);
+  const { isOpen: isCompleteProfileModalOpen, closeModal: closeCompleteProfileModal } =
+    useModalStore(MODALS.COMPLETE_PROFILE_MODAL);
 
   const queryClient = useQueryClient();
 
@@ -26,7 +20,7 @@ const CompleteProfile: React.FC = () => {
     onSuccess: (res) => {
       successNotification(res.message);
       queryClient.refetchQueries(queryKeys(AUTH).all);
-      dispatch(closeModal({ key: COMPLETE_PROFILE_MODAL }));
+      closeCompleteProfileModal();
       form.resetFields();
     },
     onError: errorNotification,
@@ -37,8 +31,8 @@ const CompleteProfile: React.FC = () => {
       centered
       destroyOnClose
       className='font-sans'
-      open={isOpen}
-      onCancel={() => dispatch(closeModal({ key: COMPLETE_PROFILE_MODAL }))}
+      open={isCompleteProfileModalOpen}
+      onCancel={closeCompleteProfileModal}
       afterClose={() => form.resetFields()}
       footer={null}
     >

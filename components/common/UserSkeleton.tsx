@@ -1,14 +1,13 @@
 import Image from 'next/image';
-import { NextRouter, useRouter } from 'next/router';
-import { useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Avatar, Button, Space } from 'antd';
 import { useAuth } from 'auth';
 import { followUser, unfollowUser } from 'request/user';
+import { useModalStore } from 'store/hooks';
 import { errorNotification, successNotification } from 'utils/notification';
-import { closeModal } from 'store/modalSlice';
 import { queryKeys } from 'utils';
-import { MODAL_KEYS } from 'constants/reduxKeys';
+import { MODALS } from 'constants/reduxKeys';
 import { FOLLOWER, FOLLOWING } from 'constants/queryKeys';
 import { User } from 'interface/models';
 
@@ -18,12 +17,10 @@ interface Props {
   isModal?: boolean;
 }
 
-const { USER_SUGGESTIONS_MODAL } = MODAL_KEYS;
-
 const UserSkeleton: React.FC<Props> = ({ user, descriptionMode, isModal }) => {
-  const router: NextRouter = useRouter();
+  const router = useRouter();
 
-  const dispatch = useDispatch();
+  const { closeModal: closeUserSuggestionModal } = useModalStore(MODALS.USER_SUGGESTION_MODAL);
 
   const { authUser } = useAuth();
 
@@ -66,7 +63,7 @@ const UserSkeleton: React.FC<Props> = ({ user, descriptionMode, isModal }) => {
             className='text-sm text-white multiline-truncate-title break-words cursor-pointer'
             onClick={() => {
               router.push(`/profile/${user?.id}`);
-              isModal && dispatch(closeModal({ key: USER_SUGGESTIONS_MODAL }));
+              isModal && closeUserSuggestionModal();
             }}
           >
             {user?.name}

@@ -16,10 +16,10 @@ import ChangePassword from '../components/ChangePassword';
 import DeleteAccount from '../components/DeleteAccount';
 import CompleteProfile from '../components/CompleteProfile';
 import { openDrawer, closeDrawer } from 'store/drawerSlice';
-import { openModal } from 'store/modalSlice';
+import { useModalStore } from 'store/hooks';
 import { successNotification, errorNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
-import { MODAL_KEYS, NAV_KEYS } from 'constants/reduxKeys';
+import { MODALS, NAV_KEYS } from 'constants/reduxKeys';
 import { NOTIFICATION } from 'constants/queryKeys';
 
 interface Props {
@@ -29,17 +29,18 @@ interface Props {
 
 const { HOME_NAV, PROFILE_NAV, CREATE_NAV, BOOKMARKS_NAV, NOTIF_NAV, LOGOUT_NAV } = NAV_KEYS;
 
-const {
-  USER_SUGGESTIONS_MODAL,
-  CHANGE_PASSWORD_MODAL,
-  DELETE_ACCOUNT_MODAL,
-  COMPLETE_PROFILE_MODAL,
-} = MODAL_KEYS;
-
 type MenuItem = Required<MenuProps>['items'][number];
 
 export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
   const { pathname, push } = useRouter();
+
+  const { openModal: openUserSuggestionModal } = useModalStore(MODALS.USER_SUGGESTION_MODAL);
+
+  const { openModal: openChangePasswordModal } = useModalStore(MODALS.CHANGE_PASSWORD_MODAL);
+
+  const { openModal: openDeleteAccountModal } = useModalStore(MODALS.DELETE_ACCOUNT_MODAL);
+
+  const { openModal: openCompleteProfileModal } = useModalStore(MODALS.COMPLETE_PROFILE_MODAL);
 
   const dispatch = useDispatch();
 
@@ -67,13 +68,13 @@ export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
           Delete Account
         </p>
       ),
-      onClick: () => dispatch(openModal({ key: DELETE_ACCOUNT_MODAL })),
+      onClick: openDeleteAccountModal,
       disabled: !authUser?.isVerified,
     },
     {
       key: 'changePassword',
       label: <p className={`py-2 ${!authUser?.isVerified && 'line-through'}`}>Change Password</p>,
-      onClick: () => dispatch(openModal({ key: CHANGE_PASSWORD_MODAL })),
+      onClick: openChangePasswordModal,
       disabled: !authUser?.isVerified,
     },
     {
@@ -86,7 +87,7 @@ export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
       className: `${authUser?.isVerified && 'hidden'}`,
       key: 'completeAuth',
       label: <p className='py-2'>Complete Profile</p>,
-      onClick: () => dispatch(openModal({ key: COMPLETE_PROFILE_MODAL })),
+      onClick: openCompleteProfileModal,
     },
   ];
 
@@ -176,7 +177,7 @@ export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
             type='primary'
             shape='round'
             size='large'
-            onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
+            onClick={openUserSuggestionModal}
           >
             Search Users
           </Button>
@@ -184,7 +185,7 @@ export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
           <BiSearch
             className={`w-full xl:hidden cursor-pointer ${isDrawer ? 'hidden' : 'block'}`}
             size={22}
-            onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
+            onClick={openUserSuggestionModal}
           />
         </span>
 

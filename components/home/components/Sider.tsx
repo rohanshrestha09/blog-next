@@ -1,23 +1,22 @@
 import { useRouter } from 'next/router';
-import { useDispatch } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Divider, Skeleton } from 'antd';
 import { useAuth } from 'auth';
 import UserSkeleton from 'components/common/UserSkeleton';
 import BlogCard from 'components/common/BlogCard';
-import { openModal } from 'store/modalSlice';
 import { getUserSuggestions } from 'request/user';
 import { getBlogSuggestions, getGenre } from 'request/blog';
+import { useModalStore } from 'store/hooks';
 import { queryKeys } from 'utils';
-import { MODAL_KEYS } from 'constants/reduxKeys';
+import { MODALS } from 'constants/reduxKeys';
 import { BLOG, GENRE, USER } from 'constants/queryKeys';
-
-const { USER_SUGGESTIONS_MODAL, LOGIN_MODAL } = MODAL_KEYS;
 
 const HomeSider = () => {
   const router = useRouter();
 
-  const dispatch = useDispatch();
+  const { openModal: openLoginModal } = useModalStore(MODALS.LOGIN_MODAL);
+
+  const { openModal: openUserSuggestionModal } = useModalStore(MODALS.USER_SUGGESTION_MODAL);
 
   const { authUser } = useAuth();
 
@@ -43,9 +42,7 @@ const HomeSider = () => {
           className='w-full font-semibold font-shalimar uppercase btn-secondary text-xl'
           shape='round'
           size='large'
-          onClick={() =>
-            authUser ? router.push('/blog/create') : dispatch(openModal({ key: LOGIN_MODAL }))
-          }
+          onClick={() => (authUser ? router.push('/blog/create') : openLoginModal())}
         >
           {authUser ? 'Write a Blog' : 'Login / Register'}
         </Button>
@@ -64,7 +61,7 @@ const HomeSider = () => {
 
         <span
           className='text-[#1890ff] cursor-pointer hover:text-blue-600 transition-all duration-300'
-          onClick={() => dispatch(openModal({ key: USER_SUGGESTIONS_MODAL }))}
+          onClick={openUserSuggestionModal}
         >
           View More Suggestions
         </span>

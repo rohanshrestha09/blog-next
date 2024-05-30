@@ -1,8 +1,7 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Form, Input, Button, Checkbox, DatePicker, Upload, Modal, Divider } from 'antd';
 import {
@@ -14,22 +13,20 @@ import {
 } from '@ant-design/icons';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { register } from 'request/auth';
-import { openModal, closeModal } from 'store/modalSlice';
+import { useModalStore } from 'store/hooks';
 import { errorNotification, successNotification, warningNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { AUTH } from 'constants/queryKeys';
-import { MODAL_KEYS } from 'constants/reduxKeys';
-
-const { LOGIN_MODAL, REGISTER_MODAL } = MODAL_KEYS;
+import { MODALS } from 'constants/reduxKeys';
 
 const Register: React.FC = () => {
   const router = useRouter();
 
-  const {
-    isOpen: { [REGISTER_MODAL]: isOpen },
-  } = useSelector((state: RootState) => state.modal);
+  const { isOpen: isRegisterModalOpen, closeModal: closeRegisterModal } = useModalStore(
+    MODALS.REGISTER_MODAL,
+  );
 
-  const dispatch = useDispatch();
+  const { openModal: openLoginModal } = useModalStore(MODALS.LOGIN_MODAL);
 
   const queryClient = useQueryClient();
 
@@ -72,7 +69,7 @@ const Register: React.FC = () => {
         successNotification(res.message);
         form.resetFields();
         queryClient.refetchQueries(queryKeys(AUTH).all);
-        dispatch(closeModal({ key: REGISTER_MODAL }));
+        closeRegisterModal();
         router.push('/profile');
       },
       onError: errorNotification,
@@ -84,8 +81,8 @@ const Register: React.FC = () => {
       centered
       destroyOnClose
       className='font-sans'
-      open={isOpen}
-      onCancel={() => dispatch(closeModal({ key: REGISTER_MODAL }))}
+      open={isRegisterModalOpen}
+      onCancel={closeRegisterModal}
       footer={null}
     >
       <Form
@@ -253,8 +250,8 @@ const Register: React.FC = () => {
             <label
               className='text-[#1890ff] cursor-pointer'
               onClick={() => {
-                dispatch(openModal({ key: LOGIN_MODAL }));
-                dispatch(closeModal({ key: REGISTER_MODAL }));
+                openLoginModal();
+                closeRegisterModal();
               }}
             >
               Login

@@ -3,7 +3,7 @@ import modalReducer from './modalSlice';
 import drawerReducer from './drawerSlice';
 import authBlogReducer from './authBlogSlice';
 import followersReducer from './followersSlice';
-import sortFilterReducer from './sortFilterSlice';
+import filterReducer from './filterSlice';
 import readingModeReducer from './readingModeSlice';
 
 const store = configureStore({
@@ -12,7 +12,7 @@ const store = configureStore({
     drawer: drawerReducer,
     authBlog: authBlogReducer,
     followers: followersReducer,
-    sortFilter: sortFilterReducer,
+    filter: filterReducer,
     readingMode: readingModeReducer,
   },
 });

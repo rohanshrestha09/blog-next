@@ -1,24 +1,22 @@
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { Fragment } from 'react';
 import { NextSeo } from 'next-seo';
-import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import { DehydratedState, QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import { Empty as RenderEmpty, Tabs, List, Skeleton, Button, ConfigProvider } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { isEmpty } from 'lodash';
 import { GithubOutlined } from '@ant-design/icons';
 import BlogCard from 'components/common/BlogCard';
-import SortFilter from 'components/common/SortFilter';
-import { setSize } from 'store/sortFilterSlice';
+import Filter from 'components/common/Filter';
+import { useFilterStore } from 'store/hooks';
 import { useAuth } from 'auth';
 import { getAllBlogs, getGenre } from 'request/blog';
 import { getFollowingBlogs, getProfile } from 'request/auth';
 import { getUserSuggestions } from 'request/user';
 import { queryKeys } from 'utils';
-import { SORT_TYPE, HOME_KEYS } from 'constants/reduxKeys';
+import { SORT_TYPE, FILTERS } from 'constants/reduxKeys';
 import { AUTH, BLOG, FOLLOWING as FOLLOWING_QUERY_KEY, GENRE, USER } from 'constants/queryKeys';
 import { Blog } from 'interface/models';
-const { HOME, FOLLOWING } = HOME_KEYS;
 
 const { LIKE_COUNT } = SORT_TYPE;
 
@@ -40,37 +38,47 @@ const Home: NextPage = () => {
   const { authUser } = useAuth();
 
   const {
-    sort: { [HOME]: sort },
-    search: { [HOME]: search },
-    genre: { [HOME]: genre },
     size,
-  } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
+    sort,
+    search,
+    genre,
+    setSize: setHomeBlogSize,
+  } = useFilterStore(FILTERS.HOME_BLOG_FILTER);
 
-  const dispatch = useDispatch();
+  const { size: followingBlogSize, setSize: setFollowingBlogSize } = useFilterStore(
+    FILTERS.FOLLOWING_BLOG_FILTER,
+  );
 
   const {
     data: blogs,
     isPreviousData,
     isFetchedAfterMount,
   } = useQuery({
-    queryFn: () => getAllBlogs({ sort, genre, size: size[HOME], search }),
-    queryKey: queryKeys(BLOG).list({ genre, sort, size: size[HOME], search }),
+    queryFn: () => getAllBlogs({ sort, genre, size, search }),
+    queryKey: queryKeys(BLOG).list({ genre, sort, size, search }),
     keepPreviousData: true,
   });
 
   const { data: followingBlogs } = useQuery({
-    queryFn: () => getFollowingBlogs({ size: size[FOLLOWING] }),
-    queryKey: queryKeys(FOLLOWING_QUERY_KEY, BLOG).list({ size: size[FOLLOWING] }),
+    queryFn: () => getFollowingBlogs({ size: followingBlogSize }),
+    queryKey: queryKeys(FOLLOWING_QUERY_KEY, BLOG).list({ size: followingBlogSize }),
     keepPreviousData: true,
   });
 
-  const getTabItems = (label: string, key: HOME_KEYS, blogs?: { data: Blog[]; count: number }) => {
+  const getTabItems = (
+    label: string,
+    key: FILTERS,
+    setSize: (size: number) => void,
+    blogs?: { data: Blog[]; count: number },
+  ) => {
     return {
       key,
       label: <span className='sm:mx-2 mx-auto flex items-center gap-1.5'>{label}</span>,
       children: (
         <div className='w-full pt-3'>
-          {key === HOME && <SortFilter sortFilterKey={HOME} isLoading={isPreviousData} hasSort />}
+          {key === FILTERS.HOME_BLOG_FILTER && (
+            <Filter filterType={FILTERS.HOME_BLOG_FILTER} isLoading={isPreviousData} hasSort />
+          )}
 
           {!isEmpty(blogs?.data) && !isFetchedAfterMount ? (
             Array.from({ length: 3 }).map((_, i) => (
@@ -79,7 +87,7 @@ const Home: NextPage = () => {
           ) : (
             <InfiniteScroll
               dataLength={blogs?.data?.length ?? 0}
-              next={() => dispatch(setSize({ key, size: 10 }))}
+              next={() => setSize(10)}
               hasMore={blogs?.data ? blogs?.data?.length < blogs?.count : false}
               loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
               endMessage={<Empty />}
@@ -106,22 +114,24 @@ const Home: NextPage = () => {
 
   const items = [
     {
-      key: HOME,
+      key: FILTERS.HOME_BLOG_FILTER,
       label: 'For You',
+      setSize: setHomeBlogSize,
       blogs: blogs && {
         data: blogs.result,
         count: blogs.count,
       },
     },
     {
-      key: FOLLOWING,
+      key: FILTERS.FOLLOWING_BLOG_FILTER,
       label: 'Following',
+      setSize: setFollowingBlogSize,
       blogs: followingBlogs && {
         data: followingBlogs.result,
         count: followingBlogs.count,
       },
     },
-  ].map(({ key, label, blogs }) => getTabItems(label, key, blogs));
+  ].map(({ key, label, setSize, blogs }) => getTabItems(label, key, setSize, blogs));
 
   return (
     <Fragment>
@@ -131,7 +141,7 @@ const Home: NextPage = () => {
         <main className='w-full flex flex-col'>
           <header className='text-2xl uppercase pb-2'>Home</header>
 
-          <Tabs className='w-full' defaultActiveKey={HOME} items={items} />
+          <Tabs className='w-full' defaultActiveKey={FILTERS.HOME_BLOG_FILTER} items={items} />
         </main>
       </div>
     </Fragment>

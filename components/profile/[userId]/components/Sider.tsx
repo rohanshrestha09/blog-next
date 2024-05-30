@@ -12,10 +12,10 @@ import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/r
 import UserSkeleton from 'components/common/UserSkeleton';
 import { getUser, getUserFollowers, getUserFollowing } from 'request/user';
 import { changeKey } from 'store/followersSlice';
-import { setSize, setSearch } from 'store/sortFilterSlice';
-import { openModal, closeModal } from 'store/modalSlice';
+import { useFilterStore } from 'store/hooks';
+import { useModalStore } from 'store/hooks';
 import { queryKeys } from 'utils';
-import { MODAL_KEYS, FOLLOWERS_KEYS } from 'constants/reduxKeys';
+import { MODALS, FOLLOWERS_KEYS, FILTERS } from 'constants/reduxKeys';
 import { FOLLOWER, FOLLOWING, USER } from 'constants/queryKeys';
 import { User } from 'interface/models';
 
@@ -23,18 +23,30 @@ interface Props {
   isSider?: boolean;
 }
 
-const { USER_FOLLOWERS, USER_FOLLOWING } = FOLLOWERS_KEYS;
-
-const { USER_FOLLOWERS_MODAL } = MODAL_KEYS;
-
 const UserProfileSider: React.FC<Props> = ({ isSider }) => {
   const { query } = useRouter();
 
+  const {
+    isOpen: isUserFollowerModalOpen,
+    openModal: openUserFollowerModal,
+    closeModal: closeUserFollowerModal,
+  } = useModalStore(MODALS.USER_FOLLOWER_MODAL);
+
   const { userKey } = useSelector((state: RootState) => state.followers, shallowEqual);
 
-  const { size, search } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
+  const {
+    size: userFollowingSize,
+    search: userFollowingSearch,
+    setSize: setUserFollowingSize,
+    setSearch: setUserFollowingSearch,
+  } = useFilterStore(FILTERS.USER_FOLLOWING_FILTER);
 
-  const { isOpen } = useSelector((state: RootState) => state.modal);
+  const {
+    size: userFollowerSize,
+    search: userFollowerSearch,
+    setSize: setUserFollowerSize,
+    setSearch: setUserFollowerSearch,
+  } = useFilterStore(FILTERS.USER_FOLLOWER_FILTER);
 
   const dispatch = useDispatch();
 
@@ -51,13 +63,13 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
     queryFn: () =>
       getUserFollowers({
         id: String(query?.userId),
-        size: size[USER_FOLLOWERS],
-        search: search[USER_FOLLOWERS],
+        size: userFollowerSize,
+        search: userFollowerSearch,
       }),
     queryKey: queryKeys(USER, FOLLOWER).list({
       id: String(query?.userId),
-      size: size[USER_FOLLOWERS],
-      search: search[USER_FOLLOWERS],
+      size: userFollowerSize,
+      search: userFollowerSearch,
     }),
     keepPreviousData: true,
   });
@@ -70,13 +82,13 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
     queryFn: () =>
       getUserFollowing({
         id: String(query?.userId),
-        size: size[USER_FOLLOWING],
-        search: search[USER_FOLLOWING],
+        size: userFollowingSize,
+        search: userFollowingSearch,
       }),
     queryKey: queryKeys(USER, FOLLOWING).list({
       id: String(query?.userId),
-      size: size[USER_FOLLOWING],
-      search: search[USER_FOLLOWING],
+      size: userFollowingSize,
+      search: userFollowingSearch,
     }),
     keepPreviousData: true,
   });
@@ -85,8 +97,13 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
 
   const getTabItems = (
     label: string,
-    key: FOLLOWERS_KEYS,
+    key: FILTERS,
     Icon: IconType,
+    config: {
+      search: string;
+      setSize: (size: number) => void;
+      setSearch: (search: string) => void;
+    },
     users?: { data: User[]; count: number },
   ) => {
     return {
@@ -101,12 +118,12 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
           <span className='w-full flex gap-3 items-center'>
             <Input
               className='rounded-lg py-[5px] bg-black'
-              defaultValue={search[key]}
+              defaultValue={config.search}
               placeholder='Search user...'
               prefix={<BiSearch />}
               onChange={({ target: { value } }) => {
                 if (timeout) clearTimeout(timeout);
-                timeout = setTimeout(() => dispatch(setSearch({ key, search: value })), 700);
+                timeout = setTimeout(() => config.setSearch(value), 700);
               }}
               allowClear
             />
@@ -125,7 +142,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
           ) : (
             <InfiniteScroll
               dataLength={users?.data.length ?? 0}
-              next={() => dispatch(setSize({ key, size: 10 }))}
+              next={() => config.setSize(10)}
               hasMore={users?.data ? users?.data.length < users?.count : false}
               loader={<Skeleton avatar round paragraph={{ rows: 1 }} active />}
             >
@@ -145,8 +162,13 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
 
   const items = [
     {
-      key: USER_FOLLOWERS,
+      key: FILTERS.USER_FOLLOWER_FILTER,
       label: 'Followers',
+      config: {
+        search: userFollowerSearch,
+        setSize: setUserFollowerSize,
+        setSearch: setUserFollowerSearch,
+      },
       users: followers && {
         data: followers?.result,
         count: followers?.count,
@@ -154,15 +176,22 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
       icon: RiUserFollowLine,
     },
     {
-      key: USER_FOLLOWING,
+      key: FILTERS.USER_FOLLOWING_FILTER,
       label: 'Following',
+      config: {
+        search: userFollowingSearch,
+        setSize: setUserFollowingSize,
+        setSearch: setUserFollowingSearch,
+      },
       users: following && {
         data: following?.result,
         count: following?.count,
       },
       icon: RiUserAddLine,
     },
-  ].map(({ key, label, users, icon }) => user && getTabItems(label, key, icon, users));
+  ].map(
+    ({ key, label, config, users, icon }) => user && getTabItems(label, key, icon, config, users),
+  );
 
   return (
     <div className={`w-full sm:order-last ${!isSider && 'lg:hidden'}`}>
@@ -208,15 +237,15 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
                   <RiUserFollowFill />
                   <p
                     className='text-[#1890ff] cursor-pointer hover:text-blue-600'
-                    onClick={() => dispatch(openModal({ key: USER_FOLLOWERS_MODAL }))}
+                    onClick={openUserFollowerModal}
                   >
                     Check Followers
                   </p>
                 </span>
 
                 <Modal
-                  open={isOpen[USER_FOLLOWERS_MODAL]}
-                  onCancel={() => dispatch(closeModal({ key: USER_FOLLOWERS_MODAL }))}
+                  open={isUserFollowerModalOpen}
+                  onCancel={closeUserFollowerModal}
                   footer={null}
                 >
                   <Tabs

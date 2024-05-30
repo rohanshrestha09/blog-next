@@ -1,6 +1,5 @@
 import Image from 'next/image';
-import { NextRouter, useRouter } from 'next/router';
-import { useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import he from 'he';
@@ -14,11 +13,11 @@ import {
   MdOutlineUnpublished,
 } from 'react-icons/md';
 import { deleteBlog, publishBlog, unpublishBlog } from 'request/blog';
+import { useModalStore } from 'store/hooks';
 import ConfirmDelete from './ConfirmDelete';
-import { openModal, closeModal } from 'store/modalSlice';
 import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
-import { MODAL_KEYS } from 'constants/reduxKeys';
+import { MODALS } from 'constants/reduxKeys';
 import { BLOG } from 'constants/queryKeys';
 import { Blog } from 'interface/models';
 
@@ -28,12 +27,12 @@ interface Props {
   size?: 'small';
 }
 
-const { DELETE_MODAL } = MODAL_KEYS;
-
 const BlogCard: React.FC<Props> = ({ blog, editable, size }) => {
-  const router: NextRouter = useRouter();
+  const router = useRouter();
 
-  const dispatch = useDispatch();
+  const { openModal: openDeleteModal, closeModal: closeDeleteModal } = useModalStore(
+    MODALS.DELETE_MODAL,
+  );
 
   const queryClient = useQueryClient();
 
@@ -57,7 +56,7 @@ const BlogCard: React.FC<Props> = ({ blog, editable, size }) => {
     onSuccess: (res) => {
       successNotification(res.message);
       queryClient.refetchQueries(queryKeys(BLOG).all);
-      dispatch(closeModal({ key: DELETE_MODAL }));
+      closeDeleteModal();
     },
     onError: errorNotification,
   });
@@ -97,7 +96,7 @@ const BlogCard: React.FC<Props> = ({ blog, editable, size }) => {
         <>
           <Space
             className='w-full cursor-pointer py-1 text-red-500 text-sm'
-            onClick={() => dispatch(openModal({ key: DELETE_MODAL }))}
+            onClick={openDeleteModal}
           >
             <MdOutlineDelete size={16} />
             Delete

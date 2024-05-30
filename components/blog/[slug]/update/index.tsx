@@ -1,26 +1,25 @@
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
 import { useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Editor } from '@tinymce/tinymce-react';
 import { Form, Input, Button, Upload, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import { openModal, closeModal } from 'store/modalSlice';
+import { useModalStore } from 'store/hooks';
 import ConfirmDelete from 'components/common/ConfirmDelete';
 import { withAuth } from 'auth';
 import { deleteBlog, getBlog, getGenre, updateBlog } from 'request/blog';
 import { errorNotification, successNotification, warningNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
-import { MODAL_KEYS } from 'constants/reduxKeys';
+import { MODALS } from 'constants/reduxKeys';
 import { AUTH, BLOG, GENRE } from 'constants/queryKeys';
-
-const { DELETE_MODAL } = MODAL_KEYS;
 
 const UpdateBlog = () => {
   const { query, push }: NextRouter = useRouter();
 
-  const dispatch = useDispatch();
+  const { openModal: openDeleteModal, closeModal: closeDeleteModal } = useModalStore(
+    MODALS.DELETE_MODAL,
+  );
 
   const queryClient = useQueryClient();
 
@@ -94,7 +93,7 @@ const UpdateBlog = () => {
       successNotification(res.message);
       queryClient.refetchQueries(queryKeys(AUTH).all);
       queryClient.refetchQueries(queryKeys(BLOG).all);
-      dispatch(closeModal({ key: DELETE_MODAL }));
+      closeDeleteModal();
       push('/profile');
     },
     onError: errorNotification,
@@ -226,7 +225,7 @@ const UpdateBlog = () => {
             <Button
               type='primary'
               className='h-10 mx-2 rounded-lg uppercase'
-              onClick={() => dispatch(openModal({ key: DELETE_MODAL }))}
+              onClick={openDeleteModal}
               danger
             >
               Delete Blog

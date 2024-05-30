@@ -2,30 +2,24 @@ import { useRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { Fragment } from 'react';
 import { NextSeo } from 'next-seo';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { dehydrate, QueryClient, DehydratedState, useQuery } from '@tanstack/react-query';
 import { Divider, List, PageHeader, Skeleton } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { capitalize } from 'lodash';
 import { useAuth } from 'auth';
 import BlogCard from 'components/common/BlogCard';
-import { setSize } from 'store/sortFilterSlice';
+import { useFilterStore } from 'store/hooks';
 import { getProfile } from 'request/auth';
 import { getAllBlogs, getGenre } from 'request/blog';
 import { queryKeys } from 'utils';
 import { AUTH, BLOG, GENRE } from 'constants/queryKeys';
-import { HOME_KEYS } from 'constants/reduxKeys';
+import { FILTERS } from 'constants/reduxKeys';
 import { Genre } from 'interface/models';
-const { GENERIC_BLOGS } = HOME_KEYS;
 
 const GenericBlogs = () => {
   const { query, back } = useRouter();
 
-  const dispatch = useDispatch();
-
-  const {
-    size: { [GENERIC_BLOGS]: size },
-  } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
+  const { size, setSize } = useFilterStore(FILTERS.GENERIC_BLOG_FILTER);
 
   const { authUser } = useAuth();
 
@@ -54,7 +48,7 @@ const GenericBlogs = () => {
           ) : (
             <InfiniteScroll
               dataLength={blogs?.result?.length ?? 0}
-              next={() => dispatch(setSize({ key: GENERIC_BLOGS, size: 10 }))}
+              next={() => setSize(10)}
               hasMore={blogs?.result ? blogs?.result?.length < blogs?.count : false}
               loader={<Skeleton avatar round paragraph={{ rows: 2 }} active />}
             >

@@ -1,10 +1,7 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { Button, Modal, Space, Spin } from 'antd';
-import { closeModal } from 'store/modalSlice';
+import { useModalStore } from 'store/hooks';
 import DeleteIcon from 'components/icons/DeleteIcon';
-import { MODAL_KEYS } from 'constants/reduxKeys';
-
-const { DELETE_MODAL } = MODAL_KEYS;
+import { MODALS } from 'constants/reduxKeys';
 
 interface Props {
   isLoading: boolean;
@@ -12,11 +9,7 @@ interface Props {
 }
 
 const ConfirmDelete: React.FC<Props> = ({ isLoading, deleteMutation }) => {
-  const {
-    isOpen: { [DELETE_MODAL]: isOpen },
-  } = useSelector((state: RootState) => state.modal);
-
-  const dispatch = useDispatch();
+  const { isOpen, closeModal } = useModalStore(MODALS.DELETE_MODAL);
 
   return (
     <Modal
@@ -24,7 +17,7 @@ const ConfirmDelete: React.FC<Props> = ({ isLoading, deleteMutation }) => {
       className='font-sans'
       open={isOpen}
       footer={null}
-      onCancel={() => dispatch(closeModal({ key: DELETE_MODAL }))}
+      onCancel={closeModal}
       zIndex={2000}
     >
       <div className='flex flex-col items-center'>
@@ -37,11 +30,7 @@ const ConfirmDelete: React.FC<Props> = ({ isLoading, deleteMutation }) => {
         </div>
 
         <Space className='mt-8'>
-          <Button
-            className='rounded-lg h-10 uppercase'
-            disabled={isLoading}
-            onClick={() => dispatch(closeModal({ key: DELETE_MODAL }))}
-          >
+          <Button className='rounded-lg h-10 uppercase' disabled={isLoading} onClick={closeModal}>
             Cancel
           </Button>
           <Button

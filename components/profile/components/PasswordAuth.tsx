@@ -1,30 +1,25 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { Button, Form, Input, Modal } from 'antd';
 import { EyeTwoTone, EyeInvisibleOutlined, LockOutlined } from '@ant-design/icons';
-import { closeModal } from 'store/modalSlice';
-import { MODAL_KEYS } from 'constants/reduxKeys';
+import { useModalStore } from 'store/hooks';
+import { MODALS } from 'constants/reduxKeys';
 
 interface Props {
   isLoading: boolean;
   mutation: ({ password }: { password: string }) => void;
 }
 
-const { PASSWORD_AUTH_MODAL } = MODAL_KEYS;
-
 const PasswordAuth: React.FC<Props> = ({ isLoading, mutation }) => {
-  const {
-    isOpen: { [PASSWORD_AUTH_MODAL]: isOpen },
-  } = useSelector((state: RootState) => state.modal);
-
-  const dispatch = useDispatch();
+  const { isOpen: isPasswordAuthModalOpen, closeModal: closePasswordAuthModal } = useModalStore(
+    MODALS.PASSWORD_AUTH_MODAL,
+  );
 
   const [form] = Form.useForm();
 
   return (
     <Modal
       className='font-sans'
-      open={isOpen}
-      onCancel={() => dispatch(closeModal({ key: PASSWORD_AUTH_MODAL }))}
+      open={isPasswordAuthModalOpen}
+      onCancel={closePasswordAuthModal}
       afterClose={() => form.resetFields()}
       footer={null}
       destroyOnClose
