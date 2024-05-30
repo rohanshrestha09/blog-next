@@ -1,4 +1,3 @@
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
 import { Empty, Tabs, Divider, Input, Modal, Spin, Skeleton, List, ConfigProvider } from 'antd';
@@ -12,11 +11,10 @@ import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/r
 import { useAuth } from 'auth';
 import UserSkeleton from 'components/common/UserSkeleton';
 import { getFollowers, getFollowing } from 'request/auth';
-import { changeKey } from 'store/followersSlice';
 import { useModalStore, useFilterStore } from 'store/hooks';
 import { queryKeys } from 'utils';
 import { AUTH, FOLLOWER, FOLLOWING } from 'constants/queryKeys';
-import { MODALS, FOLLOWERS_KEYS, FILTERS } from 'constants/reduxKeys';
+import { MODALS, FILTERS } from 'constants/reduxKeys';
 import { User } from 'interface/models';
 
 interface Props {
@@ -24,8 +22,6 @@ interface Props {
 }
 
 const ProfileSider: React.FC<Props> = ({ isSider }) => {
-  const { authKey } = useSelector((state: RootState) => state.followers, shallowEqual);
-
   const {
     size: authFollowerSize,
     search: authFollowerSearch,
@@ -47,8 +43,6 @@ const ProfileSider: React.FC<Props> = ({ isSider }) => {
   } = useModalStore(MODALS.AUTH_FOLLOWER_MODAL);
 
   const { openModal: openUserSuggestionModal } = useModalStore(MODALS.USER_SUGGESTION_MODAL);
-
-  const dispatch = useDispatch();
 
   const { authUser } = useAuth();
 
@@ -266,19 +260,7 @@ const ProfileSider: React.FC<Props> = ({ isSider }) => {
                 onCancel={closeAuthFollowersModal}
                 footer={null}
               >
-                <Tabs
-                  defaultActiveKey={authKey}
-                  className='w-full'
-                  items={items as []}
-                  onTabClick={(key) =>
-                    dispatch(
-                      changeKey({ key, type: 'authKey' } as {
-                        key: FOLLOWERS_KEYS;
-                        type: 'authKey';
-                      }),
-                    )
-                  }
-                />
+                <Tabs className='w-full' items={items as []} />
               </Modal>
             </>
           )}
@@ -288,16 +270,7 @@ const ProfileSider: React.FC<Props> = ({ isSider }) => {
           <>
             <Divider className='mb-3' />
 
-            <Tabs
-              defaultActiveKey={authKey}
-              className='w-full'
-              items={items as []}
-              onTabClick={(key) =>
-                dispatch(
-                  changeKey({ key, type: 'authKey' } as { key: FOLLOWERS_KEYS; type: 'authKey' }),
-                )
-              }
-            />
+            <Tabs className='w-full' items={items as []} />
           </>
         )}
       </main>

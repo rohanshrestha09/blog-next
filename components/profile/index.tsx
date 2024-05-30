@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Empty, Tabs, Image, Divider, Skeleton, List, ConfigProvider } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -15,23 +14,18 @@ import BlogCard from 'components/common/BlogCard';
 import EditProfile from './components/EditProfile';
 import Filter from 'components/common/Filter';
 import { useModalStore, useFilterStore } from 'store/hooks';
-import { changeKey } from 'store/authBlogSlice';
 import { queryKeys } from 'utils';
 import { AUTH, GENRE, BLOG, FOLLOWER, FOLLOWING } from 'constants/queryKeys';
-import { AUTH_PROFILE_KEYS, MODALS, SORT_ORDER, SORT_TYPE, FILTERS } from 'constants/reduxKeys';
-
-const { ALL_BLOGS, PUBLISHED, UNPUBLISHED } = AUTH_PROFILE_KEYS;
+import { MODALS, SORT_ORDER, SORT_TYPE, FILTERS } from 'constants/reduxKeys';
 
 const Profile = () => {
   const router = useRouter();
 
-  const { key, isPublished } = useSelector((state: RootState) => state.authBlog, shallowEqual);
-
   const { openModal: openEditProfileModal } = useModalStore(MODALS.EDIT_PROFILE_MODAL);
 
-  const { size, search, sort, order, genre, setSize } = useFilterStore(FILTERS.AUTH_PROFILE_FILTER);
-
-  const dispatch = useDispatch();
+  const { size, search, sort, order, genre, isPublished, setSize, setPublished } = useFilterStore(
+    FILTERS.AUTH_PROFILE_FILTER,
+  );
 
   const { authUser } = useAuth();
 
@@ -45,7 +39,7 @@ const Profile = () => {
     keepPreviousData: true,
   });
 
-  const getTabItems = (label: string, key: AUTH_PROFILE_KEYS, Icon: IconType) => {
+  const getTabItems = (label: string, key: string, Icon: IconType) => {
     return {
       key,
       label: (
@@ -106,9 +100,9 @@ const Profile = () => {
   };
 
   const items = [
-    { key: ALL_BLOGS, label: 'All Blogs', icon: BsBook },
-    { key: PUBLISHED, label: 'Published', icon: MdOutlinePublishedWithChanges },
-    { key: UNPUBLISHED, label: 'Unpublished', icon: MdOutlineUnpublished },
+    { key: 'all', label: 'All Blogs', icon: BsBook },
+    { key: 'published', label: 'Published', icon: MdOutlinePublishedWithChanges },
+    { key: 'unpublished', label: 'Unpublished', icon: MdOutlineUnpublished },
   ].map(({ key, label, icon }) => authUser && getTabItems(label, key, icon));
 
   return (
@@ -154,9 +148,13 @@ const Profile = () => {
 
         <Tabs
           className='w-full'
-          defaultActiveKey={key}
+          defaultActiveKey={
+            isPublished === undefined ? 'all' : isPublished === true ? 'published' : 'unpublished'
+          }
           items={items as []}
-          onTabClick={(key) => dispatch(changeKey({ key } as { key: AUTH_PROFILE_KEYS }))}
+          onTabClick={(key) =>
+            setPublished(key === 'all' ? undefined : key === 'published' ? true : false)
+          }
         />
       </main>
     </div>

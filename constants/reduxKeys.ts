@@ -14,19 +14,6 @@ export enum MODALS {
   COMPLETE_PROFILE_MODAL = 'COMPLETE_PROFILE_MODAL',
 }
 
-export enum AUTH_PROFILE_KEYS {
-  ALL_BLOGS = 'allblogs',
-  PUBLISHED = 'published',
-  UNPUBLISHED = 'unpublished',
-}
-
-export enum FOLLOWERS_KEYS {
-  AUTH_FOLLOWERS = 'auth-followers',
-  AUTH_FOLLOWING = 'auth-following',
-  USER_FOLLOWERS = 'user-followers',
-  USER_FOLLOWING = 'user-following',
-}
-
 export enum SORT_TYPE {
   LIKE_COUNT = 'likedBy',
   CREATED_AT = 'createdAt',

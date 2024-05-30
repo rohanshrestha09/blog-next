@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
 import { Tabs, Divider, Input, Modal, Spin, Skeleton, List } from 'antd';
@@ -11,11 +10,10 @@ import { BsFillCalendarDateFill, BsFillInfoCircleFill } from 'react-icons/bs';
 import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/ri';
 import UserSkeleton from 'components/common/UserSkeleton';
 import { getUser, getUserFollowers, getUserFollowing } from 'request/user';
-import { changeKey } from 'store/followersSlice';
 import { useFilterStore } from 'store/hooks';
 import { useModalStore } from 'store/hooks';
 import { queryKeys } from 'utils';
-import { MODALS, FOLLOWERS_KEYS, FILTERS } from 'constants/reduxKeys';
+import { MODALS, FILTERS } from 'constants/reduxKeys';
 import { FOLLOWER, FOLLOWING, USER } from 'constants/queryKeys';
 import { User } from 'interface/models';
 
@@ -32,8 +30,6 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
     closeModal: closeUserFollowerModal,
   } = useModalStore(MODALS.USER_FOLLOWER_MODAL);
 
-  const { userKey } = useSelector((state: RootState) => state.followers, shallowEqual);
-
   const {
     size: userFollowingSize,
     search: userFollowingSearch,
@@ -47,8 +43,6 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
     setSize: setUserFollowerSize,
     setSearch: setUserFollowerSearch,
   } = useFilterStore(FILTERS.USER_FOLLOWER_FILTER);
-
-  const dispatch = useDispatch();
 
   const { data: user } = useQuery({
     queryFn: () => getUser(String(query?.userId)),
@@ -248,19 +242,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
                   onCancel={closeUserFollowerModal}
                   footer={null}
                 >
-                  <Tabs
-                    defaultActiveKey={userKey}
-                    className='w-full'
-                    items={items as []}
-                    onTabClick={(key) =>
-                      dispatch(
-                        changeKey({ key, type: 'userKey' } as {
-                          key: FOLLOWERS_KEYS;
-                          type: 'userKey';
-                        }),
-                      )
-                    }
-                  />
+                  <Tabs className='w-full' items={items as []} />
                 </Modal>
               </>
             )}
@@ -270,16 +252,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
             <>
               <Divider className='mb-3' />
 
-              <Tabs
-                defaultActiveKey={userKey}
-                className='w-full'
-                items={items as []}
-                onTabClick={(key) =>
-                  dispatch(
-                    changeKey({ key, type: 'userKey' } as { key: FOLLOWERS_KEYS; type: 'userKey' }),
-                  )
-                }
-              />
+              <Tabs className='w-full' items={items as []} />
             </>
           )}
         </main>

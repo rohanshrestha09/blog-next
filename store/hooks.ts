@@ -1,6 +1,6 @@
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { closeModal, openModal } from './modalSlice';
-import { setGenre, setOrder, setSearch, setSize, setSort } from './filterSlice';
+import { setGenre, setOrder, setPublished, setSearch, setSize, setSort } from './filterSlice';
 import { closeDrawer, openDrawer } from './drawerSlice';
 import { turnOffReadingMode, turnOnReadingMode } from './readingModeSlice';
 import { FILTERS, MODALS, SORT_ORDER, SORT_TYPE } from 'constants/reduxKeys';
@@ -19,7 +19,7 @@ export const useModalStore = (key: MODALS) => {
 };
 
 export const useFilterStore = (key: FILTERS) => {
-  const { size, search, sort, order, genre } = useSelector(
+  const { size, search, sort, order, genre, isPublished } = useSelector(
     (state: RootState) => state.filter[key],
     shallowEqual,
   );
@@ -32,11 +32,13 @@ export const useFilterStore = (key: FILTERS) => {
     sort,
     order,
     genre,
+    isPublished,
     setSize: (size: number) => dispatch(setSize({ key, size })),
     setSearch: (search: string) => dispatch(setSearch({ key, search })),
     setSort: (sort: SORT_TYPE) => dispatch(setSort({ key, sort })),
     setOrder: (order: SORT_ORDER) => dispatch(setOrder({ key, order })),
     setGenre: (genre: Genre) => dispatch(setGenre({ key, genre })),
+    setPublished: (isPublished?: boolean) => dispatch(setPublished({ key, isPublished })),
   };
 };
 

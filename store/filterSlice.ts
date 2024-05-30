@@ -10,6 +10,7 @@ const getState = (key: FILTERS) => {
       search: '',
       sort: SORT_TYPE.LIKE_COUNT,
       order: SORT_ORDER.DESC,
+      isPublished: undefined as undefined | boolean,
     },
   };
 };
@@ -86,9 +87,19 @@ const sortFilterSlice = createSlice({
             },
           });
     },
+    setPublished: (state, { payload }: { payload: { key: FILTERS; isPublished?: boolean } }) => {
+      return (state = {
+        ...state,
+        [payload.key]: {
+          ...state[payload.key],
+          isPublished: payload.isPublished,
+        },
+      });
+    },
   },
 });
 
-export const { setSize, setSearch, setSort, setOrder, setGenre } = sortFilterSlice.actions;
+export const { setSize, setSearch, setSort, setOrder, setGenre, setPublished } =
+  sortFilterSlice.actions;
 
 export default sortFilterSlice.reducer;
