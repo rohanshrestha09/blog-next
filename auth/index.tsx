@@ -14,7 +14,7 @@ interface Props {
 
 const Auth: React.FC<Props> = ({ children }) => {
   const { data: authUser } = useQuery({
-    queryFn: () => getProfile(undefined),
+    queryFn: getProfile,
     queryKey: queryKeys(AUTH).details(),
   });
 
@@ -39,7 +39,7 @@ export const withAuth = (
     if (!token) {
       return {
         redirect: {
-          destination: '/fallback',
+          destination: '/?fallback=true',
         },
       };
     }

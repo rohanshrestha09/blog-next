@@ -1,5 +1,6 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { Provider } from 'react-redux';
 import { QueryClientProvider, QueryClient, Hydrate, DehydratedState } from '@tanstack/react-query';
@@ -9,6 +10,8 @@ import AppLayout from 'components/layout';
 import store from '../store';
 
 function MyApp({ Component, pageProps }: AppProps<{ dehydratedState: DehydratedState }>) {
+  const { pathname } = useRouter();
+
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -21,17 +24,27 @@ function MyApp({ Component, pageProps }: AppProps<{ dehydratedState: DehydratedS
       }),
   );
 
+  const staticPaths = [
+    '/security/reset-password',
+    '/security/reset-password/[email]/[token]',
+    '/404',
+  ];
+
   return (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
         <Provider store={store}>
-          <Auth>
-            <AppLayout>
-              <ReactQueryDevtools />
+          {staticPaths.some((path) => pathname.startsWith(path)) ? (
+            <Component {...pageProps} />
+          ) : (
+            <Auth>
+              <AppLayout>
+                <Component {...pageProps} />
+              </AppLayout>
+            </Auth>
+          )}
 
-              <Component {...pageProps} />
-            </AppLayout>
-          </Auth>
+          <ReactQueryDevtools />
         </Provider>
       </Hydrate>
     </QueryClientProvider>

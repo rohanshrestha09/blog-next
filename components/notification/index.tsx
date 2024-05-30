@@ -1,27 +1,20 @@
 import Head from 'next/head';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Divider, List, Skeleton } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { withAuth } from 'auth';
 import NotificationCard from './components/NotificationCard';
-import { setSize } from 'store/sortFilterSlice';
+import { useFilterStore } from 'store/hooks';
 import { errorNotification } from 'utils/notification';
-import { NOTIFICATIONS_KEYS } from 'constants/reduxKeys';
+import { FILTERS } from 'constants/reduxKeys';
 import { getGenre } from 'request/blog';
 import { getProfile } from 'request/auth';
 import { queryKeys } from 'utils';
 import { getNotifications, markAllAsRead } from 'request/notification';
 import { AUTH, GENRE, NOTIFICATION } from 'constants/queryKeys';
 
-const { NOTIFICATIONS } = NOTIFICATIONS_KEYS;
-
 const Notifications = () => {
-  const {
-    size: { [NOTIFICATIONS]: size },
-  } = useSelector((state: RootState) => state.sortFilter, shallowEqual);
-
-  const dispatch = useDispatch();
+  const { size, setSize } = useFilterStore(FILTERS.NOTIFICATION_FILTER);
 
   const queryClient = useQueryClient();
 
@@ -63,7 +56,7 @@ const Notifications = () => {
         ) : (
           <InfiniteScroll
             dataLength={notifications?.result?.length ?? 0}
-            next={() => dispatch(setSize({ key: NOTIFICATIONS, size: 10 }))}
+            next={() => setSize(10)}
             hasMore={
               notifications?.result ? notifications?.result?.length < notifications?.count : false
             }

@@ -1,10 +1,8 @@
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { ReactNode, Key, Fragment } from 'react';
-import { useDispatch } from 'react-redux';
+import { Fragment } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Menu, MenuProps, Badge, Avatar, Dropdown, Button } from 'antd';
-import { IconType } from 'react-icons';
 import { AiOutlineLogout, AiOutlineMenu, AiOutlineUser } from 'react-icons/ai';
 import { BiBookmark, BiMessageSquareEdit, BiSearch } from 'react-icons/bi';
 import { BsThreeDots } from 'react-icons/bs';
@@ -15,19 +13,16 @@ import { getNotifications } from 'request/notification';
 import ChangePassword from '../components/ChangePassword';
 import DeleteAccount from '../components/DeleteAccount';
 import CompleteProfile from '../components/CompleteProfile';
-import { openDrawer, closeDrawer } from 'store/drawerSlice';
-import { useModalStore } from 'store/hooks';
+import { useModalStore, useDrawerStore } from 'store/hooks';
 import { successNotification, errorNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
-import { MODALS, NAV_KEYS } from 'constants/reduxKeys';
+import { MODALS } from 'constants/reduxKeys';
 import { NOTIFICATION } from 'constants/queryKeys';
 
 interface Props {
   className?: string;
   isDrawer?: boolean;
 }
-
-const { HOME_NAV, PROFILE_NAV, CREATE_NAV, BOOKMARKS_NAV, NOTIF_NAV, LOGOUT_NAV } = NAV_KEYS;
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -42,7 +37,7 @@ export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
 
   const { openModal: openCompleteProfileModal } = useModalStore(MODALS.COMPLETE_PROFILE_MODAL);
 
-  const dispatch = useDispatch();
+  const { closeDrawer } = useDrawerStore();
 
   const { authUser } = useAuth();
 
@@ -91,52 +86,50 @@ export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
     },
   ];
 
-  const getDrawerItems = (
-    label: ReactNode,
-    key: Key,
-    Icon: IconType,
-    children?: MenuItem[],
-    type?: 'group',
-  ): MenuItem => {
-    return {
-      key,
-      icon: <Icon size={18} />,
-      children,
-      label:
-        key === NOTIF_NAV ? (
-          <>
-            {label}
-            <Badge offset={[1, -18]} count={notifications?.unread} />
-          </>
-        ) : (
-          label
-        ),
-      type,
-      danger: key === LOGOUT_NAV,
-    } as MenuItem;
-  };
-
   const items: MenuItem[] = [
-    { key: LOGOUT_NAV, name: 'Logout', icon: AiOutlineLogout },
-    { key: NOTIF_NAV, name: 'Notifications', icon: BsAppIndicator },
-    { key: CREATE_NAV, name: 'Create', icon: BiMessageSquareEdit },
-    { key: BOOKMARKS_NAV, name: 'Bookmarks', icon: BiBookmark },
-    { key: PROFILE_NAV, name: 'Profile', icon: AiOutlineUser },
-    { key: HOME_NAV, name: 'Feed', icon: BsHouse },
-  ].map(({ key, name, icon }) => getDrawerItems(name, key, icon));
-
-  const routingFn = (key: NAV_KEYS | 'blogsansar') => {
-    switch (key) {
-      case LOGOUT_NAV:
-        return handleLogout.mutate(undefined);
-
-      case 'blogsansar':
-        return push('/');
-
-      default:
-        return push(key);
-    }
-  };
+    {
+      key: 'logout',
+      label: 'Logout',
+      icon: <AiOutlineLogout size={18} />,
+      onClick: () => handleLogout.mutate(undefined),
+      danger: true,
+    },
+    {
+      key: '/notifications',
+      label: (
+        <>
+          Notifications
+          <Badge offset={[1, -18]} count={notifications?.unread} />
+        </>
+      ),
+      icon: <BsAppIndicator size={18} />,
+      onClick: () => push('/notifications'),
+    },
+    {
+      key: '/blog/create',
+      label: 'Create',
+      icon: <BiMessageSquareEdit size={18} />,
+      onClick: () => push('/blog/create'),
+    },
+    {
+      key: '/blog/bookmark',
+      label: 'Bookmarks',
+      icon: <BiBookmark size={18} />,
+      onClick: () => push('/blog/bookmark'),
+    },
+    {
+      key: '/profile',
+      label: 'Profile',
+      icon: <AiOutlineUser size={18} />,
+      onClick: () => push('/profile'),
+    },
+    {
+      key: '/',
+      label: 'Feed',
+      icon: <BsHouse size={18} />,
+      onClick: () => push('/'),
+    },
+  ];
 
   return (
     <div
@@ -161,9 +154,8 @@ export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
           },
           ...items,
         ]}
-        onClick={({ key }) => {
-          routingFn(key as NAV_KEYS);
-          dispatch(closeDrawer());
+        onClick={() => {
+          closeDrawer();
         }}
       />
 
@@ -242,7 +234,7 @@ export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
 export const MobileNavbar = () => {
   const { pathname, push } = useRouter();
 
-  const dispatch = useDispatch();
+  const { openDrawer } = useDrawerStore();
 
   const { data: notifications } = useQuery({
     queryFn: () => getNotifications({ size: 1 }),
@@ -250,10 +242,10 @@ export const MobileNavbar = () => {
   });
 
   const items = [
-    { key: HOME_NAV, name: 'Feed', Icon: BsHouse },
-    { key: PROFILE_NAV, name: 'Profile', Icon: AiOutlineUser },
-    { key: CREATE_NAV, name: 'Create', Icon: BiMessageSquareEdit },
-    { key: NOTIF_NAV, name: 'Notifications', Icon: BsAppIndicator },
+    { key: '/', name: 'Feed', Icon: BsHouse },
+    { key: '/profile', name: 'Profile', Icon: AiOutlineUser },
+    { key: '/blog/create', name: 'Create', Icon: BiMessageSquareEdit },
+    { key: '/notifications', name: 'Notifications', Icon: BsAppIndicator },
   ];
 
   return (
@@ -266,7 +258,7 @@ export const MobileNavbar = () => {
           }`}
           onClick={() => push(key)}
         >
-          {key === NOTIF_NAV ? (
+          {key === '/notifications' ? (
             <Badge offset={[-1, 1]} count={notifications?.unread}>
               <Icon size={25} className={`${pathname === key && 'text-[#1677FF]'}`} />
             </Badge>
@@ -276,7 +268,7 @@ export const MobileNavbar = () => {
         </div>
       ))}
 
-      <div className={`px-4 py-4 flex justify-center `} onClick={() => dispatch(openDrawer())}>
+      <div className={`px-4 py-4 flex justify-center`} onClick={openDrawer}>
         <AiOutlineMenu size={25} />
       </div>
     </div>

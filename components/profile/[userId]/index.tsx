@@ -27,9 +27,7 @@ import {
 import { queryKeys } from 'utils';
 import { errorNotification, successNotification } from 'utils/notification';
 import { AUTH, USER, BLOG, FOLLOWER, FOLLOWING } from 'constants/queryKeys';
-import { FILTERS, NAV_KEYS } from 'constants/reduxKeys';
-
-const { HOME_NAV } = NAV_KEYS;
+import { FILTERS } from 'constants/reduxKeys';
 
 const UserProfile = () => {
   const { query, push }: NextRouter = useRouter();
@@ -134,7 +132,7 @@ const UserProfile = () => {
               <ConfigProvider
                 renderEmpty={() => (
                   <Empty>
-                    <Button className='h-10 uppercase rounded-lg' onClick={() => push(HOME_NAV)}>
+                    <Button className='h-10 uppercase rounded-lg' onClick={() => push('/')}>
                       Browse Blogs
                     </Button>
                   </Empty>

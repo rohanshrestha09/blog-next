@@ -1,5 +1,6 @@
-import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
-import { Fragment } from 'react';
+import type { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { useRouter } from 'next/router';
+import { Fragment, useEffect } from 'react';
 import { NextSeo } from 'next-seo';
 import { DehydratedState, QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import { Empty as RenderEmpty, Tabs, List, Skeleton, Button, ConfigProvider } from 'antd';
@@ -8,13 +9,13 @@ import { isEmpty } from 'lodash';
 import { GithubOutlined } from '@ant-design/icons';
 import BlogCard from 'components/common/BlogCard';
 import Filter from 'components/common/Filter';
-import { useFilterStore } from 'store/hooks';
+import { useFilterStore, useModalStore } from 'store/hooks';
 import { useAuth } from 'auth';
 import { getAllBlogs, getGenre } from 'request/blog';
 import { getFollowingBlogs, getProfile } from 'request/auth';
 import { getUserSuggestions } from 'request/user';
 import { queryKeys } from 'utils';
-import { SORT_TYPE, FILTERS } from 'constants/reduxKeys';
+import { SORT_TYPE, FILTERS, MODALS } from 'constants/reduxKeys';
 import { AUTH, BLOG, FOLLOWING as FOLLOWING_QUERY_KEY, GENRE, USER } from 'constants/queryKeys';
 import { Blog } from 'interface/models';
 
@@ -34,8 +35,14 @@ const Empty = () => (
   </RenderEmpty>
 );
 
-const Home: NextPage = () => {
+const Home = () => {
   const { authUser } = useAuth();
+
+  const { query } = useRouter();
+
+  const { openModal: openLoginModal, closeModal: closeLoginModal } = useModalStore(
+    MODALS.LOGIN_MODAL,
+  );
 
   const {
     size,
@@ -64,6 +71,17 @@ const Home: NextPage = () => {
     queryKey: queryKeys(FOLLOWING_QUERY_KEY, BLOG).list({ size: followingBlogSize }),
     keepPreviousData: true,
   });
+
+  useEffect(() => {
+    if (query?.fallback === 'true') {
+      openLoginModal();
+    }
+
+    return () => {
+      closeLoginModal();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
 
   const getTabItems = (
     label: string,

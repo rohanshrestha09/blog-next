@@ -10,10 +10,8 @@ import { getBookmarks, getProfile } from 'request/auth';
 import { getGenre } from 'request/blog';
 import { useFilterStore } from 'store/hooks';
 import { queryKeys } from 'utils';
-import { NAV_KEYS, FILTERS } from 'constants/reduxKeys';
+import { FILTERS } from 'constants/reduxKeys';
 import { AUTH, GENRE, BOOKMARK } from 'constants/queryKeys';
-
-const { HOME_NAV } = NAV_KEYS;
 
 const Bookmarks = () => {
   const router = useRouter();
@@ -62,7 +60,7 @@ const Bookmarks = () => {
                 <Empty>
                   <Button
                     className='h-10 btn-secondary rounded-lg'
-                    onClick={() => router.push(HOME_NAV)}
+                    onClick={() => router.push('/')}
                   >
                     Browse Blogs
                   </Button>

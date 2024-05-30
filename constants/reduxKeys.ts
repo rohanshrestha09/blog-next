@@ -1,12 +1,3 @@
-export enum NAV_KEYS {
-  HOME_NAV = '/',
-  PROFILE_NAV = '/profile',
-  BOOKMARKS_NAV = '/blog/bookmark',
-  CREATE_NAV = '/blog/create',
-  NOTIF_NAV = '/notification',
-  LOGOUT_NAV = 'logout',
-}
-
 export enum MODALS {
   LOGIN_MODAL = 'LOGIN_MODAL',
   REGISTER_MODAL = 'REGISTER_MODAL',
@@ -58,35 +49,6 @@ export const NOTIFICATIONS_STATUS = Object.freeze({
   READ: 'READ',
   UNREAD: 'UNREAD',
 });
-
-export enum PROFILE_KEYS {
-  AUTH_PROFILE = 'auth-profile',
-  USER_PROFILE = 'user-profile',
-}
-
-export enum HOME_KEYS {
-  HOME = 'home',
-  FOLLOWING = 'following',
-  USER_SUGGESTIONS = 'user-suggestions',
-  GENERIC_BLOGS = 'generic-blogs',
-}
-
-export enum BOOKMARKS_KEYS {
-  BOOKMARKS = 'bookmarks',
-}
-
-export enum NOTIFICATIONS_KEYS {
-  NOTIFICATIONS = 'notifications',
-}
-
-export enum BLOG_KEYS {
-  LIKES = 'likes',
-  COMMENTS = 'comments',
-}
-
-const { HOME, USER_SUGGESTIONS } = HOME_KEYS;
-
-const { AUTH_PROFILE } = PROFILE_KEYS;
 
 export enum FILTERS {
   HOME_BLOG_FILTER = 'HOME_BLOG_FILTER',

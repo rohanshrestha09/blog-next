@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import 'antd/dist/antd.dark.min.css';
 import { Layout, Drawer, Affix, ConfigProvider, Empty } from 'antd';
@@ -19,8 +18,7 @@ import UserList from './components/UserList';
 import NotificationCard from 'components/notification/components/NotificationCard';
 import { useAuth } from 'auth';
 import { logout } from 'request/auth';
-import { closeDrawer, openDrawer } from 'store/drawerSlice';
-import { turnReadingMode } from 'store/readingModeSlice';
+import { useReadingModeStore, useDrawerStore } from 'store/hooks';
 import { jsxNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { NOTIFICATION } from 'constants/queryKeys';
@@ -48,11 +46,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
 
   const loaderRef = useRef<LoadingBarRef>(null);
 
-  const { isOpen: isDrawerOpen } = useSelector((state: RootState) => state.drawer);
+  const { isOpen: isDrawerOpen, openDrawer, closeDrawer } = useDrawerStore();
 
-  const { isTurned: isReadingMode } = useSelector((state: RootState) => state.readingMode);
-
-  const dispatch = useDispatch();
+  const { isReadingMode, turnOffReadingMode } = useReadingModeStore();
 
   const handleLogout = useMutation(logout);
 
@@ -92,7 +88,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
   }, [events, sidebarAffixA, sidebarAffixB]);
 
   useEffect(() => {
-    if (pathname !== '/blog/[slug]') dispatch(turnReadingMode({ isTurned: false }));
+    if (pathname !== '/blog/[slug]') turnOffReadingMode();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
@@ -141,7 +137,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
             pathname.startsWith('/security') && 'hidden'
           } fixed left-4 top-[51%] cursor-pointer hover:bg-zinc-800 rounded-full z-50`}
           size={42}
-          onClick={() => dispatch(openDrawer())}
+          onClick={openDrawer}
         />
 
         <UserList />
@@ -150,7 +146,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
           placement='left'
           className={`${getSider() && 'sm:hidden'} block`}
           closable={false}
-          onClose={() => dispatch(closeDrawer())}
+          onClose={closeDrawer}
           open={isDrawerOpen}
           headerStyle={{ fontFamily: 'Poppins' }}
           bodyStyle={{ padding: 0, margin: 0 }}

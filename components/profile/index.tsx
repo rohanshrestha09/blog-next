@@ -18,14 +18,7 @@ import { useModalStore, useFilterStore } from 'store/hooks';
 import { changeKey } from 'store/authBlogSlice';
 import { queryKeys } from 'utils';
 import { AUTH, GENRE, BLOG, FOLLOWER, FOLLOWING } from 'constants/queryKeys';
-import {
-  AUTH_PROFILE_KEYS,
-  MODALS,
-  NAV_KEYS,
-  SORT_ORDER,
-  SORT_TYPE,
-  FILTERS,
-} from 'constants/reduxKeys';
+import { AUTH_PROFILE_KEYS, MODALS, SORT_ORDER, SORT_TYPE, FILTERS } from 'constants/reduxKeys';
 
 const { ALL_BLOGS, PUBLISHED, UNPUBLISHED } = AUTH_PROFILE_KEYS;
 
@@ -86,7 +79,7 @@ const Profile = () => {
                     <Button
                       type='primary'
                       className='h-10 rounded-lg'
-                      onClick={() => router.push(NAV_KEYS.CREATE_NAV)}
+                      onClick={() => router.push('/blog/create')}
                     >
                       Write a Blog
                     </Button>

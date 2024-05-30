@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { NextSeo } from 'next-seo';
 import { Fragment } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   dehydrate,
   DehydratedState,
@@ -20,7 +19,6 @@ import he from 'he';
 import { BsBookmark, BsBookmarkFill, BsHeart, BsHeartFill } from 'react-icons/bs';
 import { VscComment } from 'react-icons/vsc';
 import { useAuth } from 'auth';
-import { turnReadingMode } from 'store/readingModeSlice';
 import BlogCard from 'components/common/BlogCard';
 import UserSkeleton from 'components/common/UserSkeleton';
 import { DiscussionForm } from '../components/DiscussionForm';
@@ -40,7 +38,7 @@ import {
   unbookmarkBlog,
   unlikeBlog,
 } from 'request/blog';
-import { useModalStore, useFilterStore } from 'store/hooks';
+import { useModalStore, useFilterStore, useReadingModeStore } from 'store/hooks';
 import { AUTH, BLOG, COMMENT, GENRE, USER } from 'constants/queryKeys';
 import { FILTERS, MODALS } from 'constants/reduxKeys';
 import { Blog } from 'interface/models';
@@ -50,11 +48,9 @@ const Blog = () => {
 
   const queryClient = useQueryClient();
 
-  const dispatch = useDispatch();
-
   const { authUser } = useAuth();
 
-  const { isTurned: isReadingMode } = useSelector((state: RootState) => state.readingMode);
+  const { isReadingMode, turnOnReadingMode, turnOffReadingMode } = useReadingModeStore();
 
   const {
     isOpen: isDiscussionModalOpen,
@@ -216,7 +212,7 @@ const Blog = () => {
           <p className='text-lg'>Reading Mode:</p>
           <Switch
             checked={isReadingMode}
-            onChange={(checked) => dispatch(turnReadingMode({ isTurned: checked }))}
+            onChange={(checked) => (checked ? turnOnReadingMode() : turnOffReadingMode())}
           />
         </div>
 

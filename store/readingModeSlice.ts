@@ -1,20 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const readingModeSlice = createSlice({
-  name: 'authBlog',
+  name: 'readingMode',
   initialState: {
-    isTurned: false,
+    isReadingMode: false,
   },
   reducers: {
-    turnReadingMode: (state, { payload: { isTurned } }: { payload: { isTurned: boolean } }) => {
-      return (state = {
-        ...state,
-        isTurned,
-      });
+    turnOnReadingMode: (state) => {
+      return (state = { ...state, isReadingMode: true });
+    },
+    turnOffReadingMode: (state) => {
+      return (state = { ...state, isReadingMode: false });
     },
   },
 });
 
-export const { turnReadingMode } = readingModeSlice.actions;
+export const { turnOnReadingMode, turnOffReadingMode } = readingModeSlice.actions;
 
 export default readingModeSlice.reducer;
