@@ -30,8 +30,6 @@ export const withAuth = (
   ) => Promise<TGetServerSidePropsReturnType>,
 ) => {
   return async (context: GetServerSidePropsContext) => {
-    const queryClient = new QueryClient();
-
     const { req } = context;
 
     const { token } = req.cookies;
@@ -43,6 +41,8 @@ export const withAuth = (
         },
       };
     }
+
+    const queryClient = new QueryClient();
 
     try {
       const { props } = await gssp(context, queryClient);

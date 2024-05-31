@@ -10,9 +10,10 @@ import { useAuth } from 'auth';
 import BlogCard from 'components/common/BlogCard';
 import { useFilterStore } from 'store/hooks';
 import { getProfile } from 'request/auth';
-import { getAllBlogs, getGenre } from 'request/blog';
+import { getAllBlogs, getBlogSuggestions, getGenre } from 'request/blog';
+import { getUserSuggestions } from 'request/user';
 import { queryKeys } from 'utils';
-import { AUTH, BLOG, GENRE } from 'constants/queryKeys';
+import { AUTH, BLOG, GENRE, USER } from 'constants/queryKeys';
 import { FILTERS } from 'constants/reduxKeys';
 import { Genre } from 'interface/models';
 
@@ -23,7 +24,7 @@ const GenericBlogs = () => {
 
   const { authUser } = useAuth();
 
-  const { data: blogs, isFetchedAfterMount } = useQuery({
+  const { data: blogs, isLoading } = useQuery({
     queryFn: () => getAllBlogs({ genre: [capitalize(String(query?.genre)) as Genre], size }),
     queryKey: queryKeys(BLOG).list({ genre: [capitalize(String(query?.genre))], size }),
   });
@@ -41,7 +42,7 @@ const GenericBlogs = () => {
         />
 
         <div className='w-full pt-3'>
-          {blogs?.count && !isFetchedAfterMount ? (
+          {isLoading ? (
             Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
             ))
@@ -86,8 +87,19 @@ export const getServerSideProps: GetServerSideProps = async (
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getAllBlogs({ genre: [capitalize(String(ctx.params?.genre)) as Genre] }, config),
+    queryFn: () =>
+      getAllBlogs({ genre: [capitalize(String(ctx.params?.genre)) as Genre], size: 20 }, config),
     queryKey: queryKeys(BLOG).list({ genre: [capitalize(String(ctx.params?.genre))], size: 20 }),
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => getUserSuggestions({ size: 3 }, config),
+    queryKey: queryKeys(USER).list({ size: 3 }),
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => getBlogSuggestions({ size: 4 }, config),
+    queryKey: queryKeys(BLOG).list({ size: 4 }),
   });
 
   await queryClient.prefetchQuery({

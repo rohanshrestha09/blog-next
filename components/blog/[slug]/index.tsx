@@ -26,11 +26,12 @@ import { DiscussionList } from '../components/DiscussionList';
 import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { getProfile } from 'request/auth';
-import { getUserBlogs } from 'request/user';
+import { getUserBlogs, getUserSuggestions } from 'request/user';
 import {
   bookmarkBlog,
   createComment,
   getBlog,
+  getBlogSuggestions,
   getComments,
   getGenre,
   getLikes,
@@ -86,7 +87,7 @@ const Blog = () => {
     keepPreviousData: true,
   });
 
-  const { data: userBlogs, isFetchedAfterMount: isUserBlogFetchedAfterMount } = useQuery({
+  const { data: userBlogs, isLoading: isUserBlogLoading } = useQuery({
     queryFn: () => (blog?.authorId ? getUserBlogs({ id: blog?.authorId, size: 4 }) : undefined),
     queryKey: queryKeys(USER, BLOG).list({ id: blog?.authorId, size: 4 }),
     enabled: !!blog,
@@ -266,7 +267,7 @@ const Blog = () => {
 
           <header className='text-2xl pb-4 uppercase'>More from {blog?.author?.name}</header>
 
-          {userBlogs?.count && !isUserBlogFetchedAfterMount
+          {isUserBlogLoading
             ? Array.from({ length: 1 }).map((_, i) => (
                 <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
               ))
@@ -353,18 +354,13 @@ export const getServerSideProps: GetServerSideProps = async (
   }
 
   await queryClient.prefetchQuery({
-    queryFn: () => getUserBlogs({ id: blog?.authorId, size: 4 }, config),
-    queryKey: queryKeys(USER, BLOG).list({ id: blog?.authorId, size: 4 }),
+    queryFn: () => getUserSuggestions({ size: 3 }, config),
+    queryKey: queryKeys(USER).list({ size: 3 }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getLikes({ slug: String(ctx.params?.slug), size: 20 }, config),
-    queryKey: queryKeys(USER).list({ slug: String(ctx.params?.slug), size: 20 }),
-  });
-
-  await queryClient.prefetchQuery({
-    queryFn: () => getComments({ slug: String(ctx.params?.slug), size: 20 }, config),
-    queryKey: queryKeys(COMMENT).list({ slug: String(ctx.params?.slug), size: 20 }),
+    queryFn: () => getBlogSuggestions({ size: 4 }, config),
+    queryKey: queryKeys(BLOG).list({ size: 4 }),
   });
 
   await queryClient.prefetchQuery({

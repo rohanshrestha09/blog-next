@@ -32,7 +32,7 @@ const Profile = () => {
   const {
     data: blogs,
     isPreviousData,
-    isFetchedAfterMount,
+    isLoading,
   } = useQuery({
     queryFn: () => getBlogs({ order, isPublished, sort, genre, size, search }),
     queryKey: queryKeys(AUTH, BLOG).list({ order, isPublished, sort, genre, size, search }),
@@ -56,7 +56,7 @@ const Profile = () => {
             hasSortOrder
           />
 
-          {blogs?.count && !isFetchedAfterMount ? (
+          {isLoading ? (
             Array.from({ length: 2 }).map((_, i) => (
               <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
             ))
@@ -174,7 +174,17 @@ export const getServerSideProps = withAuth(async (ctx, queryClient) => {
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getBlogs({}, config),
+    queryFn: () =>
+      getBlogs(
+        {
+          genre: [],
+          size: 20,
+          sort: SORT_TYPE.LIKE_COUNT,
+          order: SORT_ORDER.DESC,
+          search: '',
+        },
+        config,
+      ),
     queryKey: queryKeys(AUTH, BLOG).list({
       genre: [],
       size: 20,
@@ -185,12 +195,12 @@ export const getServerSideProps = withAuth(async (ctx, queryClient) => {
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getFollowers({}, config),
+    queryFn: () => getFollowers({ size: 20, search: '' }, config),
     queryKey: queryKeys(AUTH, FOLLOWER).list({ size: 20, search: '' }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getFollowing({}, config),
+    queryFn: () => getFollowing({ size: 20, search: '' }, config),
     queryKey: queryKeys(AUTH, FOLLOWING).list({ size: 20, search: '' }),
   });
 

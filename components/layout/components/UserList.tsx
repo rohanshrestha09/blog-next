@@ -18,7 +18,7 @@ const UserList: React.FC = () => {
 
   const { size, search, setSize, setSearch } = useFilterStore(FILTERS.USER_SUGGESTION_FILTER);
 
-  const { data: users, isPreviousData: isLoading } = useQuery({
+  const { data: users, isPreviousData } = useQuery({
     queryFn: () => getUserSuggestions({ size, search }),
     queryKey: queryKeys(USER).list({ size, search }),
     keepPreviousData: true,
@@ -47,7 +47,7 @@ const UserList: React.FC = () => {
           allowClear
         />
 
-        {isLoading && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
+        {isPreviousData && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
       </span>
 
       <Divider />

@@ -5,13 +5,12 @@ import { NextSeo } from 'next-seo';
 import { DehydratedState, QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import { Empty as RenderEmpty, Tabs, List, Skeleton, Button, ConfigProvider } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { isEmpty } from 'lodash';
 import { GithubOutlined } from '@ant-design/icons';
 import BlogCard from 'components/common/BlogCard';
 import Filter from 'components/common/Filter';
 import { useFilterStore, useModalStore } from 'store/hooks';
 import { useAuth } from 'auth';
-import { getAllBlogs, getGenre } from 'request/blog';
+import { getAllBlogs, getBlogSuggestions, getGenre } from 'request/blog';
 import { getFollowingBlogs, getProfile } from 'request/auth';
 import { getUserSuggestions } from 'request/user';
 import { queryKeys } from 'utils';
@@ -59,7 +58,7 @@ const Home = () => {
   const {
     data: blogs,
     isPreviousData,
-    isFetchedAfterMount,
+    isLoading,
   } = useQuery({
     queryFn: () => getAllBlogs({ sort, genre, size, search }),
     queryKey: queryKeys(BLOG).list({ genre, sort, size, search }),
@@ -98,7 +97,7 @@ const Home = () => {
             <Filter filterType={FILTERS.HOME_BLOG_FILTER} isLoading={isPreviousData} hasSort />
           )}
 
-          {!isEmpty(blogs?.data) && !isFetchedAfterMount ? (
+          {isLoading ? (
             Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
             ))
@@ -185,18 +184,18 @@ export const getServerSideProps: GetServerSideProps = async (
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getAllBlogs({}, config),
+    queryFn: () => getAllBlogs({ genre: [], sort: LIKE_COUNT, size: 20, search: '' }, config),
     queryKey: queryKeys(BLOG).list({ genre: [], sort: LIKE_COUNT, size: 20, search: '' }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getFollowingBlogs({}, config),
-    queryKey: queryKeys(FOLLOWING_QUERY_KEY, BLOG).list({ size: 20 }),
+    queryFn: () => getUserSuggestions({ size: 3 }, config),
+    queryKey: queryKeys(USER).list({ size: 3 }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getUserSuggestions({}, config),
-    queryKey: queryKeys(USER).list({ size: 20, search: '' }),
+    queryFn: () => getBlogSuggestions({ size: 4 }, config),
+    queryKey: queryKeys(BLOG).list({ size: 4 }),
   });
 
   await queryClient.prefetchQuery({

@@ -18,7 +18,7 @@ const Notifications = () => {
 
   const queryClient = useQueryClient();
 
-  const { data: notifications, isFetchedAfterMount } = useQuery({
+  const { data: notifications, isLoading } = useQuery({
     queryFn: () => getNotifications({ size }),
     queryKey: queryKeys(NOTIFICATION).list({ size }),
     keepPreviousData: true,
@@ -49,7 +49,7 @@ const Notifications = () => {
 
         <Divider />
 
-        {!isFetchedAfterMount ? (
+        {isLoading ? (
           Array.from({ length: 7 }).map((_, i) => (
             <Skeleton key={i} className='py-1' avatar round paragraph={{ rows: 1 }} active />
           ))
@@ -87,7 +87,7 @@ export const getServerSideProps = withAuth(async (ctx, queryClient) => {
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getNotifications({}, config),
+    queryFn: () => getNotifications({ size: 20 }, config),
     queryKey: queryKeys(NOTIFICATION).list({ size: 20 }),
   });
 

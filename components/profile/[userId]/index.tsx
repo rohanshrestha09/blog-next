@@ -43,7 +43,7 @@ const UserProfile = () => {
     queryKey: queryKeys(USER).detail(String(query?.userId)),
   });
 
-  const { data: blogs, isFetchedAfterMount } = useQuery({
+  const { data: blogs, isLoading } = useQuery({
     queryFn: () => getUserBlogs({ id: String(query?.userId), size }),
     queryKey: queryKeys(USER, BLOG).list({ id: String(query?.userId), size }),
     keepPreviousData: true,
@@ -118,7 +118,7 @@ const UserProfile = () => {
         <header className='text-2xl uppercase pb-2'>{`${user?.name}'s Blogs`}</header>
 
         <div className='w-full pt-3'>
-          {blogs?.count && !isFetchedAfterMount ? (
+          {isLoading ? (
             Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
             ))
@@ -192,12 +192,13 @@ export const getServerSideProps: GetServerSideProps = async (
     };
 
   await queryClient.prefetchQuery({
-    queryFn: () => getUserBlogs({ id: String(ctx.params?.userId) }, config),
+    queryFn: () => getUserBlogs({ id: String(ctx.params?.userId), size: 20 }, config),
     queryKey: queryKeys(USER, BLOG).list({ id: String(ctx.params?.userId), size: 20 }),
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getUserFollowers({ id: String(ctx.params?.userId) }, config),
+    queryFn: () =>
+      getUserFollowers({ id: String(ctx.params?.userId), size: 20, search: '' }, config),
     queryKey: queryKeys(USER, FOLLOWER).list({
       id: String(ctx.params?.userId),
       size: 20,
@@ -206,7 +207,8 @@ export const getServerSideProps: GetServerSideProps = async (
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getUserFollowing({ id: String(ctx.params?.userId) }, config),
+    queryFn: () =>
+      getUserFollowing({ id: String(ctx.params?.userId), size: 20, search: '' }, config),
     queryKey: queryKeys(USER, FOLLOWING).list({
       id: String(ctx.params?.userId),
       size: 20,

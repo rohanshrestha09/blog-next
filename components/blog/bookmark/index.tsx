@@ -7,11 +7,12 @@ import { useAuth, withAuth } from 'auth';
 import BlogCard from 'components/common/BlogCard';
 import Filter from 'components/common/Filter';
 import { getBookmarks, getProfile } from 'request/auth';
-import { getGenre } from 'request/blog';
+import { getBlogSuggestions, getGenre } from 'request/blog';
+import { getUserSuggestions } from 'request/user';
 import { useFilterStore } from 'store/hooks';
 import { queryKeys } from 'utils';
 import { FILTERS } from 'constants/reduxKeys';
-import { AUTH, GENRE, BOOKMARK } from 'constants/queryKeys';
+import { AUTH, GENRE, BOOKMARK, USER, BLOG } from 'constants/queryKeys';
 
 const Bookmarks = () => {
   const router = useRouter();
@@ -23,7 +24,7 @@ const Bookmarks = () => {
   const {
     data: blogs,
     isPreviousData,
-    isFetchedAfterMount,
+    isLoading,
   } = useQuery({
     queryFn: () => getBookmarks({ genre, size, search }),
     queryKey: queryKeys(BOOKMARK).list({ genre, size, search }),
@@ -44,7 +45,7 @@ const Bookmarks = () => {
 
         <Filter filterType={FILTERS.BOOKMARK_FILTER} isLoading={isPreviousData} />
 
-        {blogs?.count && !isFetchedAfterMount ? (
+        {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className='py-8' avatar round paragraph={{ rows: 3 }} active />
           ))
@@ -95,8 +96,18 @@ export const getServerSideProps = withAuth(async (ctx, queryClient) => {
   });
 
   await queryClient.prefetchQuery({
-    queryFn: () => getBookmarks({}, config),
+    queryFn: () => getBookmarks({ genre: [], size: 20, search: '' }, config),
     queryKey: queryKeys(BOOKMARK).list({ genre: [], size: 20, search: '' }),
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => getUserSuggestions({ size: 3 }, config),
+    queryKey: queryKeys(USER).list({ size: 3 }),
+  });
+
+  await queryClient.prefetchQuery({
+    queryFn: () => getBlogSuggestions({ size: 4 }, config),
+    queryKey: queryKeys(BLOG).list({ size: 4 }),
   });
 
   await queryClient.prefetchQuery({

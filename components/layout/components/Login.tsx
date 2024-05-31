@@ -9,7 +9,7 @@ import { login } from 'request/auth';
 import { useModalStore } from 'store/hooks';
 import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
-import { AUTH } from 'constants/queryKeys';
+import { AUTH, NOTIFICATION } from 'constants/queryKeys';
 import { MODALS } from 'constants/reduxKeys';
 
 const Login: React.FC = () => {
@@ -29,8 +29,9 @@ const Login: React.FC = () => {
     onSuccess: (res) => {
       successNotification(res.message);
       form.resetFields();
-      queryClient.refetchQueries(queryKeys(AUTH).all);
       closeLoginModal();
+      queryClient.refetchQueries(queryKeys(AUTH).all);
+      queryClient.refetchQueries(queryKeys(NOTIFICATION).all);
       router.push('/profile');
     },
     onError: errorNotification,

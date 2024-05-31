@@ -16,7 +16,7 @@ import { register } from 'request/auth';
 import { useModalStore } from 'store/hooks';
 import { errorNotification, successNotification, warningNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
-import { AUTH } from 'constants/queryKeys';
+import { AUTH, NOTIFICATION } from 'constants/queryKeys';
 import { MODALS } from 'constants/reduxKeys';
 
 const Register: React.FC = () => {
@@ -68,8 +68,9 @@ const Register: React.FC = () => {
       onSuccess: (res) => {
         successNotification(res.message);
         form.resetFields();
-        queryClient.refetchQueries(queryKeys(AUTH).all);
         closeRegisterModal();
+        queryClient.refetchQueries(queryKeys(AUTH).all);
+        queryClient.refetchQueries(queryKeys(NOTIFICATION).all);
         router.push('/profile');
       },
       onError: errorNotification,
