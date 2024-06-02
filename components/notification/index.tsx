@@ -77,7 +77,7 @@ const Notifications = () => {
 export default Notifications;
 
 export const getServerSideProps = withAuth(async (ctx, queryClient) => {
-  ctx.res.setHeader('Cache-Control', 'public, s-maxage=86400');
+  ctx.res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
 
   const config = { headers: { Cookie: ctx.req.headers.cookie || '' } };
 

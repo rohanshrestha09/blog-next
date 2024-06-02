@@ -14,6 +14,8 @@ router.use(auth()).delete(async (_req, res) => {
     path: '/',
   });
 
+  res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
+
   res.setHeader('Set-Cookie', serialized);
 
   return res.status(201).json(httpResponse('Logged out'));
