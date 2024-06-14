@@ -5,7 +5,6 @@ import { Button, DatePicker, Form, Input, Modal, Upload } from 'antd';
 import { UserOutlined, UploadOutlined, InfoCircleOutlined, LinkOutlined } from '@ant-design/icons';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { useAuth } from 'auth';
-import PasswordAuth from './PasswordAuth';
 import { deleteProfileImage, updateProfile } from 'request/auth';
 import { useModalStore } from 'store/hooks';
 import { errorNotification, successNotification, warningNotification } from 'utils/notification';
@@ -16,10 +15,6 @@ import { AUTH, BLOG } from 'constants/queryKeys';
 const EditProfile = () => {
   const { isOpen: isEditProfileModalOpen, closeModal: closeEditProfileModal } = useModalStore(
     MODALS.EDIT_PROFILE_MODAL,
-  );
-
-  const { openModal: openPasswordAuthModal, closeModal: closePasswordAuthModal } = useModalStore(
-    MODALS.PASSWORD_AUTH_MODAL,
   );
 
   const { openModal: openCompleteProfileModal } = useModalStore(MODALS.COMPLETE_PROFILE_MODAL);
@@ -59,6 +54,7 @@ const EditProfile = () => {
 
   const handleEditProfile = useMutation(
     (formValues: any) => {
+      delete formValues.email;
       // * avoid append if formvalue is empty
       const formData = new FormData();
 
@@ -76,7 +72,6 @@ const EditProfile = () => {
         queryClient.refetchQueries(queryKeys(AUTH).all);
         queryClient.refetchQueries(queryKeys(BLOG).all);
         closeEditProfileModal();
-        closePasswordAuthModal();
       },
       onError: errorNotification,
     },
@@ -97,11 +92,16 @@ const EditProfile = () => {
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
-        onFinish={openPasswordAuthModal}
+        onFinish={(values) =>
+          handleEditProfile.mutate({
+            ...values,
+            dateOfBirth: values?.dateOfBirth?._d.toString(),
+          })
+        }
       >
         <Form.Item
           label='Full Name'
-          name='fullname'
+          name='name'
           initialValue={authUser?.name}
           rules={[{ required: true, message: 'Please input your fullname!' }]}
         >
@@ -188,6 +188,7 @@ const EditProfile = () => {
               className='h-10 rounded-lg'
               htmlType='submit'
               disabled={!authUser?.isVerified}
+              loading={handleEditProfile.isLoading}
             >
               Update
             </Button>
@@ -199,17 +200,6 @@ const EditProfile = () => {
             )}
           </div>
         </Form.Item>
-
-        <PasswordAuth
-          isLoading={handleEditProfile.isLoading}
-          mutation={({ password }) =>
-            handleEditProfile.mutate({
-              ...form.getFieldsValue(true),
-              dateOfBirth: form.getFieldValue('dateOfBirth')._d.toString(),
-              password,
-            })
-          }
-        />
       </Form>
     </Modal>
   );

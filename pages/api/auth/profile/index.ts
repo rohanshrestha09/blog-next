@@ -7,7 +7,7 @@ import { serialize } from 'cookie';
 import { isEmpty } from 'lodash';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidV4 } from 'uuid';
-import { prisma, User, userFields } from 'lib/prisma';
+import { prisma, User } from 'lib/prisma';
 import { supabase } from 'lib/supabase';
 import { session } from 'middlewares/session';
 import { auth } from 'middlewares/auth';
@@ -15,13 +15,12 @@ import { errorHandler, HttpException } from 'utils/exception';
 import { getResponse, httpResponse } from 'utils/response';
 import { transformUser } from 'lib/prisma/extensions';
 import { parseFormData } from 'utils/parseFormData';
-import { excludeFields } from 'lib/prisma';
 import { SUPABASE_BUCKET_NAME, SUPABASE_BUCKET_DIRECTORY } from 'constants/index';
 
 const validator = Joi.object<Partial<Pick<User, 'name' | 'bio' | 'website' | 'dateOfBirth'>>>({
   name: Joi.string(),
   bio: Joi.string(),
-  website: Joi.string().domain(),
+  website: Joi.string().uri(),
   dateOfBirth: Joi.date(),
 });
 
@@ -37,7 +36,19 @@ router.get(async (req, res) => {
       id: req.auth.id,
     },
     select: {
-      ...excludeFields(userFields, ['password']),
+      id: true,
+      name: true,
+      email: true,
+      dateOfBirth: true,
+      image: true,
+      imageName: true,
+      bio: true,
+      website: true,
+      provider: true,
+      isSSO: true,
+      isVerified: true,
+      createdAt: true,
+      updatedAt: true,
       followedBy: condition,
       following: condition,
       _count: {

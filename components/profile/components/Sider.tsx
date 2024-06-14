@@ -214,7 +214,7 @@ const ProfileSider: React.FC<Props> = ({ isSider }) => {
           style={{ overflowWrap: 'anywhere' }}
         >
           {authUser?.bio && (
-            <span className='flex-wrap'>
+            <span>
               <BsFillInfoCircleFill />
               <p>{authUser.bio}</p>
             </span>

@@ -148,7 +148,9 @@ export const blogExtensions = {
   },
 };
 
-export const transformUser = (user: User & { followedBy?: User[]; following?: User[] }) => {
+export const transformUser = (
+  user: Omit<User, 'password'> & { followedBy?: User[]; following?: User[] },
+) => {
   const followedByViewer = !isEmpty(user.followedBy);
 
   const followsViewer = !isEmpty(user.following);
