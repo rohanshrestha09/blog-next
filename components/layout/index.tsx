@@ -15,7 +15,7 @@ import HomeSider from 'components/home/components/Sider';
 import ProfileSider from 'components/profile/components/Sider';
 import UserProfileSider from 'components/profile/[userId]/components/Sider';
 import UserList from './components/UserList';
-import NotificationCard from 'components/notification/components/NotificationCard';
+import NotificationCard from 'components/notifications/components/NotificationCard';
 import { useAuth } from 'auth';
 import { logout } from 'request/auth';
 import { useReadingModeStore, useDrawerStore } from 'store/hooks';
@@ -58,7 +58,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
       case '/blog/[slug]':
       case '/blog/bookmark':
       case '/blog/genre/[genre]':
-      case '/notification':
+      case '/notifications':
         return <HomeSider />;
 
       case '/profile':
