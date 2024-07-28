@@ -185,7 +185,7 @@ const BlogCard: React.FC<Props> = ({ blog, editable, size }) => {
               <Tag
                 key={tag}
                 className='rounded-full cursor-pointer'
-                onClick={() => router.push(`/genre/${tag.toLowerCase()}`)}
+                onClick={() => router.push(`/blog/genre/${tag.toLowerCase()}`)}
               >
                 {tag}
               </Tag>
