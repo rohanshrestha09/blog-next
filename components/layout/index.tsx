@@ -57,7 +57,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
       case '/':
       case '/blog/[slug]':
       case '/blog/bookmark':
-      case '/[genre]':
+      case '/blog/[genre]':
       case '/notification':
         return <HomeSider />;
 
