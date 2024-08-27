@@ -7,13 +7,15 @@ import { jwtConfig } from 'server/config/jwt';
 import { HttpException } from 'server/exception';
 import { User } from 'server/models/user';
 import { IAuthService } from 'server/ports/auth';
-import { UserRepository } from 'server/repositories/user';
 import { MultipartyFile } from 'server/utils/types';
-import { SupabaseService } from './supabase';
+import { IUserRepository } from 'server/ports/user';
+import { ISupabaseService } from 'server/ports/supabase';
 
 export class AuthService implements IAuthService {
-  private readonly userRepository = new UserRepository();
-  private readonly supabaseService = new SupabaseService();
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly supabaseService: ISupabaseService,
+  ) {}
 
   async login(data: Pick<User, 'email' | 'password'>): Promise<string> {
     const password = await this.userRepository.findUserPasswordByEmail(data.email);

@@ -2,10 +2,6 @@ import { User } from 'server/models/user';
 import { MultipartyFile } from 'server/utils/types';
 
 export interface IAuthService {
-  // googleLogin(): Promise<void>;
-  // getProfile(): Promise<void>;
-  // updateProfile(): Promise<void>;
-  // deleteProfile(): Promise<void>;
   login(data: Pick<User, 'email' | 'password'>): Promise<string>;
   register(
     data: Pick<User, 'name' | 'email' | 'password' | 'dateOfBirth'>,
@@ -19,4 +15,5 @@ export interface IAuthService {
     data: Partial<Pick<User, 'name' | 'bio' | 'website' | 'dateOfBirth'>>,
     file?: MultipartyFile,
   ): Promise<void>;
+  deleteProfile(user: User, password: string): Promise<void>;
 }

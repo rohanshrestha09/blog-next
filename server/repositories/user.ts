@@ -54,7 +54,15 @@ class UserQueryBuilder implements IUserQueryBuilder {
     return this;
   }
 
-  withSearch(search: string) {
+  withSearch(search = '') {
+    this.options.where = {
+      ...this.options.where,
+      name: {
+        contains: search,
+        mode: 'insensitive',
+      },
+    };
+
     return this;
   }
 
@@ -109,7 +117,7 @@ class UserQueryBuilder implements IUserQueryBuilder {
 
     const count = await this.userInstance.count({ ...this.options, select: true });
 
-    const data = await prisma.user.findMany({
+    const data = await this.userInstance.findMany({
       ...this.options,
       select: {
         id: true,

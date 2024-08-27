@@ -1,20 +1,20 @@
-export const GENRE = [
-  'Technology',
-  'Science',
-  'Programming',
-  'Fashion',
-  'Food',
-  'Travel',
-  'Music',
-  'Lifestyle',
-  'Fitness',
-  'DIY',
-  'Sports',
-  'Finance',
-  'Gaming',
-  'News',
-  'Movie',
-  'Personal',
-  'Business',
-  'Politics',
-] as const;
+export type GENRE = (
+  | 'Technology'
+  | 'Science'
+  | 'Programming'
+  | 'Fashion'
+  | 'Food'
+  | 'Travel'
+  | 'Music'
+  | 'Lifestyle'
+  | 'Fitness'
+  | 'DIY'
+  | 'Sports'
+  | 'Finance'
+  | 'Gaming'
+  | 'News'
+  | 'Movie'
+  | 'Personal'
+  | 'Business'
+  | 'Politics'
+)[];

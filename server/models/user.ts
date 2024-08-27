@@ -59,6 +59,9 @@ export interface UserUpdate
   extends Partial<
     Omit<
       User,
+      | 'id'
+      | 'createdAt'
+      | 'updatedAt'
       | 'followsViewer'
       | 'followedByViewer'
       | 'blogs'

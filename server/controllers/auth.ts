@@ -8,15 +8,19 @@ import {
   updateProfileDto,
 } from 'server/dtos/auth';
 import { ResponseDto } from 'server/dtos/response';
-import { AuthService } from 'server/services/auth';
 import { WithAuthRequest } from 'server/utils/types';
 import { parseFormData, parseQuery } from 'server/utils/parser';
 import { HttpException } from 'server/exception';
-import { UserService } from 'server/services/user';
+import { IAuthService } from 'server/ports/auth';
+import { IUserService } from 'server/ports/user';
+import { IBlogService } from 'server/ports/blog';
 
 export class AuthController {
-  private readonly authService = new AuthService();
-  private readonly userService = new UserService();
+  constructor(
+    private readonly authService: IAuthService,
+    private readonly userService: IUserService,
+    private readonly blogService: IBlogService,
+  ) {}
 
   async login(req: NextApiRequest, res: NextApiResponse) {
     const data = await loginDto.validateAsync(req.body);
@@ -170,5 +174,63 @@ export class AuthController {
     res.setHeader('Set-Cookie', serialized);
 
     return res.status(201).json(new ResponseDto('Profile deleted'));
+  }
+
+  async getBookmarks(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+    const authUser = req.authUser;
+
+    if (!authUser) throw new HttpException(401, 'Unauthorized');
+
+    const filter = await parseQuery(req.query);
+
+    const [data, count] = await this.blogService.getBookmarks(authUser.id, filter, authUser.id);
+
+    return res.status(200).json(
+      new ResponseDto('Bookmarks fetched', data, {
+        count,
+        page: filter.page,
+        size: filter.size,
+      }),
+    );
+  }
+
+  async getFollowingBlogs(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+    const authUser = req.authUser;
+
+    if (!authUser) throw new HttpException(401, 'Unauthorized');
+
+    const filter = await parseQuery(req.query);
+
+    const [data, count] = await this.blogService.getFollowingBlogs(
+      authUser.id,
+      filter,
+      authUser.id,
+    );
+
+    return res.status(200).json(
+      new ResponseDto('Following blogs fetched', data, {
+        count,
+        page: filter.page,
+        size: filter.size,
+      }),
+    );
+  }
+
+  async getAuthorBlogs(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+    const authUser = req.authUser;
+
+    if (!authUser) throw new HttpException(401, 'Unauthorized');
+
+    const filter = await parseQuery(req.query);
+
+    const [data, count] = await this.blogService.getAuthorBlogs(authUser.id, filter, authUser.id);
+
+    return res.status(200).json(
+      new ResponseDto('Author blogs fetched', data, {
+        count,
+        page: filter.page,
+        size: filter.size,
+      }),
+    );
   }
 }

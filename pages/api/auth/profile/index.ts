@@ -1,12 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import { errorHandler } from 'server/exception';
-import { AuthGuard } from 'server/guards/auth';
-import { AuthController } from 'server/controllers/auth';
+import { getAuthController, getAuthGuard } from 'server/factories/auth';
 
-const authGuard = new AuthGuard();
+const authGuard = getAuthGuard();
 
-const authController = new AuthController();
+const authController = getAuthController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 

@@ -3,11 +3,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { NextHandler } from 'next-connect';
 import { jwtConfig } from 'server/config/jwt';
 import { HttpException } from 'server/exception';
-import { UserRepository } from 'server/repositories/user';
+import { IUserRepository } from 'server/ports/user';
 import { WithAuthRequest } from 'server/utils/types';
 
 export class AuthGuard {
-  private readonly userRepository = new UserRepository();
+  constructor(private readonly userRepository: IUserRepository) {}
 
   useAuth({ supressError } = { supressError: false }) {
     return async (

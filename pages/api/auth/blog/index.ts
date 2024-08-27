@@ -1,55 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { prisma, User } from 'lib/prisma';
-import { auth } from 'middlewares/auth';
-import { session } from 'middlewares/session';
-import { errorHandler } from 'utils/exception';
-import { parseQuery } from 'utils/parseQuery';
-import { getAllResponse } from 'utils/response';
-import { getPages } from 'utils';
+import { errorHandler } from 'server/exception';
+import { getAuthController, getAuthGuard } from 'server/factories/auth';
 
-const router = createRouter<NextApiRequest & { session: Session; auth: User }, NextApiResponse>();
+const authGuard = getAuthGuard();
 
-router.use(auth(), session()).get(async (req, res) => {
-  const authUser = req.auth;
+const authController = getAuthController();
 
-  const { take, skip, search, sort, order } = await parseQuery(req.query);
+const router = createRouter<NextApiRequest, NextApiResponse>();
 
-  const { isPublished } = req.query;
-
-  const count = await prisma.blog.count({
-    where: {
-      authorId: authUser.id,
-      title: {
-        contains: search,
-        mode: 'insensitive',
-      },
-      isPublished: isPublished ? isPublished == 'true' : undefined,
-    },
-  });
-
-  const blogs = await prisma.blog.findManyWithSession({
-    where: {
-      authorId: authUser.id,
-      title: {
-        contains: search,
-        mode: 'insensitive',
-      },
-      isPublished: isPublished ? isPublished == 'true' : undefined,
-    },
-    session: req.session,
-    skip,
-    take,
-    orderBy: {
-      [sort]: order,
-    },
-  });
-
-  const { currentPage, totalPage } = getPages({ skip, take, count });
-
-  return res
-    .status(200)
-    .json(getAllResponse('Blogs fetched', { data: blogs, count, currentPage, totalPage }));
-});
+router.use(authGuard.useAuth()).get(authController.getAuthorBlogs);
 
 export default router.handler({ onError: errorHandler });

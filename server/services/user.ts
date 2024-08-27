@@ -1,10 +1,9 @@
 import { User } from 'server/models/user';
-import { IUserService } from 'server/ports/user';
-import { UserRepository } from 'server/repositories/user';
+import { IUserRepository, IUserService } from 'server/ports/user';
 import { FilterProps } from 'server/utils/types';
 
 export class UserService implements IUserService {
-  private readonly userRepository = new UserRepository();
+  constructor(private readonly userRepository: IUserRepository) {}
 
   async getFollowers(
     userId: string,

@@ -10,8 +10,10 @@ export interface Blog {
   content: string;
   image?: string | null;
   imageName?: string | null;
-  genre: typeof GENRE;
+  genre: GENRE;
   isPublished: boolean;
+  hasLiked?: boolean;
+  hasBookmarked?: boolean;
   createdAt: Date;
   updatedAt: Date;
   authorId: string;
@@ -20,4 +22,42 @@ export interface Blog {
   likedBy?: User[];
   comments?: Comment[];
   notifications?: Notification[];
+  _count?: {
+    likedBy?: number;
+    comments?: number;
+  };
 }
+
+export interface BlogQuery extends Partial<Pick<Blog, 'isPublished' | 'authorId'>> {}
+
+export interface BlogCreate
+  extends Omit<
+    Blog,
+    | 'id'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'hasLiked'
+    | 'hasBookmarked'
+    | 'author'
+    | 'bookmarkedBy'
+    | 'likedBy'
+    | 'comments'
+    | 'notifications'
+  > {}
+
+export interface BlogUpdate
+  extends Partial<
+    Omit<
+      Blog,
+      | 'id'
+      | 'createdAt'
+      | 'updatedAt'
+      | 'hasLiked'
+      | 'hasBookmarked'
+      | 'author'
+      | 'bookmarkedBy'
+      | 'likedBy'
+      | 'comments'
+      | 'notifications'
+    >
+  > {}

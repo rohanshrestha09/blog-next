@@ -1,61 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { prisma, User } from 'lib/prisma';
-import { auth } from 'middlewares/auth';
-import { session } from 'middlewares/session';
-import { errorHandler } from 'utils/exception';
-import { parseQuery } from 'utils/parseQuery';
-import { getAllResponse } from 'utils/response';
-import { getPages } from 'utils';
+import { errorHandler } from 'server/exception';
+import { getAuthController, getAuthGuard } from 'server/factories/auth';
 
-const router = createRouter<NextApiRequest & { session: Session; auth: User }, NextApiResponse>();
+const authGuard = getAuthGuard();
 
-router.use(auth(), session()).get(async (req, res) => {
-  const authUser = req.auth;
+const authController = getAuthController();
 
-  const { take, skip, search, sort, order } = await parseQuery(req.query);
+const router = createRouter<NextApiRequest, NextApiResponse>();
 
-  const count = await prisma.blog.count({
-    where: {
-      bookmarkedBy: {
-        some: {
-          id: authUser.id,
-        },
-      },
-      title: {
-        contains: search,
-        mode: 'insensitive',
-      },
-      isPublished: true,
-    },
-  });
-
-  const blogs = await prisma.blog.findManyWithSession({
-    where: {
-      bookmarkedBy: {
-        some: {
-          id: authUser.id,
-        },
-      },
-      title: {
-        contains: search,
-        mode: 'insensitive',
-      },
-      isPublished: true,
-    },
-    session: req.session,
-    skip,
-    take,
-    orderBy: {
-      [sort]: order,
-    },
-  });
-
-  const { currentPage, totalPage } = getPages({ skip, take, count });
-
-  return res
-    .status(200)
-    .json(getAllResponse('Blogs fetched', { data: blogs, count, currentPage, totalPage }));
-});
+router.use(authGuard.useAuth()).get(authController.getBookmarks);
 
 export default router.handler({ onError: errorHandler });
