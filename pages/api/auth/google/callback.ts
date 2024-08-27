@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import { serialize } from 'cookie';
 import { passport } from 'lib/passport';
-import { errorHandler } from 'utils/exception';
+import { errorHandler } from 'server/exception';
 
 const router = createRouter<NextApiRequest & { user: { token: string } }, NextApiResponse>();
 
