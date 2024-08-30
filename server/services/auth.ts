@@ -7,14 +7,17 @@ import { jwtConfig } from 'server/config/jwt';
 import { HttpException } from 'server/exception';
 import { User } from 'server/models/user';
 import { IAuthService } from 'server/ports/auth';
-import { MultipartyFile } from 'server/utils/types';
+import { FilterProps, MultipartyFile } from 'server/utils/types';
 import { IUserRepository } from 'server/ports/user';
 import { ISupabaseService } from 'server/ports/supabase';
+import { Blog } from 'server/models/blog';
+import { IBlogRepository } from 'server/ports/blog';
 
 export class AuthService implements IAuthService {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly supabaseService: ISupabaseService,
+    private readonly blogRepository: IBlogRepository,
   ) {}
 
   async login(data: Pick<User, 'email' | 'password'>): Promise<string> {
@@ -163,5 +166,18 @@ export class AuthService implements IAuthService {
         )
         .catch(() => {});
     }
+  }
+
+  async getUserBlogs(
+    user: User,
+    filter: FilterProps,
+    isPublished?: boolean,
+  ): Promise<[Blog[], number]> {
+    return await this.blogRepository
+      .findAllBlogs({ isPublished, authorId: user.id })
+      .withPagination(filter.page, filter.size)
+      .withSort(filter.sort, filter.order)
+      .withSearch(filter.search)
+      .execute(user.id);
   }
 }

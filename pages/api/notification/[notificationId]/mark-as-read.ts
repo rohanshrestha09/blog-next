@@ -1,30 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { NotificationStatus, prisma, User } from 'lib/prisma';
-import { auth } from 'middlewares/auth';
-import { errorHandler, HttpException } from 'utils/exception';
-import { httpResponse } from 'utils/response';
+import { errorHandler } from 'server/exception';
+import { getAuthGuard } from 'server/factories/auth';
+import { getNotificationController } from 'server/factories/notification';
 
-const router = createRouter<NextApiRequest & { auth: User }, NextApiResponse>();
+const authGuard = getAuthGuard();
 
-router.use(auth()).post(async (req, res) => {
-  const authUser = req.auth;
+const notificationController = getNotificationController();
 
-  const { notificationId } = req.query;
+const router = createRouter<NextApiRequest, NextApiResponse>();
 
-  if (Array.isArray(notificationId)) throw new HttpException(400, 'Invalid operation');
-
-  await prisma.notification.update({
-    where: {
-      id: notificationId,
-      receiverId: authUser.id,
-    },
-    data: {
-      status: NotificationStatus.READ,
-    },
-  });
-
-  return res.status(201).json(httpResponse('Notification updated'));
-});
+router.use(authGuard.useAuth()).post(notificationController.markAsRead);
 
 export default router.handler({ onError: errorHandler });

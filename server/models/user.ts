@@ -34,6 +34,8 @@ export interface User {
   };
 }
 
+export interface UserQuery extends Partial<Pick<User, 'email'>> {}
+
 export interface UserCreate
   extends Omit<
     User,

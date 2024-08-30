@@ -1,53 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { prisma, User } from 'lib/prisma';
-import { validateUser } from 'middlewares/validateUser';
-import { session } from 'middlewares/session';
-import { errorHandler } from 'utils/exception';
-import { parseQuery } from 'utils/parseQuery';
-import { getAllResponse } from 'utils/response';
-import { getPages } from 'utils';
+import { errorHandler } from 'server/exception';
+import { getAuthGuard } from 'server/factories/auth';
+import { getUserController } from 'server/factories/user';
 
-const router = createRouter<NextApiRequest & { session: Session; user: User }, NextApiResponse>();
+const authGuard = getAuthGuard();
 
-router.use(session(), validateUser()).get(async (req, res) => {
-  const user = req.user;
+const userController = getUserController();
 
-  const { take, skip, search, sort, order } = await parseQuery(req.query);
+const router = createRouter<NextApiRequest, NextApiResponse>();
 
-  const count = await prisma.blog.count({
-    where: {
-      authorId: user.id,
-      title: {
-        contains: search,
-        mode: 'insensitive',
-      },
-      isPublished: true,
-    },
-  });
-
-  const blogs = await prisma.blog.findManyWithSession({
-    where: {
-      authorId: user.id,
-      title: {
-        contains: search,
-        mode: 'insensitive',
-      },
-      isPublished: true,
-    },
-    session: req.session,
-    skip,
-    take,
-    orderBy: {
-      [sort]: order,
-    },
-  });
-
-  const { currentPage, totalPage } = getPages({ skip, take, count });
-
-  return res
-    .status(200)
-    .json(getAllResponse('Blogs fetched', { data: blogs, count, currentPage, totalPage }));
-});
+router.use(authGuard.useAuth({ supressError: true })).get(userController.getUserBlogs);
 
 export default router.handler({ onError: errorHandler });

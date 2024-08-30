@@ -5,19 +5,6 @@ import { FilterProps } from 'server/utils/types';
 export class BlogService implements IBlogService {
   constructor(private readonly blogRepository: IBlogRepository) {}
 
-  async getAuthorBlogs(
-    authorId: string,
-    filter: FilterProps,
-    sessionId?: string,
-  ): Promise<[Blog[], number]> {
-    return await this.blogRepository
-      .findAllBlogs({ isPublished: true, authorId })
-      .withPagination(filter.page, filter.size)
-      .withSort(filter.sort, filter.order)
-      .withSearch(filter.search)
-      .executeWithSession(sessionId);
-  }
-
   async getBookmarks(
     userId: string,
     filter: FilterProps,
@@ -29,7 +16,7 @@ export class BlogService implements IBlogService {
       .withPagination(filter.page, filter.size)
       .withSort(filter.sort, filter.order)
       .withSearch(filter.search)
-      .executeWithSession(sessionId);
+      .execute(sessionId);
   }
 
   async getFollowingBlogs(
@@ -43,6 +30,15 @@ export class BlogService implements IBlogService {
       .withPagination(filter.page, filter.size)
       .withSort(filter.sort, filter.order)
       .withSearch(filter.search)
-      .executeWithSession(sessionId);
+      .execute(sessionId);
+  }
+
+  async getBlogSuggestions(filter: FilterProps, sessionId?: string): Promise<[Blog[], number]> {
+    const builder = await this.blogRepository.findRandomBlogs({ isPublished: true }, filter.size);
+
+    return await builder
+      .withPagination(filter.page, filter.size)
+      .withSearch(filter.search)
+      .execute(sessionId);
   }
 }

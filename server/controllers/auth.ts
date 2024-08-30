@@ -37,7 +37,7 @@ export class AuthController {
 
     res.setHeader('Set-Cookie', serialized);
 
-    return res.status(200).json(new ResponseDto('Login Successful', { token }));
+    return res.status(201).json(new ResponseDto('Login Successful', { token }));
   }
 
   async register(req: NextApiRequest, res: NextApiResponse) {
@@ -216,17 +216,21 @@ export class AuthController {
     );
   }
 
-  async getAuthorBlogs(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+  async getUserBlogs(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
     const authUser = req.authUser;
 
     if (!authUser) throw new HttpException(401, 'Unauthorized');
 
     const filter = await parseQuery(req.query);
 
-    const [data, count] = await this.blogService.getAuthorBlogs(authUser.id, filter, authUser.id);
+    const [data, count] = await this.authService.getUserBlogs(
+      authUser,
+      filter,
+      req?.query?.isPublished ? req?.query?.isPublished === 'true' : undefined,
+    );
 
     return res.status(200).json(
-      new ResponseDto('Author blogs fetched', data, {
+      new ResponseDto('User blogs fetched', data, {
         count,
         page: filter.page,
         size: filter.size,

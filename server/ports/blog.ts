@@ -11,21 +11,18 @@ export interface IBlogRepository {
   findBlogByID(id: number): Promise<Blog>;
   findBlogBySlug(slug: string): Promise<Blog>;
   findAllBlogs(options: BlogQuery): IBlogQueryBuilder;
+  findRandomBlogs(options: BlogQuery, size: number): Promise<IBlogQueryBuilder>;
   createBlog(data: BlogCreate): Promise<Blog>;
   updateBlogBySlug(slug: string, data: BlogUpdate): Promise<void>;
   deleteBlogBySlug(slug: string, returning?: Partial<Record<keyof Blog, boolean>>): Promise<Blog>;
 }
 
 export interface IBlogService {
-  getAuthorBlogs(
-    authorId: string,
-    filter: FilterProps,
-    sessionId?: string,
-  ): Promise<[Blog[], number]>;
   getBookmarks(userId: string, filter: FilterProps, sessionId?: string): Promise<[Blog[], number]>;
   getFollowingBlogs(
     userId: string,
     filter: FilterProps,
     sessionId?: string,
   ): Promise<[Blog[], number]>;
+  getBlogSuggestions(filter: FilterProps, sessionId?: string): Promise<[Blog[], number]>;
 }

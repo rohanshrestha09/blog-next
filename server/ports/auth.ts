@@ -1,5 +1,6 @@
+import { Blog } from 'server/models/blog';
 import { User } from 'server/models/user';
-import { MultipartyFile } from 'server/utils/types';
+import { FilterProps, MultipartyFile } from 'server/utils/types';
 
 export interface IAuthService {
   login(data: Pick<User, 'email' | 'password'>): Promise<string>;
@@ -16,4 +17,5 @@ export interface IAuthService {
     file?: MultipartyFile,
   ): Promise<void>;
   deleteProfile(user: User, password: string): Promise<void>;
+  getUserBlogs(user: User, filter: FilterProps, isPublished?: boolean): Promise<[Blog[], number]>;
 }

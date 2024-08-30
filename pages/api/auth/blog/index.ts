@@ -9,6 +9,6 @@ const authController = getAuthController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.use(authGuard.useAuth()).get(authController.getAuthorBlogs);
+router.use(authGuard.useAuth()).get(authController.getUserBlogs);
 
 export default router.handler({ onError: errorHandler });

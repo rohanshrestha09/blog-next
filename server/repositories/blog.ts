@@ -1,10 +1,27 @@
 import { Prisma } from '@prisma/client';
+import { prisma, blogFields, excludeFields, userFields } from 'server/lib/prisma';
 import { isEmpty } from 'lodash';
-import { prisma } from 'server/lib/prisma';
 import { Blog, BlogCreate, BlogQuery, BlogUpdate } from 'server/models/blog';
 import { User } from 'server/models/user';
 import { IBlogQueryBuilder, IBlogRepository } from 'server/ports/blog';
 import { DeepPartial } from 'server/utils/types';
+
+const sessionSelect = <T>(condition: T) => ({
+  ...blogFields,
+  author: {
+    select: {
+      ...excludeFields(userFields, ['email', 'password']),
+    },
+  },
+  likedBy: condition,
+  bookmarkedBy: condition,
+  _count: {
+    select: {
+      likedBy: true,
+      comments: true,
+    },
+  },
+});
 
 const transformBlog = (
   blog: DeepPartial<Blog> & {
@@ -95,20 +112,8 @@ class BlogQueryBuilder implements IBlogQueryBuilder {
     return this;
   }
 
-  async execute(): Promise<[Blog[], number]> {
-    const data = await this.blogInstance.findMany({ ...this.options });
-
-    const count = await this.blogInstance.count({
-      ...this.options,
-      select: true,
-      include: undefined as never,
-    });
-
-    return [data, count];
-  }
-
-  async executeWithSession(userId?: string): Promise<[Blog[], number]> {
-    const condition = userId ? { where: { id: userId }, take: 1 } : false;
+  async execute(sessionId?: string): Promise<[Blog[], number]> {
+    const condition = sessionId ? { where: { id: sessionId }, take: 1 } : false;
 
     const count = await this.blogInstance.count({
       ...this.options,
@@ -118,43 +123,7 @@ class BlogQueryBuilder implements IBlogQueryBuilder {
 
     const data = await this.blogInstance.findMany({
       ...this.options,
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        content: true,
-        image: true,
-        imageName: true,
-        genre: true,
-        isPublished: true,
-        createdAt: true,
-        updatedAt: true,
-        authorId: true,
-        author: {
-          select: {
-            id: true,
-            name: true,
-            dateOfBirth: true,
-            image: true,
-            imageName: true,
-            bio: true,
-            website: true,
-            provider: true,
-            isSSO: true,
-            isVerified: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        likedBy: condition,
-        bookmarkedBy: condition,
-        _count: {
-          select: {
-            likedBy: true,
-            comments: true,
-          },
-        },
-      },
+      select: sessionSelect(condition),
     });
 
     return [data.map((v) => transformBlog(v)), count];
@@ -172,6 +141,16 @@ export class BlogRepository implements IBlogRepository {
 
   findAllBlogs(options: BlogQuery): IBlogQueryBuilder {
     return new BlogQueryBuilder(prisma.blog, { where: options });
+  }
+
+  async findRandomBlogs(options: BlogQuery, size: number): Promise<IBlogQueryBuilder> {
+    const results = await prisma.$queryRawUnsafe<{ id: number }[]>(
+      `SELECT id FROM public."Blog" ORDER BY RANDOM() LIMIT ${size};`,
+    );
+
+    const ids = results.map((item) => item.id);
+
+    return new BlogQueryBuilder(prisma.blog, { where: { ...options, id: { in: ids } } });
   }
 
   async createBlog(data: BlogCreate): Promise<Blog> {

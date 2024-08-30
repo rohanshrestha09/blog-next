@@ -5,12 +5,12 @@ import { Notification } from './notification';
 export interface Comment {
   id: number;
   content: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   userId: string;
-  user: User;
+  user?: User | null;
   blogId: number;
-  blog: Blog;
-  likedBy: User[];
-  notifications: Notification[];
+  blog?: Blog | null;
+  likedBy?: User[];
+  notifications?: Notification[];
 }

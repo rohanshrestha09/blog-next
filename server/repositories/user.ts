@@ -1,8 +1,20 @@
 import { Prisma } from '@prisma/client';
-import { prisma } from 'lib/prisma';
+import { excludeFields, prisma, userFields } from 'server/lib/prisma';
 import { isEmpty } from 'lodash';
-import { User, UserCreate, UserUpdate } from 'server/models/user';
+import { User, UserCreate, UserQuery, UserUpdate } from 'server/models/user';
 import { IUserQueryBuilder, IUserRepository } from 'server/ports/user';
+
+const sessionSelect = <T>(condition: T) => ({
+  ...excludeFields(userFields, ['email', 'password']),
+  followedBy: condition,
+  following: condition,
+  _count: {
+    select: {
+      following: true,
+      followedBy: true,
+    },
+  },
+});
 
 export const transformUser = (
   user: Partial<User> & { followedBy?: unknown[]; following?: unknown[] },
@@ -104,43 +116,18 @@ class UserQueryBuilder implements IUserQueryBuilder {
     return this;
   }
 
-  async execute(): Promise<[User[], number]> {
-    const data = await this.userInstance.findMany({ ...this.options });
+  async execute(sessionId?: string): Promise<[User[], number]> {
+    const condition = sessionId ? { where: { id: sessionId }, take: 1 } : false;
 
-    const count = await this.userInstance.count({ ...this.options, select: true });
-
-    return [data, count];
-  }
-
-  async executeWithSession(userId?: string): Promise<[User[], number]> {
-    const condition = userId ? { where: { id: userId }, take: 1 } : false;
-
-    const count = await this.userInstance.count({ ...this.options, select: true });
+    const count = await this.userInstance.count({
+      ...this.options,
+      select: true,
+      include: undefined as never,
+    });
 
     const data = await this.userInstance.findMany({
       ...this.options,
-      select: {
-        id: true,
-        name: true,
-        dateOfBirth: true,
-        image: true,
-        imageName: true,
-        bio: true,
-        website: true,
-        provider: true,
-        isSSO: true,
-        isVerified: true,
-        createdAt: true,
-        updatedAt: true,
-        followedBy: condition,
-        following: condition,
-        _count: {
-          select: {
-            following: true,
-            followedBy: true,
-          },
-        },
-      },
+      select: sessionSelect(condition),
     });
 
     return [data.map((v) => transformUser(v)), count];
@@ -165,8 +152,18 @@ export class UserRepository implements IUserRepository {
     return user.password;
   }
 
-  findAllUsers(options: Partial<User>): IUserQueryBuilder {
-    return new UserQueryBuilder(prisma.user, {});
+  findAllUsers(options: UserQuery): IUserQueryBuilder {
+    return new UserQueryBuilder(prisma.user, { where: options });
+  }
+
+  async findRandomUsers(options: UserQuery, size: number): Promise<IUserQueryBuilder> {
+    const results = await prisma.$queryRawUnsafe<{ id: string }[]>(
+      `SELECT id FROM public."User" ORDER BY RANDOM() LIMIT ${size};`,
+    );
+
+    const ids = results.map((item) => item.id);
+
+    return new UserQueryBuilder(prisma.user, { where: { ...options, id: { in: ids } } });
   }
 
   async createUser(data: UserCreate): Promise<User> {
@@ -182,5 +179,31 @@ export class UserRepository implements IUserRepository {
     returning?: Partial<Record<keyof User, boolean>> | undefined,
   ): Promise<User> {
     return await prisma.user.delete({ where: { id }, select: returning });
+  }
+
+  async addFollower(id: string, followerId: string): Promise<void> {
+    await prisma.user.update({
+      where: { id },
+      data: {
+        following: {
+          connect: {
+            id: followerId,
+          },
+        },
+      },
+    });
+  }
+
+  async removeFollower(id: string, followerId: string): Promise<void> {
+    await prisma.user.update({
+      where: { id },
+      data: {
+        following: {
+          disconnect: {
+            id: followerId,
+          },
+        },
+      },
+    });
   }
 }

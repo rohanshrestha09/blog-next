@@ -1,57 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { prisma } from 'lib/prisma';
-import { session } from 'middlewares/session';
-import { errorHandler } from 'utils/exception';
-import { parseQuery } from 'utils/parseQuery';
-import { getAllResponse } from 'utils/response';
-import { getPages } from 'utils';
+import { errorHandler } from 'server/exception';
+import { getUserController } from 'server/factories/user';
+import { getAuthGuard } from 'server/factories/auth';
 
-const router = createRouter<NextApiRequest & { session: Session }, NextApiResponse>();
+const authGuard = getAuthGuard();
 
-router.use(session());
+const userController = getUserController();
 
-router.get(async (req, res) => {
-  const { take, skip, search } = await parseQuery(req.query);
+const router = createRouter<NextApiRequest, NextApiResponse>();
 
-  const results = await prisma.$queryRawUnsafe<{ id: string }[]>(
-    `SELECT id FROM public."User" ORDER BY RANDOM() LIMIT ${take};`,
-  );
-
-  const ids = results.map((item) => item.id);
-
-  const count = await prisma.user.count({
-    where: {
-      id: {
-        in: ids,
-      },
-      name: {
-        contains: search,
-        mode: 'insensitive',
-      },
-    },
-  });
-
-  const users = await prisma.user.findManyWithSession({
-    session: req.session,
-    where: {
-      id: {
-        in: ids,
-      },
-      name: {
-        contains: search,
-        mode: 'insensitive',
-      },
-    },
-    take,
-    skip,
-  });
-
-  const { currentPage, totalPage } = getPages({ skip, take, count });
-
-  return res
-    .status(200)
-    .json(getAllResponse('Users fetched', { data: users, count, currentPage, totalPage }));
-});
+router.use(authGuard.useAuth({ supressError: true })).get(userController.getUserSuggestions);
 
 export default router.handler({ onError: errorHandler });

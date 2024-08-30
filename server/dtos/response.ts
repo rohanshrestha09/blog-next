@@ -21,3 +21,23 @@ export class ResponseDto<T> {
     }
   }
 }
+
+export class NotificationResponseDto<T> extends ResponseDto<T> {
+  readonly read?: number;
+  readonly unread?: number;
+  constructor(
+    public readonly message: string,
+    public readonly data?: T,
+    pagination?: {
+      count: number;
+      page: number;
+      size: number;
+      read?: number;
+      unread?: number;
+    },
+  ) {
+    super(message, data, pagination);
+    this.read = pagination?.read;
+    this.unread = pagination?.unread;
+  }
+}

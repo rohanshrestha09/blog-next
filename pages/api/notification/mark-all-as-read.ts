@@ -1,25 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { NotificationStatus, prisma, User } from 'lib/prisma';
-import { auth } from 'middlewares/auth';
-import { errorHandler } from 'utils/exception';
-import { httpResponse } from 'utils/response';
+import { errorHandler } from 'server/exception';
+import { getAuthGuard } from 'server/factories/auth';
+import { getNotificationController } from 'server/factories/notification';
 
-const router = createRouter<NextApiRequest & { auth: User }, NextApiResponse>();
+const authGuard = getAuthGuard();
 
-router.use(auth()).post(async (req, res) => {
-  const authUser = req.auth;
+const notificationController = getNotificationController();
 
-  await prisma.notification.updateMany({
-    where: {
-      receiverId: authUser.id,
-    },
-    data: {
-      status: NotificationStatus.READ,
-    },
-  });
+const router = createRouter<NextApiRequest, NextApiResponse>();
 
-  return res.status(201).json(httpResponse('Notifications updated'));
-});
+router.use(authGuard.useAuth()).post(notificationController.markAllAsRead);
 
 export default router.handler({ onError: errorHandler });

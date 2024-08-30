@@ -1,11 +1,10 @@
 import { AuthController } from 'server/controllers/auth';
 import { AuthGuard } from 'server/guards/auth';
-import { BlogRepository } from 'server/repositories/blog';
 import { UserRepository } from 'server/repositories/user';
 import { AuthService } from 'server/services/auth';
-import { BlogService } from 'server/services/blog';
-import { SupabaseService } from 'server/services/supabase';
-import { UserService } from 'server/services/user';
+import { getBlogRepository, getBlogService } from './blog';
+import { getSupabaseService } from './supabase';
+import { getUserRepository, getUserService } from './user';
 
 export function getAuthGuard() {
   const userRepository = new UserRepository();
@@ -13,18 +12,22 @@ export function getAuthGuard() {
   return new AuthGuard(userRepository);
 }
 
+export function getAuthService() {
+  const userRepository = getUserRepository();
+
+  const blogRepository = getBlogRepository();
+
+  const supabaseService = getSupabaseService();
+
+  return new AuthService(userRepository, supabaseService, blogRepository);
+}
+
 export function getAuthController() {
-  const userRepository = new UserRepository();
+  const userService = getUserService();
 
-  const blogRepository = new BlogRepository();
+  const blogService = getBlogService();
 
-  const supabaseService = new SupabaseService();
-
-  const authService = new AuthService(userRepository, supabaseService);
-
-  const userService = new UserService(userRepository);
-
-  const blogService = new BlogService(blogRepository);
+  const authService = getAuthService();
 
   return new AuthController(authService, userService, blogService);
 }

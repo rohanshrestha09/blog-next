@@ -1,24 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { prisma, User } from 'lib/prisma';
-import { session } from 'middlewares/session';
-import { validateUser } from 'middlewares/validateUser';
-import { errorHandler } from 'utils/exception';
-import { getResponse } from 'utils/response';
+import { errorHandler } from 'server/exception';
+import { getAuthGuard } from 'server/factories/auth';
+import { getUserController } from 'server/factories/user';
 
-const router = createRouter<NextApiRequest & { session: Session; user: User }, NextApiResponse>();
+const authGuard = getAuthGuard();
 
-router.use(session());
+const userController = getUserController();
 
-router.use(validateUser()).get(async (req, res) => {
-  const user = await prisma.user.findUniqueWithSession({
-    session: req.session,
-    where: {
-      id: req.user.id,
-    },
-  });
+const router = createRouter<NextApiRequest, NextApiResponse>();
 
-  return res.status(200).json(getResponse('User fetched', user));
-});
+router.use(authGuard.useAuth({ supressError: true })).get(userController.getUser);
 
 export default router.handler({ onError: errorHandler });
