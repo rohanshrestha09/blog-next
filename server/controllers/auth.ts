@@ -1,6 +1,7 @@
 import { serialize } from 'cookie';
 import { NextApiRequest, NextApiResponse } from 'next';
 import {
+  changePasswordDto,
   completeProfileDto,
   deleteProfileDto,
   loginDto,
@@ -63,9 +64,9 @@ export class AuthController {
   async completeProfile(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
     const authUser = req.authUser;
 
-    const data = await completeProfileDto.validateAsync(req.body);
-
     if (!authUser) throw new HttpException(401, 'Unauthorized');
+
+    const data = await completeProfileDto.validateAsync(req.body);
 
     await this.authService.completeProfile(authUser, data);
 
@@ -236,5 +237,17 @@ export class AuthController {
         size: filter.size,
       }),
     );
+  }
+
+  async changePassword(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+    const authUser = req.authUser;
+
+    if (!authUser) throw new HttpException(401, 'Unauthorized');
+
+    const data = await changePasswordDto.validateAsync(req.body);
+
+    await this.authService.changePassword(authUser, data);
+
+    return res.status(201).json(new ResponseDto('Password changed'));
   }
 }

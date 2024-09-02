@@ -180,4 +180,19 @@ export class AuthService implements IAuthService {
       .withSearch(filter.search)
       .execute(user.id);
   }
+
+  async changePassword(
+    user: User,
+    data: { oldPassword: string; newPassword: string },
+  ): Promise<void> {
+    const isMatched = await bcrypt.compare(data.oldPassword, user.password);
+
+    if (!isMatched) throw new HttpException(403, 'Incorrect Password');
+
+    const salt = await bcrypt.genSalt(10);
+
+    const encryptedPassword = await bcrypt.hash(data.newPassword, salt);
+
+    await this.userRepository.updateUserByID(user.id, { password: encryptedPassword });
+  }
 }

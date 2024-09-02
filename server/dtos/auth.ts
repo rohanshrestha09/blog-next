@@ -26,3 +26,8 @@ export const updateProfileDto = Joi.object({
 export const deleteProfileDto = Joi.object({
   password: Joi.string().required(),
 });
+
+export const changePasswordDto = Joi.object({
+  oldPassword: Joi.string().required(),
+  newPassword: Joi.string().min(8).max(18).required(),
+});

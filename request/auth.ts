@@ -16,6 +16,14 @@ export const login: Post<Pick<User, 'email'> & { password: string }> = async (da
   return res.data;
 };
 
+export const changePassword: Post<{ oldPassword: string; newPassword: string }> = async (
+  data,
+) => {
+  const res = await axios.post('/auth/change-password', data);
+
+  return res.data;
+};
+
 export const getProfile: Get<AxiosRequestConfig | undefined, User> = async (config) => {
   const res = await axios.get('/auth/profile', config);
 

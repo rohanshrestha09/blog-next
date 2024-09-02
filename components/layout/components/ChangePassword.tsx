@@ -1,7 +1,7 @@
 import { Form, Modal, Input, Button } from 'antd';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { EyeInvisibleOutlined, EyeTwoTone, LockOutlined } from '@ant-design/icons';
-import { changePassword } from 'request/security';
+import { changePassword } from 'request/auth';
 import { useModalStore } from 'store/hooks';
 import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
@@ -44,11 +44,13 @@ const ChangePassword: React.FC = () => {
         layout='vertical'
         name='form_in_modal'
         requiredMark={false}
-        onFinish={handleChangePassword.mutate}
+        onFinish={({ oldPassword, newPassword }) =>
+          handleChangePassword.mutate({ oldPassword, newPassword })
+        }
       >
         <Form.Item
           label='Current Password'
-          name='password'
+          name='oldPassword'
           rules={[{ required: true, message: 'Please input your current password!' }]}
         >
           <Input.Password

@@ -16,9 +16,3 @@ export const resetPassword: Post<{
 
   return res.data;
 };
-
-export const changePassword: Post<{ password: string; confirmPassword: string }> = async (data) => {
-  const res = await axios.post('/security/change-password', data);
-
-  return res.data;
-};

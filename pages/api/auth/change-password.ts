@@ -1,10 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
-import { passport } from 'server/lib/passport';
 import { errorHandler } from 'server/exception';
+import { getAuthController, getAuthGuard } from 'server/factories/auth';
+
+const authGuard = getAuthGuard();
+
+const authController = getAuthController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.get(passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
+router.use(authGuard.useAuth()).post(authController.changePassword);
 
 export default router.handler({ onError: errorHandler });
