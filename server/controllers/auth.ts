@@ -6,6 +6,7 @@ import {
   deleteProfileDto,
   loginDto,
   registerDto,
+  sendPasswordResetMailDto,
   updateProfileDto,
 } from 'server/dtos/auth';
 import { ResponseDto } from 'server/dtos/response';
@@ -249,5 +250,13 @@ export class AuthController {
     await this.authService.changePassword(authUser, data);
 
     return res.status(201).json(new ResponseDto('Password changed'));
+  }
+
+  async sendPasswordResetMail(req: NextApiRequest, res: NextApiResponse) {
+    const { email } = await sendPasswordResetMailDto.validateAsync(req.body);
+
+    await this.authService.sendPasswordResetMail(email);
+
+    return res.status(201).json(new ResponseDto(`Password reset link sent to ${email}`));
   }
 }

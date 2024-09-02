@@ -31,3 +31,7 @@ export const changePasswordDto = Joi.object({
   oldPassword: Joi.string().required(),
   newPassword: Joi.string().min(8).max(18).required(),
 });
+
+export const sendPasswordResetMailDto = Joi.object({
+  email: Joi.string().email().required(),
+});

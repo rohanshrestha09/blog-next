@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { readFileSync } from 'fs';
 import { sign } from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 import moment from 'moment';
 import { v4 as uuidV4 } from 'uuid';
 import { jwtConfig } from 'server/config/jwt';
@@ -12,6 +13,7 @@ import { IUserRepository } from 'server/ports/user';
 import { ISupabaseService } from 'server/ports/supabase';
 import { Blog } from 'server/models/blog';
 import { IBlogRepository } from 'server/ports/blog';
+import { appConfig } from 'server/config/app';
 
 export class AuthService implements IAuthService {
   constructor(
@@ -194,5 +196,39 @@ export class AuthService implements IAuthService {
     const encryptedPassword = await bcrypt.hash(data.newPassword, salt);
 
     await this.userRepository.updateUserByID(user.id, { password: encryptedPassword });
+  }
+
+  async sendPasswordResetMail(email: string): Promise<void> {
+    const user = await this.userRepository.findUserByEmail(email);
+
+    const token = sign(
+      { id: user.id, email: user.email },
+      `${process.env.JWT_PASSWORD}${user.password}`,
+      {
+        expiresIn: '15min',
+      },
+    );
+
+    const resetUrl = `${appConfig.appUrl}/security/reset-password/${user.email}/${token}`;
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      host: 'smtp.gmail.com',
+      auth: {
+        user: process.env.MAILING_EMAIL,
+        pass: process.env.MAILING_PASSWORD,
+      },
+      port: 465,
+    });
+
+    await transporter.sendMail({
+      from: '"Do not reply to this email (via BlogSansar)" <blogsansar0@gmail.com>',
+      to: email,
+      subject: 'Password Reset Link',
+      html: `
+        <h1>Click on the link below to reset your password</h1>
+        <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+      `,
+    });
   }
 }

@@ -19,4 +19,5 @@ export interface IAuthService {
   deleteProfile(user: User, password: string): Promise<void>;
   getUserBlogs(user: User, filter: FilterProps, isPublished?: boolean): Promise<[Blog[], number]>;
   changePassword(user: User, data: { oldPassword: string; newPassword: string }): Promise<void>;
+  sendPasswordResetMail(email: string): Promise<void>;
 }
