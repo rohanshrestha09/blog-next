@@ -25,8 +25,8 @@ function MyApp({ Component, pageProps }: AppProps<{ dehydratedState: DehydratedS
   );
 
   const staticPaths = [
-    '/security/reset-password',
-    '/security/reset-password/[email]/[token]',
+    '/auth/reset-password',
+    '/auth/reset-password/[email]/[token]',
     '/404',
   ];
 

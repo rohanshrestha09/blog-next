@@ -20,4 +20,5 @@ export interface IAuthService {
   getUserBlogs(user: User, filter: FilterProps, isPublished?: boolean): Promise<[Blog[], number]>;
   changePassword(user: User, data: { oldPassword: string; newPassword: string }): Promise<void>;
   sendPasswordResetMail(email: string): Promise<void>;
+  resetPassword(token: string, data: Pick<User, 'email' | 'password'>): Promise<void>;
 }

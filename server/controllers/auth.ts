@@ -6,6 +6,7 @@ import {
   deleteProfileDto,
   loginDto,
   registerDto,
+  resetPasswordDto,
   sendPasswordResetMailDto,
   updateProfileDto,
 } from 'server/dtos/auth';
@@ -258,5 +259,20 @@ export class AuthController {
     await this.authService.sendPasswordResetMail(email);
 
     return res.status(201).json(new ResponseDto(`Password reset link sent to ${email}`));
+  }
+
+  async resetPassword(req: NextApiRequest, res: NextApiResponse) {
+    const { token, email } = req.query;
+
+    if (!token) throw new HttpException(403, 'Invalid token');
+
+    const { password } = await resetPasswordDto.validateAsync(req.body);
+
+    if (typeof email !== 'string' || typeof token !== 'string')
+      throw new HttpException(400, 'Invalid operation');
+
+    await this.authService.resetPassword(token, { email, password });
+
+    return res.status(201).json(new ResponseDto('Password Reset Successful'));
   }
 }

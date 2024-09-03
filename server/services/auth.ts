@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { readFileSync } from 'fs';
-import { sign } from 'jsonwebtoken';
+import { JwtPayload, sign, verify } from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import moment from 'moment';
 import { v4 as uuidV4 } from 'uuid';
@@ -14,6 +14,7 @@ import { ISupabaseService } from 'server/ports/supabase';
 import { Blog } from 'server/models/blog';
 import { IBlogRepository } from 'server/ports/blog';
 import { appConfig } from 'server/config/app';
+import { mailConfig } from 'server/config/mail';
 
 export class AuthService implements IAuthService {
   constructor(
@@ -201,23 +202,18 @@ export class AuthService implements IAuthService {
   async sendPasswordResetMail(email: string): Promise<void> {
     const user = await this.userRepository.findUserByEmail(email);
 
-    const token = sign(
-      { id: user.id, email: user.email },
-      `${process.env.JWT_PASSWORD}${user.password}`,
-      {
-        expiresIn: '15min',
-      },
-    );
+    const password = await this.userRepository.findUserPasswordByEmail(email);
+
+    const token = sign({ id: user.id, email: user.email }, `${jwtConfig.secretKey}${password}`, {
+      expiresIn: '15min',
+    });
 
     const resetUrl = `${appConfig.appUrl}/security/reset-password/${user.email}/${token}`;
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       host: 'smtp.gmail.com',
-      auth: {
-        user: process.env.MAILING_EMAIL,
-        pass: process.env.MAILING_PASSWORD,
-      },
+      auth: mailConfig,
       port: 465,
     });
 
@@ -229,6 +225,20 @@ export class AuthService implements IAuthService {
         <h1>Click on the link below to reset your password</h1>
         <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
       `,
+    });
+  }
+
+  async resetPassword(token: string, data: Pick<User, 'email' | 'password'>): Promise<void> {
+    const password = await this.userRepository.findUserPasswordByEmail(data.email);
+
+    const { id } = verify(token, `${jwtConfig.secretKey}${password}`) as JwtPayload;
+
+    const salt = await bcrypt.genSalt(10);
+
+    const encryptedPassword = await bcrypt.hash(data.password, salt);
+
+    await this.userRepository.updateUserByID(id, {
+      password: encryptedPassword,
     });
   }
 }

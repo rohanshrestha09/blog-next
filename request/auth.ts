@@ -16,9 +16,7 @@ export const login: Post<Pick<User, 'email'> & { password: string }> = async (da
   return res.data;
 };
 
-export const changePassword: Post<{ oldPassword: string; newPassword: string }> = async (
-  data,
-) => {
+export const changePassword: Post<{ oldPassword: string; newPassword: string }> = async (data) => {
   const res = await axios.post('/auth/change-password', data);
 
   return res.data;
@@ -124,4 +122,20 @@ export const getFollowing: GetAll<IQueryParamaters & { search?: string }, User> 
   const res = await axios.get(`/auth/following?page=${page}&size=${size}&search=${search}`, config);
 
   return res.data?.data;
+};
+
+export const sendPasswordResetMail: Post<Pick<User, 'email'>> = async (data) => {
+  const res = await axios.post('/auth/reset-password', data);
+
+  return res.data;
+};
+
+export const resetPassword: Post<{
+  email: string;
+  token: string;
+  data: { password: string };
+}> = async ({ email, token, data }) => {
+  const res = await axios.post(`/auth/reset-password/${email}/${token}`, data);
+
+  return res.data;
 };

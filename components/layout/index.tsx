@@ -134,7 +134,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.E
 
         <MdOutlineKeyboardArrowRight
           className={`${!getSider() ? 'block' : 'hidden'} ${
-            pathname.startsWith('/security') && 'hidden'
+            pathname.startsWith('/auth') && 'hidden'
           } fixed left-4 top-[51%] cursor-pointer hover:bg-zinc-800 rounded-full z-50`}
           size={42}
           onClick={openDrawer}

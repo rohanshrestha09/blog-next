@@ -75,7 +75,7 @@ export const DesktopNavbar: React.FC<Props> = ({ className, isDrawer }) => {
     {
       key: 'resetPassword',
       label: <p className={`py-2 ${!authUser?.isVerified && 'line-through'}`}>Reset Password</p>,
-      onClick: () => push('/security/reset-password'),
+      onClick: () => push('/auth/reset-password'),
       disabled: !authUser?.isVerified,
     },
     {

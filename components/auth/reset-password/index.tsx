@@ -7,7 +7,7 @@ import 'antd/dist/antd.min.css';
 import { Form, Input, Button, Result, Spin } from 'antd';
 import { AxiosError } from 'axios';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
-import { sendResetPasswordLink } from 'request/security';
+import { sendPasswordResetMail } from 'request/auth';
 import { useModalStore } from 'store/hooks';
 import { closeDrawer } from 'store/drawerSlice';
 import ForgotPassword from 'public/forgot-password.png';
@@ -22,7 +22,7 @@ const ResetPassword = () => {
 
   const { closeModal: closeRegisterModal } = useModalStore(MODALS.REGISTER_MODAL);
 
-  const handleSendEmail = useMutation(sendResetPasswordLink, {
+  const handleSendEmail = useMutation(sendPasswordResetMail, {
     onSuccess: () => {
       form.resetFields();
     },

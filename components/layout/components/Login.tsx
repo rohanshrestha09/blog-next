@@ -99,7 +99,7 @@ const Login: React.FC = () => {
             <Checkbox>Remember me</Checkbox>
           </Form.Item>
 
-          <Link href='/security/reset-password' passHref={true}>
+          <Link href='/auth/reset-password' passHref={true}>
             <a className='absolute right-0 no-underline text-[#1890ff] hover:text-blue-600'>
               Forgot password
             </a>
