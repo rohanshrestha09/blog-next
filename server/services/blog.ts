@@ -5,6 +5,10 @@ import { FilterProps } from 'server/utils/types';
 export class BlogService implements IBlogService {
   constructor(private readonly blogRepository: IBlogRepository) {}
 
+  async getBlog(slug: string, sessionId?: string): Promise<Blog> {
+    return await this.blogRepository.findBlogBySlug(slug);
+  }
+
   async getBookmarks(
     userId: string,
     filter: FilterProps,

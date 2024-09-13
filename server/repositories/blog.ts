@@ -157,8 +157,8 @@ export class BlogRepository implements IBlogRepository {
     return await prisma.blog.create({ data });
   }
 
-  async updateBlogBySlug(slug: string, data: BlogUpdate): Promise<void> {
-    await prisma.blog.update({ where: { slug }, data });
+  async updateBlogBySlug(author: User, slug: string, data: BlogUpdate): Promise<void> {
+    await prisma.blog.update({ where: { slug, authorId: author.id }, data });
   }
 
   async deleteBlogBySlug(
