@@ -5,6 +5,7 @@ import { Blog, BlogCreate, BlogQuery, BlogUpdate } from 'server/models/blog';
 import { User } from 'server/models/user';
 import { IBlogQueryBuilder, IBlogRepository } from 'server/ports/blog';
 import { DeepPartial } from 'server/utils/types';
+import { GENRE } from 'server/enums/genre';
 
 const sessionSelect = <T>(condition: T) => ({
   ...blogFields,
@@ -112,6 +113,17 @@ class BlogQueryBuilder implements IBlogQueryBuilder {
     return this;
   }
 
+  hasGenre(genre: GENRE) {
+    this.options.where = {
+      ...this.options.where,
+      genre: {
+        hasSome: genre,
+      },
+    };
+
+    return this;
+  }
+
   async execute(sessionId?: string): Promise<[Blog[], number]> {
     const condition = sessionId ? { where: { id: sessionId }, take: 1 } : false;
 
@@ -131,12 +143,26 @@ class BlogQueryBuilder implements IBlogQueryBuilder {
 }
 
 export class BlogRepository implements IBlogRepository {
-  async findBlogByID(id: number): Promise<Blog> {
-    return await prisma.blog.findUniqueOrThrow({ where: { id } });
+  async findBlogByID(id: number, sessionId?: string): Promise<Blog> {
+    const condition = sessionId ? { where: { id: sessionId }, take: 1 } : false;
+
+    const data = await prisma.blog.findUniqueOrThrow({
+      where: { id },
+      select: sessionSelect(condition),
+    });
+
+    return transformBlog(data);
   }
 
-  async findBlogBySlug(slug: string): Promise<Blog> {
-    return await prisma.blog.findUniqueOrThrow({ where: { slug } });
+  async findBlogBySlug(slug: string, sessionId?: string): Promise<Blog> {
+    const condition = sessionId ? { where: { id: sessionId }, take: 1 } : false;
+
+    const data = await prisma.blog.findUniqueOrThrow({
+      where: { slug },
+      select: sessionSelect(condition),
+    });
+
+    return transformBlog(data);
   }
 
   findAllBlogs(options: BlogQuery): IBlogQueryBuilder {
@@ -157,8 +183,8 @@ export class BlogRepository implements IBlogRepository {
     return await prisma.blog.create({ data });
   }
 
-  async updateBlogBySlug(author: User, slug: string, data: BlogUpdate): Promise<void> {
-    await prisma.blog.update({ where: { slug, authorId: author.id }, data });
+  async updateBlogBySlug(user: User, slug: string, data: BlogUpdate): Promise<void> {
+    await prisma.blog.update({ where: { slug, authorId: user.id }, data });
   }
 
   async deleteBlogBySlug(

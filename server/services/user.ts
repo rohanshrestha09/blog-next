@@ -15,7 +15,7 @@ export class UserService implements IUserService {
   ) {}
 
   async getUser(userId: string, sessionId?: string): Promise<User> {
-    return await this.userRepository.findUserByID(userId);
+    return await this.userRepository.findUserByID(userId, sessionId);
   }
 
   async getFollowers(

@@ -97,14 +97,14 @@ export class NotificationRepository implements INotificationRepository {
     });
   }
 
-  async updateReceiverNotifications(
+  async updateNotifications(
     options: Pick<Notification, 'receiverId'>,
     data: NotificationUpdate,
   ): Promise<void> {
     await prisma.notification.updateMany({ where: options, data });
   }
 
-  async updateReceiverNotification(
+  async updateNotification(
     options: Pick<Notification, 'id' | 'receiverId'>,
     data: NotificationUpdate,
   ): Promise<void> {

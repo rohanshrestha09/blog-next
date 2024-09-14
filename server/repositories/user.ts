@@ -135,12 +135,26 @@ class UserQueryBuilder implements IUserQueryBuilder {
 }
 
 export class UserRepository implements IUserRepository {
-  async findUserByID(id: string): Promise<User> {
-    return await prisma.user.findUniqueOrThrow({ where: { id } });
+  async findUserByID(id: string, sessionId?: string): Promise<User> {
+    const condition = sessionId ? { where: { id: sessionId }, take: 1 } : false;
+
+    const data = await prisma.user.findUniqueOrThrow({
+      where: { id },
+      select: sessionSelect(condition),
+    });
+
+    return transformUser(data);
   }
 
-  async findUserByEmail(email: string): Promise<User> {
-    return await prisma.user.findUniqueOrThrow({ where: { email } });
+  async findUserByEmail(email: string, sessionId?: string): Promise<User> {
+    const condition = sessionId ? { where: { id: sessionId }, take: 1 } : false;
+
+    const data = await prisma.user.findUniqueOrThrow({
+      where: { email },
+      select: sessionSelect(condition),
+    });
+
+    return transformUser(data);
   }
 
   async findUserPasswordByEmail(email: string): Promise<string> {

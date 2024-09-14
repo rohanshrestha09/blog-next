@@ -9,8 +9,8 @@ export interface IUserQueryBuilder extends QueryBuilder<User> {
 }
 
 export interface IUserRepository {
-  findUserByID(id: string): Promise<User>;
-  findUserByEmail(email: string): Promise<User>;
+  findUserByID(id: string, sessionId?: string): Promise<User>;
+  findUserByEmail(email: string, sessionId?: string): Promise<User>;
   findUserPasswordByEmail(email: string): Promise<string>;
   findAllUsers(options: UserQuery): IUserQueryBuilder;
   findRandomUsers(options: UserQuery, size: number): Promise<IUserQueryBuilder>;

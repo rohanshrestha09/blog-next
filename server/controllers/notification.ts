@@ -13,7 +13,7 @@ export class NotificationController {
 
     if (!authUser) throw new HttpException(401, 'Unauthorized');
 
-    await this.notificationService.markAllReceiverNotificationsAsRead(authUser?.id);
+    await this.notificationService.markAllNotificationsAsRead(authUser?.id);
 
     return res.status(201).json(new ResponseDto('Notifications updated'));
   }
@@ -23,11 +23,11 @@ export class NotificationController {
 
     if (!authUser) throw new HttpException(401, 'Unauthorized');
 
-    const notificationId = req.query?.notificationId;
+    const { notificationId } = req.query;
 
     if (typeof notificationId !== 'string') throw new HttpException(400, 'Invalid notificationId');
 
-    await this.notificationService.markReceiverNotificationAsRead({
+    await this.notificationService.markNotificationAsRead({
       id: notificationId,
       receiverId: authUser?.id,
     });
@@ -42,14 +42,9 @@ export class NotificationController {
 
     const filter = await parseQuery(req.query);
 
-    const [data, count] = await this.notificationService.getReceiverNotifications(
-      authUser.id,
-      filter,
-    );
+    const [data, count] = await this.notificationService.getNotifications(authUser.id, filter);
 
-    const { read, unread } = await this.notificationService.getReceiverNotificationsCount(
-      authUser.id,
-    );
+    const { read, unread } = await this.notificationService.getNotificationsCount(authUser.id);
 
     return res.status(200).json(
       new NotificationResponseDto('Notifications fetched', data, {

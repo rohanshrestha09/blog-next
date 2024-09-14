@@ -11,7 +11,7 @@ export class UserController {
   async getUser(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
     const authUser = req.authUser;
 
-    const userId = req?.query?.userId;
+    const { userId } = req.query;
 
     if (typeof userId !== 'string') throw new HttpException(400, 'Invalid userId');
 
@@ -37,7 +37,7 @@ export class UserController {
   }
 
   async getUserBlogs(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
-    const userId = req.query?.userId;
+    const { userId } = req.query;
 
     if (typeof userId !== 'string') throw new HttpException(400, 'Invalid userId');
 
@@ -61,7 +61,7 @@ export class UserController {
 
     if (!authUser) throw new HttpException(401, 'Unauthorized');
 
-    const userId = req?.query?.userId;
+    const { userId } = req.query;
 
     if (typeof userId !== 'string') throw new HttpException(400, 'Invalid userId');
 
@@ -75,7 +75,7 @@ export class UserController {
 
     if (!authUser) throw new HttpException(401, 'Unauthorized');
 
-    const userId = req?.query?.userId;
+    const { userId } = req.query;
 
     if (typeof userId !== 'string') throw new HttpException(400, 'Invalid userId');
 
@@ -87,7 +87,7 @@ export class UserController {
   async getFollowers(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
     const authUser = req.authUser;
 
-    const userId = req?.query?.userId;
+    const { userId } = req.query;
 
     if (typeof userId !== 'string') throw new HttpException(400, 'Invalid userId');
 
@@ -107,7 +107,7 @@ export class UserController {
   async getFollowing(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
     const authUser = req.authUser;
 
-    const userId = req?.query?.userId;
+    const { userId } = req.query;
 
     if (typeof userId !== 'string') throw new HttpException(400, 'Invalid userId');
 

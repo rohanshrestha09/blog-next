@@ -11,22 +11,20 @@ export class NotificationService implements INotificationService {
     await pusher.trigger(data.receiverId, 'dispatch-notification', data);
   }
 
-  async markAllReceiverNotificationsAsRead(receiverId: string): Promise<void> {
-    await this.notificationRepository.updateReceiverNotifications(
+  async markAllNotificationsAsRead(receiverId: string): Promise<void> {
+    await this.notificationRepository.updateNotifications(
       { receiverId },
       { status: NotificationStatus.READ },
     );
   }
 
-  async markReceiverNotificationAsRead(
-    options: Pick<Notification, 'id' | 'receiverId'>,
-  ): Promise<void> {
-    await this.notificationRepository.updateReceiverNotification(options, {
+  async markNotificationAsRead(options: Pick<Notification, 'id' | 'receiverId'>): Promise<void> {
+    await this.notificationRepository.updateNotification(options, {
       status: NotificationStatus.READ,
     });
   }
 
-  async getReceiverNotifications(
+  async getNotifications(
     receiverId: string,
     filter: FilterProps,
   ): Promise<[Notification[], number]> {
@@ -37,9 +35,7 @@ export class NotificationService implements INotificationService {
       .execute();
   }
 
-  async getReceiverNotificationsCount(
-    receiverId: string,
-  ): Promise<{ read: number; unread: number }> {
+  async getNotificationsCount(receiverId: string): Promise<{ read: number; unread: number }> {
     const read = await this.notificationRepository.countNotifications({
       status: NotificationStatus.READ,
       receiverId,

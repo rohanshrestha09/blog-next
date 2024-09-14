@@ -13,11 +13,11 @@ export interface INotificationRepository {
   notificationExists(options: NotificationQuery): Promise<boolean>;
   findAllNotifications(options: NotificationQuery): INotificationQueryBuilder;
   createNotification(data: NotificationCreate): Promise<Notification>;
-  updateReceiverNotifications(
+  updateNotifications(
     options: Pick<Notification, 'receiverId'>,
     data: NotificationUpdate,
   ): Promise<void>;
-  updateReceiverNotification(
+  updateNotification(
     options: Pick<Notification, 'id' | 'receiverId'>,
     data: NotificationUpdate,
   ): Promise<void>;
@@ -26,11 +26,8 @@ export interface INotificationRepository {
 
 export interface INotificationService {
   dispatchNotification(data: Notification): Promise<void>;
-  markAllReceiverNotificationsAsRead(receiverId: string): Promise<void>;
-  markReceiverNotificationAsRead(options: Pick<Notification, 'id' | 'receiverId'>): Promise<void>;
-  getReceiverNotifications(
-    receiverId: string,
-    filter: FilterProps,
-  ): Promise<[Notification[], number]>;
-  getReceiverNotificationsCount(receiverId: string): Promise<{ read: number; unread: number }>;
+  markAllNotificationsAsRead(receiverId: string): Promise<void>;
+  markNotificationAsRead(options: Pick<Notification, 'id' | 'receiverId'>): Promise<void>;
+  getNotifications(receiverId: string, filter: FilterProps): Promise<[Notification[], number]>;
+  getNotificationsCount(receiverId: string): Promise<{ read: number; unread: number }>;
 }
