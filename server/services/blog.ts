@@ -1,16 +1,25 @@
 import { readFileSync } from 'fs';
 import { kebabCase } from 'lodash';
+import { NotificationType } from 'server/enums/notification';
 import { HttpException } from 'server/exception';
 import { Blog } from 'server/models/blog';
+import { Comment } from 'server/models/comment';
 import { User } from 'server/models/user';
 import { IBlogRepository, IBlogService } from 'server/ports/blog';
+import { ICommentRepository } from 'server/ports/comment';
+import { INotificationRepository, INotificationService } from 'server/ports/notification';
 import { ISupabaseService } from 'server/ports/supabase';
+import { IUserRepository } from 'server/ports/user';
 import { FilterProps, MultipartyFile } from 'server/utils/types';
 
 export class BlogService implements IBlogService {
   constructor(
     private readonly blogRepository: IBlogRepository,
+    private readonly userRepository: IUserRepository,
+    private readonly commentRepository: ICommentRepository,
     private readonly supabaseService: ISupabaseService,
+    private readonly notificationRepository: INotificationRepository,
+    private readonly notificationService: INotificationService,
   ) {}
 
   async getBlog(slug: string, sessionId?: string): Promise<Blog> {
@@ -105,11 +114,73 @@ export class BlogService implements IBlogService {
       .execute(sessionId);
   }
 
+  async getBlogLikers(
+    slug: string,
+    filter: FilterProps,
+    sessionId?: string,
+  ): Promise<[User[], number]> {
+    return await this.userRepository
+      .findAllUsers({})
+      .hasLikedBlog(slug)
+      .withPagination(filter.page, filter.size)
+      .withSort(filter.sort, filter.order)
+      .execute(sessionId);
+  }
+
   async publishBlog(user: User, slug: string): Promise<void> {
     await this.blogRepository.updateBlogBySlug(user, slug, { isPublished: true });
   }
 
   async unpublishBlog(user: User, slug: string): Promise<void> {
     await this.blogRepository.updateBlogBySlug(user, slug, { isPublished: true });
+  }
+
+  async likeBlog(user: User, slug: string): Promise<void> {
+    const blog = await this.blogRepository.addLike(slug, user.id);
+
+    const notificationExists = await this.notificationRepository.notificationExists({
+      type: NotificationType.LIKE_BLOG,
+      senderId: user.id,
+      blogId: blog.id,
+      receiverId: blog.authorId,
+    });
+
+    if (!notificationExists) {
+      const notification = await this.notificationRepository.createNotification({
+        type: NotificationType.LIKE_BLOG,
+        senderId: user.id,
+        blogId: blog.id,
+        receiverId: blog.authorId,
+        description: `${user.name} liked your blog.`,
+      });
+
+      await this.notificationService.dispatchNotification(notification);
+    }
+  }
+
+  async unlikeBlog(user: User, slug: string): Promise<void> {
+    await this.blogRepository.removeLike(slug, user.id);
+  }
+
+  async bookmarkBlog(user: User, slug: string): Promise<void> {
+    await this.blogRepository.addBookmark(slug, user.id);
+  }
+
+  async unbookmarkBlog(user: User, slug: string): Promise<void> {
+    await this.blogRepository.removeBookmark(slug, user.id);
+  }
+
+  async getBlogComments(
+    slug: string,
+    filter: FilterProps,
+    sessionId?: string,
+  ): Promise<[Comment[], number]> {
+    const blog = await this.blogRepository.findBlogBySlug(slug);
+
+    return await this.commentRepository
+      .findAllComments({ blogId: blog.id })
+      .withPagination(filter.page, filter.size)
+      .withSort(filter.sort, filter.order)
+      .execute(sessionId);
   }
 }

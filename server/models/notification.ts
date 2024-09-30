@@ -21,9 +21,9 @@ export interface Notification {
 }
 
 export interface NotificationQuery
-  extends Partial<Pick<Notification, 'type' | 'status' | 'senderId' | 'receiverId'>> {}
+  extends Partial<Pick<Notification, 'type' | 'status' | 'senderId' | 'receiverId' | 'blogId' | 'commentId'>> { }
 
 export interface NotificationCreate
-  extends Pick<Notification, 'type' | 'senderId' | 'receiverId' | 'description'> {}
+  extends Pick<Notification, 'type' | 'senderId' | 'receiverId' | 'description' | 'blogId' | 'commentId'> { }
 
-export interface NotificationUpdate extends Partial<Pick<Notification, 'status'>> {}
+export interface NotificationUpdate extends Partial<Pick<Notification, 'status'>> { }

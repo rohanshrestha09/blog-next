@@ -38,7 +38,7 @@ class UserQueryBuilder implements IUserQueryBuilder {
   constructor(
     private readonly userInstance: typeof prisma.user,
     private readonly options: Prisma.UserFindManyArgs,
-  ) {}
+  ) { }
 
   withPagination(page: number, size: number) {
     this.options.skip = (page - 1) * (size || 20);
@@ -110,6 +110,17 @@ class UserQueryBuilder implements IUserQueryBuilder {
             mode: 'insensitive',
           },
         },
+      },
+    };
+
+    return this;
+  }
+
+  hasLikedBlog(slug: string): IUserQueryBuilder {
+    this.options.where = {
+      ...this.options.where,
+      likedBlogs: {
+        some: { slug },
       },
     };
 

@@ -6,6 +6,7 @@ import { Blog } from 'server/models/blog';
 export interface IUserQueryBuilder extends QueryBuilder<User> {
   following(userId: string, search?: string): IUserQueryBuilder;
   followedBy(userId: string, search?: string): IUserQueryBuilder;
+  hasLikedBlog(slug: string): IUserQueryBuilder;
 }
 
 export interface IUserRepository {

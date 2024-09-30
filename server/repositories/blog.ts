@@ -188,9 +188,58 @@ export class BlogRepository implements IBlogRepository {
   }
 
   async deleteBlogBySlug(
+    user: User,
     slug: string,
     returning?: Partial<Record<keyof Blog, boolean>> | undefined,
   ): Promise<Blog> {
-    return await prisma.blog.delete({ where: { slug }, select: returning });
+    return await prisma.blog.delete({ where: { slug, authorId: user.id }, select: returning });
+  }
+
+  async addLike(slug: string, userId: string): Promise<Blog> {
+    return await prisma.blog.update({
+      where: { slug, isPublished: true },
+      data: {
+        likedBy: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    });
+  }
+
+  async removeLike(slug: string, userId: string): Promise<void> {
+    await prisma.blog.update({
+      where: { slug, isPublished: true },
+      data: {
+        likedBy: {
+          disconnect: {
+            id: userId,
+          },
+        },
+      },
+    });
+  }
+
+  async addBookmark(slug: string, userId: string): Promise<void> {
+    await prisma.blog.update({
+      where: { slug, isPublished: true },
+      data: {
+        bookmarkedBy: {
+          connect: { id: userId },
+        },
+      },
+    });
+  }
+
+  async removeBookmark(slug: string, userId: string): Promise<void> {
+    await prisma.blog.update({
+      where: { slug, isPublished: true },
+      data: {
+        bookmarkedBy: {
+          disconnect: { id: userId },
+        },
+      },
+    });
   }
 }

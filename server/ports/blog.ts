@@ -3,6 +3,7 @@ import { QueryBuilder } from 'server/helpers/query-builder';
 import { FilterProps, MultipartyFile } from 'server/utils/types';
 import { User } from 'server/models/user';
 import { GENRE } from 'server/enums/genre';
+import { Comment } from 'server/models/comment';
 
 export interface IBlogQueryBuilder extends QueryBuilder<Blog> {
   bookmarkedBy(userId: string): IBlogQueryBuilder;
@@ -17,7 +18,15 @@ export interface IBlogRepository {
   findRandomBlogs(options: BlogQuery, size: number): Promise<IBlogQueryBuilder>;
   createBlog(data: BlogCreate): Promise<Blog>;
   updateBlogBySlug(author: User, slug: string, data: BlogUpdate): Promise<void>;
-  deleteBlogBySlug(slug: string, returning?: Partial<Record<keyof Blog, boolean>>): Promise<Blog>;
+  deleteBlogBySlug(
+    author: User,
+    slug: string,
+    returning?: Partial<Record<keyof Blog, boolean>>,
+  ): Promise<Blog>;
+  addLike(slug: string, userId: string): Promise<Blog>;
+  removeLike(slug: string, userId: string): Promise<void>;
+  addBookmark(slug: string, userId: string): Promise<void>;
+  removeBookmark(slug: string, userId: string): Promise<void>;
 }
 
 export interface IBlogService {
@@ -39,6 +48,16 @@ export interface IBlogService {
     sessionId?: string,
   ): Promise<[Blog[], number]>;
   getBlogSuggestions(filter: FilterProps, sessionId?: string): Promise<[Blog[], number]>;
+  getBlogLikers(slug: string, filter: FilterProps, sessionId?: string): Promise<[User[], number]>;
   publishBlog(user: User, slug: string): Promise<void>;
   unpublishBlog(user: User, slug: string): Promise<void>;
+  likeBlog(user: User, slug: string): Promise<void>;
+  unlikeBlog(user: User, slug: string): Promise<void>;
+  bookmarkBlog(user: User, slug: string): Promise<void>;
+  unbookmarkBlog(user: User, slug: string): Promise<void>;
+  getBlogComments(
+    slug: string,
+    filter: FilterProps,
+    sessionId?: string,
+  ): Promise<[Comment[], number]>;
 }

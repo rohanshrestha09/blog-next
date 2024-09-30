@@ -2,16 +2,16 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import { errorHandler } from 'server/exception';
 import { getAuthGuard } from 'server/factories/auth';
-import { getBlogController } from 'server/factories/blog';
+import { getCommentController } from 'server/factories/comment';
 
 const authGuard = getAuthGuard();
 
-const blogController = getBlogController();
+const commentController = getCommentController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.post(authGuard.useAuth(), blogController.bookmarkBlog);
+router.post(authGuard.useAuth(), commentController.likeComment);
 
-router.delete(authGuard.useAuth(), blogController.unbookmarkBlog);
+router.delete(authGuard.useAuth(), commentController.unlikeComment);
 
 export default router.handler({ onError: errorHandler });

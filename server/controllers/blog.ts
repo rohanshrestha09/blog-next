@@ -104,4 +104,100 @@ export class BlogController {
 
     return res.status(200).json(new ResponseDto('Blog unpublished'));
   }
+
+  async getBlogLikers(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+    const authUser = req.authUser;
+
+    const { slug } = req.query;
+
+    if (typeof slug !== 'string') throw new HttpException(400, 'Invalid slug');
+
+    const filter = await parseQuery(req.query);
+
+    const [data, count] = await this.blogService.getBlogLikers(slug, filter, authUser?.id);
+
+    return res.status(200).json(
+      new ResponseDto('Blog likers fetched', data, {
+        count,
+        page: filter.page,
+        size: filter.size,
+      }),
+    );
+  }
+
+  async likeBlog(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+    const authUser = req.authUser;
+
+    if (!authUser) throw new HttpException(401, 'Unauthorized');
+
+    const { slug } = req.query;
+
+    if (typeof slug !== 'string') throw new HttpException(400, 'Invalid slug');
+
+    await this.blogService.likeBlog(authUser, slug);
+
+    return res.status(201).json(new ResponseDto('Blog liked'));
+  }
+
+  async unlikeBlog(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+    const authUser = req.authUser;
+
+    if (!authUser) throw new HttpException(401, 'Unauthorized');
+
+    const { slug } = req.query;
+
+    if (typeof slug !== 'string') throw new HttpException(400, 'Invalid slug');
+
+    await this.blogService.unlikeBlog(authUser, slug);
+
+    return res.status(201).json(new ResponseDto('Blog unliked'));
+  }
+
+  async bookmarkBlog(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+    const authUser = req.authUser;
+
+    if (!authUser) throw new HttpException(401, 'Unauthorized');
+
+    const { slug } = req.query;
+
+    if (typeof slug !== 'string') throw new HttpException(400, 'Invalid slug');
+
+    await this.blogService.bookmarkBlog(authUser, slug);
+
+    return res.status(201).json(new ResponseDto('Blog bookmarked'));
+  }
+
+  async unbookmarkBlog(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+    const authUser = req.authUser;
+
+    if (!authUser) throw new HttpException(401, 'Unauthorized');
+
+    const { slug } = req.query;
+
+    if (typeof slug !== 'string') throw new HttpException(400, 'Invalid slug');
+
+    await this.blogService.unbookmarkBlog(authUser, slug);
+
+    return res.status(201).json(new ResponseDto('Blog unbookmarked'));
+  }
+
+  async getBlogComments(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+    const authUser = req.authUser;
+
+    const { slug } = req.query;
+
+    if (typeof slug !== 'string') throw new HttpException(400, 'Invalid slug');
+
+    const filter = await parseQuery(req.query);
+
+    const [data, count] = await this.blogService.getBlogComments(slug, filter, authUser?.id);
+
+    return res.status(200).json(
+      new ResponseDto('Blog comments fetched', data, {
+        count,
+        page: filter.page,
+        size: filter.size,
+      }),
+    );
+  }
 }
