@@ -11,11 +11,11 @@ const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.use(authGuard.useAuth());
 
-router.get(authController.getProfile);
+router.get((req, res) => authController.getProfile(req, res));
 
-router.put(authController.updateProfile);
+router.put((req, res) => authController.updateProfile(req, res));
 
-router.delete(authController.deleteProfile);
+router.delete((req, res) => authController.deleteProfile(req, res));
 
 export default router.handler({ onError: errorHandler });
 

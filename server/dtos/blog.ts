@@ -9,3 +9,12 @@ export const createBlogDto = Joi.object({
     .try(Joi.array().items(...Object.values(genre)), Joi.string().allow(...Object.values(genre)))
     .required(),
 });
+
+export const updateBlogDto = Joi.object({
+  title: Joi.string(),
+  content: Joi.string(),
+  genre: Joi.alternatives().try(
+    Joi.array().items(...Object.values(genre)),
+    Joi.string().allow(...Object.values(genre)),
+  ),
+});

@@ -16,7 +16,7 @@ import { getUserSuggestions } from 'request/user';
 import { queryKeys } from 'utils';
 import { SORT_TYPE, FILTERS, MODALS } from 'constants/reduxKeys';
 import { AUTH, BLOG, FOLLOWING as FOLLOWING_QUERY_KEY, GENRE, USER } from 'constants/queryKeys';
-import { Blog } from 'interface/models';
+import { Blog } from 'models/blog';
 
 const { LIKE_COUNT } = SORT_TYPE;
 

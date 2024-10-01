@@ -4,7 +4,6 @@ import { setGenre, setOrder, setPublished, setSearch, setSize, setSort } from '.
 import { closeDrawer, openDrawer } from './drawerSlice';
 import { turnOffReadingMode, turnOnReadingMode } from './readingModeSlice';
 import { FILTERS, MODALS, SORT_ORDER, SORT_TYPE } from 'constants/reduxKeys';
-import { Genre } from 'interface/models';
 
 export const useModalStore = (key: MODALS) => {
   const { isOpen } = useSelector((state: RootState) => state.modal[key], shallowEqual);
@@ -37,7 +36,7 @@ export const useFilterStore = (key: FILTERS) => {
     setSearch: (search: string) => dispatch(setSearch({ key, search })),
     setSort: (sort: SORT_TYPE) => dispatch(setSort({ key, sort })),
     setOrder: (order: SORT_ORDER) => dispatch(setOrder({ key, order })),
-    setGenre: (genre: Genre) => dispatch(setGenre({ key, genre })),
+    setGenre: (genre: string) => dispatch(setGenre({ key, genre })),
     setPublished: (isPublished?: boolean) => dispatch(setPublished({ key, isPublished })),
   };
 };

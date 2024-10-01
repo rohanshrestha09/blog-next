@@ -29,7 +29,6 @@ import { getProfile } from 'request/auth';
 import { getUserBlogs, getUserSuggestions } from 'request/user';
 import {
   bookmarkBlog,
-  createComment,
   getBlog,
   getBlogSuggestions,
   getComments,
@@ -39,12 +38,13 @@ import {
   unbookmarkBlog,
   unlikeBlog,
 } from 'request/blog';
+import { createComment } from 'request/comment';
 import { useModalStore, useFilterStore, useReadingModeStore } from 'store/hooks';
 import { AUTH, BLOG, COMMENT, GENRE, USER } from 'constants/queryKeys';
 import { FILTERS, MODALS } from 'constants/reduxKeys';
-import { Blog } from 'interface/models';
+import { type Blog } from 'models/blog';
 
-const Blog = () => {
+export default function Blog() {
   const { query, push } = useRouter();
 
   const queryClient = useQueryClient();
@@ -297,8 +297,8 @@ const Blog = () => {
           {authUser && (
             <DiscussionForm
               onSubmit={(content) => {
-                if (!blog?.slug) return;
-                handleCreateComment.mutate({ slug: blog?.slug, data: { content } });
+                if (!blog?.id) return;
+                handleCreateComment.mutate({ blogId: blog.id, content });
               }}
             />
           )}
@@ -317,9 +317,7 @@ const Blog = () => {
       </main>
     </Fragment>
   );
-};
-
-export default Blog;
+}
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,

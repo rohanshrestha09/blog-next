@@ -4,7 +4,7 @@ import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query';
 import { getProfile } from 'request/auth';
 import { queryKeys } from 'utils';
 import { AUTH } from 'constants/queryKeys';
-import type { IContext, TGetServerSidePropsReturnType } from 'interface';
+import { IContext, TGetServerSidePropsReturnType } from 'utils/types';
 
 export const AuthContext = createContext<IContext>({});
 

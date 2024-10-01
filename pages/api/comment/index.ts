@@ -10,6 +10,6 @@ const commentController = getCommentController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.post(authGuard.useAuth(), commentController.createComment);
+router.post(authGuard.useAuth(), (req, res) => commentController.createComment(req, res));
 
 export default router.handler({ onError: errorHandler });

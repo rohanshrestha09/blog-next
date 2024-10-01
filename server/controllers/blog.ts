@@ -5,7 +5,7 @@ import { parseFormData, parseQuery } from 'server/utils/parser';
 import { IBlogService } from 'server/ports/blog';
 import { GENRE } from 'server/enums/genre';
 import { HttpException } from 'server/exception';
-import { createBlogDto } from 'server/dtos/blog';
+import { createBlogDto, updateBlogDto } from 'server/dtos/blog';
 
 export class BlogController {
   constructor(private readonly blogService: IBlogService) {}
@@ -33,7 +33,7 @@ export class BlogController {
     const { genre = [] } = req.query;
 
     const [data, count] = await this.blogService.getAllBlogs(
-      { genre: (Array.isArray(genre) ? genre : genre?.split(',')) as GENRE },
+      { genre: (Array.isArray(genre) ? genre : genre?.split(',')).filter(Boolean) as GENRE },
       filter,
       authUser?.id,
     );
@@ -59,6 +59,38 @@ export class BlogController {
     const blog = await this.blogService.createBlog(authUser, data, files?.[0]);
 
     return res.status(201).json(new ResponseDto('Blog created', { slug: blog.slug }));
+  }
+
+  async updateBlog(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+    const authUser = req.authUser;
+
+    if (!authUser) throw new HttpException(401, 'Unauthorized');
+
+    const { slug } = req.query;
+
+    if (typeof slug !== 'string') throw new HttpException(400, 'Invalid slug');
+
+    const { fields, files } = await parseFormData(req);
+
+    const data = await updateBlogDto.validateAsync(fields);
+
+    const blog = await this.blogService.updateBlog(authUser, slug, data, files?.[0]);
+
+    return res.status(201).json(new ResponseDto('Blog updated', { slug: blog.slug }));
+  }
+
+  async deleteBlog(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+    const authUser = req.authUser;
+
+    if (!authUser) throw new HttpException(401, 'Unauthorized');
+
+    const { slug } = req.query;
+
+    if (typeof slug !== 'string') throw new HttpException(400, 'Invalid slug');
+
+    await this.blogService.deleteBlog(authUser, slug);
+
+    return res.status(201).json(new ResponseDto('Blog deleted'));
   }
 
   async getBlogSuggestions(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {

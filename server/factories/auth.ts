@@ -1,25 +1,28 @@
 import { AuthController } from 'server/controllers/auth';
 import { AuthGuard } from 'server/guards/auth';
-import { UserRepository } from 'server/repositories/user';
 import { AuthService } from 'server/services/auth';
-import { getBlogRepository, getBlogService } from './blog';
+import { getBlogService } from './blog';
 import { getSupabaseService } from './supabase';
-import { getUserRepository, getUserService } from './user';
+import { getUserService } from './user';
+import { getUnitOfWork } from './unitofwork';
 
 export function getAuthGuard() {
-  const userRepository = new UserRepository();
+  const unitOfWork = getUnitOfWork();
 
-  return new AuthGuard(userRepository);
+  return new AuthGuard(unitOfWork.userRepository);
 }
 
 export function getAuthService() {
-  const userRepository = getUserRepository();
-
-  const blogRepository = getBlogRepository();
+  const unitOfWork = getUnitOfWork();
 
   const supabaseService = getSupabaseService();
 
-  return new AuthService(userRepository, supabaseService, blogRepository);
+  return new AuthService(
+    unitOfWork,
+    unitOfWork.userRepository,
+    unitOfWork.blogRepository,
+    supabaseService,
+  );
 }
 
 export function getAuthController() {

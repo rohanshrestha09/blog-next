@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios';
 import axios from '.';
-import { type Notification } from 'interface/models';
-import { IQueryParamaters } from 'interface';
+import { Notification } from 'models/notification';
+import { IQueryParamaters } from 'utils/types';
 
 export const getNotifications = async (
   { page = 1, size = 20 }: IQueryParamaters,
@@ -16,7 +16,7 @@ export const getNotifications = async (
 }> => {
   const res = await axios.get(`/notification/?page=${page}&size=${size}`, config);
 
-  return res.data?.data;
+  return res.data;
 };
 
 export const markAsRead: Post<string> = async (id) => {

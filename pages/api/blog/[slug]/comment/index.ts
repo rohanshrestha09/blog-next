@@ -10,6 +10,8 @@ const blogController = getBlogController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.use(authGuard.useAuth({ supressError: true })).get(blogController.getBlogComments);
+router
+  .use(authGuard.useAuth({ supressError: true }))
+  .get((req, res) => blogController.getBlogComments(req, res));
 
 export default router.handler({ onError: errorHandler });

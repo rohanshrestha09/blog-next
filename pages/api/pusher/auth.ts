@@ -10,6 +10,6 @@ const pusherController = getPusherController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.use(authGuard.useAuth()).post(pusherController.authorizeChannel);
+router.use(authGuard.useAuth()).post((req, res) => pusherController.authorizeChannel(req, res));
 
 export default router.handler({ onError: errorHandler });

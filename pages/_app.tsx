@@ -7,7 +7,7 @@ import { QueryClientProvider, QueryClient, Hydrate, DehydratedState } from '@tan
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import Auth from 'auth';
 import AppLayout from 'components/layout';
-import store from '../store';
+import store from 'store';
 
 function MyApp({ Component, pageProps }: AppProps<{ dehydratedState: DehydratedState }>) {
   const { pathname } = useRouter();
@@ -24,11 +24,7 @@ function MyApp({ Component, pageProps }: AppProps<{ dehydratedState: DehydratedS
       }),
   );
 
-  const staticPaths = [
-    '/auth/reset-password',
-    '/auth/reset-password/[email]/[token]',
-    '/404',
-  ];
+  const staticPaths = ['/auth/reset-password', '/auth/reset-password/[email]/[token]', '/404'];
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -9,7 +9,7 @@ import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { MODALS } from 'constants/reduxKeys';
 import { FOLLOWER, FOLLOWING } from 'constants/queryKeys';
-import { User } from 'interface/models';
+import { User } from 'models/user';
 
 interface Props {
   user: User;

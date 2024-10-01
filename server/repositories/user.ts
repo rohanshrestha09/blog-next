@@ -1,5 +1,5 @@
-import { Prisma } from '@prisma/client';
-import { excludeFields, prisma, userFields } from 'server/lib/prisma';
+import { Prisma, PrismaClient } from '@prisma/client';
+import { excludeFields, userFields } from 'server/lib/prisma';
 import { isEmpty } from 'lodash';
 import { User, UserCreate, UserQuery, UserUpdate } from 'server/models/user';
 import { IUserQueryBuilder, IUserRepository } from 'server/ports/user';
@@ -36,9 +36,9 @@ export const transformUser = (
 
 class UserQueryBuilder implements IUserQueryBuilder {
   constructor(
-    private readonly userInstance: typeof prisma.user,
+    private readonly userInstance: PrismaClient['user'],
     private readonly options: Prisma.UserFindManyArgs,
-  ) { }
+  ) {}
 
   withPagination(page: number, size: number) {
     this.options.skip = (page - 1) * (size || 20);
@@ -146,10 +146,12 @@ class UserQueryBuilder implements IUserQueryBuilder {
 }
 
 export class UserRepository implements IUserRepository {
+  constructor(private readonly prisma: PrismaClient) {}
+
   async findUserByID(id: string, sessionId?: string): Promise<User> {
     const condition = sessionId ? { where: { id: sessionId }, take: 1 } : false;
 
-    const data = await prisma.user.findUniqueOrThrow({
+    const data = await this.prisma.user.findUniqueOrThrow({
       where: { id },
       select: sessionSelect(condition),
     });
@@ -160,7 +162,7 @@ export class UserRepository implements IUserRepository {
   async findUserByEmail(email: string, sessionId?: string): Promise<User> {
     const condition = sessionId ? { where: { id: sessionId }, take: 1 } : false;
 
-    const data = await prisma.user.findUniqueOrThrow({
+    const data = await this.prisma.user.findUniqueOrThrow({
       where: { email },
       select: sessionSelect(condition),
     });
@@ -169,7 +171,7 @@ export class UserRepository implements IUserRepository {
   }
 
   async findUserPasswordByEmail(email: string): Promise<string> {
-    const user = await prisma.user.findUniqueOrThrow({
+    const user = await this.prisma.user.findUniqueOrThrow({
       where: { email },
       select: { password: true },
     });
@@ -178,36 +180,36 @@ export class UserRepository implements IUserRepository {
   }
 
   findAllUsers(options: UserQuery): IUserQueryBuilder {
-    return new UserQueryBuilder(prisma.user, { where: options });
+    return new UserQueryBuilder(this.prisma.user, { where: options });
   }
 
   async findRandomUsers(options: UserQuery, size: number): Promise<IUserQueryBuilder> {
-    const results = await prisma.$queryRawUnsafe<{ id: string }[]>(
+    const results = await this.prisma.$queryRawUnsafe<{ id: string }[]>(
       `SELECT id FROM public."User" ORDER BY RANDOM() LIMIT ${size};`,
     );
 
     const ids = results.map((item) => item.id);
 
-    return new UserQueryBuilder(prisma.user, { where: { ...options, id: { in: ids } } });
+    return new UserQueryBuilder(this.prisma.user, { where: { ...options, id: { in: ids } } });
   }
 
   async createUser(data: UserCreate): Promise<User> {
-    return await prisma.user.create({ data });
+    return await this.prisma.user.create({ data });
   }
 
   async updateUserByID(id: string, data: UserUpdate): Promise<void> {
-    await prisma.user.update({ where: { id }, data });
+    await this.prisma.user.update({ where: { id }, data });
   }
 
   async deleteUserByID(
     id: string,
     returning?: Partial<Record<keyof User, boolean>> | undefined,
   ): Promise<User> {
-    return await prisma.user.delete({ where: { id }, select: returning });
+    return await this.prisma.user.delete({ where: { id }, select: returning });
   }
 
   async addFollower(id: string, followerId: string): Promise<void> {
-    await prisma.user.update({
+    await this.prisma.user.update({
       where: { id },
       data: {
         following: {
@@ -220,7 +222,7 @@ export class UserRepository implements IUserRepository {
   }
 
   async removeFollower(id: string, followerId: string): Promise<void> {
-    await prisma.user.update({
+    await this.prisma.user.update({
       where: { id },
       data: {
         following: {

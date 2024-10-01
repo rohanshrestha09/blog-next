@@ -17,7 +17,7 @@ export interface IBlogRepository {
   findAllBlogs(options: BlogQuery): IBlogQueryBuilder;
   findRandomBlogs(options: BlogQuery, size: number): Promise<IBlogQueryBuilder>;
   createBlog(data: BlogCreate): Promise<Blog>;
-  updateBlogBySlug(author: User, slug: string, data: BlogUpdate): Promise<void>;
+  updateBlogBySlug(author: User, slug: string, data: BlogUpdate): Promise<Blog>;
   deleteBlogBySlug(
     author: User,
     slug: string,
@@ -41,6 +41,13 @@ export interface IBlogService {
     data: Pick<Blog, 'title' | 'content' | 'genre' | 'isPublished'>,
     file?: MultipartyFile,
   ): Promise<Blog>;
+  updateBlog(
+    user: User,
+    slug: string,
+    data: Pick<Blog, 'title' | 'content' | 'genre'>,
+    file?: MultipartyFile,
+  ): Promise<Blog>;
+  deleteBlog(user: User, slug: string): Promise<void>;
   getBookmarks(userId: string, filter: FilterProps, sessionId?: string): Promise<[Blog[], number]>;
   getFollowingBlogs(
     userId: string,

@@ -11,7 +11,7 @@ import { errorNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { MODALS, NOTIFICATIONS_STATUS, NOTIFICATIONS_TYPE } from 'constants/reduxKeys';
 import { NOTIFICATION } from 'constants/queryKeys';
-import { Notification } from 'interface/models';
+import { Notification } from 'models/notification';
 
 interface Props {
   notification: Notification;

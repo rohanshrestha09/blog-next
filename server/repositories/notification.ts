@@ -1,9 +1,8 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import {
   blogFields,
   commentFields,
   notificationFields,
-  prisma,
   selectFields,
   userFields,
 } from 'server/lib/prisma';
@@ -17,7 +16,7 @@ import { INotificationQueryBuilder, INotificationRepository } from 'server/ports
 
 class NotificationQueryBuilder implements INotificationQueryBuilder {
   constructor(
-    private readonly notificationInstance: typeof prisma.notification,
+    private readonly notificationInstance: PrismaClient['notification'],
     private readonly options: Prisma.NotificationFindManyArgs,
   ) {}
 
@@ -69,18 +68,20 @@ class NotificationQueryBuilder implements INotificationQueryBuilder {
 }
 
 export class NotificationRepository implements INotificationRepository {
+  constructor(private readonly prisma: PrismaClient) {}
+
   async notificationExists(options: NotificationQuery): Promise<boolean> {
-    const notification = await prisma.notification.findFirst({ where: options });
+    const notification = await this.prisma.notification.findFirst({ where: options });
 
     return !!notification;
   }
 
   findAllNotifications(options: NotificationQuery): INotificationQueryBuilder {
-    return new NotificationQueryBuilder(prisma.notification, { where: options });
+    return new NotificationQueryBuilder(this.prisma.notification, { where: options });
   }
 
   async createNotification(data: NotificationCreate): Promise<Notification> {
-    return await prisma.notification.create({
+    return await this.prisma.notification.create({
       data,
       select: {
         ...notificationFields,
@@ -101,17 +102,17 @@ export class NotificationRepository implements INotificationRepository {
     options: Pick<Notification, 'receiverId'>,
     data: NotificationUpdate,
   ): Promise<void> {
-    await prisma.notification.updateMany({ where: options, data });
+    await this.prisma.notification.updateMany({ where: options, data });
   }
 
   async updateNotification(
     options: Pick<Notification, 'id' | 'receiverId'>,
     data: NotificationUpdate,
   ): Promise<void> {
-    await prisma.notification.update({ where: options, data });
+    await this.prisma.notification.update({ where: options, data });
   }
 
   async countNotifications(options: NotificationQuery): Promise<number> {
-    return await prisma.notification.count({ where: options });
+    return await this.prisma.notification.count({ where: options });
   }
 }

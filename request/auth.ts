@@ -1,8 +1,9 @@
 import { AxiosRequestConfig } from 'axios';
 import axios from '.';
-import { type Blog, type User } from 'interface/models';
-import { IQueryParamaters } from 'interface';
-import { SORT_TYPE, SORT_ORDER } from '../constants/reduxKeys';
+import { Blog } from 'models/blog';
+import { User } from 'models/user';
+import { IQueryParamaters } from 'utils/types';
+import { SORT_TYPE, SORT_ORDER } from 'constants/reduxKeys';
 
 export const register: Post<FormData> = async (data) => {
   const res = await axios.post('/auth/register', data);
@@ -63,7 +64,7 @@ export const deleteProfileImage: Delete<unknown> = async () => {
 };
 
 export const getBlogs: GetAll<
-  IQueryParamaters & Partial<Pick<Blog, 'genre' | 'isPublished'>> & { search?: string },
+  IQueryParamaters & Partial<Pick<Blog, 'genre' | 'isPublished'>>,
   Blog
 > = async (
   {
@@ -82,19 +83,19 @@ export const getBlogs: GetAll<
     config,
   );
 
-  return res.data?.data;
+  return res.data;
 };
 
-export const getBookmarks: GetAll<
-  IQueryParamaters & Partial<Pick<Blog, 'genre'>> & { search?: string },
-  Blog
-> = async ({ page = 1, size = 20, genre = '', search = '' }, config) => {
+export const getBookmarks: GetAll<IQueryParamaters & Partial<Pick<Blog, 'genre'>>, Blog> = async (
+  { page = 1, size = 20, genre = '', search = '' },
+  config,
+) => {
   const res = await axios.get(
-    `/auth/blog/bookmarks?page=${page}&size=${size}&genre=${genre}&search=${search}`,
+    `/auth/blog/bookmark?page=${page}&size=${size}&genre=${genre}&search=${search}`,
     config,
   );
 
-  return res.data?.data;
+  return res.data;
 };
 
 export const getFollowingBlogs: GetAll<IQueryParamaters, Blog> = async (
@@ -103,25 +104,25 @@ export const getFollowingBlogs: GetAll<IQueryParamaters, Blog> = async (
 ) => {
   const res = await axios.get(`/auth/blog/following?page=${page}&size=${size}`, config);
 
-  return res.data?.data;
+  return res.data;
 };
 
-export const getFollowers: GetAll<IQueryParamaters & { search?: string }, User> = async (
+export const getFollowers: GetAll<IQueryParamaters, User> = async (
   { page = 1, size = 20, search = '' },
   config,
 ) => {
-  const res = await axios.get(`/auth/followers?page=${page}&size=${size}&search=${search}`, config);
+  const res = await axios.get(`/auth/follower?page=${page}&size=${size}&search=${search}`, config);
 
-  return res.data?.data;
+  return res.data;
 };
 
-export const getFollowing: GetAll<IQueryParamaters & { search?: string }, User> = async (
+export const getFollowing: GetAll<IQueryParamaters, User> = async (
   { page = 1, size = 20, search = '' },
   config,
 ) => {
   const res = await axios.get(`/auth/following?page=${page}&size=${size}&search=${search}`, config);
 
-  return res.data?.data;
+  return res.data;
 };
 
 export const sendPasswordResetMail: Post<Pick<User, 'email'>> = async (data) => {

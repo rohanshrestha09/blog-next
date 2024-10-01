@@ -1,5 +1,5 @@
-import { Prisma } from '@prisma/client';
-import { prisma, blogFields, excludeFields, userFields } from 'server/lib/prisma';
+import { Prisma, PrismaClient } from '@prisma/client';
+import { blogFields, excludeFields, userFields } from 'server/lib/prisma';
 import { isEmpty } from 'lodash';
 import { Blog, BlogCreate, BlogQuery, BlogUpdate } from 'server/models/blog';
 import { User } from 'server/models/user';
@@ -47,7 +47,7 @@ const transformBlog = (
 
 class BlogQueryBuilder implements IBlogQueryBuilder {
   constructor(
-    private readonly blogInstance: typeof prisma.blog,
+    private readonly blogInstance: PrismaClient['blog'],
     private readonly options: Prisma.BlogFindManyArgs,
   ) {}
 
@@ -114,6 +114,8 @@ class BlogQueryBuilder implements IBlogQueryBuilder {
   }
 
   hasGenre(genre: GENRE) {
+    if (!genre.length) return this;
+
     this.options.where = {
       ...this.options.where,
       genre: {
@@ -143,10 +145,12 @@ class BlogQueryBuilder implements IBlogQueryBuilder {
 }
 
 export class BlogRepository implements IBlogRepository {
+  constructor(private readonly prisma: PrismaClient) {}
+
   async findBlogByID(id: number, sessionId?: string): Promise<Blog> {
     const condition = sessionId ? { where: { id: sessionId }, take: 1 } : false;
 
-    const data = await prisma.blog.findUniqueOrThrow({
+    const data = await this.prisma.blog.findUniqueOrThrow({
       where: { id },
       select: sessionSelect(condition),
     });
@@ -157,7 +161,7 @@ export class BlogRepository implements IBlogRepository {
   async findBlogBySlug(slug: string, sessionId?: string): Promise<Blog> {
     const condition = sessionId ? { where: { id: sessionId }, take: 1 } : false;
 
-    const data = await prisma.blog.findUniqueOrThrow({
+    const data = await this.prisma.blog.findUniqueOrThrow({
       where: { slug },
       select: sessionSelect(condition),
     });
@@ -166,25 +170,25 @@ export class BlogRepository implements IBlogRepository {
   }
 
   findAllBlogs(options: BlogQuery): IBlogQueryBuilder {
-    return new BlogQueryBuilder(prisma.blog, { where: options });
+    return new BlogQueryBuilder(this.prisma.blog, { where: options });
   }
 
   async findRandomBlogs(options: BlogQuery, size: number): Promise<IBlogQueryBuilder> {
-    const results = await prisma.$queryRawUnsafe<{ id: number }[]>(
+    const results = await this.prisma.$queryRawUnsafe<{ id: number }[]>(
       `SELECT id FROM public."Blog" ORDER BY RANDOM() LIMIT ${size};`,
     );
 
     const ids = results.map((item) => item.id);
 
-    return new BlogQueryBuilder(prisma.blog, { where: { ...options, id: { in: ids } } });
+    return new BlogQueryBuilder(this.prisma.blog, { where: { ...options, id: { in: ids } } });
   }
 
   async createBlog(data: BlogCreate): Promise<Blog> {
-    return await prisma.blog.create({ data });
+    return await this.prisma.blog.create({ data });
   }
 
-  async updateBlogBySlug(user: User, slug: string, data: BlogUpdate): Promise<void> {
-    await prisma.blog.update({ where: { slug, authorId: user.id }, data });
+  async updateBlogBySlug(user: User, slug: string, data: BlogUpdate): Promise<Blog> {
+    return await this.prisma.blog.update({ where: { slug, authorId: user.id }, data });
   }
 
   async deleteBlogBySlug(
@@ -192,11 +196,11 @@ export class BlogRepository implements IBlogRepository {
     slug: string,
     returning?: Partial<Record<keyof Blog, boolean>> | undefined,
   ): Promise<Blog> {
-    return await prisma.blog.delete({ where: { slug, authorId: user.id }, select: returning });
+    return await this.prisma.blog.delete({ where: { slug, authorId: user.id }, select: returning });
   }
 
   async addLike(slug: string, userId: string): Promise<Blog> {
-    return await prisma.blog.update({
+    return await this.prisma.blog.update({
       where: { slug, isPublished: true },
       data: {
         likedBy: {
@@ -209,7 +213,7 @@ export class BlogRepository implements IBlogRepository {
   }
 
   async removeLike(slug: string, userId: string): Promise<void> {
-    await prisma.blog.update({
+    await this.prisma.blog.update({
       where: { slug, isPublished: true },
       data: {
         likedBy: {
@@ -222,7 +226,7 @@ export class BlogRepository implements IBlogRepository {
   }
 
   async addBookmark(slug: string, userId: string): Promise<void> {
-    await prisma.blog.update({
+    await this.prisma.blog.update({
       where: { slug, isPublished: true },
       data: {
         bookmarkedBy: {
@@ -233,7 +237,7 @@ export class BlogRepository implements IBlogRepository {
   }
 
   async removeBookmark(slug: string, userId: string): Promise<void> {
-    await prisma.blog.update({
+    await this.prisma.blog.update({
       where: { slug, isPublished: true },
       data: {
         bookmarkedBy: {

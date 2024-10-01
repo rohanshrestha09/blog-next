@@ -10,8 +10,8 @@ const commentController = getCommentController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.post(authGuard.useAuth(), commentController.likeComment);
+router.post(authGuard.useAuth(), (req, res) => commentController.likeComment(req, res));
 
-router.delete(authGuard.useAuth(), commentController.unlikeComment);
+router.delete(authGuard.useAuth(), (req, res) => commentController.unlikeComment(req, res));
 
 export default router.handler({ onError: errorHandler });

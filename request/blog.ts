@@ -1,7 +1,9 @@
 import { AxiosRequestConfig } from 'axios';
 import axios from '.';
-import { type User, type Blog, type Comment, type Genre } from 'interface/models';
-import { IQueryParamaters } from 'interface';
+import { User } from 'models/user';
+import { Blog } from 'models/blog';
+import { Comment } from 'models/comment';
+import { IQueryParamaters } from 'utils/types';
 import { SORT_ORDER, SORT_TYPE } from 'constants/reduxKeys';
 
 export const getBlog: Get<string, Blog> = async (id, config) => {
@@ -11,7 +13,7 @@ export const getBlog: Get<string, Blog> = async (id, config) => {
 };
 
 export const getAllBlogs: GetAll<
-  IQueryParamaters & Partial<Pick<Blog, 'genre' | 'isPublished'>> & { search?: string },
+  IQueryParamaters & Partial<Pick<Blog, 'genre' | 'isPublished'>>,
   Blog
 > = async (
   {
@@ -29,16 +31,16 @@ export const getAllBlogs: GetAll<
     config,
   );
 
-  return res.data?.data;
+  return res.data;
 };
 
 export const getBlogSuggestions: GetAll<IQueryParamaters, Blog> = async (
   { page = 1, size = 4 },
   config,
 ) => {
-  const res = await axios.get(`/blog/suggestions?page=${page}&size=${size}`, config);
+  const res = await axios.get(`/blog/suggestion?page=${page}&size=${size}`, config);
 
-  return res.data?.data;
+  return res.data;
 };
 
 export const createBlog = async (
@@ -85,7 +87,7 @@ export const getLikes: GetAll<IQueryParamaters & Pick<Blog, 'slug'>, User> = asy
 ) => {
   const res = await axios.get(`/blog/${slug}/like?page=${page}&size=${size}`, config);
 
-  return res.data?.data;
+  return res.data;
 };
 
 export const likeBlog: Post<string> = async (slug) => {
@@ -118,46 +120,10 @@ export const getComments: GetAll<IQueryParamaters & Pick<Blog, 'slug'>, Comment>
 ) => {
   const res = await axios.get(`/blog/${slug}/comment?page=${page}&size=${size}`, config);
 
-  return res.data?.data;
-};
-
-export const createComment: Post<Pick<Blog, 'slug'> & { data: Pick<Comment, 'content'> }> = async ({
-  slug,
-  data,
-}) => {
-  const res = await axios.post(`/blog/${slug}/comment`, data);
-
   return res.data;
 };
 
-export const deleteComment: Delete<{ slug: string; commentId: number }> = async ({
-  slug,
-  commentId,
-}) => {
-  const res = await axios.delete(`/blog/${slug}/comment/${commentId}`);
-
-  return res.data;
-};
-
-export const likeComment: Post<{ slug: string; commentId: number }> = async ({
-  slug,
-  commentId,
-}) => {
-  const res = await axios.post(`/blog/${slug}/comment/${commentId}/like`);
-
-  return res.data;
-};
-
-export const unlikeComment: Delete<{ slug: string; commentId: number }> = async ({
-  slug,
-  commentId,
-}) => {
-  const res = await axios.delete(`/blog/${slug}/comment/${commentId}/like`);
-
-  return res.data;
-};
-
-export const getGenre: Get<AxiosRequestConfig, Record<Genre, Genre>> = async (config) => {
+export const getGenre: Get<AxiosRequestConfig, Record<string, string>> = async (config) => {
   const res = await axios.get('/blog/genre', config);
 
   return res.data?.data;

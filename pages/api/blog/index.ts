@@ -10,9 +10,11 @@ const blogController = getBlogController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.post(authGuard.useAuth(), blogController.createBlog);
+router.post(authGuard.useAuth(), (req, res) => blogController.createBlog(req, res));
 
-router.get(authGuard.useAuth({ supressError: true }), blogController.getAllBlogs);
+router.get(authGuard.useAuth({ supressError: true }), (req, res) =>
+  blogController.getAllBlogs(req, res),
+);
 
 export default router.handler({ onError: errorHandler });
 

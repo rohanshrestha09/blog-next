@@ -8,12 +8,12 @@ import { LikeFilled, LikeOutlined } from '@ant-design/icons';
 import { useAuth } from 'auth';
 import ConfirmDelete from 'components/common/ConfirmDelete';
 import { useModalStore } from 'store/hooks';
-import { deleteComment, likeComment, unlikeComment } from 'request/blog';
+import { deleteComment, likeComment, unlikeComment } from 'request/comment';
 import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { MODALS } from 'constants/reduxKeys';
 import { BLOG, COMMENT } from 'constants/queryKeys';
-import { Comment as CommentSchema } from 'interface/models';
+import { Comment as CommentSchema } from 'models/comment';
 
 interface Props {
   data: CommentSchema[];
@@ -102,14 +102,8 @@ export const DiscussionList: React.FC<Props> = ({ data, count }) => {
                   <span
                     onClick={() =>
                       comment?.hasLiked
-                        ? handleUnlikeComment.mutate({
-                            commentId: comment?.id,
-                            slug: comment?.blog?.slug,
-                          })
-                        : handleLikeComment.mutate({
-                            commentId: comment?.id,
-                            slug: comment?.blog?.slug,
-                          })
+                        ? handleUnlikeComment.mutate(comment?.id)
+                        : handleLikeComment.mutate(comment?.id)
                     }
                   >
                     {comment?.hasLiked ? <LikeFilled /> : <LikeOutlined />}
@@ -120,7 +114,7 @@ export const DiscussionList: React.FC<Props> = ({ data, count }) => {
                   <span
                     key={comment?.id}
                     onClick={() => {
-                      setComment({ id: comment?.id, slug: comment?.blog?.slug });
+                      setComment({ id: comment?.id, slug: comment?.blog?.slug ?? null });
                       openDeleteModal();
                     }}
                   >
@@ -145,11 +139,7 @@ export const DiscussionList: React.FC<Props> = ({ data, count }) => {
 
       <ConfirmDelete
         isLoading={handleDeleteComment.isLoading}
-        deleteMutation={() =>
-          comment.slug &&
-          comment.id &&
-          handleDeleteComment.mutate({ slug: comment.slug, commentId: comment.id })
-        }
+        deleteMutation={() => comment.id && handleDeleteComment.mutate(comment.id)}
       />
     </Fragment>
   );

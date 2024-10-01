@@ -10,6 +10,6 @@ const notificationController = getNotificationController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.use(authGuard.useAuth()).post(notificationController.markAllAsRead);
+router.use(authGuard.useAuth()).post((req, res) => notificationController.markAllAsRead(req, res));
 
 export default router.handler({ onError: errorHandler });

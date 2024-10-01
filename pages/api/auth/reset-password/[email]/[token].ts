@@ -7,6 +7,6 @@ const authController = getAuthController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.post(authController.resetPassword);
+router.post((req, res) => authController.resetPassword(req, res));
 
 export default router.handler({ onError: errorHandler });

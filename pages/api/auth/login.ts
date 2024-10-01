@@ -7,6 +7,6 @@ const authController = getAuthController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.post(authController.login);
+router.post((req, res) => authController.login(req, res));
 
 export default router.handler({ onError: errorHandler });

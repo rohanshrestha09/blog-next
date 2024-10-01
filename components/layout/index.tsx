@@ -22,7 +22,7 @@ import { useReadingModeStore, useDrawerStore } from 'store/hooks';
 import { jsxNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { NOTIFICATION } from 'constants/queryKeys';
-import { Notification } from 'interface/models';
+import { Notification } from 'models/notification';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }): JSX.Element => {
   const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY as string, {

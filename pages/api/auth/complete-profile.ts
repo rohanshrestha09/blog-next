@@ -9,6 +9,6 @@ const authController = getAuthController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.use(authGuard.useAuth()).patch(authController.completeProfile);
+router.use(authGuard.useAuth()).patch((req, res) => authController.completeProfile(req, res));
 
 export default router.handler({ onError: errorHandler });

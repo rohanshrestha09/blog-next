@@ -15,7 +15,7 @@ import { useModalStore } from 'store/hooks';
 import { queryKeys } from 'utils';
 import { MODALS, FILTERS } from 'constants/reduxKeys';
 import { FOLLOWER, FOLLOWING, USER } from 'constants/queryKeys';
-import { User } from 'interface/models';
+import { User } from 'models/user';
 
 interface Props {
   isSider?: boolean;

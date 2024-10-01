@@ -1,34 +1,23 @@
 import { BlogController } from 'server/controllers/blog';
-import { BlogRepository } from 'server/repositories/blog';
 import { BlogService } from 'server/services/blog';
 import { getSupabaseService } from './supabase';
-import { getUserRepository } from './user';
-import { getNotificationRepository, getNotificationService } from './notification';
-import { getCommentRepository } from './comment';
-
-export function getBlogRepository() {
-  return new BlogRepository();
-}
+import { getNotificationService } from './notification';
+import { getUnitOfWork } from './unitofwork';
 
 export function getBlogService() {
-  const blogRepository = getBlogRepository();
-
-  const userRepository = getUserRepository();
-
-  const commentRepository = getCommentRepository();
+  const unitOfWork = getUnitOfWork();
 
   const supabaseService = getSupabaseService();
-
-  const notificationRepository = getNotificationRepository();
 
   const notificationService = getNotificationService();
 
   return new BlogService(
-    blogRepository,
-    userRepository,
-    commentRepository,
+    unitOfWork,
+    unitOfWork.blogRepository,
+    unitOfWork.userRepository,
+    unitOfWork.commentRepository,
+    unitOfWork.notificationRepository,
     supabaseService,
-    notificationRepository,
     notificationService,
   );
 }

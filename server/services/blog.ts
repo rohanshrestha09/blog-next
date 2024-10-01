@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { kebabCase } from 'lodash';
+import { v4 as uuidV4 } from 'uuid';
 import { NotificationType } from 'server/enums/notification';
 import { HttpException } from 'server/exception';
 import { Blog } from 'server/models/blog';
@@ -11,14 +12,16 @@ import { INotificationRepository, INotificationService } from 'server/ports/noti
 import { ISupabaseService } from 'server/ports/supabase';
 import { IUserRepository } from 'server/ports/user';
 import { FilterProps, MultipartyFile } from 'server/utils/types';
+import { IUnitOfWork } from 'server/ports/unitofwork';
 
 export class BlogService implements IBlogService {
   constructor(
+    private readonly unitOfWork: IUnitOfWork,
     private readonly blogRepository: IBlogRepository,
     private readonly userRepository: IUserRepository,
     private readonly commentRepository: ICommentRepository,
-    private readonly supabaseService: ISupabaseService,
     private readonly notificationRepository: INotificationRepository,
+    private readonly supabaseService: ISupabaseService,
     private readonly notificationService: INotificationService,
   ) {}
 
@@ -45,36 +48,97 @@ export class BlogService implements IBlogService {
     data: Pick<Blog, 'title' | 'content' | 'genre' | 'isPublished'>,
     file?: MultipartyFile,
   ): Promise<Blog> {
-    const blog = await this.blogRepository.createBlog({
-      authorId: user.id,
-      slug: kebabCase(data.title),
-      title: data.title,
-      content: data.content,
-      genre: data.genre,
-      isPublished: data.isPublished,
-    });
-
-    if (file) {
-      if (!file?.headers?.['content-type'].startsWith('image/'))
-        throw new HttpException(403, 'Please choose an image');
-
-      const filename = file?.headers?.['content-type'].replace('image/', `${user.id}.`);
-
-      const uploadedFilePath = await this.supabaseService.uploadFile(
-        'blogs',
-        filename,
-        readFileSync(file?.path),
-      );
-
-      const previewUrl = await this.supabaseService.downloadFile('blogs', filename);
-
-      await this.blogRepository.updateBlogBySlug(user, blog.slug, {
-        image: previewUrl,
-        imageName: uploadedFilePath,
+    return await this.unitOfWork.beginTx(async (tx) => {
+      const blog = await tx.blogRepository.createBlog({
+        authorId: user.id,
+        slug: kebabCase(data.title),
+        title: data.title,
+        content: data.content,
+        genre: data.genre,
+        isPublished: data.isPublished,
       });
-    }
 
-    return blog;
+      if (file) {
+        if (!file?.headers?.['content-type'].startsWith('image/'))
+          throw new HttpException(403, 'Please choose an image');
+
+        const uuid = uuidV4();
+
+        const filename = file?.headers?.['content-type'].replace('image/', `${uuid}.`);
+
+        const uploadedFilePath = await this.supabaseService.uploadFile(
+          'blogs',
+          filename,
+          readFileSync(file?.path),
+        );
+
+        const previewUrl = await this.supabaseService.downloadFile('blogs', filename);
+
+        await tx.blogRepository.updateBlogBySlug(user, blog.slug, {
+          image: previewUrl,
+          imageName: uploadedFilePath,
+        });
+      }
+
+      return blog;
+    });
+  }
+
+  async updateBlog(
+    user: User,
+    slug: string,
+    data: Pick<Blog, 'title' | 'content' | 'genre'>,
+    file?: MultipartyFile,
+  ): Promise<Blog> {
+    return await this.unitOfWork.beginTx(async (tx) => {
+      const blog = await tx.blogRepository.updateBlogBySlug(user, slug, {
+        title: data.title,
+        slug: kebabCase(data.title),
+        content: data.content,
+        genre: data.genre,
+      });
+
+      if (file) {
+        if (!file?.headers?.['content-type'].startsWith('image/'))
+          throw new HttpException(403, 'Please choose an image');
+
+        const uuid = uuidV4();
+
+        const filename = file?.headers?.['content-type'].replace('image/', `${uuid}.`);
+
+        const uploadedFilePath = await this.supabaseService.uploadFile(
+          'blogs',
+          filename,
+          readFileSync(file?.path),
+        );
+
+        const previewUrl = await this.supabaseService.downloadFile('blogs', filename);
+
+        if (blog.image && blog.imageName) {
+          await this.supabaseService.deleteFile('blogs', [blog.imageName]);
+        }
+
+        await tx.blogRepository.updateBlogBySlug(user, slug, {
+          image: previewUrl,
+          imageName: uploadedFilePath,
+        });
+      }
+
+      return blog;
+    });
+  }
+
+  async deleteBlog(user: User, slug: string): Promise<void> {
+    await this.unitOfWork.beginTx(async (tx) => {
+      const blog = await tx.blogRepository.deleteBlogBySlug(user, slug, {
+        image: true,
+        imageName: true,
+      });
+
+      if (blog.image && blog.imageName) {
+        await this.supabaseService.deleteFile('blogs', [blog.imageName]);
+      }
+    });
   }
 
   async getBookmarks(
@@ -124,6 +188,7 @@ export class BlogService implements IBlogService {
       .hasLikedBlog(slug)
       .withPagination(filter.page, filter.size)
       .withSort(filter.sort, filter.order)
+      .withSearch(filter.search)
       .execute(sessionId);
   }
 

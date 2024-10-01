@@ -9,6 +9,6 @@ const authController = getAuthController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.use(authGuard.useAuth()).post(authController.changePassword);
+router.use(authGuard.useAuth()).post((req, res) => authController.changePassword(req, res));
 
 export default router.handler({ onError: errorHandler });

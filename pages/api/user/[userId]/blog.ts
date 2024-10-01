@@ -10,6 +10,8 @@ const userController = getUserController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.use(authGuard.useAuth({ supressError: true })).get(userController.getUserBlogs);
+router
+  .use(authGuard.useAuth({ supressError: true }))
+  .get((req, res) => userController.getUserBlogs(req, res));
 
 export default router.handler({ onError: errorHandler });

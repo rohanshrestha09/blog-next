@@ -139,9 +139,11 @@ export class AuthController {
 
     if (!authUser) throw new HttpException(401, 'Unauthorized');
 
-    const data = this.authService.getProfile(authUser);
+    const data = await this.authService.getProfile(authUser);
 
-    return res.status(200).json(new ResponseDto('Profile fetched', data));
+    return res
+      .status(200)
+      .json(new ResponseDto('Profile fetched', { ...data, email: authUser.email }));
   }
 
   async updateProfile(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {

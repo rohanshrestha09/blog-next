@@ -10,10 +10,12 @@ const blogController = getBlogController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.get(authGuard.useAuth({ supressError: true }), blogController.getBlogLikers);
+router.get(authGuard.useAuth({ supressError: true }), (req, res) =>
+  blogController.getBlogLikers(req, res),
+);
 
-router.post(authGuard.useAuth(), blogController.likeBlog);
+router.post(authGuard.useAuth(), (req, res) => blogController.likeBlog(req, res));
 
-router.delete(authGuard.useAuth(), blogController.unlikeBlog);
+router.delete(authGuard.useAuth(), (req, res) => blogController.unlikeBlog(req, res));
 
 export default router.handler({ onError: errorHandler });

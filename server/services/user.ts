@@ -28,6 +28,7 @@ export class UserService implements IUserService {
       .followedBy(userId, filter.search)
       .withPagination(filter.page, filter.size)
       .withSort(filter.sort, filter.order)
+      .withSearch(filter.search)
       .execute(sessionId);
   }
 
@@ -41,6 +42,7 @@ export class UserService implements IUserService {
       .following(userId, filter.search)
       .withPagination(filter.page, filter.size)
       .withSort(filter.sort, filter.order)
+      .withSearch(filter.search)
       .execute(sessionId);
   }
 

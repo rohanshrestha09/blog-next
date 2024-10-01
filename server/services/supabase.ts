@@ -1,4 +1,4 @@
-import { supabase } from 'lib/supabase';
+import { supabase } from 'server/lib/supabase';
 import { ISupabaseService } from 'server/ports/supabase';
 
 export class SupabaseService implements ISupabaseService {

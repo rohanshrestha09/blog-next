@@ -19,7 +19,7 @@ import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { MODALS } from 'constants/reduxKeys';
 import { BLOG } from 'constants/queryKeys';
-import { Blog } from 'interface/models';
+import { Blog } from 'models/blog';
 
 interface Props {
   editable?: boolean;
@@ -181,7 +181,7 @@ const BlogCard: React.FC<Props> = ({ blog, editable, size }) => {
 
         <div className='w-full flex items-center justify-between'>
           <span className='truncate'>
-            {blog?.genre?.map((tag) => (
+            {blog?.genre?.map((tag: string) => (
               <Tag
                 key={tag}
                 className='rounded-full cursor-pointer'

@@ -10,6 +10,6 @@ const commentController = getCommentController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.use(authGuard.useAuth()).delete(commentController.deleteComment);
+router.use(authGuard.useAuth()).delete((req, res) => commentController.deleteComment(req, res));
 
 export default router.handler({ onError: errorHandler });

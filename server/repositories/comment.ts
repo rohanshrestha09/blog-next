@@ -1,6 +1,6 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { isEmpty } from 'lodash';
-import { blogFields, commentFields, excludeFields, prisma, userFields } from 'server/lib/prisma';
+import { blogFields, commentFields, excludeFields, userFields } from 'server/lib/prisma';
 import { Comment, CommentCreate, CommentQuery } from 'server/models/comment';
 import { User } from 'server/models/user';
 import { ICommentQueryBuilder, ICommentRepository } from 'server/ports/comment';
@@ -39,7 +39,7 @@ const transformComment = (
 
 class CommentQueryBuilder implements ICommentQueryBuilder {
   constructor(
-    private readonly commentInstance: typeof prisma.comment,
+    private readonly commentInstance: PrismaClient['comment'],
     private readonly options: Prisma.CommentFindManyArgs,
   ) {}
 
@@ -100,30 +100,32 @@ class CommentQueryBuilder implements ICommentQueryBuilder {
 }
 
 export class CommentRepository implements ICommentRepository {
+  constructor(private readonly prisma: PrismaClient) {}
+
   findAllComments(options: CommentQuery): ICommentQueryBuilder {
-    return new CommentQueryBuilder(prisma.comment, { where: options });
+    return new CommentQueryBuilder(this.prisma.comment, { where: options });
   }
 
   async createComment(data: CommentCreate): Promise<Comment> {
-    return await prisma.comment.create({ data });
+    return await this.prisma.comment.create({ data });
   }
 
   async addLike(commentId: number, userId: string): Promise<Comment> {
-    return await prisma.comment.update({
+    return await this.prisma.comment.update({
       where: { id: commentId },
       data: { likedBy: { connect: { id: userId } } },
     });
   }
 
   async removeLike(commentId: number, userId: string): Promise<void> {
-    await prisma.comment.update({
+    await this.prisma.comment.update({
       where: { id: commentId },
       data: { likedBy: { disconnect: { id: userId } } },
     });
   }
 
   async deleteCommentByID(user: User, id: number): Promise<void> {
-    await prisma.comment.delete({
+    await this.prisma.comment.delete({
       where: { id, userId: user.id },
     });
   }

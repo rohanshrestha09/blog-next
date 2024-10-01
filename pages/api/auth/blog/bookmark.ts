@@ -1,15 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import { errorHandler } from 'server/exception';
-import { getAuthGuard } from 'server/factories/auth';
-import { getBlogController } from 'server/factories/blog';
+import { getAuthController, getAuthGuard } from 'server/factories/auth';
 
 const authGuard = getAuthGuard();
 
-const blogController = getBlogController();
+const authController = getAuthController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.use(authGuard.useAuth({ supressError: true })).get(blogController.getBlogSuggestions);
+router.use(authGuard.useAuth()).get((req, res) => authController.getBookmarks(req, res));
 
 export default router.handler({ onError: errorHandler });

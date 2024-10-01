@@ -15,12 +15,14 @@ import { Blog } from 'server/models/blog';
 import { IBlogRepository } from 'server/ports/blog';
 import { appConfig } from 'server/config/app';
 import { mailConfig } from 'server/config/mail';
+import { IUnitOfWork } from 'server/ports/unitofwork';
 
 export class AuthService implements IAuthService {
   constructor(
+    private readonly unitOfWork: IUnitOfWork,
     private readonly userRepository: IUserRepository,
-    private readonly supabaseService: ISupabaseService,
     private readonly blogRepository: IBlogRepository,
+    private readonly supabaseService: ISupabaseService,
   ) {}
 
   async login(data: Pick<User, 'email' | 'password'>): Promise<string> {
@@ -43,47 +45,49 @@ export class AuthService implements IAuthService {
     data: Pick<User, 'name' | 'email' | 'password' | 'dateOfBirth'>,
     file?: MultipartyFile,
   ): Promise<string> {
-    const userExists = await this.userRepository.findUserByEmail(data.email);
+    return await this.unitOfWork.beginTx(async (tx) => {
+      const userExists = await tx.userRepository.findUserByEmail(data.email);
 
-    if (userExists) throw new HttpException(403, 'User already exists. Choose a different email');
+      if (userExists) throw new HttpException(403, 'User already exists. Choose a different email');
 
-    const salt = await bcrypt.genSalt(10);
+      const salt = await bcrypt.genSalt(10);
 
-    const encryptedPassword = await bcrypt.hash(data.password, salt);
+      const encryptedPassword = await bcrypt.hash(data.password, salt);
 
-    const user = await this.userRepository.createUser({
-      name: data.name,
-      email: data.email,
-      password: encryptedPassword,
-      dateOfBirth: new Date(moment(data.dateOfBirth).format()),
-      isVerified: true,
-    });
-
-    if (file) {
-      if (!file?.headers?.['content-type'].startsWith('image/'))
-        throw new HttpException(403, 'Please choose an image');
-
-      const filename = file?.headers?.['content-type'].replace('image/', `${user.id}.`);
-
-      const uploadedFilePath = await this.supabaseService.uploadFile(
-        'users',
-        filename,
-        readFileSync(file?.path),
-      );
-
-      const previewUrl = await this.supabaseService.downloadFile('users', filename);
-
-      await this.userRepository.updateUserByID(user.id, {
-        image: previewUrl,
-        imageName: uploadedFilePath,
+      const user = await tx.userRepository.createUser({
+        name: data.name,
+        email: data.email,
+        password: encryptedPassword,
+        dateOfBirth: moment(data.dateOfBirth).toDate(),
+        isVerified: true,
       });
-    }
 
-    const token = sign({ id: user.id, email: user.email }, jwtConfig.secretKey, {
-      expiresIn: '30d',
+      if (file) {
+        if (!file?.headers?.['content-type'].startsWith('image/'))
+          throw new HttpException(403, 'Please choose an image');
+
+        const filename = file?.headers?.['content-type'].replace('image/', `${user.id}.`);
+
+        const uploadedFilePath = await this.supabaseService.uploadFile(
+          'users',
+          filename,
+          readFileSync(file?.path),
+        );
+
+        const previewUrl = await this.supabaseService.downloadFile('users', filename);
+
+        await tx.userRepository.updateUserByID(user.id, {
+          image: previewUrl,
+          imageName: uploadedFilePath,
+        });
+      }
+
+      const token = sign({ id: user.id, email: user.email }, jwtConfig.secretKey, {
+        expiresIn: '30d',
+      });
+
+      return token;
     });
-
-    return token;
   }
 
   async completeProfile(user: User, data: Pick<User, 'password'>): Promise<void> {
@@ -130,8 +134,7 @@ export class AuthService implements IAuthService {
         readFileSync(file.path),
       );
 
-      if (user.image && user.imageName)
-        await this.supabaseService.deleteFile('users', [user.imageName]);
+      if (user.image && user.imageName) this.supabaseService.deleteFile('users', [user.imageName]);
 
       previewUrl = await this.supabaseService.downloadFile('users', filename);
     }
@@ -142,33 +145,33 @@ export class AuthService implements IAuthService {
       website: data.website,
       image: previewUrl,
       imageName: uploadedFilePath,
-      dateOfBirth: data.dateOfBirth && new Date(moment(data.dateOfBirth).format()),
+      dateOfBirth: data.dateOfBirth && moment(data.dateOfBirth).toDate(),
     });
   }
 
   async deleteProfile(user: User, password: string): Promise<void> {
-    const userPassword = await this.userRepository.findUserPasswordByEmail(user.email);
+    await this.unitOfWork.beginTx(async (tx) => {
+      const userPassword = await tx.userRepository.findUserPasswordByEmail(user.email);
 
-    const isMatched = await bcrypt.compare(password, userPassword);
+      const isMatched = await bcrypt.compare(password, userPassword);
 
-    if (!isMatched) throw new HttpException(403, 'Incorrect Password');
+      if (!isMatched) throw new HttpException(403, 'Incorrect Password');
 
-    if (user.image && user.imageName) {
-      await this.supabaseService.deleteFile('users', [user.imageName]);
-    }
+      if (user.image && user.imageName) {
+        await this.supabaseService.deleteFile('users', [user.imageName]);
+      }
 
-    const deletedUser = await this.userRepository.deleteUserByID(user.id, { blogs: true });
+      const deletedUser = await tx.userRepository.deleteUserByID(user.id, { blogs: true });
 
-    if (deletedUser?.blogs?.length) {
-      this.supabaseService
-        .deleteFile(
+      if (deletedUser?.blogs?.length) {
+        this.supabaseService.deleteFile(
           'blogs',
           deletedUser.blogs
             .map((blog) => blog.imageName)
             .filter((filename): filename is string => typeof filename === 'string'),
-        )
-        .catch(() => {});
-    }
+        );
+      }
+    });
   }
 
   async getUserBlogs(

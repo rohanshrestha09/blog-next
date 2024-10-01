@@ -1,26 +1,17 @@
-import { CommentRepository } from 'server/repositories/comment';
 import { CommentService } from 'server/services/comment';
 import { CommentController } from 'server/controllers/comment';
-import { getNotificationRepository, getNotificationService } from './notification';
-import { getBlogRepository } from './blog';
-
-export function getCommentRepository() {
-  return new CommentRepository();
-}
+import { getNotificationService } from './notification';
+import { getUnitOfWork } from './unitofwork';
 
 export function getCommentService() {
-  const commentRepository = getCommentRepository();
-
-  const blogRepository = getBlogRepository();
-
-  const notificationRepository = getNotificationRepository();
+  const unitOfWork = getUnitOfWork();
 
   const notificationService = getNotificationService();
 
   return new CommentService(
-    commentRepository,
-    blogRepository,
-    notificationRepository,
+    unitOfWork.commentRepository,
+    unitOfWork.blogRepository,
+    unitOfWork.notificationRepository,
     notificationService,
   );
 }

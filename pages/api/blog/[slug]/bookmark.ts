@@ -10,8 +10,8 @@ const blogController = getBlogController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.post(authGuard.useAuth(), blogController.bookmarkBlog);
+router.post(authGuard.useAuth(), (req, res) => blogController.bookmarkBlog(req, res));
 
-router.delete(authGuard.useAuth(), blogController.unbookmarkBlog);
+router.delete(authGuard.useAuth(), (req, res) => blogController.unbookmarkBlog(req, res));
 
 export default router.handler({ onError: errorHandler });

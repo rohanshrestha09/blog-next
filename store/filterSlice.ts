@@ -1,12 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Genre } from 'interface/models';
 import { FILTERS, SORT_ORDER, SORT_TYPE } from '../constants/reduxKeys';
 
 const getState = (key: FILTERS) => {
   return {
     [key]: {
       size: 20,
-      genre: [] as Genre[],
+      genre: [] as string[],
       search: '',
       sort: SORT_TYPE.LIKE_COUNT,
       order: SORT_ORDER.DESC,
@@ -70,7 +69,7 @@ const sortFilterSlice = createSlice({
         },
       });
     },
-    setGenre: (state, { payload }: { payload: { key: FILTERS; genre: Genre } }) => {
+    setGenre: (state, { payload }: { payload: { key: FILTERS; genre: string } }) => {
       return (state = state[payload.key].genre.includes(payload.genre)
         ? {
             ...state,

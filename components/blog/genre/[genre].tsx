@@ -15,7 +15,6 @@ import { getUserSuggestions } from 'request/user';
 import { queryKeys } from 'utils';
 import { AUTH, BLOG, GENRE, USER } from 'constants/queryKeys';
 import { FILTERS } from 'constants/reduxKeys';
-import { Genre } from 'interface/models';
 
 const GenericBlogs = () => {
   const { query, back } = useRouter();
@@ -25,7 +24,7 @@ const GenericBlogs = () => {
   const { authUser } = useAuth();
 
   const { data: blogs, isLoading } = useQuery({
-    queryFn: () => getAllBlogs({ genre: [capitalize(String(query?.genre)) as Genre], size }),
+    queryFn: () => getAllBlogs({ genre: [capitalize(String(query?.genre))], size }),
     queryKey: queryKeys(BLOG).list({ genre: [capitalize(String(query?.genre))], size }),
   });
 
@@ -88,7 +87,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   await queryClient.prefetchQuery({
     queryFn: () =>
-      getAllBlogs({ genre: [capitalize(String(ctx.params?.genre)) as Genre], size: 20 }, config),
+      getAllBlogs({ genre: [capitalize(String(ctx.params?.genre))], size: 20 }, config),
     queryKey: queryKeys(BLOG).list({ genre: [capitalize(String(ctx.params?.genre))], size: 20 }),
   });
 

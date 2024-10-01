@@ -1,15 +1,11 @@
 import { NotificationController } from 'server/controllers/notification';
-import { NotificationRepository } from 'server/repositories/notification';
 import { NotificationService } from 'server/services/notification';
-
-export function getNotificationRepository() {
-  return new NotificationRepository();
-}
+import { getUnitOfWork } from './unitofwork';
 
 export function getNotificationService() {
-  const notificationRepository = getNotificationRepository();
+  const unitOfWork = getUnitOfWork();
 
-  return new NotificationService(notificationRepository);
+  return new NotificationService(unitOfWork.notificationRepository);
 }
 
 export function getNotificationController() {

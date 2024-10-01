@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
 import { SORT_ORDER, SORT_TYPE } from 'constants/reduxKeys';
-import { type User } from './models';
+import { User } from '../models/user';
 
 export interface IContext {
   authUser?: User;
@@ -23,6 +23,7 @@ export interface IQueryParamaters {
   size?: number;
   sort?: SORT_TYPE;
   order?: SORT_ORDER;
+  search?: string;
 }
 
 export interface IMessage {

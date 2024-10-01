@@ -27,6 +27,8 @@ export class AuthGuard {
 
       req.authUser = authUser;
 
+      authUser.email = email;
+
       await next();
     };
   }

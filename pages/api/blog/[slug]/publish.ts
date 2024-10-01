@@ -10,8 +10,8 @@ const blogController = getBlogController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.post(authGuard.useAuth(), blogController.publishBlog);
+router.post(authGuard.useAuth(), (req, res) => blogController.publishBlog(req, res));
 
-router.delete(authGuard.useAuth(), blogController.unpublishBlog);
+router.delete(authGuard.useAuth(), (req, res) => blogController.unpublishBlog(req, res));
 
 export default router.handler({ onError: errorHandler });

@@ -10,6 +10,8 @@ const userController = getUserController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.use(authGuard.useAuth()).post(userController.followUser).delete(userController.unfollowUser);
+router.post(authGuard.useAuth(), (req, res) => userController.followUser(req, res));
+
+router.delete(authGuard.useAuth(), (req, res) => userController.unfollowUser(req, res));
 
 export default router.handler({ onError: errorHandler });
