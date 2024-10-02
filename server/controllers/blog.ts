@@ -30,10 +30,10 @@ export class BlogController {
 
     const filter = await parseQuery(req.query);
 
-    const { genre = [] } = req.query;
+    const { genre = '' } = req.query;
 
     const [data, count] = await this.blogService.getAllBlogs(
-      { genre: (Array.isArray(genre) ? genre : genre?.split(',')).filter(Boolean) as GENRE },
+      { genre: genre?.toString()?.split(',').filter(Boolean) as GENRE },
       filter,
       authUser?.id,
     );

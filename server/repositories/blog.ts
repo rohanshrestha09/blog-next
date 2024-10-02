@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { blogFields, excludeFields, userFields } from 'server/lib/prisma';
+import { blogFields, selectFields, userFields } from 'server/lib/prisma';
 import { isEmpty } from 'lodash';
 import { Blog, BlogCreate, BlogQuery, BlogUpdate } from 'server/models/blog';
 import { User } from 'server/models/user';
@@ -11,7 +11,7 @@ const sessionSelect = <T>(condition: T) => ({
   ...blogFields,
   author: {
     select: {
-      ...excludeFields(userFields, ['email', 'password']),
+      ...selectFields(userFields, ['id', 'name', 'image']),
     },
   },
   likedBy: condition,
@@ -113,7 +113,7 @@ class BlogQueryBuilder implements IBlogQueryBuilder {
     return this;
   }
 
-  hasGenre(genre: GENRE) {
+  hasGenre(genre: GENRE = []) {
     if (!genre.length) return this;
 
     this.options.where = {

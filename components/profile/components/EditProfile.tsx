@@ -127,20 +127,16 @@ const EditProfile = () => {
           />
         </Form.Item>
 
-        <Form.Item label='Bio' name='bio' initialValue={authUser?.bio}>
-          <Input
-            className='rounded-lg p-3'
-            placeholder='Bio'
-            prefix={<InfoCircleOutlined className='text-zinc-400 mr-2' />}
-          />
-        </Form.Item>
-
         <Form.Item label='Website' name='website' initialValue={authUser?.website}>
           <Input
             className='rounded-lg p-3'
             placeholder='Website'
             prefix={<LinkOutlined className='text-zinc-400 mr-2' />}
           />
+        </Form.Item>
+
+        <Form.Item label='Bio' name='bio' initialValue={authUser?.bio}>
+          <Input.TextArea className='rounded-lg p-3' placeholder='Bio' />
         </Form.Item>
 
         <div className='w-full grid grid-cols-5'>

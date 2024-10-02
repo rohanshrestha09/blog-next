@@ -5,7 +5,14 @@ import { User, UserCreate, UserQuery, UserUpdate } from 'server/models/user';
 import { IUserQueryBuilder, IUserRepository } from 'server/ports/user';
 
 const sessionSelect = <T>(condition: T) => ({
-  ...excludeFields(userFields, ['email', 'password']),
+  ...excludeFields(userFields, [
+    'email',
+    'password',
+    'dateOfBirth',
+    'isVerified',
+    'isSSO',
+    'provider',
+  ]),
   followedBy: condition,
   following: condition,
   _count: {
@@ -159,6 +166,13 @@ export class UserRepository implements IUserRepository {
     return transformUser(data);
   }
 
+  async findSensitiveUserByID(id: string): Promise<User> {
+    return await this.prisma.user.findUniqueOrThrow({
+      where: { id },
+      select: excludeFields(userFields, ['password']),
+    });
+  }
+
   async findUserByEmail(email: string, sessionId?: string): Promise<User> {
     const condition = sessionId ? { where: { id: sessionId }, take: 1 } : false;
 
@@ -168,6 +182,13 @@ export class UserRepository implements IUserRepository {
     });
 
     return transformUser(data);
+  }
+
+  async findSensitiveUserByEmail(email: string): Promise<User> {
+    return await this.prisma.user.findUniqueOrThrow({
+      where: { email },
+      select: excludeFields(userFields, ['password']),
+    });
   }
 
   async findUserPasswordByEmail(email: string): Promise<string> {

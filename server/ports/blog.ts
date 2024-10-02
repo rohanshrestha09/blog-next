@@ -8,7 +8,7 @@ import { Comment } from 'server/models/comment';
 export interface IBlogQueryBuilder extends QueryBuilder<Blog> {
   bookmarkedBy(userId: string): IBlogQueryBuilder;
   followedBy(userId: string): IBlogQueryBuilder;
-  hasGenre(genre: GENRE): IBlogQueryBuilder;
+  hasGenre(genre?: GENRE): IBlogQueryBuilder;
 }
 
 export interface IBlogRepository {
@@ -48,12 +48,6 @@ export interface IBlogService {
     file?: MultipartyFile,
   ): Promise<Blog>;
   deleteBlog(user: User, slug: string): Promise<void>;
-  getBookmarks(userId: string, filter: FilterProps, sessionId?: string): Promise<[Blog[], number]>;
-  getFollowingBlogs(
-    userId: string,
-    filter: FilterProps,
-    sessionId?: string,
-  ): Promise<[Blog[], number]>;
   getBlogSuggestions(filter: FilterProps, sessionId?: string): Promise<[Blog[], number]>;
   getBlogLikers(slug: string, filter: FilterProps, sessionId?: string): Promise<[User[], number]>;
   publishBlog(user: User, slug: string): Promise<void>;

@@ -23,11 +23,9 @@ export class AuthGuard {
 
       const { email } = verify(token, jwtConfig.secretKey) as JwtPayload;
 
-      const authUser = await this.userRepository.findUserByEmail(email);
+      const authUser = await this.userRepository.findSensitiveUserByEmail(email);
 
       req.authUser = authUser;
-
-      authUser.email = email;
 
       await next();
     };

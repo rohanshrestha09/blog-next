@@ -16,13 +16,12 @@ import { parseFormData, parseQuery } from 'server/utils/parser';
 import { HttpException } from 'server/exception';
 import { IAuthService } from 'server/ports/auth';
 import { IUserService } from 'server/ports/user';
-import { IBlogService } from 'server/ports/blog';
+import { GENRE } from 'server/enums/genre';
 
 export class AuthController {
   constructor(
     private readonly authService: IAuthService,
     private readonly userService: IUserService,
-    private readonly blogService: IBlogService,
   ) {}
 
   async login(req: NextApiRequest, res: NextApiResponse) {
@@ -181,14 +180,22 @@ export class AuthController {
     return res.status(201).json(new ResponseDto('Profile deleted'));
   }
 
-  async getBookmarks(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
+  async getBookmarkedBlogs(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
     const authUser = req.authUser;
 
     if (!authUser) throw new HttpException(401, 'Unauthorized');
 
     const filter = await parseQuery(req.query);
 
-    const [data, count] = await this.blogService.getBookmarks(authUser.id, filter, authUser.id);
+    const { genre = '' } = req.query;
+
+    const [data, count] = await this.authService.getBookmarkedBlogs(
+      authUser,
+      {
+        genre: genre?.toString()?.split(',').filter(Boolean) as GENRE,
+      },
+      filter,
+    );
 
     return res.status(200).json(
       new ResponseDto('Bookmarks fetched', data, {
@@ -206,11 +213,7 @@ export class AuthController {
 
     const filter = await parseQuery(req.query);
 
-    const [data, count] = await this.blogService.getFollowingBlogs(
-      authUser.id,
-      filter,
-      authUser.id,
-    );
+    const [data, count] = await this.authService.getFollowingBlogs(authUser, filter);
 
     return res.status(200).json(
       new ResponseDto('Following blogs fetched', data, {
@@ -228,10 +231,15 @@ export class AuthController {
 
     const filter = await parseQuery(req.query);
 
+    const { genre = '', isPublished } = req.query;
+
     const [data, count] = await this.authService.getUserBlogs(
       authUser,
+      {
+        genre: genre?.toString()?.split(',').filter(Boolean) as GENRE,
+        isPublished: isPublished ? isPublished === 'true' : undefined,
+      },
       filter,
-      req?.query?.isPublished ? req?.query?.isPublished === 'true' : undefined,
     );
 
     return res.status(200).json(

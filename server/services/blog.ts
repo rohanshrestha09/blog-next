@@ -141,34 +141,6 @@ export class BlogService implements IBlogService {
     });
   }
 
-  async getBookmarks(
-    userId: string,
-    filter: FilterProps,
-    sessionId?: string,
-  ): Promise<[Blog[], number]> {
-    return await this.blogRepository
-      .findAllBlogs({ isPublished: true })
-      .bookmarkedBy(userId)
-      .withPagination(filter.page, filter.size)
-      .withSort(filter.sort, filter.order)
-      .withSearch(filter.search)
-      .execute(sessionId);
-  }
-
-  async getFollowingBlogs(
-    userId: string,
-    filter: FilterProps,
-    sessionId?: string,
-  ): Promise<[Blog[], number]> {
-    return await this.blogRepository
-      .findAllBlogs({ isPublished: true })
-      .followedBy(userId)
-      .withPagination(filter.page, filter.size)
-      .withSort(filter.sort, filter.order)
-      .withSearch(filter.search)
-      .execute(sessionId);
-  }
-
   async getBlogSuggestions(filter: FilterProps, sessionId?: string): Promise<[Blog[], number]> {
     const builder = await this.blogRepository.findRandomBlogs({ isPublished: true }, filter.size);
 

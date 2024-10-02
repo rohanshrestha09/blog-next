@@ -110,7 +110,7 @@ export class AuthService implements IAuthService {
   }
 
   async getProfile(user: User): Promise<User> {
-    return await this.userRepository.findUserByID(user.id);
+    return await this.userRepository.findSensitiveUserByID(user.id);
   }
 
   async updateProfile(
@@ -176,11 +176,37 @@ export class AuthService implements IAuthService {
 
   async getUserBlogs(
     user: User,
+    options: Partial<Pick<Blog, 'genre' | 'isPublished'>>,
     filter: FilterProps,
-    isPublished?: boolean,
   ): Promise<[Blog[], number]> {
     return await this.blogRepository
-      .findAllBlogs({ isPublished, authorId: user.id })
+      .findAllBlogs({ isPublished: options.isPublished, authorId: user.id })
+      .hasGenre(options.genre)
+      .withPagination(filter.page, filter.size)
+      .withSort(filter.sort, filter.order)
+      .withSearch(filter.search)
+      .execute(user.id);
+  }
+
+  async getBookmarkedBlogs(
+    user: User,
+    options: Partial<Pick<Blog, 'genre'>>,
+    filter: FilterProps,
+  ): Promise<[Blog[], number]> {
+    return await this.blogRepository
+      .findAllBlogs({ isPublished: true })
+      .bookmarkedBy(user.id)
+      .hasGenre(options.genre)
+      .withPagination(filter.page, filter.size)
+      .withSort(filter.sort, filter.order)
+      .withSearch(filter.search)
+      .execute(user.id);
+  }
+
+  async getFollowingBlogs(user: User, filter: FilterProps): Promise<[Blog[], number]> {
+    return await this.blogRepository
+      .findAllBlogs({ isPublished: true })
+      .followedBy(user.id)
       .withPagination(filter.page, filter.size)
       .withSort(filter.sort, filter.order)
       .withSearch(filter.search)
@@ -203,7 +229,7 @@ export class AuthService implements IAuthService {
   }
 
   async sendPasswordResetMail(email: string): Promise<void> {
-    const user = await this.userRepository.findUserByEmail(email);
+    const user = await this.userRepository.findSensitiveUserByEmail(email);
 
     const password = await this.userRepository.findUserPasswordByEmail(email);
 

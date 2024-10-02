@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { isEmpty } from 'lodash';
-import { blogFields, commentFields, excludeFields, userFields } from 'server/lib/prisma';
+import { blogFields, commentFields, selectFields, userFields } from 'server/lib/prisma';
 import { Comment, CommentCreate, CommentQuery } from 'server/models/comment';
 import { User } from 'server/models/user';
 import { ICommentQueryBuilder, ICommentRepository } from 'server/ports/comment';
@@ -10,7 +10,7 @@ const sessionSelect = <T>(condition: T) => ({
   ...commentFields,
   user: {
     select: {
-      ...excludeFields(userFields, ['email', 'password']),
+      ...selectFields(userFields, ['id', 'name', 'image']),
     },
   },
   blog: { select: blogFields },

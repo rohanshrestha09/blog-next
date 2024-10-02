@@ -17,7 +17,17 @@ export interface IAuthService {
     file?: MultipartyFile,
   ): Promise<void>;
   deleteProfile(user: User, password: string): Promise<void>;
-  getUserBlogs(user: User, filter: FilterProps, isPublished?: boolean): Promise<[Blog[], number]>;
+  getUserBlogs(
+    user: User,
+    options: Partial<Pick<Blog, 'genre' | 'isPublished'>>,
+    filter: FilterProps,
+  ): Promise<[Blog[], number]>;
+  getBookmarkedBlogs(
+    user: User,
+    options: Partial<Pick<Blog, 'genre'>>,
+    filter: FilterProps,
+  ): Promise<[Blog[], number]>;
+  getFollowingBlogs(user: User, filter: FilterProps): Promise<[Blog[], number]>;
   changePassword(user: User, data: { oldPassword: string; newPassword: string }): Promise<void>;
   sendPasswordResetMail(email: string): Promise<void>;
   resetPassword(token: string, data: Pick<User, 'email' | 'password'>): Promise<void>;
