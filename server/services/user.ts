@@ -25,7 +25,7 @@ export class UserService implements IUserService {
   ): Promise<[User[], number]> {
     return await this.userRepository
       .findAllUsers({})
-      .followedBy(userId, filter.search)
+      .following(userId, filter.search)
       .withPagination(filter.page, filter.size)
       .withSort(filter.sort, filter.order)
       .withSearch(filter.search)
@@ -39,7 +39,7 @@ export class UserService implements IUserService {
   ): Promise<[User[], number]> {
     return await this.userRepository
       .findAllUsers({})
-      .following(userId, filter.search)
+      .followedBy(userId, filter.search)
       .withPagination(filter.page, filter.size)
       .withSort(filter.sort, filter.order)
       .withSearch(filter.search)

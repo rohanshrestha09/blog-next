@@ -97,6 +97,7 @@ const Register: React.FC = () => {
           if (values.rememberCredential) localStorage.setItem('rememberCredential', 'true');
 
           delete values?.rememberCredential;
+          delete values?.confirmPassword;
 
           handleRegister.mutate({
             ...values,

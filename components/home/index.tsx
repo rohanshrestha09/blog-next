@@ -15,7 +15,7 @@ import { getFollowingBlogs, getProfile } from 'request/auth';
 import { getUserSuggestions } from 'request/user';
 import { queryKeys } from 'utils';
 import { SORT_TYPE, FILTERS, MODALS } from 'constants/reduxKeys';
-import { AUTH, BLOG, FOLLOWING as FOLLOWING_QUERY_KEY, GENRE, USER } from 'constants/queryKeys';
+import { AUTH, BLOG, FOLLOWING, GENRE, USER } from 'constants/queryKeys';
 import { Blog } from 'models/blog';
 
 const { LIKE_COUNT } = SORT_TYPE;
@@ -67,7 +67,7 @@ const Home = () => {
 
   const { data: followingBlogs } = useQuery({
     queryFn: () => getFollowingBlogs({ size: followingBlogSize }),
-    queryKey: queryKeys(FOLLOWING_QUERY_KEY, BLOG).list({ size: followingBlogSize }),
+    queryKey: queryKeys(FOLLOWING, BLOG).list({ size: followingBlogSize }),
     keepPreviousData: true,
   });
 

@@ -169,7 +169,7 @@ export class BlogService implements IBlogService {
   }
 
   async unpublishBlog(user: User, slug: string): Promise<void> {
-    await this.blogRepository.updateBlogBySlug(user, slug, { isPublished: true });
+    await this.blogRepository.updateBlogBySlug(user, slug, { isPublished: false });
   }
 
   async likeBlog(user: User, slug: string): Promise<void> {

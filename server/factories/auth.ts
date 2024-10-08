@@ -1,7 +1,6 @@
 import { AuthController } from 'server/controllers/auth';
 import { AuthGuard } from 'server/guards/auth';
 import { AuthService } from 'server/services/auth';
-import { getBlogService } from './blog';
 import { getSupabaseService } from './supabase';
 import { getUserService } from './user';
 import { getUnitOfWork } from './unitofwork';
@@ -28,9 +27,7 @@ export function getAuthService() {
 export function getAuthController() {
   const userService = getUserService();
 
-  const blogService = getBlogService();
-
   const authService = getAuthService();
 
-  return new AuthController(authService, userService, blogService);
+  return new AuthController(authService, userService);
 }

@@ -56,7 +56,7 @@ export class BlogController {
 
     const data = await createBlogDto.validateAsync(fields);
 
-    const blog = await this.blogService.createBlog(authUser, data, files?.[0]);
+    const blog = await this.blogService.createBlog(authUser, data, files?.get('image')?.[0]);
 
     return res.status(201).json(new ResponseDto('Blog created', { slug: blog.slug }));
   }
@@ -74,7 +74,7 @@ export class BlogController {
 
     const data = await updateBlogDto.validateAsync(fields);
 
-    const blog = await this.blogService.updateBlog(authUser, slug, data, files?.[0]);
+    const blog = await this.blogService.updateBlog(authUser, slug, data, files?.get('image')?.[0]);
 
     return res.status(201).json(new ResponseDto('Blog updated', { slug: blog.slug }));
   }

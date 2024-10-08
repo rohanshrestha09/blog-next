@@ -36,7 +36,12 @@ export const DiscussionForm: React.FC<Props> = ({ onSubmit }) => {
               className='rounded-lg py-2'
               placeholder='Write a comment...'
               onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
-              onPressEnter={() => form.validateFields().then((values) => onSubmit(values?.content))}
+              onPressEnter={() =>
+                form.validateFields().then(async (values) => {
+                  onSubmit(values?.content);
+                  form.resetFields();
+                })
+              }
               autoSize
             />
           </Form.Item>

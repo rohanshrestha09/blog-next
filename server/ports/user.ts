@@ -10,6 +10,7 @@ export interface IUserQueryBuilder extends QueryBuilder<User> {
 }
 
 export interface IUserRepository {
+  userExistsByEmail(email: string): Promise<boolean>;
   findUserByID(id: string, sessionId?: string): Promise<User>;
   findSensitiveUserByID(id: string, sessionId?: string): Promise<User>;
   findUserByEmail(email: string, sessionId?: string): Promise<User>;

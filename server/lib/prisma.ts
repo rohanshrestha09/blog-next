@@ -40,15 +40,19 @@ export const notificationFields = generateFields<Prisma.NotificationFieldRefs, N
 );
 
 export const selectFields = <T extends Record<string, unknown>>(model: T, fields: (keyof T)[]) => {
-  Object.keys(model).forEach((key) => {
-    if (!fields.includes(key)) delete model[key];
+  const modifiedFields = { ...model };
+
+  Object.keys(modifiedFields).forEach((key) => {
+    if (!fields.includes(key)) delete modifiedFields[key];
   });
 
-  return model;
+  return modifiedFields;
 };
 
 export const excludeFields = <T>(model: T, fields: (keyof T)[]) => {
-  fields.forEach((field) => delete model[field]);
+  const modifiedFields = { ...model };
 
-  return model;
+  fields.forEach((field) => delete modifiedFields[field]);
+
+  return modifiedFields;
 };

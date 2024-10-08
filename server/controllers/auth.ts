@@ -47,7 +47,7 @@ export class AuthController {
 
     const data = await registerDto.validateAsync(fields);
 
-    const token = await this.authService.register(data, files?.[0]);
+    const token = await this.authService.register(data, files?.get('image')?.[0]);
 
     const serialized = serialize('token', token, {
       httpOnly: true,
@@ -140,9 +140,7 @@ export class AuthController {
 
     const data = await this.authService.getProfile(authUser);
 
-    return res
-      .status(200)
-      .json(new ResponseDto('Profile fetched', { ...data, email: authUser.email }));
+    return res.status(200).json(new ResponseDto('Profile fetched', data));
   }
 
   async updateProfile(req: WithAuthRequest<NextApiRequest>, res: NextApiResponse) {
@@ -154,7 +152,7 @@ export class AuthController {
 
     const data = await updateProfileDto.validateAsync(fields);
 
-    await this.authService.updateProfile(authUser, data, files?.[0]);
+    await this.authService.updateProfile(authUser, data, files?.get('image')?.[0]);
 
     return res.status(201).json(new ResponseDto('Profile updated'));
   }

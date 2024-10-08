@@ -38,20 +38,21 @@ const UserProfile = () => {
 
   const { authUser } = useAuth();
 
-  const { data: user } = useQuery({
+  const { data: user, refetch } = useQuery({
     queryFn: () => getUser(String(query?.userId)),
     queryKey: queryKeys(USER).detail(String(query?.userId)),
   });
 
   const { data: blogs, isLoading } = useQuery({
     queryFn: () => getUserBlogs({ id: String(query?.userId), size }),
-    queryKey: queryKeys(USER, BLOG).list({ id: String(query?.userId), size }),
+    queryKey: queryKeys(BLOG, USER).list({ id: String(query?.userId), size }),
     keepPreviousData: true,
   });
 
   const handleFollowUser = useMutation(followUser, {
     onSuccess: (res) => {
       successNotification(res.message);
+      refetch();
       queryClient.refetchQueries(queryKeys(FOLLOWING).all);
       queryClient.refetchQueries(queryKeys(FOLLOWER).all);
     },
@@ -61,6 +62,7 @@ const UserProfile = () => {
   const handleUnfollowUser = useMutation(unfollowUser, {
     onSuccess: (res) => {
       successNotification(res.message);
+      refetch();
       queryClient.refetchQueries(queryKeys(FOLLOWING).all);
       queryClient.refetchQueries(queryKeys(FOLLOWER).all);
     },
@@ -193,13 +195,13 @@ export const getServerSideProps: GetServerSideProps = async (
 
   await queryClient.prefetchQuery({
     queryFn: () => getUserBlogs({ id: String(ctx.params?.userId), size: 20 }, config),
-    queryKey: queryKeys(USER, BLOG).list({ id: String(ctx.params?.userId), size: 20 }),
+    queryKey: queryKeys(BLOG, USER).list({ id: String(ctx.params?.userId), size: 20 }),
   });
 
   await queryClient.prefetchQuery({
     queryFn: () =>
       getUserFollowers({ id: String(ctx.params?.userId), size: 20, search: '' }, config),
-    queryKey: queryKeys(USER, FOLLOWER).list({
+    queryKey: queryKeys(FOLLOWER, USER).list({
       id: String(ctx.params?.userId),
       size: 20,
       search: '',
@@ -209,7 +211,7 @@ export const getServerSideProps: GetServerSideProps = async (
   await queryClient.prefetchQuery({
     queryFn: () =>
       getUserFollowing({ id: String(ctx.params?.userId), size: 20, search: '' }, config),
-    queryKey: queryKeys(USER, FOLLOWING).list({
+    queryKey: queryKeys(FOLLOWING, USER).list({
       id: String(ctx.params?.userId),
       size: 20,
       search: '',

@@ -89,7 +89,7 @@ export default function Blog() {
 
   const { data: userBlogs, isLoading: isUserBlogLoading } = useQuery({
     queryFn: () => (blog?.authorId ? getUserBlogs({ id: blog?.authorId, size: 4 }) : undefined),
-    queryKey: queryKeys(USER, BLOG).list({ id: blog?.authorId, size: 4 }),
+    queryKey: queryKeys(BLOG, USER).list({ id: blog?.authorId, size: 4 }),
     enabled: !!blog,
   });
 

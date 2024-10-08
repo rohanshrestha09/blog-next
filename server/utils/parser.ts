@@ -13,13 +13,22 @@ export const parseFormData = async <T>(req: NextApiRequest) => {
     });
   });
 
-  const { fields, files } = data as { fields: { [x: string]: string[] }; files: any };
+  const { fields, files } = data as {
+    fields: { [x: string]: string[] };
+    files: { [x: string]: MultipartyFile[] };
+  };
+
+  const filesMap = new Map<string, MultipartyFile[]>();
+
+  Object.entries(files).forEach(([k, v]) => {
+    filesMap.set(k, filesMap.has(k) ? [...filesMap.get(k)!, ...v] : v); // Append to existing key if it exists
+  });
 
   const parsedFields = Object.entries(fields)
     .map(([k, v]) => ({ [k]: v.length === 1 ? v[0] : v }))
-    .reduce((prev, curr) => ({ ...prev, ...curr }));
+    .reduce((prev, curr) => ({ ...prev, ...curr })) as T;
 
-  return { fields: parsedFields, files } as { fields: T; files: MultipartyFile[] };
+  return { fields: parsedFields, files: filesMap };
 };
 
 export async function parseQuery(query: NextApiRequest['query']): Promise<FilterProps> {

@@ -6,7 +6,7 @@ import { isEmpty } from 'lodash';
 import { LoadingOutlined } from '@ant-design/icons';
 import { IconType } from 'react-icons';
 import { BiLink, BiSearch } from 'react-icons/bi';
-import { BsFillCalendarDateFill, BsFillInfoCircleFill } from 'react-icons/bs';
+import { BsFillCalendarDateFill } from 'react-icons/bs';
 import { RiUserAddLine, RiUserFollowFill, RiUserFollowLine } from 'react-icons/ri';
 import { useAuth } from 'auth';
 import UserSkeleton from 'components/common/UserSkeleton';
@@ -56,7 +56,7 @@ const ProfileSider: React.FC<Props> = ({ isSider }) => {
         size: authFollowerSize,
         search: authFollowerSearch,
       }),
-    queryKey: queryKeys(AUTH, FOLLOWER).list({
+    queryKey: queryKeys(FOLLOWER, AUTH).list({
       size: authFollowerSize,
       search: authFollowerSearch,
     }),
@@ -73,7 +73,7 @@ const ProfileSider: React.FC<Props> = ({ isSider }) => {
         size: authFollowingSize,
         search: authFollowingSearch,
       }),
-    queryKey: queryKeys(AUTH, FOLLOWING).list({
+    queryKey: queryKeys(FOLLOWING, AUTH).list({
       size: authFollowingSize,
       search: authFollowingSearch,
     }),
@@ -213,18 +213,13 @@ const ProfileSider: React.FC<Props> = ({ isSider }) => {
           className='w-full flex flex-col gap-3 [&>*]:flex [&>*]:items-center [&>*]:gap-2'
           style={{ overflowWrap: 'anywhere' }}
         >
-          {authUser?.bio && (
-            <span>
-              <BsFillInfoCircleFill />
-              <p>{authUser.bio}</p>
-            </span>
-          )}
+          {authUser?.bio && <p className='flex-1'>{authUser.bio}</p>}
 
           {authUser?.website && (
             <span>
               <BiLink />
               <a
-                className='underline'
+                className='underline flex-1'
                 href={
                   !authUser.website.startsWith('https://')
                     ? `https://${authUser.website}`
@@ -240,7 +235,7 @@ const ProfileSider: React.FC<Props> = ({ isSider }) => {
 
           <span>
             <BsFillCalendarDateFill />
-            <p>{`Joined ${moment(authUser?.createdAt).format('ll')}`}</p>
+            <p className='flex-1'>{`Joined ${moment(authUser?.createdAt).format('ll')}`}</p>
           </span>
 
           {!isSider && (

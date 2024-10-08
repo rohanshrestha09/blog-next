@@ -60,7 +60,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
         size: userFollowerSize,
         search: userFollowerSearch,
       }),
-    queryKey: queryKeys(USER, FOLLOWER).list({
+    queryKey: queryKeys(FOLLOWER, USER).list({
       id: String(query?.userId),
       size: userFollowerSize,
       search: userFollowerSearch,
@@ -79,7 +79,7 @@ const UserProfileSider: React.FC<Props> = ({ isSider }) => {
         size: userFollowingSize,
         search: userFollowingSearch,
       }),
-    queryKey: queryKeys(USER, FOLLOWING).list({
+    queryKey: queryKeys(FOLLOWING, USER).list({
       id: String(query?.userId),
       size: userFollowingSize,
       search: userFollowingSearch,

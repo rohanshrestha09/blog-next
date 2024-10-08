@@ -32,7 +32,7 @@ export class AuthService implements IAuthService {
 
     if (!isMatched) throw new HttpException(403, 'Incorrect Password');
 
-    const user = await this.userRepository.findUserByEmail(data.email);
+    const user = await this.userRepository.findSensitiveUserByEmail(data.email);
 
     const token = sign({ id: user.id, email: user.email }, jwtConfig.secretKey, {
       expiresIn: jwtConfig.expiresIn,
@@ -46,7 +46,7 @@ export class AuthService implements IAuthService {
     file?: MultipartyFile,
   ): Promise<string> {
     return await this.unitOfWork.beginTx(async (tx) => {
-      const userExists = await tx.userRepository.findUserByEmail(data.email);
+      const userExists = await tx.userRepository.userExistsByEmail(data.email);
 
       if (userExists) throw new HttpException(403, 'User already exists. Choose a different email');
 
@@ -83,7 +83,7 @@ export class AuthService implements IAuthService {
       }
 
       const token = sign({ id: user.id, email: user.email }, jwtConfig.secretKey, {
-        expiresIn: '30d',
+        expiresIn: jwtConfig.expiresIn,
       });
 
       return token;
@@ -134,7 +134,8 @@ export class AuthService implements IAuthService {
         readFileSync(file.path),
       );
 
-      if (user.image && user.imageName) this.supabaseService.deleteFile('users', [user.imageName]);
+      if (user.image && user.imageName)
+        await this.supabaseService.deleteFile('users', [user.imageName]);
 
       previewUrl = await this.supabaseService.downloadFile('users', filename);
     }
@@ -217,7 +218,9 @@ export class AuthService implements IAuthService {
     user: User,
     data: { oldPassword: string; newPassword: string },
   ): Promise<void> {
-    const isMatched = await bcrypt.compare(data.oldPassword, user.password);
+    const userPassword = await this.userRepository.findUserPasswordByEmail(user.email);
+
+    const isMatched = await bcrypt.compare(data.oldPassword, userPassword);
 
     if (!isMatched) throw new HttpException(403, 'Incorrect Password');
 
@@ -237,7 +240,7 @@ export class AuthService implements IAuthService {
       expiresIn: '15min',
     });
 
-    const resetUrl = `${appConfig.appUrl}/security/reset-password/${user.email}/${token}`;
+    const resetUrl = `${appConfig.appUrl}/auth/reset-password/${user.email}/${token}`;
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',

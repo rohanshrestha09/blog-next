@@ -91,14 +91,16 @@ class UserQueryBuilder implements IUserQueryBuilder {
       following: {
         some: { id: userId },
       },
-      followedBy: {
-        some: {
-          name: {
-            contains: search,
-            mode: 'insensitive',
-          },
-        },
-      },
+      followedBy: search
+        ? {
+            some: {
+              name: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          }
+        : undefined,
     };
 
     return this;
@@ -110,14 +112,16 @@ class UserQueryBuilder implements IUserQueryBuilder {
       followedBy: {
         some: { id: userId },
       },
-      following: {
-        some: {
-          name: {
-            contains: search,
-            mode: 'insensitive',
-          },
-        },
-      },
+      following: search
+        ? {
+            some: {
+              name: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          }
+        : undefined,
     };
 
     return this;
@@ -154,6 +158,12 @@ class UserQueryBuilder implements IUserQueryBuilder {
 
 export class UserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaClient) {}
+
+  async userExistsByEmail(email: string): Promise<boolean> {
+    const user = await this.prisma.user.findFirst({ where: { email } });
+
+    return !!user;
+  }
 
   async findUserByID(id: string, sessionId?: string): Promise<User> {
     const condition = sessionId ? { where: { id: sessionId }, take: 1 } : false;
@@ -233,7 +243,7 @@ export class UserRepository implements IUserRepository {
     await this.prisma.user.update({
       where: { id },
       data: {
-        following: {
+        followedBy: {
           connect: {
             id: followerId,
           },
@@ -246,7 +256,7 @@ export class UserRepository implements IUserRepository {
     await this.prisma.user.update({
       where: { id },
       data: {
-        following: {
+        followedBy: {
           disconnect: {
             id: followerId,
           },
