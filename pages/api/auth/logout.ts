@@ -9,6 +9,6 @@ const authController = getAuthController();
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.use(authGuard.useAuth()).delete((req, res) => authController.logout(req, res));
+router.delete((req, res) => authController.logout(req, res));
 
 export default router.handler({ onError: errorHandler });

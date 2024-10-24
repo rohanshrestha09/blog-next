@@ -8,7 +8,7 @@ import { useModalStore } from 'store/hooks';
 import { errorNotification, successNotification } from 'utils/notification';
 import { queryKeys } from 'utils';
 import { MODALS } from 'constants/reduxKeys';
-import { FOLLOWER, FOLLOWING } from 'constants/queryKeys';
+import { FOLLOWER, FOLLOWING, USER } from 'constants/queryKeys';
 import { User } from 'models/user';
 
 interface Props {
@@ -29,6 +29,7 @@ const UserSkeleton: React.FC<Props> = ({ user, descriptionMode, isModal }) => {
   const handleFollowUser = useMutation(followUser, {
     onSuccess: (res) => {
       successNotification(res.message);
+      queryClient.refetchQueries(queryKeys(USER).all);
       queryClient.refetchQueries(queryKeys(FOLLOWER).all);
       queryClient.refetchQueries(queryKeys(FOLLOWING).all);
     },
@@ -38,6 +39,7 @@ const UserSkeleton: React.FC<Props> = ({ user, descriptionMode, isModal }) => {
   const handleUnfollowUser = useMutation(unfollowUser, {
     onSuccess: (res) => {
       successNotification(res.message);
+      queryClient.refetchQueries(queryKeys(USER).all);
       queryClient.refetchQueries(queryKeys(FOLLOWER).all);
       queryClient.refetchQueries(queryKeys(FOLLOWING).all);
     },
